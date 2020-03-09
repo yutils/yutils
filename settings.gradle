@@ -1,0 +1,2 @@
+rootProject.name='utils_yutils'
+include ':app',  ':utils'

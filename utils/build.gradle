@@ -1,0 +1,54 @@
+apply plugin: 'com.android.library'
+apply plugin: 'com.github.dcendents.android-maven'
+group = 'com.github.yutils'
+android {
+    compileOptions {
+        sourceCompatibility = 1.8
+        targetCompatibility = 1.8
+    }
+    compileSdkVersion 29
+    buildToolsVersion "29.0.3"
+    defaultConfig {
+        minSdkVersion 19
+        targetSdkVersion 29
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    lintOptions {
+        //build release 版本时开启lint检测
+        checkReleaseBuilds true
+        //lint 遇到error时继续构建，true为不继续构建(默认)，false为继续构建
+        abortOnError false
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'androidx.test:runner:1.2.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    //gson  <!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
+    implementation 'androidx.recyclerview:recyclerview:1.1.0'
+
+//    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
+    // https://mvnrepository.com/artifact/com.google.code.gson/gson
+    implementation group: 'com.google.code.gson', name: 'gson', version: '2.8.6'
+
+    // FST要用到以下3个包
+    // https://mvnrepository.com/artifact/de.ruedigermoeller/fst
+//    implementation group: 'de.ruedigermoeller', name: 'fst', version: '2.57'
+    // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core
+//    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.9.6'
+    // https://mvnrepository.com/artifact/org.objenesis/objenesis
+//    implementation group: 'org.objenesis', name: 'objenesis', version: '2.6'
+}
+apply from: 'toJar.gradle'
