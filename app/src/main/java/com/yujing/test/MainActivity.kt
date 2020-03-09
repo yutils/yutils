@@ -1,6 +1,5 @@
 package com.yujing.test
 
-import android.widget.Button
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : BaseActivity() {
