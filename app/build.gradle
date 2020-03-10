@@ -40,10 +40,10 @@ dependencies {
     implementation project(':utils')
 //    implementation project(':yurl')
 //    implementation project(':ycrash')
-    implementation 'com.github.yutils.utils3:net:3.4.2'
-//    implementation 'com.github.yutils.utils3:utils:3.4.2'
-    implementation 'com.github.yutils.utils3:yurl:3.4.2'
-    implementation 'com.github.yutils.utils3:ycrash:3.4.2'
+//    implementation 'com.github.yutils:yutils:1.0.0'
+    implementation 'com.github.yutils:ycrash:1.0.0'
+    implementation 'com.github.yutils:net:1.0.0'
+    implementation 'com.github.yutils:yurl:1.0.0'
 
     //gson <!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
     implementation 'com.google.code.gson:gson:2.8.6'
