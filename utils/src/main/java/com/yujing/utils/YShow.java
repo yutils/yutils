@@ -187,34 +187,6 @@ public class YShow extends Dialog {
         return yDialog;
     }
 
-
-    public synchronized static void show(Activity activity) {
-        show(activity, null, null, true);
-    }
-
-    public synchronized static void show(Activity activity, String message) {
-        show(activity, message, null, true);
-    }
-
-    public synchronized static void show(Activity activity, String message1, String message2) {
-        show(activity, message1, message2, true);
-    }
-
-    public synchronized static void show(Activity activity, String message, boolean canCancel) {
-        show(activity, message, null, canCancel);
-    }
-
-    public synchronized static void show(Activity activity, String message1, String message2, boolean canCancel) {
-        show(activity, message1, message2, canCancel, null);
-    }
-
-    public synchronized static void show(Activity activity, String message1, String message2, boolean canCancel, Boolean fullScreen) {
-        yDialog = new YShow(activity, message1, message2, canCancel);
-        yDialog.setFullScreen(fullScreen);
-        yDialog.show();
-    }
-
-
     public synchronized static void showUpdate(Activity activity) {
         showUpdate(activity, null, null, true, null);
     }
@@ -236,11 +208,37 @@ public class YShow extends Dialog {
     }
 
     public synchronized static void showUpdate(Activity activity, String message1, String message2, boolean canCancel, Boolean fullScreen) {
+        show(activity, message1, message2, canCancel, fullScreen);
+    }
+
+    public synchronized static void show(Activity activity) {
+        show(activity, null, null, true);
+    }
+
+    public synchronized static void show(Activity activity, String message) {
+        show(activity, message, null, true);
+    }
+
+    public synchronized static void show(Activity activity, String message1, String message2) {
+        show(activity, message1, message2, true);
+    }
+
+    public synchronized static void show(Activity activity, String message, boolean canCancel) {
+        show(activity, message, null, canCancel);
+    }
+
+    public synchronized static void show(Activity activity, String message1, String message2, boolean canCancel) {
+        show(activity, message1, message2, canCancel, null);
+    }
+    
+    public synchronized static void show(Activity activity, String message1, String message2, boolean canCancel, Boolean fullScreen) {
         if (isShow()) {
             setMessage(message1);
             setMessageOther(message2);
         } else {
-            show(activity, message1, message2, canCancel, fullScreen);
+            yDialog = new YShow(activity, message1, message2, canCancel);
+            yDialog.setFullScreen(fullScreen);
+            yDialog.show();
         }
     }
 
