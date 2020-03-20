@@ -1,6 +1,5 @@
 package com.yujing.utils;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -25,12 +24,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 
 /**
  * 各种类型转换
@@ -157,46 +152,6 @@ public class YConvert {
             }
         }
         return new String(c);
-    }
-
-    /**
-     * strTime要转换的string类型的时间，formatType要转换的格式yyyy-MM-dd HH:mm:ss//yyyy年MM月dd日
-     * * HH时mm分ss秒，
-     * * strTime的时间格式必须要与formatType的时间格式相同
-     *
-     * @param strTime    需要转换的时间字符串
-     * @param formatType format
-     * @return Date
-     */
-    public static Date string2Date(String strTime, String formatType) {
-        @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter = new SimpleDateFormat(formatType);
-        try {
-            return formatter.parse(strTime);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    /**
-     * 时间格式转换
-     *
-     * @param oldDateString 旧的时间字符串
-     * @param oldDateFormat 旧的格式
-     * @param newDateFormat 新的格式
-     * @return 新的时间字符串
-     */
-    public static String dateConvert(String oldDateString, String oldDateFormat, String newDateFormat) {
-        String newDateString;
-        @SuppressLint("SimpleDateFormat") SimpleDateFormat dateFormatOld = new SimpleDateFormat(oldDateFormat);
-        @SuppressLint("SimpleDateFormat") SimpleDateFormat dateFormatNew = new SimpleDateFormat(newDateFormat);
-        try {
-            Date date = dateFormatOld.parse(oldDateString);
-            newDateString = dateFormatNew.format(Objects.requireNonNull(date));
-        } catch (ParseException e) {
-            newDateString = "";
-        }
-        return newDateString;
     }
 
     /**
