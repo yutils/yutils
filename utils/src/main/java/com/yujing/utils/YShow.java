@@ -22,7 +22,7 @@ import androidx.annotation.ColorInt;
 /**
  * 半透明等待对话框，单例模式
  *
- * @author 余静 2018年11月20日17:00:27
+ * @author 余静 2020年3月20日10:44:41
  */
 @SuppressWarnings({"unused"})
 public class YShow extends Dialog {
