@@ -34,7 +34,7 @@ public class YShow extends Dialog {
     private TextView textView1;
     private TextView textView2;
     private boolean canCancel = true;//可以按返回键
-    private Boolean fullScreen = false;//全屏
+    private Boolean fullScreen;//全屏
     @SuppressLint("StaticFieldLeak")
     private static YShow yDialog = null;
 

@@ -9,7 +9,9 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.Gravity;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
@@ -18,25 +20,45 @@ import android.widget.LinearLayout;
 /**
  * 图片显示对话框
  *
- * @author yujing 2019年8月1日11:47:34
+ * @author yujing 2020年3月21日18:23:58
  */
 @SuppressWarnings({"unused"})
 public class YImageDialog extends Dialog {
+    private static boolean defaultFullScreen = false;
+    private Activity activity;
     private ImageView imageView;
     private boolean cancel = true;
     @SuppressLint("StaticFieldLeak")
     private static YImageDialog yDialog = null;
-    private LinearLayout linearLayout;
+    private Boolean fullScreen;//全屏
+    private DisplayMetrics displayMetrics;
+    private Bitmap bitmap;//图片
+    private Integer resource;//图片
+    private Drawable drawable;//图片
 
     // 构造函数
     public YImageDialog(Activity activity) {
         super(activity, android.R.style.Theme_DeviceDefault_Dialog_NoActionBar);
-        linearLayout = getView();
+        this.activity = activity;
+
+        displayMetrics = new DisplayMetrics();
+        WindowManager manager = (WindowManager) activity.getSystemService(Context.WINDOW_SERVICE);
+        if (manager!=null) manager.getDefaultDisplay().getRealMetrics(displayMetrics);
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        LinearLayout linearLayout = getView();
+
+        if (bitmap != null) {
+            imageView.setImageBitmap(bitmap);
+        } else if (resource != null) {
+            imageView.setImageResource(resource);
+        } else if (drawable != null) {
+            imageView.setImageDrawable(drawable);
+        }
+
         setContentView(linearLayout);// 设置布局view
         Window window = getWindow();
         if (window != null) {
@@ -44,13 +66,15 @@ public class YImageDialog extends Dialog {
             WindowManager.LayoutParams lp = window.getAttributes();
             lp.alpha = 1f;// 透明度
             lp.dimAmount = 0f;// 模糊度
+            lp.height = displayMetrics.heightPixels;
+            lp.width = displayMetrics.widthPixels;
             window.setAttributes(lp);
             //设置 window的Background为圆角
             GradientDrawable gradientDrawable = new GradientDrawable();
             int strokeWidth = 1; // 1dp 边框宽度
             int roundRadius = 0; // 6dp 圆角半径
-            int strokeColor = Color.parseColor("#C0000000");//内部填充颜色
-            int fillColor = Color.parseColor("#B0000000");//边框颜色
+            int strokeColor = Color.parseColor("#80000000");//内部填充颜色
+            int fillColor = Color.parseColor("#A0000000");//边框颜色
             gradientDrawable.setColor(fillColor);
             gradientDrawable.setCornerRadius(dip2px(getContext(), roundRadius));
             gradientDrawable.setStroke(dip2px(getContext(), strokeWidth), strokeColor);
@@ -73,13 +97,14 @@ public class YImageDialog extends Dialog {
         linearLayout.removeAllViews();
         linearLayout.setOrientation(LinearLayout.VERTICAL);//设置纵向布局
         //linearLayout.setPadding(dip2px(getContext(), 10), dip2px(getContext(), 10), dip2px(getContext(), 10), dip2px(getContext(), 10));
-        linearLayout.setMinimumHeight(YScreenUtil.getScreenHeight(getContext()));//最小高度
-        linearLayout.setMinimumWidth(YScreenUtil.getScreenWidth(getContext()));//最小宽度
+        linearLayout.setMinimumHeight(displayMetrics.heightPixels);//最小高度
+        linearLayout.setMinimumWidth(displayMetrics.widthPixels);//最小宽度
         //创建imageView
         imageView = new ImageView(getContext());
         LinearLayout.LayoutParams imageViewLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
         imageViewLayoutParams.gravity = Gravity.CENTER;//设置中心对其
         imageViewLayoutParams.weight = 1;
+        imageViewLayoutParams.setMargins((int) (displayMetrics.widthPixels * 0.05), (int) (displayMetrics.heightPixels * 0.05), (int) (displayMetrics.widthPixels * 0.05), (int) (displayMetrics.heightPixels * 0.05));
         imageView.setLayoutParams(imageViewLayoutParams);
         linearLayout.addView(imageView);
         return linearLayout;
@@ -103,7 +128,7 @@ public class YImageDialog extends Dialog {
             return;
         }
         yDialog = new YImageDialog(activity);
-        yDialog.getImageView().setImageBitmap(bitmap);
+        yDialog.setBitmap(bitmap);
         yDialog.setCancelable(cancelable);
         yDialog.show();
     }
@@ -114,7 +139,7 @@ public class YImageDialog extends Dialog {
             return;
         }
         yDialog = new YImageDialog(activity);
-        yDialog.getImageView().setImageResource(resource);
+        yDialog.setResource(resource);
         yDialog.setCancelable(cancelable);
         yDialog.show();
     }
@@ -125,7 +150,7 @@ public class YImageDialog extends Dialog {
             return;
         }
         yDialog = new YImageDialog(activity);
-        yDialog.getImageView().setImageDrawable(drawable);
+        yDialog.setDrawable(drawable);
         yDialog.setCancelable(cancelable);
         yDialog.show();
     }
@@ -139,6 +164,78 @@ public class YImageDialog extends Dialog {
         }
     }
 
+    @Override
+    public void show() {
+        if (activity == null || activity.isFinishing())
+            return;
+        finish();
+        if (fullScreen == null) fullScreen = defaultFullScreen;
+        if (fullScreen) {
+            //主要作用是焦点失能和焦点恢复，保证在弹出dialog时不会弹出虚拟按键且事件不会穿透。
+            if (this.getWindow() != null) {
+                this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE, WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
+                this.getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+                super.show();
+                this.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
+            }
+        } else {
+            super.show();
+        }
+    }
+
+    public boolean isCancel() {
+        return cancel;
+    }
+
+    public YImageDialog setCancel(boolean cancel) {
+        this.cancel = cancel;
+        return this;
+    }
+
+    public Bitmap getBitmap() {
+        return bitmap;
+    }
+
+    public YImageDialog setBitmap(Bitmap bitmap) {
+        this.bitmap = bitmap;
+        return this;
+    }
+
+    public Integer getResource() {
+        return resource;
+    }
+
+    public YImageDialog setResource(Integer resource) {
+        this.resource = resource;
+        return this;
+    }
+
+    public Drawable getDrawable() {
+        return drawable;
+    }
+
+    public YImageDialog setDrawable(Drawable drawable) {
+        this.drawable = drawable;
+        return this;
+    }
+
+    public Boolean getFullScreen() {
+        return fullScreen;
+    }
+
+    public YImageDialog setFullScreen(Boolean fullScreen) {
+        this.fullScreen = fullScreen;
+        return this;
+    }
+
+    public static boolean isDefaultFullScreen() {
+        return defaultFullScreen;
+    }
+
+    public static void setDefaultFullScreen(boolean defaultFullScreen) {
+        YImageDialog.defaultFullScreen = defaultFullScreen;
+    }
+
     /**
      * 顾名思义
      */
@@ -147,15 +244,4 @@ public class YImageDialog extends Dialog {
         return (int) (dpValue * scale + 0.5f);
     }
 
-    public boolean isCancel() {
-        return cancel;
-    }
-
-    public void setCancel(boolean cancel) {
-        this.cancel = cancel;
-    }
-
-    public ImageView getImageView() {
-        return imageView;
-    }
 }

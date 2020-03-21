@@ -233,7 +233,7 @@ public class YScreenUtil {
         WindowManager manager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         DisplayMetrics metrics = new DisplayMetrics();
         if (manager != null)
-            manager.getDefaultDisplay().getMetrics(metrics);
+            manager.getDefaultDisplay().getRealMetrics(metrics);//manager.getDefaultDisplay().getMetrics(metrics);
         return metrics;
     }
 }
