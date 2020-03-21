@@ -19,7 +19,6 @@ import android.widget.LinearLayout;
 
 /**
  * 图片显示对话框
- *
  * @author yujing 2020年3月21日18:23:58
  */
 @SuppressWarnings({"unused"})
