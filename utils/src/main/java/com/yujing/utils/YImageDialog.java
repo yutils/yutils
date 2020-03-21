@@ -43,7 +43,7 @@ public class YImageDialog extends Dialog {
 
         displayMetrics = new DisplayMetrics();
         WindowManager manager = (WindowManager) activity.getSystemService(Context.WINDOW_SERVICE);
-        if (manager!=null) manager.getDefaultDisplay().getRealMetrics(displayMetrics);
+        if (manager != null) manager.getDefaultDisplay().getRealMetrics(displayMetrics);
     }
 
     @Override
@@ -66,8 +66,10 @@ public class YImageDialog extends Dialog {
             WindowManager.LayoutParams lp = window.getAttributes();
             lp.alpha = 1f;// 透明度
             lp.dimAmount = 0f;// 模糊度
-            lp.height = displayMetrics.heightPixels;
-            lp.width = displayMetrics.widthPixels;
+            if (fullScreen != null && fullScreen) {
+                lp.height = displayMetrics.heightPixels;
+                lp.width = displayMetrics.widthPixels;
+            }
             window.setAttributes(lp);
             //设置 window的Background为圆角
             GradientDrawable gradientDrawable = new GradientDrawable();
@@ -243,5 +245,4 @@ public class YImageDialog extends Dialog {
         float scale = context.getResources().getDisplayMetrics().density;
         return (int) (dpValue * scale + 0.5f);
     }
-
 }
