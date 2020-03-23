@@ -98,7 +98,7 @@ public class YSave {
         }
         // 读盘，如果是null直接返回
         String value = getString(key);
-        if (value == null) return null;
+        if (value == null) return defaultObject;
 
         //读盘，如果是String直接返回
         if (type.equals(String.class)) {
@@ -130,7 +130,7 @@ public class YSave {
 
         // 读盘，如果是null直接返回
         String json = getString(key);
-        if (json == null) return null;
+        if (json == null) return (T)defaultObject;
 
         //读盘，如果是String直接返回
         if (classOfT.equals(String.class)) {
