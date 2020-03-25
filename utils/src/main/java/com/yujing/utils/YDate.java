@@ -108,14 +108,14 @@ public class YDate {
      * @return 新的时间字符串
      */
     public static String dateConvert(String oldDateString, String oldDateFormat, String newDateFormat) {
-        String newDateString;
+        String newDateString = "";
         @SuppressLint("SimpleDateFormat") SimpleDateFormat dateFormatOld = new SimpleDateFormat(oldDateFormat);
         @SuppressLint("SimpleDateFormat") SimpleDateFormat dateFormatNew = new SimpleDateFormat(newDateFormat);
         try {
             Date date = dateFormatOld.parse(oldDateString);
             newDateString = dateFormatNew.format(Objects.requireNonNull(date));
         } catch (ParseException e) {
-            newDateString = "";
+            e.printStackTrace();
         }
         return newDateString;
     }
@@ -123,19 +123,28 @@ public class YDate {
     /**
      * 根据日期获取星期 （2019-05-06 ——> 星期一）
      *
+     * @param date date
      * @return 星期几
      */
     public static String dateToWeek(Date date) {
-        String[] weekDays = {"星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"};
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
-        //一周的第几天
-        int w = cal.get(Calendar.DAY_OF_WEEK) - 1;
-        if (w < 0)
-            w = 0;
-        return weekDays[w];
+        return dateToWeek(cal);
     }
 
+    /**
+     * 根据日期获取星期 （2019-05-06 ——> 星期一）
+     *
+     * @param calendar calendar
+     * @return 星期几
+     */
+    public static String dateToWeek(Calendar calendar) {
+        String[] weekDays = {"星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"};
+        //一周的第几天
+        int w = calendar.get(Calendar.DAY_OF_WEEK) - 1;
+        if (w < 0) w = 0;
+        return weekDays[w];
+    }
 
     /**
      * 获取详细时间
@@ -143,8 +152,18 @@ public class YDate {
      * @return yyyy-MM-dd HH:mm:ss
      */
     public static String getStringDate() {
+        return getStringDate(new Date());
+    }
+
+    /**
+     * 获取详细时间
+     *
+     * @param date date
+     * @return yyyy-MM-dd HH:mm:ss
+     */
+    public static String getStringDate(Date date) {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        return formatter.format(new Date());
+        return formatter.format(date);
     }
 
     /**
@@ -153,9 +172,18 @@ public class YDate {
      * @return yyyy-MM-dd HH:mm:ss
      */
     public static String getStringDateChinese() {
+        return getStringDateChinese(new Date());
+    }
 
+    /**
+     * 获取详细时间
+     *
+     * @param date date
+     * @return yyyy-MM-dd HH:mm:ss
+     */
+    public static String getStringDateChinese(Date date) {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss");
-        return formatter.format(new Date());
+        return formatter.format(date);
     }
 
     /**
@@ -164,8 +192,18 @@ public class YDate {
      * @return 年月日
      */
     public static String getStringDateShort() {
+        return getStringDateShort(new Date());
+    }
+
+    /**
+     * 获取年月日
+     *
+     * @param date date
+     * @return 年月日
+     */
+    public static String getStringDateShort(Date date) {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-        return formatter.format(new Date());
+        return formatter.format(date);
     }
 
     /**
@@ -174,8 +212,18 @@ public class YDate {
      * @return 年月日
      */
     public static String getStringDateShortChinese() {
+        return getStringDateShortChinese(new Date());
+    }
+
+    /**
+     * 获取年月日
+     *
+     * @param date date
+     * @return 年月日
+     */
+    public static String getStringDateShortChinese(Date date) {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy年MM月dd日");
-        return formatter.format(new Date());
+        return formatter.format(date);
     }
 
     /**
@@ -184,31 +232,177 @@ public class YDate {
      * @return 时分秒
      */
     public static String getTimeShort() {
+        return getTimeShort(new Date());
+    }
+
+    /**
+     * 获取时分秒
+     *
+     * @param date date
+     * @return 时分秒
+     */
+    public static String getTimeShort(Date date) {
         SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss");
-        return formatter.format(new Date());
+        return formatter.format(date);
+    }
+
+
+    /**
+     * 获取当年第一天
+     */
+    public static Calendar getFirstDayOfYear() {
+        return getFirstDayOfYear(Calendar.getInstance());
     }
 
     /**
-     * 计算本月第一天
-     *
-     * @return 日期
+     * 获取一年第一天
      */
-    public static Date getFirstDay() {
-        Calendar firstDay = Calendar.getInstance();//获取当前时间
-        firstDay.set(Calendar.DAY_OF_MONTH, 1);//日期设置为一号，就是第一天了
-        return firstDay.getTime();
+    public static Calendar getFirstDayOfYear(Calendar c) {
+        c.set(Calendar.DAY_OF_YEAR, 1);
+        return c;
     }
 
     /**
-     * 计算本月最后一天
-     *
-     * @return 日期
+     * 获取当年最后一天
      */
-    public static Date getLastDay() {
-        Calendar lastDay = Calendar.getInstance();//获取当前时间
-        lastDay.add(Calendar.MONTH, 1);//月份设置为下个月
-        lastDay.set(Calendar.DAY_OF_MONTH, 1);//日期设置为1号
-        lastDay.add(Calendar.DAY_OF_MONTH, -1);//倒回到前一天
-        return lastDay.getTime();
+    public static Calendar getLastDayOfYear() {
+        return getLastDayOfYear(Calendar.getInstance());
+    }
+
+    /**
+     * 获取一年最后一天
+     */
+    public static Calendar getLastDayOfYear(Calendar c) {
+        c.set(Calendar.DAY_OF_YEAR, 1);
+        c.add(Calendar.DAY_OF_YEAR, -1);
+        c.add(Calendar.YEAR, 1);
+        return c;
+    }
+
+    /**
+     * 获取当月第一天
+     */
+    public static Calendar getFirstDayOfMonth() {
+        return getFirstDayOfMonth(Calendar.getInstance());
+    }
+
+    /**
+     * 获取一个月第一天
+     */
+    public static Calendar getFirstDayOfMonth(Calendar c) {
+        c.set(Calendar.DAY_OF_MONTH, 1);
+        return c;
+    }
+
+    /**
+     * 获取当月最后一天
+     */
+    public static Calendar getLastDayOfMonth() {
+        return getLastDayOfMonth(Calendar.getInstance());
+    }
+
+    /**
+     * 获取一个月最后一天
+     */
+    public static Calendar getLastDayOfMonth(Calendar c) {
+        c.set(Calendar.DAY_OF_MONTH, 1);
+        c.add(Calendar.MONTH, 1);
+        c.add(Calendar.DAY_OF_YEAR, -1);
+        return c;
+    }
+
+    /**
+     * 获取当周第一天
+     */
+    public static Calendar getFirstDayOfWeek() {
+        return getFirstDayOfWeek(Calendar.getInstance());
+    }
+
+    /**
+     * 获取一周第一天
+     */
+    public static Calendar getFirstDayOfWeek(Calendar c) {
+        c.set(Calendar.DAY_OF_WEEK, 1);
+        return c;
+    }
+
+    /**
+     * 获取当周最后一天
+     */
+    public static Calendar getLastDayOfWeek() {
+        return getLastDayOfWeek(Calendar.getInstance());
+    }
+
+    /**
+     * 获取一周最后一天
+     */
+    public static Calendar getLastDayOfWeek(Calendar c) {
+        c.set(Calendar.DAY_OF_WEEK, 1);
+        c.add(Calendar.DAY_OF_YEAR, 6);
+        return c;
+    }
+
+    /**
+     * 获取一年第一天
+     */
+    public static Date getFirstDayOfYear(Date date) {
+        return getFirstDayOfYear(dateToCalendar(date)).getTime();
+    }
+
+    /**
+     * 获取一年最后一天
+     */
+    public static Date getLastDayOfYear(Date date) {
+        return getLastDayOfYear(dateToCalendar(date)).getTime();
+    }
+
+    /**
+     * 获取一个月第一天
+     */
+    public static Date getFirstDayOfMonth(Date date) {
+        return getFirstDayOfMonth(dateToCalendar(date)).getTime();
+    }
+
+    /**
+     * 获取一个月最后一天
+     */
+    public static Date getLastDayOfMonth(Date date) {
+        return getLastDayOfMonth(dateToCalendar(date)).getTime();
+    }
+
+    /**
+     * 获取一周第一天
+     */
+    public static Date getFirstDayOfWeek(Date date) {
+        return getFirstDayOfWeek(dateToCalendar(date)).getTime();
+    }
+
+    /**
+     * 获取一周最后一天
+     */
+    public static Date getLastDayOfWeek(Date date) {
+        return getLastDayOfWeek(dateToCalendar(date)).getTime();
+    }
+
+    /**
+     * Calendar转化为Date
+     *
+     * @param calendar calendar
+     * @return date
+     */
+    public static Date calendarToDate(Calendar calendar) {
+        return calendar.getTime();
+    }
+
+    /**
+     * Date转化为Calendar
+     *
+     * @param date date
+     * @return Calendar
+     */
+    public static Calendar dateToCalendar(Date date) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        return cal;
     }
 }

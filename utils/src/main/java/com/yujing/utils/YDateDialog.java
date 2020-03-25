@@ -7,9 +7,13 @@ import android.content.DialogInterface.OnClickListener;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.DatePicker;
 import android.widget.LinearLayout;
 import android.widget.TimePicker;
+
+import com.yujing.contract.YListener;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -19,10 +23,14 @@ import java.util.Objects;
 
 /**
  * 日历对话框
+ *
  * @author 余静 2018年5月25日09:12:20
+ * 最后一次修改
  */
 @SuppressWarnings({"unused"})
 public class YDateDialog {
+    private static boolean defaultFullScreen = false;
+    private Boolean fullScreen;//全屏
     private DatePicker datePicker;
     private TimePicker timePicker;
     private AlertDialog ad;
@@ -36,6 +44,7 @@ public class YDateDialog {
     private boolean showMonth = true;// 是否显示日
     private boolean cancelable = true;// 是否可以取消
     private OnClickListener onCancelClickListener;
+    private YListener<Window> windowListener;//window，外部好设置样式
 
     public YDateDialog(Activity activity) {
         this.activity = activity;
@@ -82,6 +91,7 @@ public class YDateDialog {
         //---------------------------------------------设置布局开始------------------------------------
         // 创建一个布局
         LinearLayout dateTimeLayout = new LinearLayout(activity);
+        dateTimeLayout.removeAllViews();
         dateTimeLayout.setOrientation(LinearLayout.VERTICAL);
         // 实例化日期选择
         datePicker = new DatePicker(activity);
@@ -157,7 +167,18 @@ public class YDateDialog {
                 onCancelClickListener.onClick(dialog, which);
             }
             ad.dismiss();
-        }).show();
+        }).create();
+        if (windowListener != null)
+            windowListener.value(ad.getWindow());
+        if (fullScreen == null) fullScreen = defaultFullScreen;
+        if (fullScreen) {
+            ad.getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE, WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
+            ad.getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+            ad.show();
+            ad.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
+        } else {
+            ad.show();
+        }
         ad.setCancelable(cancelable);
         setTitle();
     }
@@ -191,14 +212,16 @@ public class YDateDialog {
     }
 
     public static void TEST(Activity activity) {
+        YDateDialog.setDefaultFullScreen(true);
         YDateDialog yDateDialog = new YDateDialog(activity);
         yDateDialog.setFormat("yyyy年MM月dd日");// 设置日期格式（如："yyyy年MM月dd日HH:mm"）
         yDateDialog.initTime("2018年6月27日");//设置初始化日期，必须和设置格式相同（如："2016年07月01日15:19"）
-        yDateDialog.setShowDay(false);// 设置是否显示日滚轮,默认显示
+        yDateDialog.setShowDay(true);// 设置是否显示日滚轮,默认显示
         yDateDialog.setShowTime(false);// 设置是否显示时间滚轮,默认显示
         yDateDialog.setShowMonth(true);// 设置是否显示时间滚轮,默认显示
+        yDateDialog.setWindowListener(window -> {
+        });
         yDateDialog.show((format, calendar, date, yyyy, MM, dd, HH, mm) -> {
-
         });
     }
 
@@ -216,5 +239,25 @@ public class YDateDialog {
 
     public void setOnCancelClickListener(OnClickListener onCancelClickListener) {
         this.onCancelClickListener = onCancelClickListener;
+    }
+
+    public void setWindowListener(YListener<Window> windowListener) {
+        this.windowListener = windowListener;
+    }
+
+    public Boolean getFullScreen() {
+        return fullScreen;
+    }
+
+    public void setFullScreen(Boolean fullScreen) {
+        this.fullScreen = fullScreen;
+    }
+
+    public static boolean isDefaultFullScreen() {
+        return defaultFullScreen;
+    }
+
+    public static void setDefaultFullScreen(boolean defaultFullScreen) {
+        YDateDialog.defaultFullScreen = defaultFullScreen;
     }
 }

@@ -24,12 +24,13 @@ import android.widget.LinearLayout;
 @SuppressWarnings({"unused"})
 public class YImageDialog extends Dialog {
     private static boolean defaultFullScreen = false;
+    private Boolean fullScreen;//全屏
+
     private Activity activity;
     private ImageView imageView;
     private boolean cancel = true;
     @SuppressLint("StaticFieldLeak")
     private static YImageDialog yDialog = null;
-    private Boolean fullScreen;//全屏
     private DisplayMetrics displayMetrics;
     private Bitmap bitmap;//图片
     private Integer resource;//图片
@@ -178,6 +179,8 @@ public class YImageDialog extends Dialog {
                 this.getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
                 super.show();
                 this.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
+            }else {
+                super.show();
             }
         } else {
             super.show();
