@@ -48,6 +48,7 @@ class MainActivity : BaseActivity() {
     var IP: String
         get() = YSave.get(App.get(), "IP", String::class.java, "127.0.0.1")
         set(ip) {
+            //设置还可以这样 YSave.create(this)["IP",String::class.java,""]
             YSave.put(App.get(), "IP", ip)
         }
 }
