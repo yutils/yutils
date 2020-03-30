@@ -405,7 +405,7 @@ public class YUtils {
                 parcel = Parcel.obtain();
                 parcel.writeParcelable((Parcelable) date, 0);
                 parcel.setDataPosition(0);
-                return parcel.readParcelable(date.getClass().getClassLoader());
+                return (T) parcel.readParcelable(date.getClass().getClassLoader());
             } catch (Exception e) {
                 Log.e("copyObject", "复制错误", e);
             } finally {
