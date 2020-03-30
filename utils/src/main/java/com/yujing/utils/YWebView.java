@@ -10,16 +10,31 @@ import android.webkit.WebViewClient;
 
 /**
  * WebView常用设置
+ *
  * @author yujing 2018年11月30日12:07:59
+ * 最后一次修改2020年3月27日17:10:07
  */
 @SuppressWarnings("unused")
 public class YWebView {
     /**
      * 初始化WebView
-     * @param  webView webView
-     * @param url url地址
+     *
+     * @param webView webView
+     * @param url     url地址
      */
     public static void init(WebView webView, String url) {
+        setSettings(webView);
+        setClient(webView);
+        webView.loadUrl(url);
+    }
+
+    /**
+     * 初始化WebView,背景透明
+     *
+     * @param webView webView
+     * @param url     url地址
+     */
+    public static void initBackgroundAlpha(WebView webView, String url) {
         setSettings(webView);
         setBackgroundAlpha(webView);
         setClient(webView);
@@ -28,6 +43,7 @@ public class YWebView {
 
     /**
      * 设置WebView背景透明
+     *
      * @param webView webView
      */
     public static void setBackgroundAlpha(WebView webView) {
@@ -41,6 +57,7 @@ public class YWebView {
 
     /**
      * 设置WebView跳转拦截
+     *
      * @param webView webView
      */
     public static void setClient(WebView webView) {
@@ -64,6 +81,7 @@ public class YWebView {
 
     /**
      * 设置WebView
+     *
      * @param webView webView
      */
     @SuppressLint({"SetJavaScriptEnabled"})

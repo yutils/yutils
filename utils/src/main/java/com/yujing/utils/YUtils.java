@@ -16,6 +16,8 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.os.StatFs;
 import android.provider.Settings;
 import android.telephony.PhoneNumberUtils;
@@ -32,8 +34,9 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
+
+import com.google.gson.Gson;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -41,6 +44,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.Inet4Address;
@@ -386,33 +390,54 @@ public class YUtils {
     /**
      * 对象复制,深度复制,被复制的对象必须序列化或是基本类型
      *
-     * @param object 对象
-     * @param <T>    对象 extends Serializable
+     * @param date 对象
+     * @param <T>  对象 extends Serializable
      * @return 新的对象
      */
     @SuppressWarnings("unchecked")
-    public static <T> T copyObject(T object) {
-        if (object == null)
+    public static <T> T copyObject(T date) {
+        if (date == null)
             return null;
-        T t = null;
-        try {
-            ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
-            ObjectOutputStream out = new ObjectOutputStream(byteOut);
-            out.writeObject(object);
-            ByteArrayInputStream byteIn = new ByteArrayInputStream(byteOut.toByteArray());
-            ObjectInputStream in = new ObjectInputStream(byteIn);
-            t = (T) in.readObject();
-        } catch (IOException e) {
-            System.out.println("复制对象发生错误 IOException" + e.getMessage());
-            Log.e("copyObject", "复制发生IO错误", e);
-        } catch (ClassNotFoundException e) {
-            System.out.println("复制对象发生错误 ClassNotFoundException" + e.getMessage());
-            Log.e("copyObject", "复制发生IO错误", e);
-        } catch (Exception e) {
-            System.out.println("复制对象发生错错误 Exception" + e.getMessage());
-            Log.e("copyObject", "复制发生IO错误", e);
+        if (date instanceof Parcelable) {
+            Log.i("copyObject", "采用Parcelable序列化");
+            Parcel parcel = null;
+            try {
+                parcel = Parcel.obtain();
+                parcel.writeParcelable((Parcelable) date, 0);
+                parcel.setDataPosition(0);
+                return parcel.readParcelable(date.getClass().getClassLoader());
+            } catch (Exception e) {
+                Log.e("copyObject", "复制错误", e);
+            } finally {
+                parcel.recycle();
+            }
         }
-        return t;
+        if (date instanceof Serializable) {
+            Log.i("copyObject", "采用Serializable序列化");
+            try {
+                ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
+                ObjectOutputStream out = new ObjectOutputStream(byteOut);
+                out.writeObject(date);
+                ByteArrayInputStream byteIn = new ByteArrayInputStream(byteOut.toByteArray());
+                ObjectInputStream in = new ObjectInputStream(byteIn);
+                return (T) in.readObject();
+            } catch (IOException e) {
+                Log.e("copyObject", "复制发生IO错误", e);
+            } catch (ClassNotFoundException e) {
+                Log.e("copyObject", "复制找不到对象错误", e);
+            } catch (Exception e) {
+                Log.e("copyObject", "复制错误", e);
+            }
+        }
+        Log.i("copyObject", "警告，对象未继承Serializable或Parcelable");
+        Log.i("copyObject", "尝试Gson序列化");
+        try {
+            Gson gson = new Gson();
+            return (T) gson.fromJson(gson.toJson(date), date.getClass());
+        } catch (Exception e) {
+            Log.e("copyObject", "Gson序列化失败", e);
+        }
+        return null;
     }
 
     /**

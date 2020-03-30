@@ -1,7 +1,9 @@
 package com.yujing.test
 
+import android.util.Log
 import com.yujing.utils.YDateDialog
 import com.yujing.utils.YSave
+import com.yujing.utils.YUtils
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
 
@@ -18,7 +20,8 @@ class MainActivity : BaseActivity() {
         button2.setOnClickListener { show(IP) }
         button3.text = "Date测试"
         button3.setOnClickListener { openDate() }
-        button4.setOnClickListener { }
+        button4.text = "对象复制"
+        button4.setOnClickListener { copy() }
         button5.setOnClickListener { }
         button6.setOnClickListener { }
         button7.setOnClickListener { }
@@ -31,6 +34,16 @@ class MainActivity : BaseActivity() {
                 测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测
                 测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测
             """
+    }
+
+
+    private fun copy() {
+        var user1:User= User("111",123)
+        var user2=YUtils.copyObject(user1)
+        Log.e("T"," "+user2.name)
+        user2.name="456789"
+        Log.e("T"," "+user1.name)
+        Log.e("T"," "+user2.name)
     }
 
     private fun openDate() {
