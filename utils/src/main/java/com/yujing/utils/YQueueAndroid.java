@@ -26,7 +26,6 @@ public class YQueueAndroid extends YQueue {
             } finally {
                 shutdown();
             }
-
         });
         add(thread);
     }

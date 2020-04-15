@@ -9,8 +9,8 @@ import android.os.Build;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import com.yujing.contract.YEmptyListener;
 import com.yujing.contract.YListener;
+import com.yujing.contract.YListener1;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,20 +23,20 @@ import java.util.List;
 public class YPermissions {
     public static int requestCode = 888;
     private Activity activity;
-    private YEmptyListener successListener;
-    private YListener<List<String>> failListener;
+    private YListener successListener;
+    private YListener1<List<String>> failListener;
 
     public YPermissions(Activity activity) {
         this.activity = activity;
     }
 
     //获取到全部权限
-    public void setSuccessListener(YEmptyListener successListener) {
+    public void setSuccessListener(YListener successListener) {
         this.successListener = successListener;
     }
 
     //没有获取到的权限
-    public void setFailListener(YListener<List<String>> failListener) {
+    public void setFailListener(YListener1<List<String>> failListener) {
         this.failListener = failListener;
     }
 
@@ -62,7 +62,7 @@ public class YPermissions {
         if (!toApplyList.isEmpty()) {
             ActivityCompat.requestPermissions(activity, toApplyList.toArray(tmpList), requestCode);
         } else {
-            if (successListener != null) successListener.listener();
+            if (successListener != null) successListener.value();
         }
     }
 
@@ -73,7 +73,7 @@ public class YPermissions {
         //判断是否是自己请求的权限||判断SDK版本号是否大于等于安卓6.0
         //判断permissions数组和grantResults数组是否有长度，permissions数组记录请求哪些权限，grantResults数组记录哪些权限获取到了，0(PackageManager.PERMISSION_GRANTED)代表获取到了，-1代表未获取到
         if (requestCode != 888 || Build.VERSION.SDK_INT < 23 || permissions.length == 0 || grantResults.length == 0) {
-            if (successListener != null) successListener.listener();
+            if (successListener != null) successListener.value();
             return;
         }
         //拒绝列表
@@ -84,7 +84,7 @@ public class YPermissions {
         }
         //拒绝列表如果为空，就表示获取到全部权限
         if (IgnoreList.isEmpty()) {
-            if (successListener != null) successListener.listener();
+            if (successListener != null) successListener.value();
             return;
         }
         if (failListener != null) failListener.value(IgnoreList);
@@ -139,8 +139,8 @@ public class YPermissions {
     /**
      * 判断是否有某些权限
      *
-     * @param context context
-     * @param permissions   权限。如：Manifest.permission.CAMERA
+     * @param context     context
+     * @param permissions 权限。如：Manifest.permission.CAMERA
      * @return 是否有
      */
     public static boolean hasPermissions(Context context, String... permissions) {

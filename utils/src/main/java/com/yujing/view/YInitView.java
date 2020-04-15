@@ -39,9 +39,9 @@ public class YInitView {
             Field[] fields = activity.getClass().getDeclaredFields();
             for (Field field : fields) {
                 field.setAccessible(true);//允许调用私有变量
-                setFindviewByActivity(activity, field);// 找到R.id.XXX
+                setFindViewByActivity(activity, field);// 找到R.id.XXX
                 setbackByActivity(activity, field);
-                setstartActivityByActivity(activity, field);
+                setStartActivityByActivity(activity, field);
             }
         } catch (IllegalAccessException e) {
             System.out.println("调用方法权限不足");
@@ -87,7 +87,7 @@ public class YInitView {
         }
     }
 
-    private static void setFindviewByActivity(Object object, Field field)
+    private static void setFindViewByActivity(Object object, Field field)
             throws IllegalAccessException, IllegalArgumentException {
         // 判断这个Field上是否有这个注解
         if (field.isAnnotationPresent(FindView.class)) {
@@ -118,7 +118,7 @@ public class YInitView {
         }
     }
 
-    private static void setstartActivityByActivity(final Object object, Field field)
+    private static void setStartActivityByActivity(final Object object, Field field)
             throws IllegalAccessException, IllegalArgumentException {
         // 判断这个Field上是否有这个注解
         if (field.isAnnotationPresent(StartActivity.class)) {
@@ -149,9 +149,9 @@ public class YInitView {
             Field[] fields = fragment.getClass().getDeclaredFields();
             for (Field field : fields) {
                 field.setAccessible(true);//允许调用私有变量
-                setFindviewByView(fragment, field, view);// 找到R.id.XXX
+                setFindViewByView(fragment, field, view);// 找到R.id.XXX
                 setbackByFragment(fragment, field, view);
-                setstartActivityByView(fragment, field, view);
+                setStartActivityByView(fragment, field, view);
             }
         } catch (IllegalAccessException e) {
             System.out.println("调用方法权限不足");
@@ -197,7 +197,7 @@ public class YInitView {
         }
     }
 
-    private static void setFindviewByView(Object object, Field field, View v)
+    private static void setFindViewByView(Object object, Field field, View v)
             throws IllegalAccessException, IllegalArgumentException {
         // 判断这个Field上是否有这个注解
         if (field.isAnnotationPresent(FindView.class)) {
@@ -234,7 +234,7 @@ public class YInitView {
         }
     }
 
-    private static void setstartActivityByView(final Object object, Field field, View v)
+    private static void setStartActivityByView(final Object object, Field field, View v)
             throws IllegalAccessException, IllegalArgumentException {
         // 判断这个Field上是否有这个注解
         if (field.isAnnotationPresent(StartActivity.class)) {

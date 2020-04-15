@@ -8,6 +8,6 @@ package com.yujing.contract;
  * @author yujing 2020年1月13日17:11:44
  */
 
-public interface YMultipleListener<Value1, Value2> {
+public interface YListener2<Value1, Value2> {
     void value(Value1 value1, Value2 value2);
 }

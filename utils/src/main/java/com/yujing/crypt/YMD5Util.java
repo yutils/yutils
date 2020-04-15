@@ -1,4 +1,4 @@
-package com.yujing.utils;
+package com.yujing.crypt;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -7,7 +7,7 @@ import java.security.NoSuchAlgorithmException;
  * MD5 算法
  * @author yujing 2018年11月30日12:11:57
 */
-@SuppressWarnings({"unused", "WeakerAccess"})
+@SuppressWarnings({"unused"})
 public class YMD5Util {
     // 全局数组
     private final static String[] strDigits = { "0", "1", "2", "3", "4", "5",

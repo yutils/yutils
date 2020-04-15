@@ -5,7 +5,7 @@ import android.os.Build;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
 
-import com.yujing.contract.YListener;
+import com.yujing.contract.YListener1;
 
 import java.util.Locale;
 
@@ -23,7 +23,7 @@ public class YTts {
 
     private static YTts yTts;//单例
 
-    public static YTts getYTtsInstance(Context context, YListener<Boolean> listener) {
+    public static YTts getYTtsInstance(Context context, YListener1<Boolean> listener) {
         if (yTts == null || yTts.textToSpeech == null) {
             synchronized (YTts.class) {
                 if (yTts == null || yTts.textToSpeech == null) yTts = new YTts(context, listener);
@@ -40,7 +40,7 @@ public class YTts {
         this(context, null);
     }
 
-    public YTts(final Context context, YListener<Boolean> initListener) {
+    public YTts(final Context context, YListener1<Boolean> initListener) {
         textToSpeech = new TextToSpeech(context, status -> {
             if (status == TextToSpeech.SUCCESS) {
                 int result = textToSpeech.setLanguage(Locale.CHINA);

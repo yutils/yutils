@@ -1,6 +1,7 @@
 package com.yujing.utils;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -28,7 +29,8 @@ import androidx.core.app.ActivityCompat;
  *
  * @author 余静 2018年5月15日19:00:17
  */
-@SuppressWarnings({"WeakerAccess", "unused"})
+@SuppressWarnings({"unused"})
+@SuppressLint("MissingPermission")
 public class YGps {
     private GpsLocation gpsLocation;
     private final Context context;
@@ -53,6 +55,7 @@ public class YGps {
 
     /**
      * 判断GPS模块是否存在或者是开启 如果开启正常，则会直接进入到显示页面，如果开启不正常，则会进行到GPS设置页面传递的Activity对象
+     *
      * @param context context
      */
     public YGps(Context context) {
@@ -183,6 +186,7 @@ public class YGps {
 
     /**
      * 获取一次定位信息，如果有GPS就获取GPS信息，若没有就获取网络定位
+     *
      * @return Location位置信息
      */
     public Location getLocation() {

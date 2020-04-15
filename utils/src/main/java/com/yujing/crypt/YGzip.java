@@ -21,7 +21,7 @@ import java.util.zip.GZIPOutputStream;
 @SuppressWarnings("unused")
 public class YGzip {
 
-    public static final int BUFFER = 1048576;
+    public static final int BUFFER = 16384;
     public static final String EXT = ".gz";
 
     /**

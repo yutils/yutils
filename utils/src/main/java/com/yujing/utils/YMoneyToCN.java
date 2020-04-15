@@ -17,7 +17,7 @@ public class YMoneyToCN {
     /**
      * 汉语中货币单位大写，这样的设计类似于占位符
      */
-    private static final String[] CN_UPPER_MONETRAY_UNIT = {"分", "角", "元", "拾", "佰", "仟", "万", "拾", "佰", "仟", "亿", "拾", "佰", "仟", "兆", "拾", "佰", "仟"};
+    private static final String[] CN_UPPER_MONEY_UNIT = {"分", "角", "元", "拾", "佰", "仟", "万", "拾", "佰", "仟", "亿", "拾", "佰", "仟", "兆", "拾", "佰", "仟"};
     /**
      * 特殊字符：整
      */
@@ -74,12 +74,12 @@ public class YMoneyToCN {
             numUnit = (int) (number % 10);
             if (numUnit > 0) {
                 if ((numIndex == 9) && (zeroSize >= 3)) {
-                    sb.insert(0, CN_UPPER_MONETRAY_UNIT[6]);
+                    sb.insert(0, CN_UPPER_MONEY_UNIT[6]);
                 }
                 if ((numIndex == 13) && (zeroSize >= 3)) {
-                    sb.insert(0, CN_UPPER_MONETRAY_UNIT[10]);
+                    sb.insert(0, CN_UPPER_MONEY_UNIT[10]);
                 }
-                sb.insert(0, CN_UPPER_MONETRAY_UNIT[numIndex]);
+                sb.insert(0, CN_UPPER_MONEY_UNIT[numIndex]);
                 sb.insert(0, CN_UPPER_NUMBER[numUnit]);
                 getZero = false;
                 zeroSize = 0;
@@ -89,9 +89,9 @@ public class YMoneyToCN {
                     sb.insert(0, CN_UPPER_NUMBER[numUnit]);
                 }
                 if (numIndex == 2) {
-                    sb.insert(0, CN_UPPER_MONETRAY_UNIT[numIndex]);
+                    sb.insert(0, CN_UPPER_MONEY_UNIT[numIndex]);
                 } else if (((numIndex - 2) % 4 == 0) && (number % 1000 > 0)) {
-                    sb.insert(0, CN_UPPER_MONETRAY_UNIT[numIndex]);
+                    sb.insert(0, CN_UPPER_MONEY_UNIT[numIndex]);
                 }
                 getZero = true;
             }

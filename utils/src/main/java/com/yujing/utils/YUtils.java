@@ -646,7 +646,7 @@ public class YUtils {
      * @param text        短信内容
      * @param sendMessage 发送广播
      * @param receiver    接收广播
-     *                    <p>
+     *
      *                    sendMessage = new BroadcastReceiver() {
      *                    public void onReceive(Context context, Intent intent) {
      *                    // 判断短信是否发送成功

@@ -1,16 +1,10 @@
 package com.yujing.contract;
 
 /**
- * 通用监听
+ * 空回调
  *
- * @param <Value> 回调类型
- * @author yujing 2020年1月13日17:14:03
+ * @author yujing 2020年2月12日16:57:28
  */
-public interface YListener<Value> {
-    /**
-     * 返回值
-     *
-     * @param value 值
-     */
-    void value(Value value);
+public interface YListener {
+    void value();
 }

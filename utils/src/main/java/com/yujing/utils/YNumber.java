@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
  * BigDecimal.ROUND_UP;//超过自定位数就入
  */
 @SuppressWarnings("unused")
-public class Ynumber {
+public class YNumber {
     public static final String INTEGER = "^-?(([1-9]\\d*$)|0)";
     public static final String DOUBLE = "^-?([1-9]\\d*\\.\\d*|0\\.\\d*[1-9]\\d*|0?\\.0+|0)$";
 

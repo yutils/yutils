@@ -13,7 +13,7 @@ import android.widget.DatePicker;
 import android.widget.LinearLayout;
 import android.widget.TimePicker;
 
-import com.yujing.contract.YListener;
+import com.yujing.contract.YListener1;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -44,7 +44,7 @@ public class YDateDialog {
     private boolean showMonth = true;// 是否显示日
     private boolean cancelable = true;// 是否可以取消
     private OnClickListener onCancelClickListener;
-    private YListener<Window> windowListener;//window，外部好设置样式
+    private YListener1<Window> windowListener;//window，外部好设置样式
 
     public YDateDialog(Activity activity) {
         this.activity = activity;
@@ -241,7 +241,7 @@ public class YDateDialog {
         this.onCancelClickListener = onCancelClickListener;
     }
 
-    public void setWindowListener(YListener<Window> windowListener) {
+    public void setWindowListener(YListener1<Window> windowListener) {
         this.windowListener = windowListener;
     }
 

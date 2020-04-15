@@ -2,7 +2,7 @@ package com.yujing.utils;
 
 import android.util.Log;
 
-import com.yujing.contract.YListener;
+import com.yujing.contract.YListener1;
 
 import java.io.InputStream;
 
@@ -16,7 +16,7 @@ public class YReadInputStream {
     private static final String TAG = "YRead";
     private static boolean showLog = false;
     private InputStream inputStream;
-    private YListener<byte[]> readListener;
+    private YListener1<byte[]> readListener;
     private ReadThread readThread;
     private final int loopWaitTime = 1;//循环等待时间1毫秒
     private boolean autoPackage = true;//自动组包
@@ -27,7 +27,7 @@ public class YReadInputStream {
     public YReadInputStream() {
     }
 
-    public YReadInputStream(InputStream inputStream, YListener<byte[]> readListener) {
+    public YReadInputStream(InputStream inputStream, YListener1<byte[]> readListener) {
         this.inputStream = inputStream;
         this.readListener = readListener;
     }
@@ -40,7 +40,7 @@ public class YReadInputStream {
         this.inputStream = inputStream;
     }
 
-    public void setReadListener(YListener<byte[]> readListener) {
+    public void setReadListener(YListener1<byte[]> readListener) {
         this.readListener = readListener;
     }
 
