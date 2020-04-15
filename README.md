@@ -37,6 +37,7 @@ Github地址：[https://github.com/yutils/yurl](https://github.com/yutils/yurl)
 # 下面列举一些主要类的方法，具体每个类方法和和使用，请看文档或源码，欢迎给我提出修改意见。
 
 ## 类 YUtils
+```
 static void	closeSoftKeyboard(android.app.Activity activity)
 关闭软键盘
 static <T> T	copyObject(T date)
@@ -127,8 +128,10 @@ static void	setFullScreen(android.app.Activity activity, boolean isFullScreen)
 设置全屏
 static void	setImmersive(android.app.Activity activity, boolean isFullScreen)
 设置开启沉浸式
+```
 
 ## 类 YActivityUtil
+```
 static void	closeActivityByName(java.lang.String name)
 通过名称关闭Activity
 static void	closeAllActivity()
@@ -142,8 +145,10 @@ static android.app.Activity	getCurrentActivity()
 获得当前栈顶Activity
 static java.lang.String	getCurrentActivityName()
 获得当前Activity名字
+```
 
 ## 类 YBitmapUtil
+```
 static byte[]	compressToBytes(android.graphics.Bitmap image, int Kb)
 图片压缩返回byte[]
 static android.graphics.Bitmap	getReflection(android.graphics.Bitmap bitmap)
@@ -154,8 +159,10 @@ static android.graphics.Bitmap	replaceColor(android.graphics.Bitmap oldBitmap, i
 替换eBitmap中某颜色值
 static android.graphics.Bitmap	zoom(android.graphics.Bitmap bitmap, int w, int h)
 放大缩小图片
+```
 
 ## 类 YBytes
+```
 YBytes	addByte(byte b)
 在byte数组末尾添加一个byte
 YBytes	addByte(byte[] bs)
@@ -184,8 +191,10 @@ byte[]	getBytes()
 获取bytes数组
 void	setBytes(byte[] bytes)
 替换bytes数组
+```
 
 ## 类 YCheck
+```
 static boolean	isAge(java.lang.String str)
 判断字段是否为年龄 符合返回ture
 static boolean	isBankCard(java.lang.String str) 
@@ -231,8 +240,10 @@ static boolean	isUrl(java.lang.String str)
 判断是否为Url 符合返回ture
 static boolean	isZipCode(java.lang.String str)
 判断字段是否为邮编 符合返回ture
+```
 
 ## 类 YConvert
+```
 static java.lang.String	asciiToString(java.lang.String value)
 asciiToString
 static java.lang.Object	base642Object(java.lang.String Base64String)
@@ -301,8 +312,10 @@ static android.graphics.Bitmap	view2Bitmap(android.view.View v)
 View转bitmap
 static android.graphics.Bitmap	yuv420spToBitmap(byte[] data, int width, int height)
 yuv420格式图片数据转成bitmap
+```
 
 ## 类 YConvertBytes
+```
 static int	bytes2ToInt(byte[] b)
 int 和 网络字节序的 byte[] 数组之间的转换 2位byte
 static int	bytes2ToInt(byte[] b, int offset)
@@ -351,8 +364,10 @@ static byte[]	shortToBytes(short n)
 short 和 网络字节序的 byte[] 数组之间的转换
 static void	shortToBytes(short n, byte[] array, int offset)
 short 和 网络字节序的 byte[] 数组之间的转换
+```
 
 ## 类 YDate
+```
 static java.util.Date	calendarToDate(java.util.Calendar calendar)
 Calendar转化为Date
 static java.lang.String	date2String(java.util.Date date, java.lang.String formatType)
@@ -423,7 +438,7 @@ static java.lang.String	getTimeShort(java.util.Date date)
 获取时分秒
 static java.util.Date	string2Date(java.lang.String strTime, java.lang.String formatType)
 strTime要转换的string类型的时间，formatType要转换的格式yyyy-MM-dd HH:mm:ss//yyyy年MM月dd日 * HH时mm分ss秒， * strTime的时间格式必须要与formatType的时间格式相同
-
+```
 ## 类 YDateDialog
 弹出日期选择对话框
 
@@ -434,6 +449,7 @@ strTime要转换的string类型的时间，formatType要转换的格式yyyy-MM-d
 统计单位时间内时间触发次数
 
 ## 类 YFileUtil
+```
 static boolean	byteToFile(byte[] bytes, java.io.File file)
 bytes转file
 static void	copy(java.lang.String source, java.lang.String target, boolean isFolder)
@@ -458,8 +474,10 @@ static void	stringToFile(java.io.File file, java.lang.String str)
 string转file
 static void	stringToFile(java.io.File file, java.lang.String str, java.nio.charset.Charset charset)
 string转file
+```
 
 ## 类 YGps
+```
 static double	getLatitude() 
 android.location.Location	getLocation()
 获取一次定位信息，如果有GPS就获取GPS信息，若没有就获取网络定位
@@ -475,12 +493,15 @@ void	StopGPS()
 停止GPS定位信息
 void	StopNET()
 停止网络定位信息
+```
 
 ## 类 YLoop
+```
 循环调用某一个类中的某一个方法 
 static void	start(java.lang.Object obj, java.lang.String methodName, int interval) 
 static void	start(java.lang.Object obj, java.lang.String methodName, int interval, int cycleNum) 
 static void	stop(java.lang.Object obj, java.lang.String methodName) 
+```
 
 ## 类 YNoticeDownload
 下载类，进度显示通知栏
@@ -489,6 +510,7 @@ static void	stop(java.lang.Object obj, java.lang.String methodName)
 对int，long，flat，double各种转换，保留小数等
 
 ## 类 YPath
+```
 static java.lang.String	getALARMS()
 获取警告文件夹 需要申请权限
 static java.lang.String	getCache(android.content.Context context)
@@ -533,8 +555,10 @@ static java.lang.String	getRoot()
 获得系统目录 需要申请权限 /system
 static java.lang.String	getSDCard()
 获得SD卡目录（获取的是手机外置sd卡的路径） 需要申请权限 /storage/emulated/0
+```
 
 ## 类 YPermissions
+```
 static java.lang.String[]	getManifestPermissions(android.app.Activity activity)
 获取Manifest中的全部权限
 static boolean	hasPermissions(android.content.Context context, java.lang.String... permissions)
@@ -551,8 +575,10 @@ static void	requestAll(android.app.Activity activity)
 获取权限
 void	setFailListener(YListener1<java.util.List<java.lang.String>> failListener) 
 void	setSuccessListener(YListener successListener) 
+```
 
 ## 类 YPicture
+```
 java.io.File	createImageFile(java.lang.String path)
 创建图片File
 void	gotoAlbum(android.app.Activity activity)
@@ -580,8 +606,10 @@ void	setPictureFromCameraListener(YPicture.PictureFromCameraListener pictureFrom
 void	setPictureFromCropListener(YPicture.PictureFromCropListener pictureFromCropListener) 
 java.lang.String	uri2ImagePath(android.content.Context context, android.net.Uri uri)
 根据URI获图片路径
+```
 
 ## 类 YPropertiesUtils
+```
 static java.util.Map<java.lang.String,java.lang.String>	getAll(java.lang.String propertyFilePath) 
 static java.lang.String	getValue(java.lang.String propertyFilePath, java.lang.String key) 
 static java.lang.String	getValue(java.lang.String propertyFilePath, java.lang.String key, boolean isAbsolutePath) 
@@ -591,8 +619,10 @@ static void	removeValue(java.lang.String propertyFilePath, java.lang.String key)
 static boolean	removeValue(java.lang.String propertyFilePath, java.lang.String[] key) 
 static void	setValue(java.lang.String propertyFilePath, java.util.HashMap<java.lang.String,java.lang.String> htKeyValue) 
 static boolean	setValue(java.lang.String propertyFilePath, java.lang.String key, java.lang.String value) 
+```
 
 ## 类 YReadInputStream
+```
 java.io.InputStream	getInputStream() 
 int	getPackageTime() 
 boolean	isAutoPackage() 
@@ -609,9 +639,11 @@ void	setReadListener(YListener1<byte[]> readListener)
 static void	setShowLog(boolean showLog) 
 void	start() 
 void	stop() 
+```
 
 ## 类 YSave
 把对象保存到文件
+```
 static YSave	create(android.content.Context context) 
 static YSave	create(android.content.Context context, java.lang.String path) 
 static YSave	create(android.content.Context context, java.lang.String path, java.lang.String extensionName) 
@@ -639,8 +671,10 @@ static void	removeAll(android.content.Context context)
 YSave	setExtensionName(java.lang.String extensionName) 
 YSave	setPath(java.lang.String path) 
 static void	setUseCache(boolean useCache) 
+```
 
 ## 类 YScreenUtil
+```
 static int	dp2px(android.content.Context context, float dpValue)
 dip转换为px大小
 static int	dp2px(float dpValue)
@@ -675,8 +709,10 @@ static android.graphics.Bitmap	snapShotWithStatusBar(android.app.Activity activi
 获取当前屏幕截图，包含状态栏
 static int	sp2px(android.content.Context context, float spValue)
 sp转换为px
+```
 
 ## 类 YSharedPreferencesUtils
+```
 static void	delete(android.content.Context context, java.lang.String key) 
 static void	delete(android.content.Context context, java.lang.String fileName, int mode, java.lang.String key) 
 static void	delete(android.content.Context context, java.lang.String fileName, java.lang.String key) 
@@ -700,11 +736,13 @@ static void	writeBoolean(android.content.Context context, java.lang.String fileN
 static void	writeInt(android.content.Context context, java.lang.String key, int value) 
 static void	writeInt(android.content.Context context, java.lang.String fileName, int mode, java.lang.String key, int value) 
 static void	writeInt(android.content.Context context, java.lang.String fileName, java.lang.String key, int value) 
+```
 
 ## 类 YShow
 半透明等待对话框
 
 ## 类 YString
+```
 static java.util.List<java.lang.StringBuilder>	group(java.lang.String str, int digit)
 字符串分组，每digit位字符拆分一次字符串，中文英文都算一个字符
 static java.util.List<java.lang.StringBuilder>	groupDouble(java.lang.String str, int digit)
@@ -715,8 +753,10 @@ static java.lang.String	ToDBC(java.lang.String input)
 全角转半角
 static java.lang.String	ToSBC(java.lang.String input)
 半角转全角
+```
 
 ## 类 YThreadPool
+```
 static void	add(java.lang.Thread thread)
 把一个线程扔进线程池
 static int	getPoolSize()
@@ -727,8 +767,10 @@ static void	shutdown()
 关闭释放线程池
 static void	stopAll()
 停止当前队列中全部请求
+```
 
 ## 类 YToast
+```
 static int	getQueueTime()
 获取队列显示时间
 static void	setQueueTime(int queueTime)
@@ -741,8 +783,10 @@ static void	showQueue(android.content.Context context, java.lang.String text)
 多条toast同时过来，每一条toast至少显示queueTime时间（毫秒）
 static void	showQueueLong(android.content.Context context, java.lang.String text)
 多条toast同时过来，每一条toast至少显示queueTime时间（毫秒）
+```
 
 ## 类 YTts
+```
 float	getPitch()
 获取音调
 float	getSpeechRate()
@@ -771,8 +815,10 @@ void	speakQueue(java.lang.String speak)
 语音队列播放
 void	speakQueue(java.lang.String speak, float speechRate, float pitch)
 语音队列播放
+```
 
 ## 类 YUri
+```
 static android.graphics.Bitmap	getBitmap(android.content.Context context, android.net.Uri uri)
 uri转换成Bitmap
 static java.lang.String	getPath(android.content.Context context, android.net.Uri uri)
@@ -783,8 +829,10 @@ static android.net.Uri	getUri(android.content.Context context, java.io.File file
 file转URI
 static android.net.Uri	saveBitmap2uri(java.lang.String path, android.graphics.Bitmap mBitmap)
 保存文件返回uri
+```
 
 ## 类 YWebView
+```
 static void	init(android.webkit.WebView webView, java.lang.String url)
 初始化WebView
 static void	initBackgroundAlpha(android.webkit.WebView webView, java.lang.String url)
@@ -797,8 +845,10 @@ static void	setClient(android.webkit.WebView webView)
 设置WebView跳转拦截
 static void	setSettings(android.webkit.WebView webView)
 设置WebView
+```
 
 ## 类 YFragmentManager
+```
 void	hideCurrent()
 隐藏当前fragment
 void	hideFragment(Fragment targetFragment)
@@ -807,15 +857,19 @@ void	showCurrent()
 显示当前fragment
 void	showFragment(Fragment targetFragment)
 显示fragment
+```
 
 ## 类 Y3des
+```
 static byte[]	decode(byte[] bytes, byte[] key)
 3DES解密
 static byte[]	encode(byte[] bytes, byte[] key)
 3DES加密
 static byte[]	getKey() 
+```
 
 ## 类 YAes
+```
 static java.security.Key	createKey()
 创建一个随机秘钥
 static byte[]	decrypt(byte[] result, java.security.Key key)
@@ -831,14 +885,18 @@ static byte[]	encrypt(java.lang.String context, java.security.Key key)
 static java.lang.String	encryptToBase64(java.lang.String data, java.lang.String password) 
 static java.lang.String	encryptToHex(java.lang.String data, java.lang.String password) 
 static javax.crypto.spec.SecretKeySpec	getKey() 
+```
 
 ## 类 YDes
+```
 static byte[]	decode(byte[] data, byte[] pwd)
 DES 解密算法
 static byte[]	encode(byte[] data, byte[] pwd)
 DES加密算法
+```
 
 ## 类 YEncrypt
+```
 自定义加密解密类
 byte[]	decode(byte[] byteArray) 
 byte[]	decode(byte[] byteArray, java.lang.String passWord) 
@@ -850,8 +908,10 @@ byte[]	encode(byte[] byteArray, java.lang.String passWord)
 java.lang.String	encode(java.lang.String str) 
 java.lang.String	encode(java.lang.String str, java.lang.String passWord) 
 byte[]	encodeFast(byte[] byteArray) 
+```
 
 ## 类 YGzip
+```
 static byte[]	compress(byte[] data)
 数据压缩
 static void	compress(java.io.File file, boolean delete)
@@ -864,19 +924,23 @@ static void	decompress(java.io.File file, boolean delete)
 文件解压缩
 static void	decompress(java.io.InputStream is, java.io.OutputStream os)
 数据解压缩
+```
 
 ## 类 YMD5Util
 static java.lang.String	MD5(java.lang.String strObj) 
 
 ## 类 YOneBitCrypt
+```
 static byte[]	decrypt(byte[] bytes, byte password)
 机密算法，与上面加密算法反之
 static byte[]	encrypt(byte[] bytes, byte password)
 一位加密，第一步奇数偶数位置互换，比如原始byte数组为[1,2,3,4,5,6,7,8],第一步过后数组为[2,1,4,3,5,6,8,7]。
 static byte	getPassword(byte password)
 计算对称密码
+```
 
 ## 类 YRsa
+```
 static byte	asc_to_bcd(byte asc) 
 static byte[]	ASCII_To_BCD(byte[] ascii, int asc_len)
 ASCII码转BCD码
@@ -896,7 +960,7 @@ static byte[][]	splitArray(byte[] data, int len)
 拆分数组
 static java.lang.String[]	splitString(java.lang.String string, int len)
 拆分字符串
-
+```
 
 ### 列举了一下主要类的方法，具体每个类方法和和使用，请看文档或源码，欢迎给我提出修改意见。
 
