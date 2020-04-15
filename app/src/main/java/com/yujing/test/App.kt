@@ -1,7 +1,9 @@
 package com.yujing.test
 
 import android.app.Application
+import com.yujing.utils.YActivityUtil
 import com.yujing.ycrash.YCrash
+
 
 class App : Application() {
     //标准单列
@@ -27,5 +29,6 @@ class App : Application() {
         instance = this
         YCrash.getInstance().init(this)
         YCrash.getInstance().appName = "AppName"
+        registerActivityLifecycleCallbacks(YActivityUtil.getActivityLifecycleCallbacks())
     }
 }

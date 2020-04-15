@@ -5,6 +5,8 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -23,15 +25,21 @@ import android.provider.Settings;
 import android.telephony.PhoneNumberUtils;
 import android.telephony.SmsManager;
 import android.telephony.TelephonyManager;
+import android.text.Spannable;
+import android.text.SpannableString;
 import android.text.TextUtils;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.FileProvider;
@@ -45,7 +53,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
@@ -63,6 +70,7 @@ import java.util.Objects;
  * @author 余静 2018年5月18日14:52:58
  */
 @SuppressWarnings("unused")
+@SuppressLint("MissingPermission")
 public class YUtils {
 
     /**
@@ -209,9 +217,7 @@ public class YUtils {
                         if (obj != null) {
                             return obj.toString();
                         }
-                    } catch (IllegalAccessException e) {
-                        Log.e("获取IMEI", "失败", e);
-                    } catch (InvocationTargetException e) {
+                    } catch (Exception e) {
                         Log.e("获取IMEI", "失败", e);
                     }
                 }
@@ -646,7 +652,7 @@ public class YUtils {
      * @param text        短信内容
      * @param sendMessage 发送广播
      * @param receiver    接收广播
-     *
+     *                    <p>
      *                    sendMessage = new BroadcastReceiver() {
      *                    public void onReceive(Context context, Intent intent) {
      *                    // 判断短信是否发送成功
@@ -825,8 +831,8 @@ public class YUtils {
         try {
             for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements(); ) {
                 NetworkInterface ni = en.nextElement();
-                for (Enumeration<InetAddress> enumIpAddr = ni.getInetAddresses(); enumIpAddr.hasMoreElements(); ) {
-                    InetAddress inetAddress = enumIpAddr.nextElement();
+                for (Enumeration<InetAddress> item = ni.getInetAddresses(); item.hasMoreElements(); ) {
+                    InetAddress inetAddress = item.nextElement();
                     if (!inetAddress.isLoopbackAddress() && (inetAddress instanceof Inet6Address)) {
                         ips.add(inetAddress.getHostAddress());
                     }
@@ -848,8 +854,8 @@ public class YUtils {
         try {
             for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements(); ) {
                 NetworkInterface ni = en.nextElement();
-                for (Enumeration<InetAddress> enumIpAddr = ni.getInetAddresses(); enumIpAddr.hasMoreElements(); ) {
-                    InetAddress inetAddress = enumIpAddr.nextElement();
+                for (Enumeration<InetAddress> item = ni.getInetAddresses(); item.hasMoreElements(); ) {
+                    InetAddress inetAddress = item.nextElement();
                     if (!inetAddress.isLoopbackAddress() && (inetAddress instanceof Inet4Address)) {
                         ips.add(inetAddress.getHostAddress());
                     }
@@ -859,5 +865,78 @@ public class YUtils {
             Log.e("获取IPv4失败", ex.toString());
         }
         return ips;
+    }
+
+    /**
+     * 复制文本到粘贴板
+     */
+    public static void copyToClipboard(Context context, String text) {
+        ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Activity.CLIPBOARD_SERVICE);
+        if (clipboard != null)
+            clipboard.setPrimaryClip(ClipData.newPlainText(context.getPackageName(), text));
+    }
+
+    /**
+     * 获取粘贴板最后一条数据
+     */
+    public static String getClipboardLast(Context context) {
+        // 获取系统剪贴板
+        ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+        // 获取剪贴板的剪贴数据集
+        if (clipboard != null) {
+            ClipData clipData = clipboard.getPrimaryClip();
+            if (clipData != null && clipData.getItemCount() > 0)
+                return clipData.getItemAt(0).getText().toString();
+        }
+        return null;
+    }
+
+    /**
+     * 获取粘贴板全部数据
+     */
+    public static List<String> getClipboardAll(Context context) {
+        List<String> strings = new ArrayList<>();
+        // 获取系统剪贴板
+        ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+        // 获取剪贴板的剪贴数据集
+        if (clipboard != null) {
+            ClipData clipData = clipboard.getPrimaryClip();
+            if (clipData != null)
+                for (int i = 0; i < clipData.getItemCount(); i++) {
+                    strings.add(clipData.getItemAt(0).getText().toString());
+                }
+        }
+        return strings;
+    }
+
+    /**
+     * 字体高亮
+     */
+    public static View foreground(View view, int color, int start, int end) {
+        if (view instanceof Button) {
+            Button btn = (Button) view;
+            // 获取文字
+            Spannable span = new SpannableString(btn.getText().toString());
+            //设置颜色和起始位置
+            span.setSpan(new ForegroundColorSpan(color), start, end, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+            btn.setText(span);
+            return btn;
+        } else if (view instanceof TextView) {//EditText extends TextView
+            TextView text = (TextView) view;
+            Spannable span = new SpannableString(text.getText().toString());
+            span.setSpan(new ForegroundColorSpan(color), start, end, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+            text.setText(span);
+            return text;
+        }
+        return null;
+    }
+
+    /**
+     * 关闭软键盘
+     */
+    public static void closeSoftKeyboard(Activity activity) {
+        InputMethodManager inputManger = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (inputManger != null)
+            inputManger.hideSoftInputFromWindow(activity.getWindow().getDecorView().getWindowToken(), 0);
     }
 }

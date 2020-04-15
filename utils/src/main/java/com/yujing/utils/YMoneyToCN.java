@@ -109,7 +109,7 @@ public class YMoneyToCN {
         }
         return sb.toString();
     }
-
+    //测试
     public static void TEST() {
         double money = 2020004.01;
         BigDecimal numberOfMoney = new BigDecimal(money);

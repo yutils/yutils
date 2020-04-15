@@ -5,7 +5,9 @@ import java.util.Objects;
 
 /**
  * YBase64 非标准base64，+换成了-，base64DecodeChars的第43位换成了45位
- * YuJing
+ * 以为在http传输中+会被转义导致结果变化
+ *
+ * @author yujing
  * 2017年3月13日 下午17:49:30
  */
 @SuppressWarnings("unused")
@@ -31,6 +33,9 @@ public class YBase64ToHTTP {
         return encode(data.getBytes());
     }
 
+    /**
+     * 编码成base64
+     */
     @SuppressWarnings("DuplicateExpressions")
     public static String encode(byte[] data) {
         StringBuilder sb = new StringBuilder();
@@ -68,6 +73,9 @@ public class YBase64ToHTTP {
         return new String(Objects.requireNonNull(decode(str)));
     }
 
+    /**
+     * 解码base64
+     */
     public static byte[] decode(String str) {
         StringBuilder sb = new StringBuilder();
         byte[] data;

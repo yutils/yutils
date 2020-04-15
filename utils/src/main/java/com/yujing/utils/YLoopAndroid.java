@@ -9,6 +9,7 @@ import java.util.Map;
 
 /**
  * 循环调用某一个类中的某一个方法
+ * 适用于android
  * 被调用的方法需要用public修辞，而且被调用的方法没有形参和返回值
  *
  * @author yujing 2019年1月8日10:20:40

@@ -4,9 +4,10 @@ import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 /**
- * YBase64 非标准base64，+换成了-，base64DecodeChars的第43位换成了45位
- * YuJing
- * 2017年3月13日 下午17:49:30
+ * YBase64 标准base64
+ *
+ * @author yujing
+ * 2020年4月15日14:18:47
  */
 @SuppressWarnings("unused")
 public class YBase64 {
@@ -21,6 +22,12 @@ public class YBase64 {
         return new String(Objects.requireNonNull(decode(str)));
     }
 
+    /**
+     * 编码成base64
+     *
+     * @param data byte数组
+     * @return base64
+     */
     @SuppressWarnings("DuplicateExpressions")
     public static String encode(byte[] data) {
         StringBuilder sb = new StringBuilder();
@@ -52,6 +59,12 @@ public class YBase64 {
         return sb.toString();
     }
 
+    /**
+     * base64解码
+     *
+     * @param str 目标字符串
+     * @return byte数组
+     */
     public static byte[] decode(String str) {
         StringBuilder sb = new StringBuilder();
         byte[] data;
