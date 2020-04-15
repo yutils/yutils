@@ -13,6 +13,7 @@ import java.util.Stack;
  *
  * @author yujing 2020年4月15日14:23:14
  */
+@SuppressWarnings("unused")
 public class YActivityUtil {
     //Stack(栈)，后进先出
     private static Stack<Activity> activityStack = new Stack<>();
