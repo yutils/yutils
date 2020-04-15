@@ -28,7 +28,7 @@ dependencies {
 ```
 
 
-Github地址：[https://github.com/yutils/yurl](https://github.com/yutils/yurl)
+Github地址：[https://github.com/yutils/yutils](https://github.com/yutils/yutils)
 
 我的CSDN：[https://blog.csdn.net/Yu1441](https://blog.csdn.net/Yu1441)
 
@@ -964,7 +964,7 @@ static java.lang.String[]	splitString(java.lang.String string, int len)
 
 ### 列举了一下主要类的方法，具体每个类方法和和使用，请看文档或源码，欢迎给我提出修改意见。
 
-Github地址：[https://github.com/yutils/yurl](https://github.com/yutils/yurl)
+Github地址：[https://github.com/yutils/yutils](https://github.com/yutils/yutils)
 
 我的CSDN：[https://blog.csdn.net/Yu1441](https://blog.csdn.net/Yu1441)
 
