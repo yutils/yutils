@@ -7,6 +7,12 @@ import android.text.TextUtils;
 
 import java.util.Stack;
 
+/**
+ * activity操作记录类
+ * 用法：在application的onCreate中加入：registerActivityLifecycleCallbacks(YActivityUtil.getActivityLifecycleCallbacks())
+ *
+ * @author yujing 2020年4月15日14:23:14
+ */
 public class YActivityUtil {
     //Stack(栈)，后进先出
     private static Stack<Activity> activityStack = new Stack<>();
