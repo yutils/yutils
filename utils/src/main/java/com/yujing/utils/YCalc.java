@@ -12,7 +12,7 @@ import java.util.Stack;
 @SuppressWarnings("WeakerAccess")
 public class YCalc {
     private final static String ERR_NOT_END_VALID = "你表达的最后一个字符必须是SymbolEnd!";
-    private final static String ERR_PARENTHESE_NOT_PAIR = "括号不配对!";
+    private final static String ERR_PARENTHESES_NOT_PAIR = "括号不配对!";
     private final static String ERR_CHAR_NOT_SUPPORT = "不支持的字符";
     private final static String ERR_OPERATION_NOT_SUPPORTED = "不支持的操作！";
     private final static String ERR_OPERATOR_NOT_VALID = "取余数不支持double数据！";
@@ -148,14 +148,14 @@ public class YCalc {
                     while (!stack.isEmpty() && stack.peek().charAt(0) != SymbolLeftParenthesis)
                         list.add(stack.pop());
                     if (stack.isEmpty() || stack.size() == 1)
-                        throw new Exception("右括号错误，" + ERR_PARENTHESE_NOT_PAIR);
+                        throw new Exception("右括号错误，" + ERR_PARENTHESES_NOT_PAIR);
                     stack.pop();
                     break;
                 case SymbolEnd:
                     while (stack.size() > 1 && stack.peek().charAt(0) != SymbolLeftParenthesis)
                         list.add(stack.pop());
                     if (stack.size() > 1)
-                        throw new Exception("左括号错误， " + ERR_PARENTHESE_NOT_PAIR);
+                        throw new Exception("左括号错误， " + ERR_PARENTHESES_NOT_PAIR);
                     break;
                 default:
                     if (Character.isDigit(ch) || SymbolPoint == ch) {
