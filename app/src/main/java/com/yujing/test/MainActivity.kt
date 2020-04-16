@@ -1,6 +1,7 @@
 package com.yujing.test
 
 import android.util.Log
+import com.yujing.utils.YCheck
 import com.yujing.utils.YDateDialog
 import com.yujing.utils.YSave
 import com.yujing.utils.YUtils
@@ -22,7 +23,7 @@ class MainActivity : BaseActivity() {
         button3.setOnClickListener { openDate() }
         button4.text = "对象复制"
         button4.setOnClickListener { copy() }
-        button5.setOnClickListener { }
+        button5.setOnClickListener { port() }
         button6.setOnClickListener { }
         button7.setOnClickListener { }
         button8.setOnClickListener { }
@@ -34,6 +35,14 @@ class MainActivity : BaseActivity() {
                 测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测
                 测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测
             """
+    }
+
+    private fun port() {
+        if (YCheck.isPort("10136")){
+            show("正确")
+        }else{
+            show("不正确")
+        }
     }
 
 
