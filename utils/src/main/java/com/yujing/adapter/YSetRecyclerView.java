@@ -23,7 +23,7 @@ public class YSetRecyclerView {
      * @param recyclerView recyclerView
      */
     public static void init(Context context, RecyclerView recyclerView) {
-        init(context, recyclerView, OrientationHelper.VERTICAL);
+        init(context, recyclerView, RecyclerView.VERTICAL);
     }
 
     /**
@@ -50,7 +50,7 @@ public class YSetRecyclerView {
 
     // 默认纵向布局
     public static void init(Context context, RecyclerView recyclerView, boolean isScrollView) {
-        init(context, recyclerView, OrientationHelper.VERTICAL, isScrollView);
+        init(context, recyclerView, RecyclerView.VERTICAL, isScrollView);
     }
 
     // 自定义横向或纵向布局
