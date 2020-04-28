@@ -169,7 +169,7 @@ public class YPath {
      * 获得SD卡目录（获取的是手机外置sd卡的路径）
      * 需要申请权限
      * /storage/emulated/0
-     *
+     * /sdcard
      * @return 路径
      */
     public static String getSDCard() {

@@ -335,68 +335,6 @@ public class YUtils {
     }
 
     /**
-     * 安装app
-     *
-     * @param context context
-     * @param apkPath app存放路径
-     */
-    public static void installApk(Context context, String apkPath) {
-        if (context == null || TextUtils.isEmpty(apkPath)) {
-            return;
-        }
-        File file = new File(apkPath);
-        installApk(context, file);
-    }
-
-    /**
-     * 安装app
-     *
-     * @param context context
-     * @param file    文件
-     */
-    public static void installApk(Context context, File file) {
-        if (context == null || file == null) {
-            return;
-        }
-        //判读版本是否在7.0以上
-        if (Build.VERSION.SDK_INT >= 24) {
-            Uri apkUri = FileProvider.getUriForFile(context, context.getPackageName() + ".fileprovider", file);
-            installApk(context, apkUri);
-        } else {
-            Uri apkUri = Uri.fromFile(file);
-            installApk(context, apkUri);
-        }
-    }
-
-    /**
-     * 安装app
-     *
-     * @param context context
-     * @param apkUri  app的uri
-     */
-    public static void installApk(Context context, Uri apkUri) {
-        if (context == null || apkUri == null) {
-            return;
-        }
-        try {
-            Intent intent = new Intent(Intent.ACTION_VIEW);
-            //判读版本是否在7.0以上
-            if (Build.VERSION.SDK_INT >= 24) {
-                // 添加这一句表示对目标应用临时授权该Uri所代表的文件
-                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.setDataAndType(apkUri, "application/vnd.android.package-archive");
-            } else {
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.setDataAndType(apkUri, "application/vnd.android.package-archive");
-            }
-            context.startActivity(intent);
-        } catch (Exception e) {
-            YToast.show(context, "安装失败，请手动安装");
-        }
-    }
-
-    /**
      * 对象复制,深度复制,被复制的对象必须序列化或是基本类型
      *
      * @param date 对象

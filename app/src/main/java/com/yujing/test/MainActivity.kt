@@ -1,12 +1,17 @@
 package com.yujing.test
 
+import android.app.Activity
+import android.content.DialogInterface
+import android.content.Intent
+import android.net.Uri
+import android.os.Build
 import android.util.Log
-import com.yujing.utils.YCheck
-import com.yujing.utils.YDateDialog
-import com.yujing.utils.YSave
-import com.yujing.utils.YUtils
+import android.widget.Toast
+import androidx.annotation.RequiresApi
+import com.yujing.utils.*
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
+
 
 class MainActivity : BaseActivity() {
 
@@ -23,7 +28,9 @@ class MainActivity : BaseActivity() {
         button3.setOnClickListener { openDate() }
         button4.text = "对象复制"
         button4.setOnClickListener { copy() }
-        button5.setOnClickListener { port() }
+        button5.text = "安装APK"
+        button5.setOnClickListener { install() }
+
         button6.setOnClickListener { }
         button7.setOnClickListener { }
         button8.setOnClickListener { }
@@ -35,16 +42,19 @@ class MainActivity : BaseActivity() {
                 测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测
                 测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测
             """
+        YPermissions.requestAll(this)
     }
 
-    private fun port() {
-        if (YCheck.isPort("10136")){
-            show("正确")
-        }else{
-            show("不正确")
-        }
+    var yInstallApk:YInstallApk?=null
+    private fun install() {
+        yInstallApk= YInstallApk(this)
+        yInstallApk?.install(YPath.getSDCard()+"/app.apk")
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        yInstallApk?.onActivityResult(requestCode,resultCode,data)
+    }
 
     private fun copy() {
         var user1:User= User("111",123)
