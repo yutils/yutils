@@ -30,9 +30,9 @@ class MainActivity : BaseActivity() {
         button4.setOnClickListener { copy() }
         button5.text = "安装APK"
         button5.setOnClickListener { install() }
-
-        button6.setOnClickListener { }
-        button7.setOnClickListener { }
+        var yPicture=YPicture()
+        button6.setOnClickListener {yPicture.gotoCamera(this)}
+        button7.setOnClickListener { yPicture.gotoAlbum(this)}
         button8.setOnClickListener { }
         var a=123456
         text4.text =
