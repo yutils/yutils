@@ -16,6 +16,8 @@ import static android.app.Activity.RESULT_OK;
 
 /**
  * 安装apk
+ * 如果是安卓8.0以上先请求打开位置来源
+ *
  * 权限：<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
  * 1.首先创建res/xml/file_paths.xml
  * 内容：
@@ -48,7 +50,7 @@ import static android.app.Activity.RESULT_OK;
  */
 public class YInstallApk {
     private Activity activity;
-    private String apkPath;
+    private Uri apkUri;
     private int INSTALL_CODE = 8899;
 
     public YInstallApk(Activity activity) {
@@ -63,28 +65,40 @@ public class YInstallApk {
         }
     }
 
-    /**
-     * 8.0以上系统设置安装未知来源权限
-     */
     public void install(String apkPath) {
-        this.apkPath = apkPath;
+        File file = new File(apkPath);
+        install(file);
+    }
+
+    public void install(File file) {
+        if (Build.VERSION.SDK_INT >= 24) {
+            Uri apkUri = FileProvider.getUriForFile(activity, activity.getPackageName() + ".provider", file);
+            install(apkUri);
+        } else {
+            Uri apkUri = Uri.fromFile(file);
+            installApk(activity, apkUri);
+        }
+    }
+
+    public void install(Uri apkUri) {
         if (Build.VERSION.SDK_INT >= 26) {
             //先判断是否有安装未知来源应用的权限
             boolean haveInstallPermission = activity.getPackageManager().canRequestPackageInstalls();
             if (haveInstallPermission) {
-                installApk(activity, apkPath);
+                installApk(activity, apkUri);
             } else {
+                this.apkUri=apkUri;
                 getPermission();
             }
         } else {
-            installApk(activity, apkPath);
+            installApk(activity, apkUri);
         }
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK && requestCode == INSTALL_CODE) {
-            if (apkPath != null)
-                installApk(activity, apkPath);
+            if (apkUri != null)
+                installApk(activity, apkUri);
         }
     }
 
@@ -109,9 +123,6 @@ public class YInstallApk {
      * @param file    文件
      */
     public static void installApk(Context context, File file) {
-        if (context == null || file == null) {
-            return;
-        }
         //判读版本是否在7.0以上
         if (Build.VERSION.SDK_INT >= 24) {
             Uri apkUri = FileProvider.getUriForFile(context, context.getPackageName() + ".provider", file);
@@ -129,9 +140,6 @@ public class YInstallApk {
      * @param apkUri  app的uri
      */
     public static void installApk(Context context, Uri apkUri) {
-        if (context == null || apkUri == null) {
-            return;
-        }
         try {
             Intent intent = new Intent(Intent.ACTION_VIEW);
             //判读版本是否在7.0以上
