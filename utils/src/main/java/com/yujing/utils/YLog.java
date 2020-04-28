@@ -89,13 +89,7 @@ class YLog {
     }
 
     public static void json(String TAG, String str) {
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        try {
-            JsonElement element = JsonParser.parseString(str);
-            d(TAG, gson.toJson(element));
-        } catch (Exception e) {
-            e(TAG, "字符串不是json");
-        }
+        d(TAG,YUtils.jsonFormat(str));
     }
 
     /**
