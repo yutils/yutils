@@ -45,6 +45,9 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.FileProvider;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -938,5 +941,36 @@ public class YUtils {
         InputMethodManager inputManger = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
         if (inputManger != null)
             inputManger.hideSoftInputFromWindow(activity.getWindow().getDecorView().getWindowToken(), 0);
+    }
+
+    /**
+     * json格式化
+     *
+     * @param str 目标字符串
+     * @return 被格式化的字符串
+     */
+    public static String jsonFormat(String str) {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        try {
+            JsonElement element = JsonParser.parseString(str);
+            return gson.toJson(element);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    /**
+     * 判断字符串是否是json
+     *
+     * @param str 目标字符串
+     * @return 结果
+     */
+    public static boolean stringIsJson(String str) {
+        try {
+            JsonElement element = JsonParser.parseString(str);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }
