@@ -8,6 +8,9 @@ import android.os.Build
 import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import com.yujing.url.YUrlAndroid
+import com.yujing.url.contract.YObjectListener
+import com.yujing.url.contract.YUrlListener
 import com.yujing.utils.*
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
@@ -30,9 +33,10 @@ class MainActivity : BaseActivity() {
         button4.setOnClickListener { copy() }
         button5.text = "安装APK"
         button5.setOnClickListener { install() }
-        var yPicture=YPicture()
-        button6.setOnClickListener {yPicture.gotoCamera(this)}
-        button7.setOnClickListener { yPicture.gotoAlbum(this)}
+        button6.text = "网络请求测试"
+        button6.setOnClickListener {net2()}
+        button7.setOnClickListener { }
+
         button8.setOnClickListener { }
         var a=123456
         text4.text =
@@ -83,4 +87,20 @@ class MainActivity : BaseActivity() {
             //设置还可以这样 YSave.create(this)["IP",String::class.java,""]
             YSave.put(App.get(), "IP", ip)
         }
+
+    private fun net2() {
+        var url = "http://192.168.1.120:10007/api/SweepCode/JjdTwoDownload"
+//         url = "http://www.baidu.com"
+        var p =
+            "{\"DeviceNo\":\"868403023178079\",\"BatchNum\":\"54511002\",\"Command\":112,\"MsgID\":1}"
+
+        YUrlAndroid.create().post(url,p,object : YUrlListener{
+            override fun success(bytes: ByteArray?, value: String?) {
+               YLog.d("第一次测试",value)
+            }
+            override fun fail(value: String?) {
+
+            }
+        })
+    }
 }
