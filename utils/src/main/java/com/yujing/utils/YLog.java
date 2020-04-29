@@ -14,7 +14,7 @@ import com.google.gson.JsonParser;
  */
 
 @SuppressWarnings({"unused", "FieldCanBeLocal", "WeakerAccess"})
-class YLog {
+public class YLog {
     //规定每段显示的长度
     private static int LOG_MAX_LENGTH = 2000;
     private static String TAG = "YLog";
