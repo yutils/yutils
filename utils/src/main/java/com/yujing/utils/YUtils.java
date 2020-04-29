@@ -194,6 +194,9 @@ public class YUtils {
         if (tm == null) {
             return null;
         }
+        if (Build.VERSION.SDK_INT >= 29) {
+            return getAndroidId(context);
+        }
         //如果取0号卡的IMEI
         if (index == 0) {
             if (Build.VERSION.SDK_INT >= 26) {
