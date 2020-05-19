@@ -51,7 +51,7 @@ public class ClientTest {
 		Message message = new Message(2);
 		message.setData(str);
 		for (int i = 0; i < 3; i++) {
-			ySocket.send(message.getyBytes(), isSuccess -> System.out.println("发送：" + isSuccess));
+			ySocket.send(message.getBytes(), isSuccess -> System.out.println("发送：" + isSuccess));
 			Thread.sleep(1000 * 5);
 		}
 		ySocket.closeConnect();

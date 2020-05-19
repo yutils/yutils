@@ -32,7 +32,7 @@ public class SerTest {
 						}
 						try {
 							Thread.sleep(1000 * 10);
-						} catch (InterruptedException e) {
+						} catch (InterruptedException ignored) {
 						}
 					}
 				}).start();
@@ -47,7 +47,7 @@ public class SerTest {
 								// 失败3秒后重新读取
 								try {
 									Thread.sleep(3000);
-								} catch (InterruptedException e1) {
+								} catch (InterruptedException ignored) {
 								}
 							}
 
@@ -55,7 +55,7 @@ public class SerTest {
 				}).start();
 			}
 
-		} catch (Exception e) {
+		} catch (Exception ignored) {
 		}
 	}
 

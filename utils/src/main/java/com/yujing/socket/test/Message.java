@@ -10,8 +10,7 @@ import java.nio.charset.StandardCharsets;
 /**
  * 通讯消息类，消息由请求协议头(第0位)+命令类型(第7位)+数据长度(第8-12位)+数据+校验位(最后一位)构成
  *
- * @author YuJing
- * @data 2018年11月26日14:23:15
+ * @author YuJing 2018年11月26日14:23:15
  */
 @SuppressWarnings("unused")
 public class Message {
@@ -37,7 +36,7 @@ public class Message {
     /**
      * 构造函数创建一个Bytes对象,直接赋值默认byte数组
      *
-     * @param b
+     * @param b 默认值
      */
     public Message(byte[] b) {
         yBytes = new YBytes(b);
@@ -47,9 +46,9 @@ public class Message {
      * 设置命令类型（控制位）
      *
      * @param cmd 值
-     * @return
+     * @return Message
      */
-    public Message setConmand(int cmd) {
+    public Message setCommand(int cmd) {
         yBytes.changeByte((byte) cmd, 7);
         return this;
     }
@@ -57,18 +56,18 @@ public class Message {
     /**
      * 获取控制位
      *
-     * @return
+     * @return 控制位
      */
-    public int getConmand() {
+    public int getCommand() {
         return yBytes.getBytes()[7];
     }
 
     /**
      * 获取返回数据控制位
      *
-     * @return
+     * @return 返回数据的控制位
      */
-    public int getResultConmand() {
+    public int getResultCommand() {
         return yBytes.getBytes()[5];
     }
 
@@ -76,7 +75,7 @@ public class Message {
      * 设置数据长度
      *
      * @param length 长度
-     * @return
+     * @return Message
      */
     private Message setLength(int length) {
         byte[] lengthBytes = YConvertBytes.intToBytes(length);
@@ -87,7 +86,7 @@ public class Message {
     /**
      * 获取正文byte长度
      *
-     * @return
+     * @return 正文byte长度
      */
     private int getDataLength() {
         return YConvertBytes.bytesToInt(yBytes.getBytes(), 8);
@@ -96,7 +95,7 @@ public class Message {
     /**
      * 获取返回正文byte长度
      *
-     * @return
+     * @return 返回的正文byte长度
      */
     private int getResultDataLength() {
         return YConvertBytes.bytesToInt(yBytes.getBytes(), 6);
@@ -106,7 +105,7 @@ public class Message {
      * 设置数据
      *
      * @param data 值
-     * @return
+     * @return Message
      */
     public Message setData(String data) {
         byte[] stringBytes;
@@ -120,7 +119,7 @@ public class Message {
     /**
      * 发送的data，解析data部分字符串
      *
-     * @return
+     * @return 发送的data
      */
     public String getData() {
         int index = 12;
@@ -135,7 +134,7 @@ public class Message {
     /**
      * 接收的data，解析data部分字符串
      *
-     * @return
+     * @return 接收的data
      */
     public String getResultData() {
         int index = 10;
@@ -150,9 +149,9 @@ public class Message {
     /**
      * 获取bytes数组
      *
-     * @return
+     * @return 发送的Bytes
      */
-    public byte[] getyBytes() {
+    public byte[] getBytes() {
         // 计算校验位
         int chk = 0;
         for (byte b : yBytes.getBytes())
@@ -166,7 +165,7 @@ public class Message {
     /**
      * 获取返回bytes数组
      *
-     * @return
+     * @return 接收的Bytes
      */
     public byte[] getResultBytes() {
         return yBytes.getBytes();

@@ -1,4 +1,4 @@
-def jarName = "yutils1.0.9"
+def jarName = "yutils1.1.3"
 
 //Copy类型，请在Terminal中运行gradlew makeJar
 task makeJar(type: Copy) {

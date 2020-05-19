@@ -27,7 +27,7 @@ import java.util.List;
         val heartMessage = Message(0)
         heartMessage.data = Gson().toJson(heartMap)
         Log.i("心跳包内容：", heartMessage.data)
-        return heartMessage.getyBytes()
+        return heartMessage.getBytes()
     }
     //把 inputStream 转换成byte[]
     var inputStreamReadListener= InputStreamReadListener { inputStream ->
@@ -144,7 +144,7 @@ public class YSocketAndroid extends YSocket {
      * 构造函数
      *
      * @param ip   服务器IP地址
-     * @param port
+     * @param port 服务器端口
      */
     public YSocketAndroid(String ip, int port) {
         super(ip, port);
