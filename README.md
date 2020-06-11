@@ -7,6 +7,8 @@
 
 ##当前最新版：————>[![](https://jitpack.io/v/yutils/yutils.svg)](https://jitpack.io/#yutils/yutils)
 
+**[releases里面有JAR包。点击前往](https://github.com/yutils/yutils/releases)**
+
 ## Gradle 引用
 
 1. 在根build.gradle中添加
