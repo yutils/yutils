@@ -13,6 +13,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,8 +28,9 @@ import java.util.Objects;
 public class YFileUtil {
     /**
      * string转file
+     *
      * @param file 文件
-     * @param str 要转换的string
+     * @param str  要转换的string
      */
     public static void stringToFile(File file, String str) {
         byteToFile(str.getBytes(), file);
@@ -36,8 +38,9 @@ public class YFileUtil {
 
     /**
      * string转file
-     * @param file 文件
-     * @param str 要转换的String
+     *
+     * @param file    文件
+     * @param str     要转换的String
      * @param charset 字符集
      */
     public static void stringToFile(File file, String str, Charset charset) {
@@ -46,6 +49,7 @@ public class YFileUtil {
 
     /**
      * file转string
+     *
      * @param file 文件
      * @return 转出后的String
      */
@@ -59,6 +63,7 @@ public class YFileUtil {
 
     /**
      * bytes转file
+     *
      * @param bytes byte[]
      * @param file  转出后的String
      * @return 是否成功
@@ -86,6 +91,7 @@ public class YFileUtil {
 
     /**
      * file转bytes
+     *
      * @param file 文件
      * @return 结果byte[]
      */
@@ -116,10 +122,11 @@ public class YFileUtil {
 
     /**
      * 删除文件或文件夹
+     *
      * @param file 文件或文件夹
      * @return 若删除成功，则返回True；反之，则返回False
      */
-    public static boolean delFile( File file) {
+    public static boolean delFile(File file) {
         if (file.isFile()) {
             return file.delete();
         } else if (file.isDirectory()) {
@@ -257,5 +264,64 @@ public class YFileUtil {
             Log.e("readAssets", "ERROR", e);
         }
         return is;
+    }
+
+    /**
+     * 复制Assets文件夹到指定文件夹，如果assetDir为"",那么复制整个assets文件夹
+     * 递归复制，如果文件名称不包含"."视为文件夹
+     *
+     * @param context  context
+     * @param assetDir assetDir
+     * @param dir      指定文件夹
+     */
+    private void CopyAssets(Context context, String assetDir, String dir) {
+        String[] files;
+        try {
+            // 获得Assets一共有几多文件
+            files = context.getResources().getAssets().list(assetDir);
+        } catch (IOException e1) {
+            return;
+        }
+        File mWorkingPath = new File(dir);
+        // 如果文件路径不存在
+        if (!mWorkingPath.exists()) {
+            // 创建文件夹
+            if (!mWorkingPath.mkdirs()) {
+                // 文件夹创建不成功时调用
+            }
+        }
+        for (int i = 0; i < files.length; i++) {
+            try {
+                // 获得每个文件的名字
+                String fileName = files[i];
+                // 根据路径判断是文件夹还是文件
+                if (!fileName.contains(".")) {
+                    if (0 == assetDir.length()) {
+                        CopyAssets(context, fileName, dir + fileName + "/");
+                    } else {
+                        CopyAssets(context, assetDir + "/" + fileName, dir + "/" + fileName + "/");
+                    }
+                    continue;
+                }
+                File outFile = new File(mWorkingPath, fileName);
+                if (outFile.exists())
+                    outFile.delete();
+                InputStream in;
+                if (0 != assetDir.length())
+                    in = context.getAssets().open(assetDir + "/" + fileName);
+                else
+                    in = context.getAssets().open(fileName);
+                OutputStream out = new FileOutputStream(outFile);
+                byte[] buf = new byte[1024];
+                int len;
+                while ((len = in.read(buf)) > 0) {
+                    out.write(buf, 0, len);
+                }
+                in.close();
+                out.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

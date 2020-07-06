@@ -77,6 +77,14 @@ public class YLog {
         e(TAG, msg, null);
     }
 
+    public static void e(String TAG, Throwable tr) {
+        e(TAG, "ERROR", tr);
+    }
+
+    public static void e(Throwable tr) {
+        e(TAG, "ERROR", tr);
+    }
+
     public static void e(String TAG, String msg, Throwable tr) {
         println(TAG, msg, tr, ERROR);
     }
