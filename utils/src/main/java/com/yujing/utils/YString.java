@@ -125,6 +125,11 @@ public class YString {
      */
     public static List<StringBuilder> groupActual(String str, int digit, Charset charset) {
         if (digit < 3) return group(str, digit);
+        if (str.length() < digit / 3) {
+            List<StringBuilder> strings = new ArrayList<>();
+            strings.add(new StringBuilder(str));
+            return strings;
+        }
         List<StringBuilder> strings = new ArrayList<>();
         StringBuilder sb = new StringBuilder();
         int index = 0;
