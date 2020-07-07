@@ -770,7 +770,7 @@ public class YUtils {
      *
      * @return ipv6地址列表
      */
-    public static List<String> getIpv6() {
+    public static List<String> getIPv6() {
         List<String> ips = new ArrayList<>();
         try {
             for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements(); ) {
@@ -793,7 +793,7 @@ public class YUtils {
      *
      * @return ipv4地址列表
      */
-    public static List<String> getIpv4() {
+    public static List<String> getIPv4() {
         List<String> ips = new ArrayList<>();
         try {
             for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements(); ) {

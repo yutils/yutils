@@ -26,9 +26,11 @@ import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.TimeoutException;
 
 /**
  * 各种类型转换
+ *
  * @author yujing 2019年12月12日14:09:50
  */
 @SuppressWarnings("unused")
@@ -179,7 +181,7 @@ public class YConvert {
      * @return String
      */
     public static String uri2FilePath(final Context context, Uri uri) {
-        return YUri.getPath(context,uri);
+        return YUri.getPath(context, uri);
     }
 
     /**
@@ -190,7 +192,7 @@ public class YConvert {
      * @return String
      */
     public static String uri2FilePathForN(final Context context, Uri uri) {
-        return YUri.getPathForN(context,uri);
+        return YUri.getPathForN(context, uri);
     }
 
     /**
@@ -201,18 +203,18 @@ public class YConvert {
      * @return Uri
      */
     public static Uri file2Uri(Context context, File file) {
-        return YUri.getUri(context,file);
+        return YUri.getUri(context, file);
     }
 
     /**
      * 保存文件返回uri
      *
-     * @param path    保存的路径
+     * @param path   保存的路径
      * @param bitmap 保存的文件
      * @return Uri
      */
     public synchronized static Uri saveBitmap2uri(String path, Bitmap bitmap) {
-        return YUri.saveBitmap2uri(path,bitmap);
+        return YUri.saveBitmap2uri(path, bitmap);
     }
 
     /**
@@ -223,7 +225,7 @@ public class YConvert {
      * @return Bitmap
      */
     public synchronized static Bitmap uri2Bitmap(Context context, Uri uri) {
-        return YUri.getBitmap(context,uri);
+        return YUri.getBitmap(context, uri);
     }
 
 
@@ -513,6 +515,51 @@ public class YConvert {
         return new String(inputStream2Bytes(inputStream), StandardCharsets.UTF_8);
     }
 
+
+    /**
+     * InputStream转bytes
+     *
+     * @param inputStream inputStream
+     * @return byte[]
+     * @throws IOException IOException
+     */
+    public byte[] inputStreamToBytes(InputStream inputStream) throws IOException {
+        // 网络传输时候，这样获取真正长度
+        int count = 0;
+        while (count == 0) count = inputStream.available();
+        byte[] bytes = new byte[count];
+        // 一定要读取count个数据，如果inputStream.read(bytes);可能读不完
+        int readCount = 0; // 已经成功读取的字节的个数
+        while (readCount < count) {
+            readCount += inputStream.read(bytes, readCount, count - readCount);
+        }
+        return bytes;
+    }
+
+    /**
+     * InputStream转bytes
+     *
+     * @param inputStream inputStream
+     * @param timeOut     超时毫秒
+     * @return byte[]
+     * @throws IOException IOException
+     */
+    public byte[] inputStreamToBytes(InputStream inputStream, long timeOut) throws IOException {
+        // 网络传输时候，这样获取真正长度
+        long startTime = System.currentTimeMillis();
+        int count = 0;
+        while (count == 0 && System.currentTimeMillis() - startTime < timeOut)
+            count = inputStream.available();
+        if (System.currentTimeMillis() - startTime >= timeOut)
+            new TimeoutException("读取超时").printStackTrace();
+        byte[] bytes = new byte[count];
+        // 一定要读取count个数据，如果inputStream.read(bytes);可能读不完
+        int readCount = 0; // 已经成功读取的字节的个数
+        while (readCount < count) {
+            readCount += inputStream.read(bytes, readCount, count - readCount);
+        }
+        return bytes;
+    }
 
     /**
      * string 转换BCD嘛
