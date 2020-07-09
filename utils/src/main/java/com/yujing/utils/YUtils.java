@@ -27,7 +27,6 @@ import android.telephony.SmsManager;
 import android.telephony.TelephonyManager;
 import android.text.Spannable;
 import android.text.SpannableString;
-import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.View;
@@ -42,7 +41,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.FileProvider;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -51,6 +49,7 @@ import com.google.gson.JsonParser;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -912,6 +911,52 @@ public class YUtils {
             return true;
         } catch (Exception e) {
             return false;
+        }
+    }
+
+    /**
+     * 打开网络调试
+     * @return 是否成功
+     */
+    private boolean openNetworkDebugging() {
+        DataOutputStream os = null;
+        try {
+            Process process = Runtime.getRuntime().exec("su");
+            os = new DataOutputStream(process.getOutputStream());
+            os.writeBytes("setprop service.adb.tcp.port 5555\n");
+            os.writeBytes("stop adbd\n");
+            os.writeBytes("start adbd\n");
+            os.flush();
+            return true;
+        } catch (Exception e) {
+            return false;
+        }finally {
+            try {
+                if (os!=null) os.close();
+            } catch (IOException e) {
+            }
+        }
+    }
+    /**
+     * 关闭网络调试
+     * @return 是否成功
+     */
+    private boolean closeNetworkDebugging() {
+        DataOutputStream os = null;
+        try {
+            Process process = Runtime.getRuntime().exec("su");
+            os = new DataOutputStream(process.getOutputStream());
+            os.writeBytes("setprop service.adb.tcp.port 5555\n");
+            os.writeBytes("stop adbd\n");
+            os.flush();
+            return true;
+        } catch (Exception e) {
+            return false;
+        }finally {
+            try {
+                if (os!=null) os.close();
+            } catch (IOException e) {
+            }
         }
     }
 }
