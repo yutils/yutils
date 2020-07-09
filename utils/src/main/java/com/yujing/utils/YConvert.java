@@ -497,9 +497,8 @@ public class YConvert {
         ByteArrayOutputStream bs = new ByteArrayOutputStream();
         byte[] buffer = new byte[1024];
         int len;
-        while ((len = inputStream.read(buffer)) != -1) {
+        while ((len = inputStream.read(buffer)) != -1)
             bs.write(buffer, 0, len);
-        }
         bs.flush();
         return bs.toByteArray();
     }
@@ -530,9 +529,8 @@ public class YConvert {
         byte[] bytes = new byte[count];
         // 一定要读取count个数据，如果inputStream.read(bytes);可能读不完
         int readCount = 0; // 已经成功读取的字节的个数
-        while (readCount < count) {
+        while (readCount < count)
             readCount += inputStream.read(bytes, readCount, count - readCount);
-        }
         return bytes;
     }
 
@@ -555,9 +553,8 @@ public class YConvert {
         byte[] bytes = new byte[count];
         // 一定要读取count个数据，如果inputStream.read(bytes);可能读不完
         int readCount = 0; // 已经成功读取的字节的个数
-        while (readCount < count) {
+        while (readCount < count)
             readCount += inputStream.read(bytes, readCount, count - readCount);
-        }
         return bytes;
     }
 

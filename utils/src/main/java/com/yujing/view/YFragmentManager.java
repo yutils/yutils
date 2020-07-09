@@ -52,9 +52,8 @@ public class YFragmentManager {
             transaction.add(layout, targetFragment).commit();
         } else {
             //如果存在currentFragment,而且不是自己就先隐藏currentFragment
-            if (currentFragment != null && !currentFragment.equals(targetFragment)) {
+            if (currentFragment != null && !currentFragment.equals(targetFragment))
                 transaction.hide(currentFragment);
-            }
             transaction.show(targetFragment).commit();
         }
         currentFragment = targetFragment;//记录当前fragment
