@@ -1,18 +1,12 @@
 package com.yujing.test
 
-import android.app.Activity
-import android.content.DialogInterface
 import android.content.Intent
-import android.net.Uri
-import android.os.Build
 import android.util.Log
-import android.widget.Toast
-import androidx.annotation.RequiresApi
 import com.yujing.url.YUrlAndroid
-import com.yujing.url.contract.YObjectListener
 import com.yujing.url.contract.YUrlListener
 import com.yujing.utils.*
 import kotlinx.android.synthetic.main.activity_main.*
+import java.lang.Exception
 import java.util.*
 
 
@@ -24,7 +18,7 @@ class MainActivity : BaseActivity() {
     override fun init() {
         //var a=findViewById<Button>(R.id.button1)
         button1.text = "YSave写入"
-        button1.setOnClickListener { IP = "123456" }
+        button1.setOnClickListener { IP = "123456"}
         button2.text = "YSave读取"
         button2.setOnClickListener { show(IP) }
         button3.text = "Date测试"
@@ -34,11 +28,24 @@ class MainActivity : BaseActivity() {
         button5.text = "安装APK"
         button5.setOnClickListener { install() }
         button6.text = "网络请求测试"
-        button6.setOnClickListener {net2()}
-        button7.setOnClickListener { }
+        button6.setOnClickListener { net2() }
+        button7.setOnClickListener {
+            try {
+                YLog.d(
+                    YUtils.shell(
+                        "start adbd"
+                    )
+                )
+            }catch (e:Exception){
 
-        button8.setOnClickListener { }
-        var a=123456
+            }
+
+        }
+        button8.setOnClickListener {
+            YLog.d(YUtils.shellRoot("ps"))
+            YLog.d(YUtils.shellRoot( "free"))
+        }
+        var a = 123456
         text4.text =
             """
                 测试测试测试测试测试测试测试测试测${a}试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试
@@ -49,24 +56,24 @@ class MainActivity : BaseActivity() {
         YPermissions.requestAll(this)
     }
 
-    var yInstallApk:YInstallApk?=null
+    var yInstallApk: YInstallApk? = null
     private fun install() {
-        yInstallApk= YInstallApk(this)
-        yInstallApk?.install(YPath.getSDCard()+"/app.apk")
+        yInstallApk = YInstallApk(this)
+        yInstallApk?.install(YPath.getSDCard() + "/app.apk")
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        yInstallApk?.onActivityResult(requestCode,resultCode,data)
+        yInstallApk?.onActivityResult(requestCode, resultCode, data)
     }
 
     private fun copy() {
-        var user1:User= User("111",123)
-        var user2=YUtils.copyObject(user1)
-        Log.e("T"," "+user2.name)
-        user2.name="456789"
-        Log.e("T"," "+user1.name)
-        Log.e("T"," "+user2.name)
+        var user1: User = User("111", 123)
+        var user2 = YUtils.copyObject(user1)
+        Log.e("T", " " + user2.name)
+        user2.name = "456789"
+        Log.e("T", " " + user1.name)
+        Log.e("T", " " + user2.name)
     }
 
     private fun openDate() {
@@ -94,10 +101,11 @@ class MainActivity : BaseActivity() {
         var p =
             "{\"DeviceNo\":\"868403023178079\",\"BatchNum\":\"54511002\",\"Command\":112,\"MsgID\":1}"
 
-        YUrlAndroid.create().post(url,p,object : YUrlListener{
+        YUrlAndroid.create().post(url, p, object : YUrlListener {
             override fun success(bytes: ByteArray?, value: String?) {
-               YLog.d("第一次测试",value)
+                YLog.d("第一次测试", value)
             }
+
             override fun fail(value: String?) {
 
             }

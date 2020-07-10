@@ -915,47 +915,63 @@ public class YUtils {
     }
 
     /**
-     * 打开网络调试
+     * 打开TCP
+     *
+     * @param port 端口
      * @return 是否成功
      */
-    private boolean openNetworkDebugging() {
-        DataOutputStream os = null;
+    public static boolean openTcp(int port) {
         try {
-            Process process = Runtime.getRuntime().exec("su");
-            os = new DataOutputStream(process.getOutputStream());
-            os.writeBytes("setprop service.adb.tcp.port 5555\n");
-            os.writeBytes("stop adbd\n");
-            os.writeBytes("start adbd\n");
-            os.flush();
+            shellRoot("setprop service.adb.tcp.port " + port, "start adbd");
             return true;
         } catch (Exception e) {
             return false;
-        }finally {
-            try {
-                if (os!=null) os.close();
-            } catch (IOException e) {
-            }
         }
     }
+
     /**
-     * 关闭网络调试
+     * 关闭TCP
+     *
+     * @param port 端口
      * @return 是否成功
      */
-    private boolean closeNetworkDebugging() {
+    public static boolean closeTcp(int port) {
+        try {
+            shellRoot("setprop service.adb.tcp.port " + port, "stop adbd");
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    /**
+     * 执行shell命令
+     *
+     * @return 是否成功
+     */
+    public static String shell(String command) throws IOException {
+        Process process = Runtime.getRuntime().exec(command);
+        return new String(YConvert.inputStreamToBytes(process.getInputStream(), 500));
+    }
+
+    /**
+     * 执行root命令
+     *
+     * @return 是否成功
+     */
+    public static String shellRoot(String... command) throws IOException {
         DataOutputStream os = null;
         try {
             Process process = Runtime.getRuntime().exec("su");
             os = new DataOutputStream(process.getOutputStream());
-            os.writeBytes("setprop service.adb.tcp.port 5555\n");
-            os.writeBytes("stop adbd\n");
+            for (String item : command)
+                os.writeBytes(item + "\n");
             os.flush();
-            return true;
-        } catch (Exception e) {
-            return false;
-        }finally {
+            return new String(YConvert.inputStreamToBytes(process.getInputStream(), 500));
+        } finally {
             try {
-                if (os!=null) os.close();
-            } catch (IOException e) {
+                if (os != null) os.close();
+            } catch (IOException ignored) {
             }
         }
     }

@@ -522,7 +522,7 @@ public class YConvert {
      * @return byte[]
      * @throws IOException IOException
      */
-    public byte[] inputStreamToBytes(InputStream inputStream) throws IOException {
+    public static byte[] inputStreamToBytes(InputStream inputStream) throws IOException {
         // 网络传输时候，这样获取真正长度
         int count = 0;
         while (count == 0) count = inputStream.available();
@@ -542,7 +542,7 @@ public class YConvert {
      * @return byte[]
      * @throws IOException IOException
      */
-    public byte[] inputStreamToBytes(InputStream inputStream, long timeOut) throws IOException {
+    public static byte[] inputStreamToBytes(InputStream inputStream, long timeOut) throws IOException {
         // 网络传输时候，这样获取真正长度
         long startTime = System.currentTimeMillis();
         int count = 0;
