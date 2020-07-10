@@ -523,9 +523,8 @@ public class YConvert {
      * @throws IOException IOException
      */
     public static byte[] inputStreamToBytes(InputStream inputStream) throws IOException {
-        // 网络传输时候，这样获取真正长度
         int count = 0;
-        while (count == 0) count = inputStream.available();
+        while (count == 0) count = inputStream.available();        //获取真正长度
         byte[] bytes = new byte[count];
         // 一定要读取count个数据，如果inputStream.read(bytes);可能读不完
         int readCount = 0; // 已经成功读取的字节的个数
@@ -543,11 +542,10 @@ public class YConvert {
      * @throws IOException IOException
      */
     public static byte[] inputStreamToBytes(InputStream inputStream, long timeOut) throws IOException {
-        // 网络传输时候，这样获取真正长度
         long startTime = System.currentTimeMillis();
         int count = 0;
         while (count == 0 && System.currentTimeMillis() - startTime < timeOut)
-            count = inputStream.available();
+            count = inputStream.available();        //获取真正长度
         if (System.currentTimeMillis() - startTime >= timeOut)
             new TimeoutException("读取超时").printStackTrace();
         byte[] bytes = new byte[count];
