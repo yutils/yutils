@@ -2,11 +2,11 @@ package com.yujing.test
 
 import android.content.Intent
 import android.util.Log
+import com.yujing.crypt.YSha1
 import com.yujing.url.YUrlAndroid
 import com.yujing.url.contract.YUrlListener
 import com.yujing.utils.*
 import kotlinx.android.synthetic.main.activity_main.*
-import java.lang.Exception
 import java.util.*
 
 
@@ -18,7 +18,7 @@ class MainActivity : BaseActivity() {
     override fun init() {
         //var a=findViewById<Button>(R.id.button1)
         button1.text = "YSave写入"
-        button1.setOnClickListener { IP = "123456"}
+        button1.setOnClickListener { IP = "123456" }
         button2.text = "YSave读取"
         button2.setOnClickListener { show(IP) }
         button3.text = "Date测试"
@@ -36,23 +36,18 @@ class MainActivity : BaseActivity() {
                         "start adbd"
                     )
                 )
-            }catch (e:Exception){
+            } catch (e: Exception) {
 
             }
-
         }
         button8.setOnClickListener {
-            YLog.d(YUtils.shellRoot("ps"))
-            YLog.d(YUtils.shellRoot( "free"))
+            text4.text = """
+                |签名SHA1：${YSha1.getSha1(YAppInfoUtils.getSign(applicationContext, packageName)[0].toByteArray())}
+                |签名SHA1：${YAppInfoUtils.getSign(applicationContext, packageName, YAppInfoUtils.SHA1)}
+                |签名MD5：${YAppInfoUtils.getSign(applicationContext, packageName, YAppInfoUtils.MD5)}
+                |“哈哈”= ${YSha1.getSha1("哈哈".toByteArray())}
+            """.trimMargin()
         }
-        var a = 123456
-        text4.text =
-            """
-                测试测试测试测试测试测试测试测试测${a}试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试
-                测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测
-                测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测
-                测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测
-            """
         YPermissions.requestAll(this)
     }
 

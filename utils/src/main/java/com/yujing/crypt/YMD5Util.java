@@ -1,17 +1,22 @@
 package com.yujing.crypt;
 
+import android.util.Log;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 /**
  * MD5 算法
+ *
  * @author yujing 2018年11月30日12:11:57
-*/
+ */
 @SuppressWarnings({"unused"})
 public class YMD5Util {
+    private final static String MD5 = "MD5";
     // 全局数组
-    private final static String[] strDigits = { "0", "1", "2", "3", "4", "5",
-            "6", "7", "8", "9", "a", "b", "c", "d", "e", "f" };
+    private final static String[] strDigits = {"0", "1", "2", "3", "4", "5",
+            "6", "7", "8", "9", "a", "b", "c", "d", "e", "f"};
+
     // 返回形式为数字跟字符串
     private static String byteToArrayString(byte bByte) {
         int iRet = bByte;
@@ -23,6 +28,7 @@ public class YMD5Util {
         int iD2 = iRet % 16;
         return strDigits[iD1] + strDigits[iD2];
     }
+
     // 返回形式只为数字
     private static String byteToNum(byte bByte) {
         int iRet = bByte;
@@ -32,6 +38,7 @@ public class YMD5Util {
         }
         return String.valueOf(iRet);
     }
+
     // 转换字节数组为16进制字串
     private static String byteToString(byte[] bByte) {
         StringBuilder sBuffer = new StringBuilder();
@@ -42,15 +49,17 @@ public class YMD5Util {
     }
 
     public static String MD5(String strObj) {
+        return getMd5(strObj.getBytes()).toUpperCase();
+    }
+
+    public static String getMd5(byte[] bytes) {
         String resultString = null;
         try {
-            resultString = strObj;
-            MessageDigest md = MessageDigest.getInstance("MD5");
-            // md.digest() 该函数返回值为存放哈希值结果的byte数组
-            resultString = byteToString(md.digest(strObj.getBytes()));
-        } catch (NoSuchAlgorithmException ex) {
-            ex.printStackTrace();
+            MessageDigest md = MessageDigest.getInstance(MD5);
+            resultString = byteToString(md.digest(bytes));
+        } catch (NoSuchAlgorithmException e) {
+            Log.e("MD5", "getMd5(byte[] bytes)异常：", e);
         }
-        return resultString.toUpperCase();
+        return resultString;
     }
 }
