@@ -11,7 +11,7 @@ import java.security.NoSuchAlgorithmException;
  * @author yujing 2018年11月30日12:11:57
  */
 @SuppressWarnings({"unused"})
-public class YMD5Util {
+public class YMd5 {
     private final static String MD5 = "MD5";
     // 全局数组
     private final static String[] strDigits = {"0", "1", "2", "3", "4", "5",

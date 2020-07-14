@@ -5,7 +5,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
 
-import com.yujing.crypt.YMD5Util;
+import com.yujing.crypt.YMd5;
 import com.yujing.crypt.YSha1;
 
 /**
@@ -34,7 +34,7 @@ public class YAppInfoUtils {
                 tmp = YSha1.getSha1(sig.toByteArray());
                 break;
             } else if (MD5.equals(type)) {
-                tmp = YMD5Util.getMd5(sig.toByteArray());
+                tmp = YMd5.getMd5(sig.toByteArray());
             }
         }
         return tmp;
