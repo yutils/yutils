@@ -1,8 +1,11 @@
-package com.yujing.bluetooth;
+package com.yujing.bluetooth.test;
 
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 
+import com.yujing.bluetooth.YBle;
+import com.yujing.bluetooth.YBluetooth;
+import com.yujing.bluetooth.YBt;
 import com.yujing.contract.YSuccessFailListener;
 
 import java.util.ArrayList;
