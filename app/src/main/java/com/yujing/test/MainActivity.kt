@@ -47,6 +47,7 @@ class MainActivity : BaseActivity() {
                 |签名MD5：${YAppInfoUtils.getSign(applicationContext, packageName, YAppInfoUtils.MD5)}
                 |“哈哈”= ${YSha1.getSha1("哈哈".toByteArray())}
             """.trimMargin()
+            YLog.d(text4.text.toString())
         }
         YPermissions.requestAll(this)
     }
