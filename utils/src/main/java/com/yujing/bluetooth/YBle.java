@@ -160,6 +160,7 @@ public class YBle implements YBluetoothDeviceConnect {
                 handler.post(() -> readListener.value(data));
         }
     };
+
     @Override
     public void setReadListener(YListener1<byte[]> readListener) {
         this.readListener = readListener;
