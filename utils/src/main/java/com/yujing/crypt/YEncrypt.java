@@ -8,6 +8,7 @@ import com.yujing.utils.YBase64;
  * @author YuJing 2017年3月29日 下午6:16:57
  */
 @SuppressWarnings("unused")
+@Deprecated
 public class YEncrypt {
 
     public YEncrypt() {
