@@ -12,6 +12,7 @@ import com.yujing.contract.YSuccessFailListener;
 import com.yujing.utils.YReadInputStream;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.UUID;
 
@@ -25,6 +26,7 @@ public class YBt implements YBluetoothDeviceConnect {
     private YReadInputStream readInputStream;
     Context context;
     Handler handler = new Handler();
+    InputStreamReadListener inputStreamReadListener=null;
 
     public YBt(Context context) {
         this.context = context;
@@ -40,6 +42,13 @@ public class YBt implements YBluetoothDeviceConnect {
      */
     public static UUID SPP_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
+    /**
+     * 设置解析inputStream
+     * @param readInputStream
+     */
+    public void setReadInputStream(YReadInputStream readInputStream) {
+        this.readInputStream = readInputStream;
+    }
     /**
      * 尝试连接一个设备，子线程中完成，因为会线程阻塞
      *
@@ -100,16 +109,37 @@ public class YBt implements YBluetoothDeviceConnect {
      */
     @Override
     public void read() {
-        if (readInputStream != null) {
-            readInputStream.stop();
-        }
-        try {
-            readInputStream = new YReadInputStream(bluetoothSocket.getInputStream(), readListener);
-            readInputStream.start();
-        } catch (IOException e) {
-            e.printStackTrace();
+        //如果没有设置读取监听，直接返回
+        if (readListener==null)
+            return;
+        //如果设置inputStream读取监听，那就就是用户自己解析inputStream
+        if (inputStreamReadListener!=null){
+            try {
+                readListener.value(inputStreamReadListener.inputStreamToBytes(bluetoothSocket.getInputStream()));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }else{
+            //否则使用readInputStream读取
+            if (readInputStream != null) {
+                readInputStream.stop();
+            }
+            try {
+                readInputStream = new YReadInputStream(bluetoothSocket.getInputStream(), readListener);
+                readInputStream.start();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
+
+    /**
+     * inputSteam读取解析监听
+     */
+    public interface InputStreamReadListener {
+        byte[] inputStreamToBytes(InputStream inputStream) throws IOException;
+    }
+
     @Override
     public void setReadListener(YListener1<byte[]> readListener) {
         this.readListener = readListener;
