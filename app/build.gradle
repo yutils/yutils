@@ -50,4 +50,9 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.6'
     //对应的是com.android.support:recyclerview-v7:28.0.2
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
+
+    // https://mvnrepository.com/artifact/com.sun.net.httpserver/http
+    implementation group: 'com.sun.net.httpserver', name: 'http', version: '20070405'
+
+
 }
