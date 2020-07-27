@@ -1,7 +1,9 @@
 
 package com.yujing.crypt;
 
-import com.yujing.crypt.test.Show;
+//import com.yujing.crypt.test.Show;
+
+import com.yujing.contract.YListener3;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -16,6 +18,7 @@ import java.util.zip.GZIPOutputStream;
 
 /**
  * GZIP工具
+ *
  * @author yujing  2019年8月27日16:57:26
  */
 @SuppressWarnings("unused")
@@ -28,8 +31,8 @@ public class YGzip {
      * 数据压缩
      *
      * @param data 数据
-     * @throws Exception 异常
      * @return 压缩后的数据
+     * @throws Exception 异常
      */
     public static byte[] compress(byte[] data) throws Exception {
         ByteArrayInputStream bais = new ByteArrayInputStream(data);
@@ -69,24 +72,36 @@ public class YGzip {
      * @param os 输出流
      */
     public static void compress(InputStream is, OutputStream os) {
-        Show show = null;
+        compress(is, os, null);
+    }
+
+    /**
+     * 数据压缩
+     *
+     * @param is               输入流
+     * @param os               输出流
+     * @param progressListener 进度监听，下载长度，总长度，进度
+     */
+    public static void compress(InputStream is, OutputStream os, YListener3<Long, Long, Double> progressListener) {
+        ProgressThread progressThread = null;
         try {
             GZIPOutputStream gos = new GZIPOutputStream(os);
-            show = new Show(is.available());
+            progressThread = new ProgressThread(is.available());
+            progressThread.setProgressListener(progressListener);
             int count;
             byte[] data = new byte[BUFFER];
             while ((count = is.read(data, 0, BUFFER)) != -1) {
-                if (show.isShow()) show.set(is.available());
+                if (progressThread.isShow()) progressThread.set(is.available());
                 gos.write(data, 0, count);
             }
-            show.finish();
+            progressThread.finish();
             gos.finish();
             gos.flush();
             gos.close();
         } catch (IOException e) {
             System.out.println("Error");
-            if (show != null) {
-                show.stopShow();
+            if (progressThread != null) {
+                progressThread.stopShow();
             }
         }
     }
@@ -137,23 +152,36 @@ public class YGzip {
      * @param os 输出流
      */
     public static void decompress(final InputStream is, OutputStream os) {
-        Show show = null;
+        decompress(is, os, null);
+    }
+
+    /**
+     * 数据解压缩
+     *
+     * @param is               输入流
+     * @param os               输出流
+     * @param progressListener 进度监听
+     */
+    public static void decompress(final InputStream is, OutputStream os, YListener3<Long, Long, Double> progressListener) {
+        ProgressThread progressThread = null;
         try {
             GZIPInputStream gis = new GZIPInputStream(is);
-            show = new Show(is.available());
+            progressThread = new ProgressThread(is.available());
+            progressThread.setProgressListener(progressListener);
             int count;
             byte[] data = new byte[BUFFER];
             while ((count = gis.read(data, 0, BUFFER)) != -1) {
-                if (show.isShow()) show.set(is.available());
+                if (progressThread.isShow()) progressThread.set(is.available());
                 os.write(data, 0, count);
             }
-            show.finish();
+            progressThread.finish();
             gis.close();
         } catch (IOException e) {
             System.out.println("Error,或许文件并未加压");
-            if (show != null) {
-                show.stopShow();
+            if (progressThread != null) {
+                progressThread.stopShow();
             }
         }
     }
+
 }
