@@ -7,7 +7,7 @@ import java.io.Serializable
  * 消息类，发送或者接收消息
  * @author yujing 2020年7月27日09:50:30
  */
-open class YMessage<T>(private var type: String?, private val data: T) : Serializable {
+open class YMessage<T>(private var type: String?, private val data: T?) : Serializable {
     /**
      *重写string方法，打印type和data的值
      */
