@@ -83,10 +83,10 @@ public class YGzip {
      * @param progressListener 进度监听，下载长度，总长度，进度
      */
     public static void compress(InputStream is, OutputStream os, YListener3<Long, Long, Double> progressListener) {
-        ProgressThread progressThread = null;
+        YProgressThread progressThread = null;
         try {
             GZIPOutputStream gos = new GZIPOutputStream(os);
-            progressThread = new ProgressThread(is.available());
+            progressThread = new YProgressThread(is.available());
             progressThread.setProgressListener(progressListener);
             int count;
             byte[] data = new byte[BUFFER];
@@ -163,10 +163,10 @@ public class YGzip {
      * @param progressListener 进度监听
      */
     public static void decompress(final InputStream is, OutputStream os, YListener3<Long, Long, Double> progressListener) {
-        ProgressThread progressThread = null;
+        YProgressThread progressThread = null;
         try {
             GZIPInputStream gis = new GZIPInputStream(is);
-            progressThread = new ProgressThread(is.available());
+            progressThread = new YProgressThread(is.available());
             progressThread.setProgressListener(progressListener);
             int count;
             byte[] data = new byte[BUFFER];
