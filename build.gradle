@@ -3,13 +3,13 @@ buildscript {
     repositories {
         //google()
         //jcenter()
-        //maven { url 'http://central.maven.org/maven2/' }
-        //maven { url 'https://maven.google.com' }
-        //maven { url 'https://dl.google.com/dl/android/maven2/' }
         maven { url 'https://maven.aliyun.com/repository/google' }
         maven { url 'https://maven.aliyun.com/repository/jcenter' }
         maven { url 'http://maven.aliyun.com/nexus/content/groups/public' }
         maven { url 'https://jitpack.io' }
+//        maven { url 'http://central.maven.org/maven2/' }
+//        maven { url 'https://maven.google.com' }
+//        maven { url 'https://dl.google.com/dl/android/maven2/' }
         google()
         jcenter()
     }
@@ -17,6 +17,8 @@ buildscript {
         classpath 'com.android.tools.build:gradle:4.0.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1'
+        //解决kotlin打jar包不能生成文档问题
+        classpath "org.jetbrains.dokka:dokka-gradle-plugin:0.9.17"
     }
 }
 
@@ -24,13 +26,13 @@ allprojects {
     repositories {
         //google()
         //jcenter()
-        //maven { url 'http://central.maven.org/maven2/' }
-        //maven { url 'https://maven.google.com' }
-        //maven { url 'https://dl.google.com/dl/android/maven2/' }
         maven { url 'https://maven.aliyun.com/repository/google' }
         maven { url 'https://maven.aliyun.com/repository/jcenter' }
         maven { url 'http://maven.aliyun.com/nexus/content/groups/public' }
         maven { url 'https://jitpack.io' }
+//        maven { url 'http://central.maven.org/maven2/' }
+//        maven { url 'https://maven.google.com' }
+//        maven { url 'https://dl.google.com/dl/android/maven2/' }
         google()
         jcenter()
     }

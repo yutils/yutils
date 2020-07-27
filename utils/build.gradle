@@ -3,14 +3,16 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'com.github.dcendents.android-maven'
 group = 'com.github.yutils'
+apply plugin: 'org.jetbrains.dokka'
+
 android {
     compileSdkVersion 29
     buildToolsVersion "29.0.3"
     defaultConfig {
         minSdkVersion 19
         targetSdkVersion 29
-        versionCode 14
-        versionName "1.1.4"
+        versionCode 15
+        versionName "1.1.5"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -57,4 +59,49 @@ dependencies {
     // https://mvnrepository.com/artifact/org.objenesis/objenesis
 //    implementation group: 'org.objenesis', name: 'objenesis', version: '2.6'
 }
-apply from: 'toJar.gradle'
+
+
+//打包jar;doc;sources，请在Terminal中运行gradlew makeJar
+def jarName = "yutils1.1.5"
+task makeJar(type: Copy) {
+    //删除存在的
+    delete 'build/libs/' + jarName + ".jar"
+    //设置拷贝的文件
+    from("build/intermediates/aar_main_jar/release")
+    //打进jar包后的文件目录,将classes.jar放入build/libs/目录下
+    into('build/libs/')
+    //要打包的jar文件
+    include('classes.jar')
+    //重命名
+    rename('classes.jar', jarName + ".jar")
+}
+makeJar.dependsOn(build)
+//-encoding UTF-8  -charset UTF-8
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
+}
+task generateSourcesJar(type: Jar) {
+    group = 'jar'
+    from android.sourceSets.main.java.srcDirs
+    classifier = 'sources'
+    archiveName = jarName + '-sources.jar'
+}
+task javadoc(type: Javadoc) {
+    source = android.sourceSets.main.java.srcDirs
+    options.encoding = "UTF-8"
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+}
+task dokkaJavadoc(type: org.jetbrains.dokka.gradle.DokkaTask) {
+    outputFormat = "javadoc"
+    outputDirectory = javadoc.destinationDir
+}
+task generateJavadoc(type: Jar, dependsOn: dokkaJavadoc) {
+    group = 'jar'
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+    archiveName = jarName + '-javadoc.jar'
+}
+artifacts {
+    archives generateJavadoc
+    archives generateSourcesJar
+}

@@ -8,6 +8,9 @@ import java.io.Serializable
  * @author yujing 2020年7月27日09:50:30
  */
 open class YMessage<T>(private var type: String?, private val data: T) : Serializable {
+    /**
+     *重写string方法，打印type和data的值
+     */
     override fun toString(): String {
         //如果引用的有Gson包就用Gson序列化
         try {

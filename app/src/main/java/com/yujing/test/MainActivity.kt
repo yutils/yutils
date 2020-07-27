@@ -2,6 +2,7 @@ package com.yujing.test
 
 import android.content.Intent
 import android.util.Log
+import com.yujing.contract.YMessage
 import com.yujing.crypt.YSha1
 import com.yujing.url.YUrlAndroid
 import com.yujing.url.contract.YUrlListener
