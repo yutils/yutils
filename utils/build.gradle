@@ -1,11 +1,9 @@
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
 apply plugin: 'com.github.dcendents.android-maven'
 group = 'com.github.yutils'
 android {
-    compileOptions {
-        sourceCompatibility = 1.8
-        targetCompatibility = 1.8
-    }
     compileSdkVersion 29
     buildToolsVersion "29.0.3"
     defaultConfig {
@@ -27,6 +25,15 @@ android {
         checkReleaseBuilds true
         //lint 遇到error时继续构建，true为不继续构建(默认)，false为继续构建
         abortOnError false
+    }
+
+    compileOptions {
+        sourceCompatibility = 1.8
+        targetCompatibility = 1.8
+    }
+
+    kotlinOptions {
+        jvmTarget = '1.8'
     }
 }
 
