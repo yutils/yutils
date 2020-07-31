@@ -21,7 +21,7 @@ public class YTts {
     private float pitch = 1.0f;//音调
     private boolean initSuccess = false;//初始化状态
 
-    private static YTts yTts;//单例
+    private static volatile YTts yTts;//单例
 
     public static YTts getYTtsInstance(Context context, YListener1<Boolean> listener) {
         if (yTts == null || yTts.textToSpeech == null) {
@@ -31,9 +31,16 @@ public class YTts {
         }
         return yTts;
     }
-
     public static YTts getYTtsInstance(Context context) {
         return getYTtsInstance(context, null);
+    }
+
+    public static YTts  getInstance(Context context, YListener1<Boolean> listener) {
+        return  getYTtsInstance(context,listener);
+    }
+    
+    public static YTts  getInstance(Context context) {
+        return  getYTtsInstance(context,null);
     }
 
     public YTts(final Context context) {

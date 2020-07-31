@@ -17,10 +17,10 @@ import java.util.HashMap;
 @Deprecated
 public class YObjectStorage {
     // 缓存，临时缓存
-    private static HashMap<String, Object> cache;
+    private static volatile HashMap<String, Object> cache;
     private static final String FILENAME = "Object.properties";
     private final String path;
-    private static boolean useCache = true;
+    private static volatile boolean useCache = true;
 
     // ★★★★★★★★★★★★★★★★★★★★★★★静态方法开始★★★★★★★★★★★★★★★★★★★★★★★★★★★
     // 写入

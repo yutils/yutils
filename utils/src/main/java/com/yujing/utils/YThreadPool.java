@@ -9,7 +9,7 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
  */
 @SuppressWarnings({"unused", "WeakerAccess"})
 public class YThreadPool {
-    private static int threadNum = 99;
+    private static volatile int threadNum = 99;
     private static ScheduledThreadPoolExecutor sTpe = new ScheduledThreadPoolExecutor(threadNum);
 
     /**

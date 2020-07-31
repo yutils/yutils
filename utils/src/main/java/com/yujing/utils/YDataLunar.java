@@ -64,7 +64,7 @@ public class YDataLunar {
 
 
     // ====== 传回农历 y年的总天数
-    final private static int yearDays(int y) {
+    private static int yearDays(int y) {
         int i, sum = 348;
         for (i = 0x8000; i > 0x8; i >>= 1) {
             if ((lunarInfo[y - 1900] & i) != 0)
@@ -74,7 +74,7 @@ public class YDataLunar {
     }
 
     // ====== 传回农历 y年闰月的天数
-    final private static int leapDays(int y) {
+    private static int leapDays(int y) {
         if (leapMonth(y) != 0) {
             if ((lunarInfo[y - 1900] & 0x10000) != 0)
                 return 30;
@@ -85,13 +85,13 @@ public class YDataLunar {
     }
 
     // ====== 传回农历 y年闰哪个月 1-12 , 没闰传回 0
-    final private static int leapMonth(int y) {
+    private static int leapMonth(int y) {
         int result = (int) (lunarInfo[y - 1900] & 0xf);
         return result;
     }
 
     // ====== 传回农历 y年m月的总天数
-    final private static int monthDays(int y, int m) {
+    private static int monthDays(int y, int m) {
         if ((lunarInfo[y - 1900] & (0x10000 >> m)) == 0)
             return 29;
         else
@@ -105,7 +105,7 @@ public class YDataLunar {
     }
 
     // ====== 传入 月日的offset 传回干支, 0=甲子
-    final private static String cyclicalm(int num) {
+    private static String cyclicalm(int num) {
         final String[] Gan = new String[]{"甲", "乙", "丙", "丁", "戊", "己", "庚", "辛", "壬", "癸"};
         final String[] Zhi = new String[]{"子", "丑", "寅", "卯", "辰", "巳", "午", "未", "申", "酉", "戌", "亥"};
         return (Gan[num % 10] + Zhi[num % 12]);

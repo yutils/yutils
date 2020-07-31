@@ -23,14 +23,14 @@ import android.widget.LinearLayout;
  */
 @SuppressWarnings({"unused"})
 public class YImageDialog extends Dialog {
-    private static boolean defaultFullScreen = false;
+    private static volatile boolean defaultFullScreen = false;
     private Boolean fullScreen;//全屏
 
     private Activity activity;
     private ImageView imageView;
     private boolean cancel = true;
     @SuppressLint("StaticFieldLeak")
-    private static YImageDialog yDialog = null;
+    private static volatile YImageDialog yDialog = null;
     private DisplayMetrics displayMetrics;
     private Bitmap bitmap;//图片
     private Integer resource;//图片

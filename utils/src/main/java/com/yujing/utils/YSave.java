@@ -1,5 +1,6 @@
 package com.yujing.utils;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 
 import com.google.gson.Gson;
@@ -16,7 +17,7 @@ import java.util.HashMap;
 public class YSave {
     private static final String TAG = "YSave"; //标记
     private static HashMap<String, Object> cache;    // 缓存，临时缓存
-    private static boolean useCache = true;//是否启用缓存
+    private static volatile boolean useCache = true;//是否启用缓存
 
     private Gson gson = new Gson();
     private Context context;
@@ -182,7 +183,8 @@ public class YSave {
 
 
     // ★★★★★★★★★★★★★★★★★★★★★★★静态方法开始★★★★★★★★★★★★★★★★★★★★★★★★★★
-    private static YSave ySave;//单例
+    @SuppressLint("StaticFieldLeak")
+    private static volatile YSave ySave;//单例
 
     public static YSave getInstance(Context context) {
         if (ySave == null) {

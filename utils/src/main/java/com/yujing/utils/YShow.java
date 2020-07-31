@@ -26,7 +26,7 @@ import androidx.annotation.ColorInt;
  */
 @SuppressWarnings({"unused"})
 public class YShow extends Dialog {
-    private static boolean defaultFullScreen = false;
+    private static volatile boolean defaultFullScreen = false;
     private Activity activity;
     private ProgressBar mProgressBar;//进度
     private String message1;

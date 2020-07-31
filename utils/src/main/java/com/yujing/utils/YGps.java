@@ -39,11 +39,11 @@ public class YGps {
     /**
      * 纬度
      */
-    private static double latitude = 0.0;
+    private static volatile double latitude = 0.0;
     /**
      * 经度
      */
-    private static double longitude = 0.0;
+    private static volatile double longitude = 0.0;
 
     public static double getLatitude() {
         return latitude;

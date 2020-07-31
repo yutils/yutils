@@ -14,7 +14,7 @@ import java.io.InputStream;
 @SuppressWarnings("unused")
 public class YReadInputStream {
     private static final String TAG = "YRead";
-    private static boolean showLog = false;
+    private static volatile boolean showLog = false;
     private InputStream inputStream;
     private YListener1<byte[]> readListener;
     private ReadThread readThread;

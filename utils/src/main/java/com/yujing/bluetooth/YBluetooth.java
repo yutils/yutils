@@ -64,7 +64,8 @@ public class YBluetooth implements YBluetoothDeviceConnect {
     public static final String TYPE_BLE = "TYPE_BLE";
     private static final String TAG = "YBluetooth";
     //单例
-    private static YBluetooth yBluetooth;
+    @SuppressLint("StaticFieldLeak")
+    private static volatile YBluetooth yBluetooth;
     //context
     private Context context;
     // 注册广播BroadcastReceiver的IntentFilter
@@ -85,7 +86,13 @@ public class YBluetooth implements YBluetoothDeviceConnect {
     }
 
     public static YBluetooth getInstance() {
-        if (yBluetooth == null) yBluetooth = new YBluetooth();
+        if (yBluetooth == null) {
+            synchronized (YBluetooth.class) {
+                if (yBluetooth == null) {
+                    yBluetooth = new YBluetooth();
+                }
+            }
+        }
         return yBluetooth;
     }
 

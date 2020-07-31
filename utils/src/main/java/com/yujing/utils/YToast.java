@@ -14,7 +14,7 @@ import android.widget.Toast;
 public class YToast {
     private static Toast toast;
     private static YQueueAndroid yQueueAndroid;
-    private static int queueTime = 500;//队列显示一条toast至少显示这么长时间
+    private static volatile int queueTime = 500;//队列显示一条toast至少显示这么长时间
     /**
      * 多条toast同时过来，只显示最后一条，显示时间为LENGTH_SHORT
      *

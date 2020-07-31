@@ -1,5 +1,6 @@
 package com.yujing.socket;
 
+import android.annotation.SuppressLint;
 import android.os.Handler;
 import android.util.Log;
 
@@ -108,7 +109,7 @@ import java.util.List;
 public class YSocketAndroid extends YSocket {
     Handler handler = new Handler();
 
-    private static YSocketAndroid instance;
+    private static volatile YSocketAndroid instance;
 
     /**
      * 单例模式，调用此方法前必须先调用getInstance(String ip, int port)

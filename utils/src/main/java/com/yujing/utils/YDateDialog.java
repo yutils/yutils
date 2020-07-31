@@ -29,7 +29,7 @@ import java.util.Objects;
  */
 @SuppressWarnings({"unused"})
 public class YDateDialog {
-    private static boolean defaultFullScreen = false;
+    private static volatile boolean defaultFullScreen = false;
     private Boolean fullScreen;//全屏
     private DatePicker datePicker;
     private TimePicker timePicker;
