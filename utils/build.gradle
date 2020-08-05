@@ -11,8 +11,8 @@ android {
     defaultConfig {
         minSdkVersion 19
         targetSdkVersion 29
-        versionCode 15
-        versionName "1.1.5"
+        versionCode 17
+        versionName "1.1.7"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -62,7 +62,7 @@ dependencies {
 
 
 //打包jar;doc;sources，请在Terminal中运行gradlew makeJar
-def jarName = "yutils1.1.5"
+def jarName = "yutils1.1.7"
 task makeJar(type: Copy) {
     //删除存在的
     delete 'build/libs/' + jarName + ".jar"
