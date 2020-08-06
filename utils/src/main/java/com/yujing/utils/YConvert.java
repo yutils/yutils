@@ -61,7 +61,11 @@ public class YConvert {
      */
     public static byte[] hexStringToByte(String hex) {
         if (hex != null) {
-            hex = hex.toUpperCase(Locale.US);
+            hex = hex.replaceAll(" ", "")
+                    .replaceAll("\n", "")
+                    .replaceAll("\r", "")
+                    .replaceAll("\t", "")
+                    .toUpperCase(Locale.US);
         } else {
             return new byte[0];
         }
