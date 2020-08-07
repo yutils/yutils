@@ -23,6 +23,10 @@ import java.util.Objects;
  * @author yujing 2018年12月10日12:05:17
  * @version 1.1
  */
+/*
+    用法
+
+ */
 @SuppressWarnings("unused")
 public class YPicture {
     private Activity activity;
@@ -47,8 +51,10 @@ public class YPicture {
 
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault());
 
+    public String pathName="YPicture";
     /**
-     *  打开相机
+     * 打开相机
+     *
      * @param activity 页面
      */
     public void gotoCamera(Activity activity) {
@@ -56,21 +62,28 @@ public class YPicture {
         try {
             String str = dateFormat.format(new Date(System.currentTimeMillis()));
             //路径默认，若修改则不能保存照片
-            cameraFile = createImageFile(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM) + File.separator + "Y" + File.separator + "CAMERA" + File.separator + "J_" + str + ".jpg");
-            cameraUri = createImageUri(activity, cameraFile);
+            //cameraFile = createImageFile(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM) + File.separator + "Y" + File.separator + "CAMERA" + File.separator + "J_" + str + ".jpg");
+
+            String filePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + File.separator + pathName + File.separator;
+            String fileName = "CAMERA_" + str + ".jpg";
+            YLog.d("gotoCamera路径：", filePath + fileName);
+            cameraFile = createImageFile(filePath + fileName);
+            cameraUri = createImageUri(activity, filePath, fileName);
             //跳转到照相机拍照
             Intent it = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             it.putExtra(MediaStore.EXTRA_OUTPUT, cameraUri);
             activity.startActivityForResult(it, REQUEST_CODE_CAMERA);
         } catch (Exception e) {
+            YLog.e("gotoCamera错误", e);
             Toast.makeText(activity, "请开启摄像权限", Toast.LENGTH_SHORT).show();
         }
     }
 
     /**
      * 打开相机
+     *
      * @param activity activity
-     * @param flag 标记
+     * @param flag     标记
      */
     public void gotoCamera(Activity activity, Object flag) {
         flagCamera = flag;
@@ -79,6 +92,7 @@ public class YPicture {
 
     /**
      * 打开默认相册
+     *
      * @param activity activity
      */
     public void gotoAlbumDefault(Activity activity) {
@@ -89,8 +103,9 @@ public class YPicture {
 
     /**
      * 打开默认相册
+     *
      * @param activity activity
-     * @param flag 标记
+     * @param flag     标记
      */
     public void gotoAlbumDefault(Activity activity, Object flag) {
         flagAlbum = flag;
@@ -99,6 +114,7 @@ public class YPicture {
 
     /**
      * 打开相册，获取图片，支持的软件皆可
+     *
      * @param activity activity
      */
     public void gotoAlbum(Activity activity) {
@@ -110,8 +126,9 @@ public class YPicture {
 
     /**
      * 打开相册，获取图片，支持的软件皆可
+     *
      * @param activity activity
-     * @param flag 标记
+     * @param flag     标记
      */
     public void gotoAlbum(Activity activity, Object flag) {
         flagAlbum = flag;
@@ -120,16 +137,23 @@ public class YPicture {
 
     /**
      * 剪切图片
+     *
      * @param activity activity
-     * @param uri 图片uri
-     * @param outputX 宽度
-     * @param outputY 高度
+     * @param uri      图片uri
+     * @param outputX  宽度
+     * @param outputY  高度
      */
     public void gotoCrop(Activity activity, Uri uri, int outputX, int outputY) {
         this.activity = activity;
         String str = dateFormat.format(new Date(System.currentTimeMillis()));
-        cropFile = createImageFile(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM) + File.separator + "Y" + File.separator + "CROP" + File.separator + "J_" + str + ".jpg");
-        cropUri = createImageUri(activity, cropFile);
+        //cropFile = createImageFile(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM) + File.separator + "Y" + File.separator + "CROP" + File.separator + "J_" + str + ".jpg");
+        String filePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + File.separator + pathName + File.separator;
+        String fileName = "CROP_" + str + ".jpg";
+        YLog.d("gotoCrop路径：", filePath + fileName);
+
+        cropFile = createImageFile(filePath + fileName);
+        cropUri = createImageUri(activity, filePath, fileName);
+
         Intent intent = new Intent("com.android.camera.action.CROP");
         intent.setDataAndType(uri, "image/*");
         intent.putExtra("crop", "true");
@@ -149,11 +173,12 @@ public class YPicture {
 
     /**
      * 剪切图片
+     *
      * @param activity activity
-     * @param uri 图片uri
-     * @param outputX 宽度
-     * @param outputY 高度
-     * @param flag 标记
+     * @param uri      图片uri
+     * @param outputX  宽度
+     * @param outputY  高度
+     * @param flag     标记
      */
     public void gotoCrop(Activity activity, Uri uri, int outputX, int outputY, Object flag) {
         flagCrop = flag;
@@ -162,9 +187,10 @@ public class YPicture {
 
     /**
      * 获取Activity返回信息
+     *
      * @param requestCode 请求code
-     * @param resultCode 响应code
-     * @param data 数据
+     * @param resultCode  响应code
+     * @param data        数据
      */
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_OK) {
@@ -182,8 +208,9 @@ public class YPicture {
 
     /**
      * 根据URI获图片路径
+     *
      * @param context context
-     * @param uri 图片URI
+     * @param uri     图片URI
      * @return String路径
      */
     public String uri2ImagePath(Context context, Uri uri) {
@@ -204,7 +231,8 @@ public class YPicture {
 
     /**
      * 根据图片路径获取URI
-     * @param context context
+     *
+     * @param context   context
      * @param imageFile 文件
      * @return URI图片
      */
@@ -229,6 +257,7 @@ public class YPicture {
 
     /**
      * 创建图片File
+     *
      * @param path 路径
      * @return File文件
      */
@@ -257,17 +286,27 @@ public class YPicture {
 
     /**
      * 创建适用于图片的Uri
+     *
      * @param activity activity
-     * @param file file要存放的路径
+     * @param filePath file要存放的路径
+     * @param fileName file文件名
      * @return URI图片
      */
-    private Uri createImageUri(Activity activity, File file) {
+    private Uri createImageUri(Activity activity, String filePath, String fileName) {
         Uri uri;
         if (android.os.Build.VERSION.SDK_INT < 24) {
-            uri = Uri.fromFile(file);
+            uri = Uri.fromFile(new File(filePath + fileName));
+        } else if (android.os.Build.VERSION.SDK_INT >= 29) {
+            ContentValues values = new ContentValues();
+            // 需要指定文件信息时，非必须
+            values.put(MediaStore.Images.Media.DESCRIPTION, pathName);
+            values.put(MediaStore.Images.Media.DISPLAY_NAME, fileName);
+            values.put(MediaStore.Images.Media.TITLE, fileName);
+            values.put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/"+pathName);
+            uri = activity.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
         } else {
             ContentValues contentValues = new ContentValues(1);
-            contentValues.put(MediaStore.Images.Media.DATA, file.getAbsolutePath());
+            contentValues.put(MediaStore.Images.Media.DATA, filePath + fileName);
             uri = activity.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
         }
         return uri;

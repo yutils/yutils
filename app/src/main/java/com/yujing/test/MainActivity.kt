@@ -1,8 +1,8 @@
 package com.yujing.test
 
 import android.content.Intent
-import android.util.Log
-import com.yujing.contract.YMessage
+import android.graphics.Bitmap
+import android.net.Uri
 import com.yujing.crypt.YSha1
 import com.yujing.url.YUrlAndroid
 import com.yujing.url.contract.YUrlListener
@@ -12,20 +12,22 @@ import java.util.*
 
 
 class MainActivity : BaseActivity() {
-
+    private val yPicture: YPicture = YPicture()
+    var bitmap: Bitmap? = null
+    var uri: Uri? = null
     override val layoutId: Int
         get() = R.layout.activity_main
 
     override fun init() {
         //var a=findViewById<Button>(R.id.button1)
-        button1.text = "YSave写入"
-        button1.setOnClickListener { IP = "123456" }
-        button2.text = "YSave读取"
-        button2.setOnClickListener { show(IP) }
-        button3.text = "Date测试"
-        button3.setOnClickListener { openDate() }
-        button4.text = "对象复制"
-        button4.setOnClickListener { copy() }
+        button1.text = "拍照"
+        button1.setOnClickListener { yPicture.gotoCamera(this) }
+        button2.text = "相册"
+        button2.setOnClickListener { yPicture.gotoAlbum(this) }
+        button3.text = "剪切"
+        button3.setOnClickListener { uri?.let { yPicture.gotoCrop(this, uri, 400, 400) } }
+        button4.text = "Date测试"
+        button4.setOnClickListener { openDate() }
         button5.text = "安装APK"
         button5.setOnClickListener { install() }
         button6.text = "网络请求测试"
@@ -43,14 +45,49 @@ class MainActivity : BaseActivity() {
         }
         button8.setOnClickListener {
             text4.text = """
-                |签名SHA1：${YSha1.getSha1(YAppInfoUtils.getSign(applicationContext, packageName)[0].toByteArray())}
-                |签名SHA1：${YAppInfoUtils.getSign(applicationContext, packageName, YAppInfoUtils.SHA1)}
+                |签名SHA1：${YSha1.getSha1(
+                YAppInfoUtils.getSign(
+                    applicationContext,
+                    packageName
+                )[0].toByteArray()
+            )}
+                |签名SHA1：${YAppInfoUtils.getSign(
+                applicationContext,
+                packageName,
+                YAppInfoUtils.SHA1
+            )}
                 |签名MD5：${YAppInfoUtils.getSign(applicationContext, packageName, YAppInfoUtils.MD5)}
                 |“哈哈”= ${YSha1.getSha1("哈哈".toByteArray())}
             """.trimMargin()
             YLog.d(text4.text.toString())
         }
+
+        yPicture.setPictureFromCameraListener { uri, file, Flag ->
+            val bm = YConvert.uri2Bitmap(this, uri)
+            this.bitmap = bitmap
+            this.uri = uri
+            YImageDialog.show(this, bitmap)
+            YToast.show(this,"file:"+file.exists())
+        }
+
+        yPicture.setPictureFromCropListener { uri, file, Flag ->
+            val bitmap = YConvert.uri2Bitmap(this, uri)
+            this.bitmap = bitmap
+            this.uri = uri
+            YImageDialog.show(this, bitmap)
+            YToast.show(this,"file:"+file.exists())
+        }
+
+        yPicture.setPictureFromAlbumListener { uri, file, Flag ->
+            val bitmap = YConvert.uri2Bitmap(this, uri)
+            this.bitmap = bitmap
+            this.uri = uri
+            YImageDialog.show(this, bitmap)
+            YToast.show(this,"file:"+file.exists())
+        }
+
         YPermissions.requestAll(this)
+
     }
 
     var yInstallApk: YInstallApk? = null
@@ -62,16 +99,9 @@ class MainActivity : BaseActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         yInstallApk?.onActivityResult(requestCode, resultCode, data)
+        yPicture.onActivityResult(requestCode, resultCode, data)
     }
 
-    private fun copy() {
-        var user1: User = User("111", 123)
-        var user2 = YUtils.copyObject(user1)
-        Log.e("T", " " + user2.name)
-        user2.name = "456789"
-        Log.e("T", " " + user1.name)
-        Log.e("T", " " + user2.name)
-    }
 
     private fun openDate() {
         YDateDialog.setDefaultFullScreen(true)
@@ -108,4 +138,5 @@ class MainActivity : BaseActivity() {
             }
         })
     }
+
 }

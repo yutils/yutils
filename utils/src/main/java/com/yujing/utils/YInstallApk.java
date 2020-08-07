@@ -14,39 +14,42 @@ import java.io.File;
 
 import static android.app.Activity.RESULT_OK;
 
-/**
- * 安装apk
- * 如果是安卓8.0以上先请求打开位置来源
- *
- * 权限：<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
- * 1.首先创建res/xml/file_paths.xml
- * 内容：
- * <?xml version="1.0" encoding="UTF-8"?>
- * <resources>
- * <paths>
- * <external-path path="" name="download"/>
- * </paths>
- * </resources>
- * 2.再在AndroidManifest.xml  中的application加入
- * <provider
- * android:name="androidx.core.content.FileProvider"
- * android:authorities="${applicationId}.provider"
- * android:exported="false"
- * android:grantUriPermissions="true">
- * <meta-data
- * android:name="android.support.FILE_PROVIDER_PATHS"
- * android:resource="@xml/file_paths" />
- * </provider>
- * 举例:
- * var yInstallApk:YInstallApk?=null
- * private fun install() {
- *      yInstallApk= YInstallApk(this)
- *      yInstallApk?.install(YPath.getSDCard()+"/app.apk")
- * }
- * override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
- *      super.onActivityResult(requestCode, resultCode, data)
- *      yInstallApk?.onActivityResult(requestCode,resultCode,data)
- * }
+/*
+   安装apk
+   如果是安卓8.0以上先请求打开位置来源
+   权限：<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+
+   1.首先创建res/xml/file_paths.xml
+   内容：
+    <?xml version="1.0" encoding="UTF-8"?>
+    <resources>
+        <paths>
+            <external-path path="" name="download"/>
+        </paths>
+    </resources>
+
+   2.再在AndroidManifest.xml  中的application加入
+    <!--安装app-->
+    <provider
+        android:name="androidx.core.content.FileProvider"
+        android:authorities="${applicationId}.provider"
+        android:exported="false"
+        android:grantUriPermissions="true">
+        <meta-data
+            android:name="android.support.FILE_PROVIDER_PATHS"
+            android:resource="@xml/file_paths" />
+    </provider>
+
+   举例:
+   var yInstallApk:YInstallApk?=null
+   private fun install() {
+        yInstallApk= YInstallApk(this)
+        yInstallApk?.install(YPath.getSDCard()+"/app.apk")
+   }
+   override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        yInstallApk?.onActivityResult(requestCode,resultCode,data)
+   }
  */
 public class YInstallApk {
     private Activity activity;
