@@ -20,12 +20,36 @@ import java.util.Objects;
 /**
  * 拍照，剪切，相册选择照片
  *
- * @author yujing 2018年12月10日12:05:17
- * @version 1.1
+ * @author yujing 2020年8月8日00:08:58
+ * @version 1.2 兼容安卓10.0
  */
 /*
-    用法
-
+    用法:
+     //创建对象
+     private val yPicture: YPicture = YPicture()
+     //打开相机
+     yPicture.gotoCamera(this)
+     //打开相册
+     yPicture.gotoAlbum(this)
+     //剪切图片
+     uri?.let { yPicture.gotoCrop(this, uri, 400, 400) }
+     //设置拍照回调
+     yPicture.setPictureFromCameraListener { uri, file, Flag ->
+        val bitmap = YConvert.uri2Bitmap(this, uri)
+    }
+    //设置剪切回调
+    yPicture.setPictureFromCropListener { uri, file, Flag ->
+        val bitmap = YConvert.uri2Bitmap(this, uri)
+    }
+    //设置相册回调
+    yPicture.setPictureFromAlbumListener { uri, file, Flag ->
+        val bitmap = YConvert.uri2Bitmap(this, uri)
+    }
+    //onActivityResult
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        yPicture.onActivityResult(requestCode, resultCode, data)
+    }
  */
 @SuppressWarnings("unused")
 public class YPicture {
@@ -51,7 +75,8 @@ public class YPicture {
 
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault());
 
-    public String pathName="YPicture";
+    public String pathName = "YPicture";
+
     /**
      * 打开相机
      *
@@ -302,7 +327,7 @@ public class YPicture {
             values.put(MediaStore.Images.Media.DESCRIPTION, pathName);
             values.put(MediaStore.Images.Media.DISPLAY_NAME, fileName);
             values.put(MediaStore.Images.Media.TITLE, fileName);
-            values.put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/"+pathName);
+            values.put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/" + pathName);
             uri = activity.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
         } else {
             ContentValues contentValues = new ContentValues(1);
