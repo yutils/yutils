@@ -19,13 +19,13 @@ open class YMessage<T>(var type: String?, var data: T?) : Serializable {
             val obj = cls.newInstance()
             val method = cls.getMethod("toJson", Any::class.java)
             val dataJson = method.invoke(obj, data) as String
-            return "RxBusMessage{" +
+            return "YMessage：{" +
                     "type='" + type + '\'' +
                     ", data=" + dataJson +
                     '}'
         } catch (e: Exception) {
             //如果失败就用Yjson转json
-            return "RxBusMessage{" +
+            return "YMessage，json：{" +
                     "type='" + type + '\'' +
                     ", data=" + data +
                     '}'
