@@ -1,9 +1,8 @@
-package com.yujing.test.utils
+package com.yujing.utils
 
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
-import com.yujing.utils.*
 import com.yutils.http.YHttp
 import com.yutils.http.contract.YHttpDownloadFileListener
 import java.io.File
@@ -11,8 +10,9 @@ import kotlin.system.exitProcess
 
 /**
  * 更新APP
- * @author yujing 2020年8月30日00:05:29
+ * @author yujing 2020年8月30日13:04:47
  */
+
 /*使用说明,举例
 
 val url = "https://down.qq.com/qqweb/QQ_1/android_apk/AndroidQQ_8.4.5.4745_537065283.apk"

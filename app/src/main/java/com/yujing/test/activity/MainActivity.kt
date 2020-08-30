@@ -5,7 +5,6 @@ import android.graphics.Bitmap
 import android.net.Uri
 import com.yujing.test.R
 import com.yujing.test.base.BaseActivity
-import com.yujing.test.utils.YVersionUpdate
 import com.yujing.utils.*
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
