@@ -46,17 +46,17 @@ import java.util.TimerTask;
  */
 @SuppressWarnings("unused")
 public class YNoticeDownload {
-    private DownloadManager mDownloadManager;
-    private long id;
+    private DownloadManager mDownloadManager;//系统下载管理器
+    private long id;//DownloadManager的下载id
     private DownloadReceiver mReceiver;//广播
     private Activity activity;
     private String url;
-    private String title;
+    private String title;//下载时候的自定义标题
     private Timer myTimer;
     private DownLoadComplete downLoadComplete;//下载完成回调
     private DownLoadProgress downLoadProgress;//下载过程回调
     private DownLoadFail downLoadFail;//下载失败
-    private boolean isAPK;
+    private boolean isAPK;//是否是apk文件，初始化时候将会根据扩展名自动判断
     private File file;//下载的文件
 
     public YNoticeDownload(Activity activity) {
@@ -240,7 +240,7 @@ public class YNoticeDownload {
     }
 
     public void onResume() {
-        if (!activity.isFinishing() && mReceiver != null)
+        if (mReceiver != null)
             activity.registerReceiver(mReceiver, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
     }
 
