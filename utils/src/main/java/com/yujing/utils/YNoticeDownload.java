@@ -59,10 +59,6 @@ public class YNoticeDownload {
     private boolean isAPK;
     private File file;//下载的文件
 
-    public YNoticeDownload(Activity activity) {
-        this(activity, null);
-    }
-
     public YNoticeDownload(Activity activity, String url) {
         this.activity = activity;
         this.url = url;
@@ -86,8 +82,7 @@ public class YNoticeDownload {
     }
 
     public void start() {
-        if (url == null)
-            return;
+        if (url == null) return;
         //设置URL地址
         DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
         //设置wifi才能下载
