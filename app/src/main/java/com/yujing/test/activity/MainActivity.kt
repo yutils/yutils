@@ -7,6 +7,7 @@ import com.yujing.crypt.YSha1
 import com.yujing.test.App
 import com.yujing.test.R
 import com.yujing.test.base.BaseActivity
+import com.yujing.test.utils.YVersionUpdate
 import com.yujing.url.YUrlAndroid
 import com.yujing.url.contract.YUrlListener
 import com.yujing.utils.*
@@ -34,20 +35,10 @@ class MainActivity : BaseActivity() {
         button4.setOnClickListener { openDate() }
         button5.text = "通知栏下载"
         button5.setOnClickListener { download() }
-        button6.text = "网络请求测试"
-        button6.setOnClickListener { net2() }
-        button7.text = "shell测试"
-        button7.setOnClickListener {
-            try {
-                YLog.d(
-                    YUtils.shell(
-                        "start adbd"
-                    )
-                )
-            } catch (e: Exception) {
-
-            }
-        }
+        button6.text = "App更新"
+        button6.setOnClickListener { update() }
+        button7.text = "网络请求测试"
+        button7.setOnClickListener { net2() }
         button8.text = "签名测试"
         button8.setOnClickListener {
             text4.text = """
@@ -100,6 +91,7 @@ class MainActivity : BaseActivity() {
 
     }
 
+
     private var yNoticeDownload: YNoticeDownload? = null
     private fun download() {
         val url = "https://down.qq.com/qqweb/QQ_1/android_apk/AndroidQQ_8.4.5.4745_537065283.apk"
@@ -118,19 +110,28 @@ class MainActivity : BaseActivity() {
         yNoticeDownload?.start()
     }
 
+    private var yVersionUpdate: YVersionUpdate?=null
+    private fun update() {
+        val url = "https://down.qq.com/qqweb/QQ_1/android_apk/AndroidQQ_8.4.5.4745_537065283.apk"
+        yVersionUpdate = YVersionUpdate(
+            this,
+            20,
+            false,
+            url,
+            "1.9.99",
+            "\n修复了bug1引起的问题\n新增功能：aaa"
+        )
+        yVersionUpdate?.useNotificationDownload=true
+        yVersionUpdate?.update()
+    }
+
+
     private var yInstallApk: YInstallApk? = null
     private fun installApk(file: File) {
         yInstallApk = YInstallApk(this)
         //yInstallApk?.install(YPath.getSDCard() + "/app.apk")
         yInstallApk?.install(file.path)
     }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        yInstallApk?.onActivityResult(requestCode, resultCode, data)
-        yPicture.onActivityResult(requestCode, resultCode, data)
-    }
-
 
     private fun openDate() {
         YDateDialog.setDefaultFullScreen(true)
@@ -168,8 +169,16 @@ class MainActivity : BaseActivity() {
         })
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        yInstallApk?.onActivityResult(requestCode, resultCode, data)
+        yPicture.onActivityResult(requestCode, resultCode, data)
+        yVersionUpdate?.onActivityResult(requestCode, resultCode, data)
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         yNoticeDownload?.onDestroy()
+        yVersionUpdate?.onDestroy()
     }
 }

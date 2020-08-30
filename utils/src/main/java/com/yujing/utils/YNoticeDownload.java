@@ -66,6 +66,9 @@ public class YNoticeDownload {
     public YNoticeDownload(Activity activity, String url) {
         this.activity = activity;
         this.url = url;
+        if (url != null && url.length() > 4 && url.substring(url.length() - 4).toLowerCase().equals(".apk")) {
+            isAPK = true;
+        }
         //注册广播
         mReceiver = new DownloadReceiver();
         IntentFilter intentFilter = new IntentFilter();
@@ -79,9 +82,6 @@ public class YNoticeDownload {
             if (ContextCompat.checkSelfPermission(activity, ps) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(activity, Permissions, 1);// 申请权限
             }
-        }
-        if (url.length() > 4 && url.substring(url.length() - 4).toLowerCase().equals(".apk")) {
-            isAPK = true;
         }
     }
 
@@ -162,6 +162,9 @@ public class YNoticeDownload {
 
     public void setUrl(String url) {
         this.url = url;
+        if (url.length() > 4 && url.substring(url.length() - 4).toLowerCase().equals(".apk")) {
+            isAPK = true;
+        }
     }
 
     public boolean isAPK() {
