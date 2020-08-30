@@ -22,7 +22,27 @@ import java.util.TimerTask;
 /**
  * 通知栏下载文件
  *
- * @author yujing 2018年11月30日12:09:53
+ * @author yujing 2020年8月30日11:52:28
+ */
+/*使用方法举例
+    private var yNoticeDownload: YNoticeDownload?=null
+    private fun download() {
+        val url = "https://down.qq.com/qqweb/QQ_1/android_apk/AndroidQQ_8.4.5.4745_537065283.apk"
+        if (yNoticeDownload==null)
+            yNoticeDownload = YNoticeDownload(this, url)
+        yNoticeDownload?.setDownLoadFail { show("下载失败") }
+        yNoticeDownload?.setDownLoadComplete { uri, file ->show("下载完成")}
+        yNoticeDownload?.setDownLoadProgress { downloadSize, fileSize ->
+            val progress = (10000.0 * downloadSize / fileSize).toInt() / 100.0 //下载进度，保留2位小数
+            //"进度：$progress%"
+        }
+        yNoticeDownload?.start()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        yNoticeDownload?.onDestroy()
+    }
  */
 @SuppressWarnings("unused")
 public class YNoticeDownload {
@@ -37,7 +57,7 @@ public class YNoticeDownload {
     private DownLoadProgress downLoadProgress;//下载过程回调
     private DownLoadFail downLoadFail;//下载失败
     private boolean isAPK;
-    private File f;//下载的文件
+    private File file;//下载的文件
 
     public YNoticeDownload(Activity activity) {
         this(activity, null);
@@ -60,12 +80,14 @@ public class YNoticeDownload {
                 ActivityCompat.requestPermissions(activity, Permissions, 1);// 申请权限
             }
         }
+        if (url.length() > 4 && url.substring(url.length() - 4).toLowerCase().equals(".apk")) {
+            isAPK = true;
+        }
     }
 
     public void start() {
-        if (url == null) {
+        if (url == null)
             return;
-        }
         //设置URL地址
         DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
         //设置wifi才能下载
@@ -74,12 +96,12 @@ public class YNoticeDownload {
         request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
         //设置下载路径
         String newString = url.substring(url.lastIndexOf("/"));//返回一个新的字符串，它是此字符串的一个子字符串。
-        f = new File(YPath.getFilePath(activity, "download") + newString);//外部存储卡目录
-        if (f.exists()) {
+        file = new File(YPath.getFilePath(activity, "download") + newString);//外部存储卡目录
+        if (file.exists()) {
             //noinspection ResultOfMethodCallIgnored
-            f.delete();
+            file.delete();
         }
-        Uri uri = Uri.fromFile(f);
+        Uri uri = Uri.fromFile(file);
         request.setDestinationUri(uri);
         //设置通知栏显示文字
         request.setTitle(title == null ? "文件下载中" : title);
@@ -89,19 +111,7 @@ public class YNoticeDownload {
             request.setMimeType("application/vnd.android.package-archive");
         id = mDownloadManager.enqueue(request);
         updateViews();
-    }
-
-    public void onResume() {
-        if (mReceiver != null)
-            activity.registerReceiver(mReceiver, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
-    }
-
-    public void onDestroy() {
-        //注销广播
-        if (myTimer != null)
-            myTimer.cancel();
-        if (mReceiver != null)
-            activity.unregisterReceiver(mReceiver);
+        finish = false;
     }
 
     private void updateViews() {
@@ -110,30 +120,33 @@ public class YNoticeDownload {
             @SuppressLint("NewApi")
             @Override
             public void run() {
-                DownloadManager.Query query = new DownloadManager.Query().setFilterById(id);
-                Cursor cursor = mDownloadManager.query(query);
-                if (cursor != null && cursor.moveToFirst()) {
-                    final int downloaded = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
-                    final int total = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
-                    cursor.close();
-                    final int progress = (downloaded * 100 / total);
-                    activity.runOnUiThread(() -> {
-                        if (downLoadProgress != null) {
-                            downLoadProgress.progress(downloaded, total, progress);
-                        }
-                    });
-                    if (progress == 100) {
-                        myTimer.cancel();
-                    }
-                } else {
-                    //失败
-                    myTimer.cancel();
-                    if (downLoadFail != null) {
-                        activity.runOnUiThread(() -> downLoadFail.fail());
-                    }
-                }
+                getProgress();
             }
         }, 0, 100);
+    }
+
+    private boolean finish = false;
+
+    private void getProgress() {
+        DownloadManager.Query query = new DownloadManager.Query().setFilterById(id);
+        Cursor cursor = mDownloadManager.query(query);
+        if (cursor != null && cursor.moveToFirst()) {
+            final int downloaded = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
+            final int fileSize = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
+            cursor.close();
+            if (fileSize <= 0) return;
+            if (!activity.isFinishing() && !finish && downLoadProgress != null)
+                activity.runOnUiThread(() -> downLoadProgress.progress(downloaded, fileSize));
+            if (downloaded == fileSize) {
+                finish = true;
+                myTimer.cancel();
+            }
+        } else {
+            //失败
+            myTimer.cancel();
+            if (!activity.isFinishing() && downLoadFail != null)
+                activity.runOnUiThread(() -> downLoadFail.fail());
+        }
     }
 
     public String getTitle() {
@@ -180,8 +193,6 @@ public class YNoticeDownload {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (DownloadManager.ACTION_DOWNLOAD_COMPLETE.equals(intent.getAction())) {
-                if (myTimer != null)
-                    myTimer.cancel();
                 //final long id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, 0);
                 DownloadManager.Query query = new DownloadManager.Query().setFilterById(id);
                 Cursor cursor = mDownloadManager.query(query);
@@ -189,48 +200,56 @@ public class YNoticeDownload {
                     int status = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS));
                     switch (status) {
                         case DownloadManager.STATUS_SUCCESSFUL:
-                            if (downLoadComplete != null) {
-                                activity.runOnUiThread(() -> {
-                                    Uri uri = mDownloadManager.getUriForDownloadedFile(id);
-                                    downLoadComplete.complete(uri, f);
-                                });
-                            }
+                            getProgress();
+                            if (!activity.isFinishing() && downLoadComplete != null)
+                                activity.runOnUiThread(() -> downLoadComplete.complete(mDownloadManager.getUriForDownloadedFile(id), file));
                             break;
                         case DownloadManager.STATUS_FAILED:
+                            myTimer.cancel();
                             //错误原因
                             int reason = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_REASON));
-                            if (downLoadFail != null) {
+                            if (downLoadFail != null)
                                 activity.runOnUiThread(() -> downLoadFail.fail());
-                            }
                             break;
                         case DownloadManager.STATUS_PAUSED:
-
                             break;
                         case DownloadManager.STATUS_PENDING:
                             break;
                         case DownloadManager.STATUS_RUNNING:
-
                             break;
                     }
+                    cursor.close();
                 }
             } else if (DownloadManager.ACTION_NOTIFICATION_CLICKED.equals(intent.getAction())) {
                 //下载过程中的点击事件
+                if (!activity.isFinishing())
+                    YToast.show(activity, "正在下载，请稍后。");
             }
         }
     }
 
-    @SuppressWarnings("unused")
     public interface DownLoadComplete {
         void complete(Uri uri, File file);
     }
 
-    @SuppressWarnings("unused")
     public interface DownLoadFail {
         void fail();
     }
 
-    @SuppressWarnings("unused")
     public interface DownLoadProgress {
-        void progress(long downloaded, long total, double progress);
+        void progress(long downloadSize, long fileSize);
+    }
+
+    public void onResume() {
+        if (!activity.isFinishing() && mReceiver != null)
+            activity.registerReceiver(mReceiver, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+    }
+
+    public void onDestroy() {
+        //注销广播
+        if (myTimer != null)
+            myTimer.cancel();
+        if (mReceiver != null)
+            activity.unregisterReceiver(mReceiver);
     }
 }

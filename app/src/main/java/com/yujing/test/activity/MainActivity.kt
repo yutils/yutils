@@ -1,13 +1,17 @@
-package com.yujing.test
+package com.yujing.test.activity
 
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
 import com.yujing.crypt.YSha1
+import com.yujing.test.App
+import com.yujing.test.R
+import com.yujing.test.base.BaseActivity
 import com.yujing.url.YUrlAndroid
 import com.yujing.url.contract.YUrlListener
 import com.yujing.utils.*
 import kotlinx.android.synthetic.main.activity_main.*
+import java.io.File
 import java.util.*
 
 
@@ -28,10 +32,11 @@ class MainActivity : BaseActivity() {
         button3.setOnClickListener { uri?.let { yPicture.gotoCrop(this, uri, 400, 400) } }
         button4.text = "Date测试"
         button4.setOnClickListener { openDate() }
-        button5.text = "安装APK"
-        button5.setOnClickListener { install() }
+        button5.text = "通知栏下载"
+        button5.setOnClickListener { download() }
         button6.text = "网络请求测试"
         button6.setOnClickListener { net2() }
+        button7.text = "shell测试"
         button7.setOnClickListener {
             try {
                 YLog.d(
@@ -43,19 +48,24 @@ class MainActivity : BaseActivity() {
 
             }
         }
+        button8.text = "签名测试"
         button8.setOnClickListener {
             text4.text = """
-                |签名SHA1：${YSha1.getSha1(
+                |签名SHA1：${
+                YSha1.getSha1(
+                    YAppInfoUtils.getSign(
+                        applicationContext,
+                        packageName
+                    )[0].toByteArray()
+                )
+            }
+                |签名SHA1：${
                 YAppInfoUtils.getSign(
                     applicationContext,
-                    packageName
-                )[0].toByteArray()
-            )}
-                |签名SHA1：${YAppInfoUtils.getSign(
-                applicationContext,
-                packageName,
-                YAppInfoUtils.SHA1
-            )}
+                    packageName,
+                    YAppInfoUtils.SHA1
+                )
+            }
                 |签名MD5：${YAppInfoUtils.getSign(applicationContext, packageName, YAppInfoUtils.MD5)}
                 |“哈哈”= ${YSha1.getSha1("哈哈".toByteArray())}
             """.trimMargin()
@@ -67,7 +77,7 @@ class MainActivity : BaseActivity() {
             this.bitmap = bitmap
             this.uri = uri
             YImageDialog.show(this, bitmap)
-            YToast.show(this,"file:"+file.exists())
+            YToast.show(this, "file:" + file.exists())
         }
 
         yPicture.setPictureFromCropListener { uri, file, Flag ->
@@ -75,7 +85,7 @@ class MainActivity : BaseActivity() {
             this.bitmap = bitmap
             this.uri = uri
             YImageDialog.show(this, bitmap)
-            YToast.show(this,"file:"+file.exists())
+            YToast.show(this, "file:" + file.exists())
         }
 
         yPicture.setPictureFromAlbumListener { uri, file, Flag ->
@@ -83,17 +93,36 @@ class MainActivity : BaseActivity() {
             this.bitmap = bitmap
             this.uri = uri
             YImageDialog.show(this, bitmap)
-            YToast.show(this,"file:"+file.exists())
+            YToast.show(this, "file:" + file.exists())
         }
 
         YPermissions.requestAll(this)
 
     }
 
-    var yInstallApk: YInstallApk? = null
-    private fun install() {
+    private var yNoticeDownload: YNoticeDownload? = null
+    private fun download() {
+        val url = "https://down.qq.com/qqweb/QQ_1/android_apk/AndroidQQ_8.4.5.4745_537065283.apk"
+        if (yNoticeDownload == null)
+            yNoticeDownload = YNoticeDownload(this, url)
+        yNoticeDownload?.setDownLoadFail { show("下载失败") }
+        yNoticeDownload?.setDownLoadComplete { uri, file ->
+            show("下载完成")
+            installApk(file)
+        }
+        yNoticeDownload?.setDownLoadProgress { downloadSize, fileSize ->
+            val progress = (10000.0 * downloadSize / fileSize).toInt() / 100.0 //下载进度，保留2位小数
+            text1.text = "$downloadSize/$fileSize"
+            text2.text = "进度：$progress%"
+        }
+        yNoticeDownload?.start()
+    }
+
+    private var yInstallApk: YInstallApk? = null
+    private fun installApk(file: File) {
         yInstallApk = YInstallApk(this)
-        yInstallApk?.install(YPath.getSDCard() + "/app.apk")
+        //yInstallApk?.install(YPath.getSDCard() + "/app.apk")
+        yInstallApk?.install(file.path)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -139,4 +168,8 @@ class MainActivity : BaseActivity() {
         })
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        yNoticeDownload?.onDestroy()
+    }
 }

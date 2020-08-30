@@ -1,4 +1,4 @@
-package com.yujing.test
+package com.yujing.test.base
 
 import android.annotation.SuppressLint
 import android.content.Intent
