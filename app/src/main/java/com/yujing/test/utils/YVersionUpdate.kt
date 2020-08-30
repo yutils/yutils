@@ -145,7 +145,7 @@ class YVersionUpdate(
     private fun yHttpDownApkFile() {
         YShow.show(activity, "正在下载")
         YShow.setMessageOther("请稍候...")
-        YShow.setCancel(isForceUpdate)
+        YShow.setCancel(!isForceUpdate)
         val saveApkName = downUrl.substring(downUrl.lastIndexOf("/") + 1)
         val file = File(YPath.getFilePath(activity) + "/download/" + saveApkName)
         //下载
@@ -187,6 +187,7 @@ class YVersionUpdate(
     private fun notifyDownApkFile() {
         YShow.show(activity, "正在下载")
         YShow.setMessageOther("请稍候...")
+        YShow.setCancel(!isForceUpdate)
         if (yNoticeDownload == null) yNoticeDownload = YNoticeDownload(activity)
         yNoticeDownload?.url = downUrl
         yNoticeDownload?.isAPK = true
