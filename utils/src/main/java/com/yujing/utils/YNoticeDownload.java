@@ -59,6 +59,10 @@ public class YNoticeDownload {
     private boolean isAPK;
     private File file;//下载的文件
 
+    public YNoticeDownload(Activity activity) {
+        this(activity, null);
+    }
+
     public YNoticeDownload(Activity activity, String url) {
         this.activity = activity;
         this.url = url;
