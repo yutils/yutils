@@ -18,6 +18,27 @@ import java.util.List;
  *
  * @author yujing 2018年11月30日12:13:23
  */
+/*
+用法举例
+class MyAccountAdapter(context: Context?, list: List<*>?) :
+    YBaseYListViewAdapter<Any?>(context, list) {
+    override fun setLayout(): Int {
+        return R.layout.activity_my_account_item
+    }
+
+    override fun setViewHolder(): BaseViewHolder {
+        return object : BaseViewHolder(){
+            var binding: ActivityMyAccountItemBinding? = null
+            override fun findView(convertView: View?) {
+                binding = DataBindingUtil.bind(view)
+            }
+            override fun setData(position: Int, obj: Any?, adapterList: MutableList<Any?>?, adapter: YBaseYListViewAdapter<*>?) {
+
+            }
+        }
+    }
+}
+ */
 @SuppressWarnings("unused")
 public abstract class YBaseYListViewAdapter<T> extends BaseAdapter {
     protected List<T> list;

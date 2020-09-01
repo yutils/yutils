@@ -15,6 +15,27 @@ import java.util.Objects;
  *
  * @author yujing 2018年11月30日12:13:23
  */
+/*用法举例:
+class MyAccountAdapter(context: Context?, list: List<*>?) :
+    YBaseYRecyclerViewAdapter<Any?>(context, list) {
+    override fun setLayout(): Int {
+        return R.layout.activity_my_account_item
+    }
+
+    override fun setViewHolder(itemView: View?): BaseViewHolder {
+        return object : BaseViewHolder(itemView) {
+            var binding: ActivityMyAccountItemBinding? = null
+            override fun findView(view: View) {
+                binding = DataBindingUtil.bind(view)
+            }
+
+            override fun setData(position: Int, obj: Any?, adapterList: MutableList<Any?>?, adapter: YBaseYRecyclerViewAdapter<*>?) {
+
+            }
+        }
+    }
+}
+ */
 @SuppressWarnings({"unused", "NullableProblems"})
 public abstract class YBaseYRecyclerViewAdapter<T> extends RecyclerView.Adapter<YBaseYRecyclerViewAdapter.BaseViewHolder> {
     private List<T> list;//数据
