@@ -339,7 +339,7 @@ public class YPicture {
 
 
     public interface PictureListener {
-        void result(Uri uri, File file, Object Flag);
+        void result(Uri uri, File file, Object flag);
     }
 
     public interface PictureFromCameraListener extends PictureListener {
