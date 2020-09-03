@@ -76,7 +76,8 @@ public class YRsa {
 		KeyFactory keyFactory = KeyFactory.getInstance(RSA_ALGORITHM);
 		Key priKey = keyFactory.generatePrivate(keySpec);
 		// 初始化加密器
-		Cipher cipher = Cipher.getInstance(keyFactory.getAlgorithm());
+		//Cipher cipher = Cipher.getInstance(keyFactory.getAlgorithm());
+		Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
 		cipher.init(Cipher.ENCRYPT_MODE, priKey);
 		return cipher.doFinal(binaryData);
 	}
@@ -91,7 +92,8 @@ public class YRsa {
 		KeyFactory keyFactory = KeyFactory.getInstance(RSA_ALGORITHM);
 		Key pubKey = keyFactory.generatePublic(keySpec);
 		// 初始化加密器
-		Cipher cipher = Cipher.getInstance(keyFactory.getAlgorithm());
+		//Cipher cipher = Cipher.getInstance(keyFactory.getAlgorithm());
+		Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
 		cipher.init(Cipher.ENCRYPT_MODE, pubKey);
 		return cipher.doFinal(binaryData);
 	}
@@ -106,7 +108,8 @@ public class YRsa {
 		KeyFactory keyFactory = KeyFactory.getInstance(RSA_ALGORITHM);
 		Key priKey = keyFactory.generatePrivate(keySpec);
 		// 初始化加密器
-		Cipher cipher = Cipher.getInstance(keyFactory.getAlgorithm());
+		//Cipher cipher = Cipher.getInstance(keyFactory.getAlgorithm());
+		Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
 		cipher.init(Cipher.DECRYPT_MODE, priKey);
 		return cipher.doFinal(binaryData);
 	}
@@ -121,7 +124,8 @@ public class YRsa {
 		KeyFactory keyFactory = KeyFactory.getInstance(RSA_ALGORITHM);
 		Key pubKey = keyFactory.generatePublic(x509KeySpec);
 		// 初始化加密器
-		Cipher cipher = Cipher.getInstance(keyFactory.getAlgorithm());
+		//Cipher cipher = Cipher.getInstance(keyFactory.getAlgorithm());
+		Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
 		cipher.init(Cipher.DECRYPT_MODE, pubKey);
 		return cipher.doFinal(binaryData);
 	}
