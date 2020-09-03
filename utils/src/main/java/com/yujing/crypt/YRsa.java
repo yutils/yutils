@@ -2,7 +2,6 @@ package com.yujing.crypt;
 
 import com.yujing.utils.YBase64;
 
-import java.math.BigInteger;
 import java.security.Key;
 import java.security.KeyFactory;
 import java.security.KeyPair;
@@ -14,8 +13,6 @@ import java.security.Signature;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.PKCS8EncodedKeySpec;
-import java.security.spec.RSAPrivateKeySpec;
-import java.security.spec.RSAPublicKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.HashMap;
 import java.util.Map;
@@ -146,7 +143,6 @@ public class YRsa {
 		return YBase64.encode(signature.sign());
 	}
 
-
 	/**
 	 * 使用公钥对数据签名进行验证
 	 */
@@ -163,6 +159,11 @@ public class YRsa {
 		return signature.verify(YBase64.decode(sign));
 	}
 
+	/**
+	 * 获取一对公钥和私钥
+	 * @return  Map，RSA_PUBLIC_KEY，RSA_PRIVATE_KEY
+	 * @throws NoSuchAlgorithmException NoSuchAlgorithmException
+	 */
 	public static Map<String, Object> getKey() throws NoSuchAlgorithmException {
 		// 因为只存公钥和私钥，所以指明Map的长度是2
 		Map<String, Object> keyMap = new HashMap<>(2);
@@ -179,52 +180,23 @@ public class YRsa {
 		return keyMap;
 	}
 
-
+	/**
+	 * 取出map中的公钥
+	 * @param map 一对公钥和私钥
+	 * @return base64
+	 */
 	public static String getPublicKey(Map<String, Object> map) {
 		RSAPublicKey publicKey = (RSAPublicKey) map.get(RSA_PUBLIC_KEY);
 		return YBase64.encode(publicKey.getEncoded());
 	}
 
+	/**
+	 * 取出map中的私钥
+	 * @param map 一对公钥和私钥
+	 * @return base64
+	 */
 	public static String getPrivateKey(Map<String, Object> map) {
 		RSAPrivateKey privateKey = (RSAPrivateKey) map.get(RSA_PRIVATE_KEY);
 		return YBase64.encode(privateKey.getEncoded());
-	}
-
-	public static void main(String[] args) throws Exception {
-		// 1.获取公钥私钥
-		Map<String, Object> map = getKey();
-		String publicKeyString = getPublicKey(map);
-		String privateKeyString = getPrivateKey(map);
-
-		System.out.println("公钥：" + publicKeyString);
-		System.out.println("私钥：" + privateKeyString);
-		String content = "你好，我是余静。";
-		System.out.println("============   分隔符     ===========");
-
-		// 2.使用私钥加密
-		byte[] encodeContent = encryptPrivateKey(content.getBytes(), privateKeyString);
-		System.out.println("私钥加密后的数据：" + new String(encodeContent));
-
-		// 3.使用公钥解密
-		byte[] decodeContent = decryptPublicKey(encodeContent, publicKeyString);
-		System.out.println("公钥解密后的数据：" + new String(decodeContent));
-
-		System.out.println("============   分隔符     ===========");
-		// 4.使用公钥加密
-		byte[] encodeContent2 = encryptPublicKey(content.getBytes(), publicKeyString);
-		System.out.println("公钥加密后的数据：" + new String(encodeContent2));
-
-		// 5.使用私钥解密
-		byte[] decodeContent2 = decryptPrivateKey(encodeContent2, privateKeyString);
-		System.out.println("私钥解密后的数据：" + new String(decodeContent2));
-
-		System.out.println("============   分隔符     ===========");
-		// 6.加签
-		String sign = sign(content.getBytes(), privateKeyString);
-		System.out.println("加签后的数据：" + sign);
-
-		// 7.验签
-		boolean result = verify(content.getBytes(), publicKeyString, sign);
-		System.out.println("验签结果：" + result);
 	}
 }
