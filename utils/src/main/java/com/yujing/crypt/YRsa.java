@@ -1,230 +1,230 @@
 package com.yujing.crypt;
 
+import com.yujing.utils.YBase64;
+
 import java.math.BigInteger;
+import java.security.Key;
 import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.Signature;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
+import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.RSAPrivateKeySpec;
 import java.security.spec.RSAPublicKeySpec;
+import java.security.spec.X509EncodedKeySpec;
 import java.util.HashMap;
+import java.util.Map;
+
 import javax.crypto.Cipher;
 
 /**
  * RSA加密解密
- * @author 余静 2017年7月26日17:19:26
+ * @author 余静 2020年9月3日14:11:14
  */
-@SuppressWarnings("unused")
+/*用法
+// 1.获取公钥私钥
+Map<String, Object> map = YRsa.getKey();
+String publicKeyString = YRsa.getPublicKey(map);
+String privateKeyString = YRsa.getPrivateKey(map);
+
+System.out.println("公钥：" + publicKeyString);
+System.out.println("私钥：" + privateKeyString);
+String content = "你好，我是余静。";
+System.out.println("============   分隔符     ===========");
+
+// 2.使用私钥加密
+byte[] encodeContent = YRsa.encryptPrivateKey(content.getBytes(), privateKeyString);
+System.out.println("私钥加密后的数据：" + new String(encodeContent));
+
+// 3.使用公钥解密
+byte[] decodeContent = YRsa.decryptPublicKey(encodeContent, publicKeyString);
+System.out.println("公钥解密后的数据：" + new String(decodeContent));
+
+System.out.println("============   分隔符     ===========");
+// 4.使用公钥加密
+byte[] encodeContent2 = YRsa.encryptPublicKey(content.getBytes(), publicKeyString);
+System.out.println("公钥加密后的数据：" + new String(encodeContent2));
+
+// 5.使用私钥解密
+byte[] decodeContent2 = YRsa.decryptPrivateKey(encodeContent2, privateKeyString);
+System.out.println("私钥解密后的数据：" + new String(decodeContent2));
+
+System.out.println("============   分隔符     ===========");
+// 6.加签
+String sign = YRsa.sign(content.getBytes(), privateKeyString);
+System.out.println("加签后的数据：" + sign);
+
+// 7.验签
+boolean result =  YRsa.verify(content.getBytes(), publicKeyString, sign);
+System.out.println("验签结果：" + result);
+ */
 public class YRsa {
+	private final static String RSA_ALGORITHM = "RSA";
+	private final static String SIGNATURE_ALGORITHM = "MD5withRSA";
+	private final static String RSA_PUBLIC_KEY = "RSAPublicKey";
+	private final static String RSA_PRIVATE_KEY = "RSAPrivateKey";
+
 	/**
-	 * 生成公钥和私钥
-	 * @return map中公钥public，私钥private
-	 * @throws NoSuchAlgorithmException 异常
+	 * 使用私钥对数据进行加密
 	 */
-	public static HashMap<String, Object> getKeys() throws NoSuchAlgorithmException {
-		HashMap<String, Object> map = new HashMap<>();
-		KeyPairGenerator keyPairGen = KeyPairGenerator.getInstance("RSA");
+	public static byte[] encryptPrivateKey(byte[] binaryData, String privateKey) throws Exception {
+		byte[] keyBytes = YBase64.decode(privateKey);
+		PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(keyBytes);
+		// 获取RSA算法实例
+		KeyFactory keyFactory = KeyFactory.getInstance(RSA_ALGORITHM);
+		Key priKey = keyFactory.generatePrivate(keySpec);
+		// 初始化加密器
+		Cipher cipher = Cipher.getInstance(keyFactory.getAlgorithm());
+		cipher.init(Cipher.ENCRYPT_MODE, priKey);
+		return cipher.doFinal(binaryData);
+	}
+
+	/**
+	 * 使用公钥对数据进行加密
+	 */
+	public static byte[] encryptPublicKey(byte[] binaryData, String publicKey) throws Exception {
+		byte[] keyBytes = YBase64.decode(publicKey);
+		X509EncodedKeySpec keySpec = new X509EncodedKeySpec(keyBytes);
+		// 获取RSA算法实例
+		KeyFactory keyFactory = KeyFactory.getInstance(RSA_ALGORITHM);
+		Key pubKey = keyFactory.generatePublic(keySpec);
+		// 初始化加密器
+		Cipher cipher = Cipher.getInstance(keyFactory.getAlgorithm());
+		cipher.init(Cipher.ENCRYPT_MODE, pubKey);
+		return cipher.doFinal(binaryData);
+	}
+
+	/**
+	 * 使用私钥对数据进行解密
+	 */
+	public static byte[] decryptPrivateKey(byte[] binaryData, String privateKey) throws Exception {
+		byte[] keyBytes = YBase64.decode(privateKey);
+		PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(keyBytes);
+		// 获取RSA算法实例
+		KeyFactory keyFactory = KeyFactory.getInstance(RSA_ALGORITHM);
+		Key priKey = keyFactory.generatePrivate(keySpec);
+		// 初始化加密器
+		Cipher cipher = Cipher.getInstance(keyFactory.getAlgorithm());
+		cipher.init(Cipher.DECRYPT_MODE, priKey);
+		return cipher.doFinal(binaryData);
+	}
+
+	/**
+	 * 使用公钥对数据进行解密
+	 */
+	public static byte[] decryptPublicKey(byte[] binaryData, String publicKey) throws Exception {
+		byte[] keyBytes = YBase64.decode(publicKey);
+		X509EncodedKeySpec x509KeySpec = new X509EncodedKeySpec(keyBytes);
+		// 获取RSA算法实例
+		KeyFactory keyFactory = KeyFactory.getInstance(RSA_ALGORITHM);
+		Key pubKey = keyFactory.generatePublic(x509KeySpec);
+		// 初始化加密器
+		Cipher cipher = Cipher.getInstance(keyFactory.getAlgorithm());
+		cipher.init(Cipher.DECRYPT_MODE, pubKey);
+		return cipher.doFinal(binaryData);
+	}
+
+	/**
+	 * 使用私钥对数据进行签名
+	 */
+	public static String sign(byte[] binaryData, String privateKey)
+			throws Exception {
+		byte[] keyBytes = YBase64.decode(privateKey);
+		PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(keyBytes);
+		// 获取RSA算法实例
+		KeyFactory keyFactory = KeyFactory.getInstance(RSA_ALGORITHM);
+		PrivateKey priKey = keyFactory.generatePrivate(keySpec);
+		// 获取签名算法
+		Signature signature = Signature.getInstance(SIGNATURE_ALGORITHM);
+		signature.initSign(priKey);
+		signature.update(binaryData);
+		return YBase64.encode(signature.sign());
+	}
+
+
+	/**
+	 * 使用公钥对数据签名进行验证
+	 */
+	public static boolean verify(byte[] binaryData, String publicKey, String sign) throws Exception {
+		byte[] keyBytes = YBase64.decode(publicKey);
+		X509EncodedKeySpec keySpec = new X509EncodedKeySpec(keyBytes);
+		// 获取RSA算法实例
+		KeyFactory keyFactory = KeyFactory.getInstance(RSA_ALGORITHM);
+		PublicKey pubKey = keyFactory.generatePublic(keySpec);
+		// 获取签名算法
+		Signature signature = Signature.getInstance(SIGNATURE_ALGORITHM);
+		signature.initVerify(pubKey);
+		signature.update(binaryData);
+		return signature.verify(YBase64.decode(sign));
+	}
+
+	public static Map<String, Object> getKey() throws NoSuchAlgorithmException {
+		// 因为只存公钥和私钥，所以指明Map的长度是2
+		Map<String, Object> keyMap = new HashMap<>(2);
+		// 获取RSA算法实例
+		KeyPairGenerator keyPairGen = KeyPairGenerator.getInstance(RSA_ALGORITHM);
+		// 1024代表密钥二进制位数
 		keyPairGen.initialize(1024);
+		// 产生KeyPair工厂
 		KeyPair keyPair = keyPairGen.generateKeyPair();
 		RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
 		RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
-		map.put("public", publicKey);
-		map.put("private", privateKey);
-		return map;
+		keyMap.put(RSA_PUBLIC_KEY, publicKey);
+		keyMap.put(RSA_PRIVATE_KEY, privateKey);
+		return keyMap;
 	}
 
-	/**
-	 * 使用模和指数生成RSA公钥
-	 * 注意：【此代码用了默认补位方式，为RSA/None/PKCS1Padding，不同JDK默认的补位方式可能不同，如Android默认是RSA
-	 * /None/NoPadding】
-	 * 
-	 * @param modulus 模
-	 * @param exponent 指数
-	 * @return RSAPublicKey
-	 */
-	public static RSAPublicKey getPublicKey(String modulus, String exponent) {
-		try {
-			BigInteger b1 = new BigInteger(modulus);
-			BigInteger b2 = new BigInteger(exponent);
-			KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-			RSAPublicKeySpec keySpec = new RSAPublicKeySpec(b1, b2);
-			return (RSAPublicKey) keyFactory.generatePublic(keySpec);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
+
+	public static String getPublicKey(Map<String, Object> map) {
+		RSAPublicKey publicKey = (RSAPublicKey) map.get(RSA_PUBLIC_KEY);
+		return YBase64.encode(publicKey.getEncoded());
 	}
 
-	/**
-	 * 使用模和指数生成RSA私钥
-	 * 注意：【此代码用了默认补位方式，为RSA/None/PKCS1Padding，不同JDK默认的补位方式可能不同，如Android默认是RSA
-	 * /None/NoPadding】
-	 * 
-	 * @param modulus 模
-	 * @param exponent 指数
-	 * @return RSAPrivateKey
-	 */
-	public static RSAPrivateKey getPrivateKey(String modulus, String exponent) {
-		try {
-			BigInteger b1 = new BigInteger(modulus);
-			BigInteger b2 = new BigInteger(exponent);
-			KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-			RSAPrivateKeySpec keySpec = new RSAPrivateKeySpec(b1, b2);
-			return (RSAPrivateKey) keyFactory.generatePrivate(keySpec);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
+	public static String getPrivateKey(Map<String, Object> map) {
+		RSAPrivateKey privateKey = (RSAPrivateKey) map.get(RSA_PRIVATE_KEY);
+		return YBase64.encode(privateKey.getEncoded());
 	}
 
-	/**
-	 * 公钥加密
-	 * 
-	 * @param data 数据
-	 * @param publicKey 公钥
-	 * @return 结果
-	 * @throws Exception 异常
-	 */
-	public static String encryptByPublicKey(String data, RSAPublicKey publicKey) throws Exception {
-		Cipher cipher = Cipher.getInstance("RSA");
-		cipher.init(Cipher.ENCRYPT_MODE, publicKey);
-		// 模长
-		int key_len = publicKey.getModulus().bitLength() / 8;
-		// 加密数据长度 <= 模长-11
-		String[] datas = splitString(data, key_len - 11);
-		StringBuilder mi = new StringBuilder();
-		// 如果明文长度大于模长-11则要分组加密
-		for (String s : datas) {
-			mi.append(bcd2Str(cipher.doFinal(s.getBytes())));
-		}
-		return mi.toString();
-	}
+	public static void main(String[] args) throws Exception {
+		// 1.获取公钥私钥
+		Map<String, Object> map = getKey();
+		String publicKeyString = getPublicKey(map);
+		String privateKeyString = getPrivateKey(map);
 
-	/**
-	 * 私钥解密
-	 * 
-	 * @param data 数据
-	 * @param privateKey 私钥
-	 * @return 结果
-	 * @throws Exception 异常
-	 */
-	public static String decryptByPrivateKey(String data, RSAPrivateKey privateKey) throws Exception {
-		Cipher cipher = Cipher.getInstance("RSA");
-		cipher.init(Cipher.DECRYPT_MODE, privateKey);
-		// 模长
-		int key_len = privateKey.getModulus().bitLength() / 8;
-		byte[] bytes = data.getBytes();
-		byte[] bcd = ASCII_To_BCD(bytes, bytes.length);
-		System.err.println(bcd.length);
-		// 如果密文长度大于模长则要分组解密
-		StringBuilder ming = new StringBuilder();
-		byte[][] arrays = splitArray(bcd, key_len);
-		for (byte[] arr : arrays) {
-			ming.append(new String(cipher.doFinal(arr)));
-		}
-		return ming.toString();
-	}
+		System.out.println("公钥：" + publicKeyString);
+		System.out.println("私钥：" + privateKeyString);
+		String content = "你好，我是余静。";
+		System.out.println("============   分隔符     ===========");
 
-	/**
-	 * ASCII码转BCD码
-	 * @param ascii  ascii
-	 * @param asc_len 长度
-	 * @return bcd
-	 */
-	public static byte[] ASCII_To_BCD(byte[] ascii, int asc_len) {
-		byte[] bcd = new byte[asc_len / 2];
-		int j = 0;
-		for (int i = 0; i < (asc_len + 1) / 2; i++) {
-			bcd[i] = asc_to_bcd(ascii[j++]);
-			bcd[i] = (byte) (((j >= asc_len) ? 0x00 : asc_to_bcd(ascii[j++])) + (bcd[i] << 4));
-		}
-		return bcd;
-	}
+		// 2.使用私钥加密
+		byte[] encodeContent = encryptPrivateKey(content.getBytes(), privateKeyString);
+		System.out.println("私钥加密后的数据：" + new String(encodeContent));
 
-	public static byte asc_to_bcd(byte asc) {
-		byte bcd;
-		if ((asc >= '0') && (asc <= '9'))
-			bcd = (byte) (asc - '0');
-		else if ((asc >= 'A') && (asc <= 'F'))
-			bcd = (byte) (asc - 'A' + 10);
-		else if ((asc >= 'a') && (asc <= 'f'))
-			bcd = (byte) (asc - 'a' + 10);
-		else
-			bcd = (byte) (asc - 48);
-		return bcd;
-	}
+		// 3.使用公钥解密
+		byte[] decodeContent = decryptPublicKey(encodeContent, publicKeyString);
+		System.out.println("公钥解密后的数据：" + new String(decodeContent));
 
-	/**
-	 * BCD转字符串
-	 * @param bytes bcd
-	 * @return 字符串
-	 */
-	public static String bcd2Str(byte[] bytes) {
-		char[] temp = new char[bytes.length * 2];
-		char val;
+		System.out.println("============   分隔符     ===========");
+		// 4.使用公钥加密
+		byte[] encodeContent2 = encryptPublicKey(content.getBytes(), publicKeyString);
+		System.out.println("公钥加密后的数据：" + new String(encodeContent2));
 
-		for (int i = 0; i < bytes.length; i++) {
-			val = (char) (((bytes[i] & 0xf0) >> 4) & 0x0f);
-			temp[i * 2] = (char) (val > 9 ? val + 'A' - 10 : val + '0');
+		// 5.使用私钥解密
+		byte[] decodeContent2 = decryptPrivateKey(encodeContent2, privateKeyString);
+		System.out.println("私钥解密后的数据：" + new String(decodeContent2));
 
-			val = (char) (bytes[i] & 0x0f);
-			temp[i * 2 + 1] = (char) (val > 9 ? val + 'A' - 10 : val + '0');
-		}
-		return new String(temp);
-	}
+		System.out.println("============   分隔符     ===========");
+		// 6.加签
+		String sign = sign(content.getBytes(), privateKeyString);
+		System.out.println("加签后的数据：" + sign);
 
-	/**
-	 * 拆分字符串
-	 * @param string 字符串
-	 * @param len 每隔len长度拆分
-	 * @return 字符串数组
-	 */
-	public static String[] splitString(String string, int len) {
-		int x = string.length() / len;
-		int y = string.length() % len;
-		int z = 0;
-		if (y != 0) {
-			z = 1;
-		}
-		String[] strings = new String[x + z];
-		String str;
-		for (int i = 0; i < x + z; i++) {
-			if (i == x + z - 1 && y != 0) {
-				str = string.substring(i * len, i * len + y);
-			} else {
-				str = string.substring(i * len, i * len + len);
-			}
-			strings[i] = str;
-		}
-		return strings;
-	}
-
-	/**
-	 * 拆分数组
-	 * @param data 把一维数组 拆分成二维数组
-	 * @param len 每隔len长度拆分
-	 * @return 二维数组
-	 */
-	public static byte[][] splitArray(byte[] data, int len) {
-		int x = data.length / len;
-		int y = data.length % len;
-		int z = 0;
-		if (y != 0) {
-			z = 1;
-		}
-		byte[][] arrays = new byte[x + z][];
-		byte[] arr;
-		for (int i = 0; i < x + z; i++) {
-			arr = new byte[len];
-			if (i == x + z - 1 && y != 0) {
-				System.arraycopy(data, i * len, arr, 0, y);
-			} else {
-				System.arraycopy(data, i * len, arr, 0, len);
-			}
-			arrays[i] = arr;
-		}
-		return arrays;
+		// 7.验签
+		boolean result = verify(content.getBytes(), publicKeyString, sign);
+		System.out.println("验签结果：" + result);
 	}
 }
