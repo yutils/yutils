@@ -33,9 +33,16 @@ class MainActivity : BaseActivity() {
         button6.text = "App更新"
         button6.setOnClickListener { update() }
         button7.text = "测试"
-        button7.setOnClickListener { }
+
+        val yQueue=YQueue()
+
+        button7.setOnClickListener {
+            yQueue.run(1000) { text4.text ="你好" }
+        }
+
         button8.text = "测试"
         button8.setOnClickListener {
+
         }
 
         yPicture.setPictureFromCameraListener { uri, file, Flag ->
@@ -64,7 +71,10 @@ class MainActivity : BaseActivity() {
         yInstallApk = YInstallApk(this)
         YPermissions.requestAll(this)
     }
-
+    var i=0;
+    fun loop() {
+        text4.text="当前：${i++}"
+    }
     private var yNoticeDownload: YNoticeDownload? = null
     private fun download() {
         val url = "https://down.qq.com/qqweb/QQ_1/android_apk/AndroidQQ_8.4.5.4745_537065283.apk"
@@ -88,13 +98,13 @@ class MainActivity : BaseActivity() {
         val url = "https://down.qq.com/qqweb/QQ_1/android_apk/AndroidQQ_8.4.5.4745_537065283.apk"
         yVersionUpdate = YVersionUpdate(
             this,
-            20,
+            99,
             false,
             url,
             "1.9.99",
             "\n修复了bug1引起的问题\n新增功能：aaa"
         )
-        yVersionUpdate?.useNotificationDownload = true
+        yVersionUpdate?.useNotificationDownload = false
         yVersionUpdate?.update()
     }
 

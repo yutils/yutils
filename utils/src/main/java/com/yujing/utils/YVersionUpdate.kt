@@ -10,7 +10,7 @@ import kotlin.system.exitProcess
 
 /**
  * 更新APP
- * @author yujing 2020年8月30日13:04:47
+ * @author yujing 2020年9月6日20:37:04
  */
 
 /*使用说明,举例
@@ -154,10 +154,9 @@ class YVersionUpdate(
             override fun progress(downloadSize: Int, fileSize: Int) {
                 if (!activity.isFinishing) {
                     val progress = (10000.0 * downloadSize / fileSize).toInt() / 100.0 //下载进度，保留2位小数
-                    YShow.setMessage("下载进度$progress%")
+                    YShow.setMessage("下载进度:${YNumber.showNumber0(progress)}%")
                     YShow.setMessageOther(
-                        if (downloadSize > 1048576) "已下载:" +
-                                YNumber.showNumber(downloadSize / 1048576.0, 1) + "MB"
+                        if (downloadSize > 1048576) "已下载:" + YNumber.showNumber0(downloadSize / 1048576.0, 2) + "MB"
                         else "已下载:" + downloadSize / 1024 + "KB"
                     )
                 } else YShow.finish()
@@ -207,15 +206,14 @@ class YVersionUpdate(
         yNoticeDownload?.setDownLoadProgress { downloadSize, fileSize ->
             if (!activity.isFinishing) {
                 val progress = (10000.0 * downloadSize / fileSize).toInt() / 100.0 //下载进度，保留2位小数
-                YShow.setMessage("下载进度$progress%")
+                YShow.setMessage("下载进度:${YNumber.showNumber0(progress)}%")
                 YShow.setMessageOther(
                     if (downloadSize > 1048576) "已下载:" +
-                            YNumber.showNumber(downloadSize / 1048576.0, 1) + "MB"
+                            YNumber.showNumber0(downloadSize / 1048576.0, 2) + "MB"
                     else "已下载:" + downloadSize / 1024 + "KB"
                 )
             } else YShow.finish()
         }
-
         yNoticeDownload?.start()
     }
 

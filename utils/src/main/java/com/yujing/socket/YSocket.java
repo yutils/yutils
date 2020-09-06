@@ -1,5 +1,7 @@
 package com.yujing.socket;
 
+import android.os.Handler;
+
 import com.yujing.utils.YLog;
 import com.yujing.utils.YThreadPool;
 
@@ -32,11 +34,8 @@ import java.util.List;
 		ySocket.addConnectListener(isSuccess -> System.out.println("连接状态：" + isSuccess));
 		ySocket.addDataListener(bytes -> {
 			System.out.println("收到返回信息：" + Arrays.toString(bytes));
-			byte[] re = new byte[bytes.length - 10];
-			System.arraycopy(bytes, 10, re, 0, re.length);
-			String s = new String(re);
-			System.out.println("收到返回信息：" + s);
 		});
+
 		//设置读取方法
 		ySocket.setInputStreamReadListener(inputStream -> {
 			//读取协议头
@@ -64,6 +63,41 @@ import java.util.List;
 			return bytes3;
 		});
 		ySocket.start();
+
+	//start或者reStart
+    fun start() {
+        //创建实例
+        YSocket.getInstance(Constants.IP, Constants.PORT.toInt())
+        //断开已有的连接
+        YSocket.getInstance().closeConnect()
+        //设置心跳内容
+        YSocket.getInstance().setHearBytes(getHearBytes())
+        //清空状态连接监听
+        YSocket.getInstance().clearConnectListener()
+        //清空返回消息监听
+        YSocket.getInstance().clearDataListener()
+        //设置读取方法
+        YSocket.getInstance().setInputStreamReadListener(inputStreamReadListener)
+        //添加状态连接监听
+        YSocket.getInstance().addConnectListener(stateListener)
+        //添加返回消息监听
+        YSocket.getInstance().addDataListener(dataListener)
+        //不显示日志
+        YSocket.getInstance().setShowLog(false)
+        //开始运行
+        YSocket.getInstance().start()
+    }
+
+    fun send(json:String) {
+        val heartMessage = Message(0)
+        heartMessage.data = json
+        YSocketAndroid.getInstance().send(heartMessage.getyBytes(),null)
+    }
+
+    fun onDestroy() {
+        //退出APP
+        YSocketAndroid.getInstance().exit()
+    }
 */
 
 @SuppressWarnings("WeakerAccess")
@@ -82,6 +116,7 @@ public class YSocket {
     protected int CheckConnectTime = 1000 * 3;// 检查连接时间
     protected boolean showLog = true;// 显示日志
     protected InputStreamReadListener inputStreamReadListener;//读取InputStream接口
+    private Object handler;
 
     /**
      * 构造函数
@@ -92,6 +127,44 @@ public class YSocket {
     public YSocket(String ip, int port) {
         this.ip = ip;
         this.port = port;
+        //如果是能找到Handler对象，说明是安卓
+        try {
+            Class.forName("android.os.Handler");
+            handler = new Handler();
+        } catch (Exception ignored) {
+        }
+    }
+
+    private static volatile YSocket instance;
+
+    /**
+     * 单例模式，调用此方法前必须先调用getInstance(String ip, int port)
+     */
+    public static synchronized YSocket getInstance() {
+        if (instance == null) {
+            synchronized (YSocket.class) {
+                if (instance == null) {
+                    instance = new YSocket(null, 0);
+                }
+            }
+        }
+        return instance;
+    }
+
+    /**
+     * 单例模式
+     */
+    public static YSocket getInstance(String ip, int port) {
+        if (instance == null) {
+            synchronized (YSocket.class) {
+                if (instance == null) {
+                    instance = new YSocket(ip, port);
+                }
+            }
+        }
+        instance.setIp(ip);
+        instance.setPort(port);
+        return instance;
     }
 
     /**
@@ -445,8 +518,17 @@ public class YSocket {
                 Thread thread = new Thread(() -> {
                     try {
                         for (DataListener dataListener : dataListeners) {
-                            if (dataListener != null)
-                                dataListener.data(bytes);
+                            if (handler != null && handler instanceof Handler) {
+                                ((Handler) handler).post(() -> {
+                                    if (dataListener != null) {
+                                        dataListener.data(bytes);
+                                    }
+                                });
+                            } else {
+                                if (dataListener != null) {
+                                    dataListener.data(bytes);
+                                }
+                            }
                         }
                     } catch (Exception e) {
                         printLog("错误：" + e.getMessage());
@@ -468,7 +550,13 @@ public class YSocket {
         if (stateListener != null) {
             Thread thread = new Thread(() -> {
                 try {
-                    stateListener.isSuccess(status);
+                    if (handler != null && handler instanceof Handler) {
+                        ((Handler) handler).post(() -> {
+                            stateListener.isSuccess(status);
+                        });
+                    } else {
+                        stateListener.isSuccess(status);
+                    }
                 } catch (Exception e) {
                     printLog("错误：" + e.getMessage());
                     e.printStackTrace();
@@ -478,6 +566,8 @@ public class YSocket {
             });
             YThreadPool.add(thread);
         }
+
+
     }
 
     /**

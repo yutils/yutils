@@ -1,5 +1,8 @@
 package com.yujing.utils;
 
+import android.app.Activity;
+import android.os.Handler;
+
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 /**
@@ -8,6 +11,13 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
  * @author yujing 2019年2月15日17:23:15
  */
 @SuppressWarnings({"unused", "WeakerAccess"})
+/* 用法举例
+val yQueue=YQueue()
+//每秒最多赋值一次你好
+yQueue.run(1000) { text.text ="你好1" }
+yQueue.run(1000) { text.text ="你好2" }
+yQueue.run(1000) { text.text ="你好3" }
+ */
 public class YQueue {
     /**
      * 线程队列同时最多运行个数
@@ -17,36 +27,72 @@ public class YQueue {
 
     /**
      * 运行
+     *
      * @param time 时间毫秒
      * @param qRun 回调
      */
+    @SuppressWarnings({"UnclearExpression", "ConditionCoveredByFurtherCondition", "ConstantConditions"})
     public void run(final int time, final QRun qRun) {
+        Object handler = null;
+        //如果是能找到Handler对象，说明是安卓
+        try {
+            Class.forName("android.os.Handler");
+            handler = new Handler();
+        } catch (Exception ignored) {
+        }
+        Object finalHandler = handler;
         Thread thread = new Thread(() -> {
             try {
-                qRun.queueRun();
+                if (finalHandler != null && finalHandler instanceof Handler) {
+                    ((Handler) finalHandler).post(qRun::queueRun);
+                } else {
+                    qRun.queueRun();
+                }
+                Thread.sleep(time);
+            } catch (InterruptedException ignored) {
+            }
+        });
+        add(thread);
+    }
+
+    /**
+     * 运行
+     *
+     * @param activity activity
+     * @param time     时间毫秒
+     * @param qRun     回调
+     */
+    public void run(final Activity activity, final int time, final QRun qRun) {
+        Thread thread = new Thread(() -> {
+            try {
+                activity.runOnUiThread(() -> {
+                    if (activity.isDestroyed())
+                        return;
+                    qRun.queueRun();
+                });
                 Thread.sleep(time);
             } catch (InterruptedException ignored) {
             } finally {
                 shutdown();
             }
-
         });
         add(thread);
     }
 
     /**
      * 把一个线程扔进线程池
-     * @param thread 线程
+     *
+     * @param runnable 线程
      */
-    public void add(Thread thread) {
+    private void add(Runnable runnable) {
         synchronized (sTEP) {
             if (sTEP.isShutdown()) {
                 sTEP = new ScheduledThreadPoolExecutor(threadNum);
                 synchronized (sTEP) {
-                    sTEP.execute(thread);
+                    sTEP.execute(runnable);
                 }
             } else {
-                sTEP.execute(thread);
+                sTEP.execute(runnable);
             }
         }
     }
@@ -74,5 +120,13 @@ public class YQueue {
      */
     public interface QRun {
         void queueRun();
+    }
+
+    /**
+     * 退出释放线程
+     */
+    public void onDestroy() {
+        shutdown();
+        stopAll();
     }
 }

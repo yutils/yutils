@@ -19,7 +19,25 @@ import android.widget.LinearLayout;
 
 /**
  * 图片显示对话框
- * @author yujing 2020年3月21日18:23:58
+ * @author yujing 2020年9月6日21:07:18
+ */
+/*用法举例
+
+YImageDialog.show( activity, bitmap, true)
+
+或者:
+YImageDialog yDialog = new YImageDialog(RunPretestActivity.this);
+yDialog.setBitmap(bitmap);
+yDialog.setCancelable(true);
+yDialog.show();
+
+或者：
+YImageDialog yDialog = new YImageDialog(RunPretestActivity.this);
+yDialog.show();
+RequestOptions options = new RequestOptions();
+options.placeholder(R.mipmap.add_img);
+options.error(R.mipmap.add_img);
+Glide.with(RunPretestActivity.this).load(getUrl()).apply(options).into(yDialog.getImageView());
  */
 @SuppressWarnings({"unused"})
 public class YImageDialog extends Dialog {
@@ -155,6 +173,10 @@ public class YImageDialog extends Dialog {
         yDialog.setDrawable(drawable);
         yDialog.setCancelable(cancelable);
         yDialog.show();
+    }
+
+    public ImageView getImageView() {
+        return imageView;
     }
 
     /**

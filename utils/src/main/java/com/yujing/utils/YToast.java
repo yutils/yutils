@@ -13,7 +13,7 @@ import android.widget.Toast;
 @SuppressWarnings("unused")
 public class YToast {
     private static Toast toast;
-    private static YQueueAndroid yQueueAndroid;
+    private static  YQueue yQueue;
     private static volatile int queueTime = 500;//队列显示一条toast至少显示这么长时间
     /**
      * 多条toast同时过来，只显示最后一条，显示时间为LENGTH_SHORT
@@ -61,10 +61,10 @@ public class YToast {
             toast = Toast.makeText(context, text, Toast.LENGTH_SHORT);
             toast.show();
         } else {
-            if (yQueueAndroid == null) {
-                yQueueAndroid = new YQueueAndroid();
+            if (yQueue == null) {
+                yQueue = new YQueue();
             }
-            yQueueAndroid.run(queueTime, () -> show(context, text));
+            yQueue.run(queueTime, () -> show(context, text));
         }
     }
 
@@ -80,10 +80,10 @@ public class YToast {
             toast = Toast.makeText(context, text, Toast.LENGTH_LONG);
             toast.show();
         } else {
-            if (yQueueAndroid == null) {
-                yQueueAndroid = new YQueueAndroid();
+            if (yQueue == null) {
+                yQueue = new YQueue();
             }
-            yQueueAndroid.run(queueTime, () -> showLong(context, text));
+            yQueue.run(queueTime, () -> showLong(context, text));
         }
     }
 

@@ -1,5 +1,8 @@
 package com.yujing.utils;
 
+import android.app.Activity;
+import android.util.Log;
+
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
@@ -8,9 +11,13 @@ import java.util.Map;
  * 循环调用某一个类中的某一个方法
  * 被调用的方法需要用public修辞，而且被调用的方法没有形参和返回值
  *
- * @author yujing 2019年1月8日10:20:40
+ * @author yujing 2020年9月6日21:09:28
  */
 @SuppressWarnings({"unused", "WeakerAccess"})
+/* 用法举例
+//每秒调用一次run方法，run不能为private，不能有参数
+YLoop.start(this,"run",1000);
+ */
 public class YLoop {
     // 记录哪些类的哪些方法正在被调用
     private static final Map<String, Boolean> MethodStatus = new HashMap<>();
@@ -53,11 +60,29 @@ public class YLoop {
                     while (MethodStatus.get(sign) != null && MethodStatus.get(sign)) {
                         try {
                             // 判断循环次数是否到了。循环次数，cycleNum小于等于0就无线循环，否者循环自定次数
-                            if (cycleNum > 0 && num <= 0) {
+                            if (cycleNum > 0 && num <= 0)
                                 break;
-                            }
                             num--;// 循环次数减1
-                            method.invoke(obj);
+                            try {
+                                Class.forName("android.app.Activity");
+                                if (obj instanceof Activity) {
+                                    Activity activity = (Activity) obj;
+                                    if (activity.isDestroyed()) {
+                                        break;
+                                    }
+                                    activity.runOnUiThread(() -> {
+                                        try {
+                                            method.invoke(obj);
+                                        } catch (Exception e) {
+                                            Log.e("YLoopAndroid", "调用 method.invoke(obj) 时发生异常", e);
+                                        }
+                                    });
+                                } else {
+                                    method.invoke(obj);
+                                }
+                            } catch (Exception ignored) {
+                                method.invoke(obj);
+                            }
                             Thread.sleep(interval);
                         } catch (Exception e) {
                             e.printStackTrace();
