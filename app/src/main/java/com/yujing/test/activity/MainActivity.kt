@@ -35,11 +35,10 @@ class MainActivity : BaseActivity() {
         button7.text = "测试"
 
         val yQueue=YQueue()
-
+        var i=0
         button7.setOnClickListener {
-            yQueue.run(1000) { text4.text ="你好" }
+            yQueue.run(1000) { text4.text ="你好${i++}" }
         }
-
         button8.text = "测试"
         button8.setOnClickListener {
 
@@ -70,10 +69,6 @@ class MainActivity : BaseActivity() {
         }
         yInstallApk = YInstallApk(this)
         YPermissions.requestAll(this)
-    }
-    var i=0;
-    fun loop() {
-        text4.text="当前：${i++}"
     }
     private var yNoticeDownload: YNoticeDownload? = null
     private fun download() {
