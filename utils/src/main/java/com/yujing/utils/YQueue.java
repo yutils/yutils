@@ -28,11 +28,11 @@ public class YQueue {
     /**
      * 运行
      *
-     * @param time 时间毫秒
-     * @param qRun 回调
+     * @param time     时间毫秒
+     * @param runnable 回调
      */
     @SuppressWarnings({"UnclearExpression", "ConditionCoveredByFurtherCondition", "ConstantConditions"})
-    public void run(final int time, final QRun qRun) {
+    public void run(final int time, final Runnable runnable) {
         Object handler = null;
         //如果是能找到Handler对象，说明是安卓
         try {
@@ -44,9 +44,9 @@ public class YQueue {
         Thread thread = new Thread(() -> {
             try {
                 if (finalHandler != null && finalHandler instanceof Handler) {
-                    ((Handler) finalHandler).post(qRun::queueRun);
+                    ((Handler) finalHandler).post(runnable);
                 } else {
-                    qRun.queueRun();
+                    runnable.run();
                 }
                 Thread.sleep(time);
             } catch (InterruptedException ignored) {
@@ -60,15 +60,14 @@ public class YQueue {
      *
      * @param activity activity
      * @param time     时间毫秒
-     * @param qRun     回调
+     * @param runnable 回调
      */
-    public void run(final Activity activity, final int time, final QRun qRun) {
+    public void run(final Activity activity, final int time, final Runnable runnable) {
         Thread thread = new Thread(() -> {
             try {
                 activity.runOnUiThread(() -> {
-                    if (activity.isDestroyed())
-                        return;
-                    qRun.queueRun();
+                    if (activity.isDestroyed()) return;
+                    runnable.run();
                 });
                 Thread.sleep(time);
             } catch (InterruptedException ignored) {
@@ -113,13 +112,6 @@ public class YQueue {
             if (!sTEP.isShutdown())
                 sTEP.shutdown();
         }
-    }
-
-    /**
-     * 延时运行接口
-     */
-    public interface QRun {
-        void queueRun();
     }
 
     /**

@@ -54,7 +54,6 @@ public class YLoop {
             MethodStatus.put(sign, true);// 记录该方法被启用
             Thread thread = new Thread(new Runnable() {
                 int num = cycleNum;// 倒计时剩下执行次数
-
                 @Override
                 public void run() {
                     while (MethodStatus.get(sign) != null && MethodStatus.get(sign)) {

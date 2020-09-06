@@ -22,11 +22,11 @@ public class YDelay {
     /**
      * 延时运行
      *
-     * @param time 时间毫秒
-     * @param dRun 回调
+     * @param time     时间毫秒
+     * @param runnable 回调
      */
     @SuppressWarnings({"UnclearExpression", "ConditionCoveredByFurtherCondition", "ConstantConditions"})
-    public static void run(final int time, final DRun dRun) {
+    public static void run(final int time, final Runnable runnable) {
         Object handler = null;
         //如果是能找到Handler对象，说明是安卓
         try {
@@ -39,13 +39,12 @@ public class YDelay {
             try {
                 Thread.sleep(time);
                 if (finalHandler != null && finalHandler instanceof Handler) {
-                    ((Handler) finalHandler).post(dRun::delayedRun);
+                    ((Handler) finalHandler).post(runnable);
                 } else {
-                    dRun.delayedRun();
+                    runnable.run();
                 }
             } catch (InterruptedException ignored) {
             }
-
         }).start();
     }
 
@@ -54,9 +53,9 @@ public class YDelay {
      *
      * @param activity activity
      * @param time     时间毫秒
-     * @param dRun     回调
+     * @param runnable 回调
      */
-    public static void run(final Activity activity, final int time, final DRun dRun) {
+    public static void run(final Activity activity, final int time, final Runnable runnable) {
         new Thread(() -> {
             try {
                 Thread.sleep(time);
@@ -64,16 +63,9 @@ public class YDelay {
             }
             activity.runOnUiThread(() -> {
                 if (activity.isDestroyed()) return;
-                dRun.delayedRun();
+                runnable.run();
             });
         }).start();
-    }
-
-    /**
-     * 延时运行接口
-     */
-    public interface DRun {
-        void delayedRun();
     }
 }
 
