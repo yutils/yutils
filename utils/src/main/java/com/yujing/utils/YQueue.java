@@ -23,7 +23,7 @@ public class YQueue {
      * 线程队列同时最多运行个数
      */
     private static volatile int threadNum = 1;
-    private static ScheduledThreadPoolExecutor sTEP = new ScheduledThreadPoolExecutor(threadNum);
+    private ScheduledThreadPoolExecutor sTEP = new ScheduledThreadPoolExecutor(threadNum);
 
     /**
      * 运行
