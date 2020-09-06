@@ -976,6 +976,9 @@ public class YUtils {
         }
     }
 
+    /**
+     * 退出APP
+     */
     public static void exit() {
         YThreadPool.stopAll();
         android.os.Process.killProcess(android.os.Process.myPid());
