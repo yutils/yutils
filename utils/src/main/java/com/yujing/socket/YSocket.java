@@ -25,7 +25,7 @@ import java.util.List;
  * 连接线程：连接线程每一定时间根据（connect）检查一连接，如果连接断开就重新连接，更新socket，并通知连接状态。
  *
  * @author YuJing
- * @version 1.2 2020年5月18日13:51:14
+ * @version 1.3 2020年9月7日10:16:34
  */
 
 /*
