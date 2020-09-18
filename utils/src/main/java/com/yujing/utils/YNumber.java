@@ -32,7 +32,6 @@ public class YNumber {
         return Pattern.matches(DOUBLE, decimals);
     }
 
-
     //保留小数
     public synchronized static double round(double value, int scale, int roundingMode) {
         BigDecimal bd = new BigDecimal(value);
@@ -144,12 +143,12 @@ public class YNumber {
     }
 
     //不显示科学计数，默认2位小数，不够的填充0
-    public synchronized static String showFill0(double d) {
-        return showFill0(d, 2);
+    public synchronized static String fill(double d) {
+        return fill(d, 2);
     }
 
     //不显示科学计数，不够的填充0
-    public synchronized static String showFill0(double d, int scale) {
+    public synchronized static String fill(double d, int scale) {
         StringBuilder mat = new StringBuilder("0");
         if (scale > 0) {
             mat.append(".");
