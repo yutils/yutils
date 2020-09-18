@@ -33,7 +33,21 @@ public class YMoneyToCN {
     /**
      * 特殊字符：零元整
      */
-    private static final String CN_ZEOR_FULL = "零元" + CN_FULL;
+    private static final String CN_ZERO_FULL = "零元" + CN_FULL;
+
+    /**
+     * 把输入的金额转换为汉语中人民币的大写
+     */
+    public static String number2CN(float numberOfMoney) {
+        return number2CN(BigDecimal.valueOf(numberOfMoney));
+    }
+
+    /**
+     * 把输入的金额转换为汉语中人民币的大写
+     */
+    public static String number2CN(double numberOfMoney) {
+        return number2CN(BigDecimal.valueOf(numberOfMoney));
+    }
 
     /**
      * 把输入的金额转换为汉语中人民币的大写
@@ -41,14 +55,14 @@ public class YMoneyToCN {
      * @param numberOfMoney 输入的金额
      * @return 对应的汉语大写
      */
-    public static String number2CNMontrayUnit(BigDecimal numberOfMoney) {
+    public static String number2CN(BigDecimal numberOfMoney) {
         StringBuilder sb = new StringBuilder();
         // -1, 0, or 1 as the value of this BigDecimal is negative, zero, or
         // positive.
-        int signum = numberOfMoney.signum();
+        int sigNum = numberOfMoney.signum();
         // 零元整的情况
-        if (signum == 0) {
-            return CN_ZEOR_FULL;
+        if (sigNum == 0) {
+            return CN_ZERO_FULL;
         }
         // 这里会进行金额的四舍五入
         long number = numberOfMoney.movePointRight(MONEY_PRECISION).setScale(0, 4).abs().longValue();
@@ -100,7 +114,7 @@ public class YMoneyToCN {
             ++numIndex;
         }
         // 如果signum == -1，则说明输入的数字为负数，就在最前面追加特殊字符：负
-        if (signum == -1) {
+        if (sigNum == -1) {
             sb.insert(0, CN_NEGATIVE);
         }
         // 输入的数字小数点后两位为"00"的情况，则要在最后追加特殊字符：整
@@ -109,11 +123,12 @@ public class YMoneyToCN {
         }
         return sb.toString();
     }
+
     //测试
     public static void TEST() {
         double money = 2020004.01;
         BigDecimal numberOfMoney = new BigDecimal(money);
-        String s = YMoneyToCN.number2CNMontrayUnit(numberOfMoney);
+        String s = YMoneyToCN.number2CN(numberOfMoney);
         System.out.println("你输入的金额为：【" + money + "】   #--# [" + s + "]");
     }
 }

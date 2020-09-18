@@ -144,12 +144,12 @@ public class YNumber {
     }
 
     //不显示科学计数，默认2位小数，不够的填充0
-    public synchronized static String showNumber0(double d) {
-        return showNumber0(d, 2);
+    public synchronized static String showFill0(double d) {
+        return showFill0(d, 2);
     }
 
     //不显示科学计数，不够的填充0
-    public synchronized static String showNumber0(double d, int scale) {
+    public synchronized static String showFill0(double d, int scale) {
         StringBuilder mat = new StringBuilder("0");
         if (scale > 0) {
             mat.append(".");

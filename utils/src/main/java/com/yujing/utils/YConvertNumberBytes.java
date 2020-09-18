@@ -7,7 +7,7 @@ package com.yujing.utils;
  * char、int、float、double和 byte[] 数组之间的转换关系还需继续研究实现。
  */
 @SuppressWarnings("unused")
-public class YConvertBytes {
+public class YConvertNumberBytes {
 
     /**
      * long 和 网络字节序的 byte[] 数组之间的转换

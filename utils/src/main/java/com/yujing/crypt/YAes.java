@@ -24,11 +24,38 @@ import javax.crypto.spec.SecretKeySpec;
  * Aes128 加密解密
  * @author yujing 2020年9月17日18:59:38
  */
+/* 使用方法
+// AES CBC 加密
+    byte[] en = YAes.encryptCBC("余静".getBytes(), "123456".getBytes(), "8516144119920625");
+    byte[] dec = YAes.decryptCBC(en, "123456".getBytes(), "8516144119920625");
+    System.out.println("加密后：" + YBase64.encode(en));
+    System.out.println("解密：" + new String(dec));
+
+// AES ECB 加密
+    byte[] en = YAes.encryptECB("余静".getBytes(), "123456".getBytes());
+    byte[] dec = YAes.decryptECB(en, "123456".getBytes());
+    System.out.println("加密后：" + YBase64.encode(en));
+    System.out.println("解密：" + new String(dec));
+
+// AES ECB 加密
+    String en = YAes.encryptToBase64("余静", "123456");
+    String dec = YAes.decryptFromBase64(en, "123456");
+    System.out.println("加密后：" + en);
+    System.out.println("解密：" + dec);
+
+// AES 生成KEY 加密
+    Key key = YAes.createKey();
+    byte[] en = YAes.encrypt("余静".getBytes(), key);
+    byte[] dec = YAes.decrypt(en, key);
+    System.out.println("加密后：" + YBase64.encode(en));
+    System.out.println("解密：" + new String(dec));
+ */
 @SuppressWarnings("unused")
 public class YAes {
     private static final String AES = "AES";
-    private static final String AES_CBC_Padding = "AES/CBC/PKCS5Padding";
-    private static final String AES_ECB_Padding = "AES/ECB/PKCS5Padding";
+    public static String AES_CBC_Padding = "AES/CBC/PKCS5Padding";
+    public static String AES_ECB_Padding = "AES/ECB/PKCS5Padding";// C# 不支持PKCS5，通用填充只有NoPadding和 "AES/ECB/ISO10126Padding";
+
     /**
      * 创建一个随机秘钥
      *
