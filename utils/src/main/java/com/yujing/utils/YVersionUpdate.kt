@@ -156,7 +156,10 @@ class YVersionUpdate(
                     val progress = (10000.0 * downloadSize / fileSize).toInt() / 100.0 //下载进度，保留2位小数
                     YShow.setMessage("下载进度:${YNumber.fill(progress)}%")
                     YShow.setMessageOther(
-                        if (downloadSize > 1048576) "已下载:" + YNumber.fill(downloadSize / 1048576.0, 2) + "MB"
+                        if (downloadSize > 1048576) "已下载:" + YNumber.fill(
+                            downloadSize / 1048576.0,
+                            2
+                        ) + "MB"
                         else "已下载:" + downloadSize / 1024 + "KB"
                     )
                 } else YShow.finish()
