@@ -26,6 +26,7 @@ import javax.crypto.spec.SecretKeySpec;
  */
 /* 使用方法
 // AES CBC 加密
+    YAes.AES_ECB_Padding="AES/ECB/ISO10126Padding";
     byte[] en = YAes.encryptCBC("余静".getBytes(), "123456".getBytes(), "8516144119920625");
     byte[] dec = YAes.decryptCBC(en, "123456".getBytes(), "8516144119920625");
     System.out.println("加密后：" + YBase64.encode(en));

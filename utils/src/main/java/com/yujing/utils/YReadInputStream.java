@@ -1,13 +1,16 @@
 package com.yujing.utils;
+
 import android.util.Log;
+
 import com.yujing.contract.YListener1;
+
 import java.io.IOException;
 import java.io.InputStream;
 
 /**
  * 读取InputStream
  *
- * @author yujing 2020年9月2日17:17:00
+ * @author yujing 2020年9月22日17:27:55
  */
 
 public class YReadInputStream {
@@ -20,6 +23,7 @@ public class YReadInputStream {
     private int maxGroupPackageTime = 1;//组包时间差，毫秒
     private int readLength = -1;//读取长度
     private int readTimeout = -1;//读取超时时间
+    private boolean noDataNotReturn = true;//无数据不返回
 
     public YReadInputStream(InputStream inputStream, YListener1<byte[]> readListener) {
         this.inputStream = inputStream;
@@ -56,11 +60,9 @@ public class YReadInputStream {
                     }
                     try {
                         if (readListener != null) {
-                            if (!autoPackage && readTimeout > 0 && readLength > 0) {
-                                readListener.value(read(inputStream, readTimeout, readLength).getBytes());
-                            } else {
-                                readListener.value(read(inputStream, maxGroupPackageTime).getBytes());
-                            }
+                            byte[] bytes = (!autoPackage && readTimeout > 0 && readLength > 0) ? read(inputStream, readTimeout, readLength).getBytes() : read(inputStream, maxGroupPackageTime).getBytes();
+                            //无数据不返回
+                            if (!noDataNotReturn || bytes.length != 0) readListener.value(bytes);
                         }
                     } catch (Exception e) {
                         log("读取线程异常", e);
@@ -112,6 +114,13 @@ public class YReadInputStream {
         this.autoPackage = autoPackage;
     }
 
+    public boolean isNoDataNotReturn() {
+        return noDataNotReturn;
+    }
+
+    public void setNoDataNotReturn(boolean noDataNotReturn) {
+        this.noDataNotReturn = noDataNotReturn;
+    }
     //★★★★★★★★★★★★★★★★★★★★★★★★★★★★★读流操作★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
 
     /**
