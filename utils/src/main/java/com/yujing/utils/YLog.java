@@ -13,7 +13,12 @@ import java.util.List;
  * 清理某个时间点之前的日志
  * @author yujing 2020年10月12日17:06:15
  */
-
+/* 用法
+    //保存日志开
+    YLog.saveOpen(YPath.getFilePath(this,"log"))
+    //保存最近30天日志
+    YLog.delDaysAgo(30)
+ */
 @SuppressWarnings({"unused", "FieldCanBeLocal", "WeakerAccess"})
 public class YLog {
     private static SimpleDateFormat formatDate = new SimpleDateFormat("yyyy-MM-dd");

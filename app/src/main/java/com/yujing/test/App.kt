@@ -32,7 +32,9 @@ class App : Application() {
         YCrash.getInstance().init(this)
         YCrash.getInstance().appName = "AppName"
         registerActivityLifecycleCallbacks(YActivityUtil.getActivityLifecycleCallbacks())
+        //保存日志开
         YLog.saveOpen(YPath.getFilePath(this,"log"))
-        YLog.delDaysAgo(7)
+        //保存最近30天日志
+        YLog.delDaysAgo(30)
     }
 }
