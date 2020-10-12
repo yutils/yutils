@@ -114,7 +114,7 @@ public class YLog {
 
     //如 save("路径",“v”,“错误”,“网络异常”);
     public static void save(String path, String type, String tag, String msg) {
-        String saveString = formatTime.format(new Date()) + "\t" + type + "\t" + (TAG.equals(tag) ? "log" : TAG) + ":" + msg + "\n";
+        String saveString = formatTime.format(new Date()) + "\t" + type + "\t" + (TAG.equals(tag) ? "log" : tag) + ":" + msg + "\n";
         YFileUtil.addStringToFile(new File(path), saveString);
     }
 
