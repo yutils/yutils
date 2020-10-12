@@ -6,6 +6,8 @@ import android.net.Uri
 import com.yujing.test.R
 import com.yujing.test.base.BaseActivity
 import com.yujing.utils.*
+import com.yutils.http.YHttp
+import com.yutils.http.contract.YHttpListener
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
 
@@ -19,29 +21,46 @@ class MainActivity : BaseActivity() {
         get() = R.layout.activity_main
 
     override fun init() {
+        YLog.i("启动成功")
         //var a=findViewById<Button>(R.id.button1)
         button1.text = "拍照"
-        button1.setOnClickListener { yPicture.gotoCamera(this) }
+        button1.setOnClickListener {
+            YLog.v("事件","拍照")
+            yPicture.gotoCamera(this)
+        }
         button2.text = "相册"
-        button2.setOnClickListener { yPicture.gotoAlbum(this) }
+        button2.setOnClickListener {
+            YLog.i("点击","相册");
+            yPicture.gotoAlbum(this) }
         button3.text = "剪切"
-        button3.setOnClickListener { uri?.let { yPicture.gotoCrop(this, uri, 400, 400) } }
+        button3.setOnClickListener {
+            uri?.let { yPicture.gotoCrop(this, uri, 400, 400) } }
         button4.text = "Date测试"
-        button4.setOnClickListener { openDate() }
+        button4.setOnClickListener {
+            openDate() }
         button5.text = "通知栏下载"
         button5.setOnClickListener { download() }
         button6.text = "App更新"
         button6.setOnClickListener { update() }
-        button7.text = "测试"
-
-        val yQueue=YQueue()
-        var i=0
+        button7.text = "队列"
+        val yQueue = YQueue()
+        var i = 0
         button7.setOnClickListener {
-            yQueue.run(1000) { text4.text ="你好${i++}" }
+            yQueue.run(1000) { text4.text = "你好${i++}" }
         }
-        button8.text = "测试"
-        button8.setOnClickListener {
 
+        button8.text = "百度"
+        button8.setOnClickListener {
+            val url = "https://www.baidu.com"
+            YHttp.create().get(url, object : YHttpListener {
+                override fun success(bytes: ByteArray, value: String) {
+                    YLog.i("网络请求",value)
+                    YLog.save("yujing","测试","保存这条数据")
+                }
+                override fun fail(value: String) {
+
+                }
+            })
         }
 
         yPicture.setPictureFromCameraListener { uri, file, Flag ->
@@ -70,6 +89,7 @@ class MainActivity : BaseActivity() {
         yInstallApk = YInstallApk(this)
         YPermissions.requestAll(this)
     }
+
     private var yNoticeDownload: YNoticeDownload? = null
     private fun download() {
         val url = "https://down.qq.com/qqweb/QQ_1/android_apk/AndroidQQ_8.4.5.4745_537065283.apk"
@@ -78,6 +98,7 @@ class MainActivity : BaseActivity() {
         yNoticeDownload?.setDownLoadFail { show("下载失败") }
         yNoticeDownload?.setDownLoadComplete { uri, file ->
             show("下载完成")
+            YLog.i("下载完成");
             yInstallApk?.install(file.path)
         }
         yNoticeDownload?.setDownLoadProgress { downloadSize, fileSize ->

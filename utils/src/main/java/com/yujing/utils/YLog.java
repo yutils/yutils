@@ -2,17 +2,26 @@ package com.yujing.utils;
 
 import android.util.Log;
 
-import java.util.ArrayList;
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 /**
  * LOG显示类，解决AndroidStudio的logcat显示超长字符串的问题
- *
- * @author yujing 2020年4月28日14:59:59
+ * 保存日志到本地文件夹
+ * 清理某个时间点之前的日志
+ * @author yujing 2020年10月12日17:06:15
  */
 
 @SuppressWarnings({"unused", "FieldCanBeLocal", "WeakerAccess"})
 public class YLog {
+    private static SimpleDateFormat formatDate = new SimpleDateFormat("yyyy-MM-dd");
+    private static SimpleDateFormat formatTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+    //是否保存日志
+    private static boolean isSave = false;
+    //保存日志目录
+    private static String saveLogDir;
     //规定每段显示的长度
     private static int LOG_MAX_LENGTH = 4000;
     private static String TAG = "YLog";
@@ -98,6 +107,72 @@ public class YLog {
         d(TAG, YUtils.jsonFormat(str));
     }
 
+    //如 save("路径",“v”,“错误”,“网络异常”);
+    public static void save(String path, String type, String TAG, String msg) {
+        String saveString = formatTime.format(new Date()) + "\t" + type + "\t" + ("TAG".equals(TAG) ? "log" : TAG) + ":" + msg + "\n";
+        YFileUtil.addStringToFile(new File(path), saveString);
+    }
+
+    public static void save(String type, String TAG, String msg) {
+        if (saveLogDir == null) return;
+        save(saveLogDir + "/" + formatDate.format(new Date()) + ".log", type, TAG, msg);
+    }
+
+    /**
+     * 打开日志本地保存
+     *
+     * @param dir 路径，建议context.getExternalFilesDir(dir).getAbsolutePath();
+     */
+    public static void saveOpen(String dir) {
+        isSave = true;
+        saveLogDir = dir;
+    }
+
+    /**
+     * 关闭日志本地保存
+     */
+    public static void saveClose() {
+        isSave = false;
+        saveLogDir = null;
+    }
+
+    /**
+     * 删除几天前日志
+     */
+    public static void delDaysAgo(int daysAgo) {
+        if (saveLogDir == null) return;
+        List<File> files = YFileUtil.getFileAll(new File(saveLogDir));
+        for (File item : files) {
+            int index = item.getName().lastIndexOf(".log");
+            if (index == -1) continue;
+            String date = item.getName().substring(0, index);
+            try {
+                long time = formatDate.parse(date).getTime();
+                if (time + (1000 * 60 * 60 * 24) * daysAgo < (new Date().getTime())) {
+                    Log.i("清理日志", item.getPath());
+                    del(date);
+                }
+            } catch (Exception e) {
+            }
+        }
+    }
+
+    /**
+     * 删除日志
+     */
+    public static void del(String date) {
+        if (saveLogDir == null) return;
+        YFileUtil.delFile(saveLogDir + "/" + date + ".log");
+    }
+
+    /**
+     * 删除全部日志
+     */
+    public static void delAll() {
+        if (saveLogDir == null) return;
+        YFileUtil.delFile(saveLogDir);
+    }
+
     /**
      * 打印日志
      *
@@ -122,6 +197,18 @@ public class YLog {
             else if (type == ERROR)
                 Log.e(tag, item.toString(), tr);
             i++;
+        }
+        if (isSave) {
+            if (type == VERBOSE)
+                save("v", TAG, msg);
+            else if (type == DEBUG)
+                save("d", TAG, msg);
+            else if (type == INFO)
+                save("i", TAG, msg);
+            else if (type == WARN)
+                save("w", TAG, msg);
+            else if (type == ERROR)
+                save("e", TAG, msg);
         }
     }
 

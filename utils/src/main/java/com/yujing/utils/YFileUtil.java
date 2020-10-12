@@ -14,6 +14,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.RandomAccessFile;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
@@ -65,7 +66,7 @@ public class YFileUtil {
      * bytes转file
      *
      * @param bytes byte[]
-     * @param file  转出后的String
+     * @param file  文件
      * @return 是否成功
      */
     public static boolean byteToFile(byte[] bytes, File file) {
@@ -109,6 +110,44 @@ public class YFileUtil {
         }
         return null;
     }
+
+    /**
+     * 添加字符串到文件末尾
+     *
+     * @param file  文件
+     * @param str 字符串
+     * @return 是否成功
+     */
+    public static boolean addStringToFile(File file, String str) {
+        return addByteToFile(file,str.getBytes());
+    }
+
+    /**
+     * 添加bytes到文件末尾
+     *
+     * @param file  文件
+     * @param bytes byte[]
+     * @return 是否成功
+     */
+    public static boolean addByteToFile(File file, byte[] bytes) {
+        try {
+            if (!Objects.requireNonNull(file.getParentFile()).exists()) // 如果位置不存在
+                file.getParentFile().mkdirs();
+            // 打开一个随机访问文件流，按读写方式
+            RandomAccessFile randomFile = new RandomAccessFile(file, "rw");
+            // 文件长度，字节数
+            long fileLength = randomFile.length();
+            // 将写文件指针移到文件尾。
+            randomFile.seek(fileLength);
+            randomFile.write(bytes);
+            randomFile.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
 
     /**
      * 删除文件或文件夹
