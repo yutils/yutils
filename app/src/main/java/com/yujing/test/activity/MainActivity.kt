@@ -21,23 +21,33 @@ class MainActivity : BaseActivity() {
         get() = R.layout.activity_main
 
     override fun init() {
+        YLog.setLogListener { type, tag, msg ->
+            show("卧槽，$msg")
+            if (tag == "啊啊")
+                return@setLogListener false
+            true
+        }
         YLog.i("启动成功")
         //var a=findViewById<Button>(R.id.button1)
         button1.text = "拍照"
         button1.setOnClickListener {
-            YLog.v("事件","拍照")
+            YLog.v("事件", "拍照")
             yPicture.gotoCamera(this)
         }
         button2.text = "相册"
         button2.setOnClickListener {
-            YLog.i("点击","相册");
-            yPicture.gotoAlbum(this) }
+            YLog.i("点击", "相册");
+            yPicture.gotoAlbum(this)
+        }
         button3.text = "剪切"
         button3.setOnClickListener {
-            uri?.let { yPicture.gotoCrop(this, uri, 400, 400) } }
+            YLog.i("啊啊", "剪切");
+            uri?.let { yPicture.gotoCrop(this, uri, 400, 400) }
+        }
         button4.text = "Date测试"
         button4.setOnClickListener {
-            openDate() }
+            openDate()
+        }
         button5.text = "通知栏下载"
         button5.setOnClickListener { download() }
         button6.text = "App更新"
@@ -54,9 +64,10 @@ class MainActivity : BaseActivity() {
             val url = "https://www.baidu.com"
             YHttp.create().get(url, object : YHttpListener {
                 override fun success(bytes: ByteArray, value: String) {
-                    YLog.i("网络请求",value)
-                    YLog.save("yujing","测试","保存这条数据")
+                    YLog.i("网络请求", value)
+                    YLog.save("yujing", "测试", "保存这条数据")
                 }
+
                 override fun fail(value: String) {
 
                 }
