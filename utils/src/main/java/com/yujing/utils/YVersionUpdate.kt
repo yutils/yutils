@@ -146,7 +146,12 @@ class YVersionUpdate(
         YShow.show(activity, "正在下载")
         YShow.setMessageOther("请稍候...")
         YShow.setCancel(!isForceUpdate)
-        val saveApkName = downUrl.substring(downUrl.lastIndexOf("/") + 1)
+//        var saveApkName = downUrl.substring(downUrl.lastIndexOf("/") + 1)
+//        saveApkName = saveApkName
+//            .replace("*", "_").replace("#", "_").replace(":", "_").replace("?", "_")
+//            .replace("/", "_").replace("\\", "_").replace("|", "_").replace("<", "_")
+//            .replace(">", "_").replace(" ", "_")
+        val saveApkName = "update_$serverCode.apk"
         val file = File(YPath.getFilePath(activity) + "/download/" + saveApkName)
         //下载
         YHttp.create().downloadFile(downUrl, file, object :
@@ -156,10 +161,8 @@ class YVersionUpdate(
                     val progress = (10000.0 * downloadSize / fileSize).toInt() / 100.0 //下载进度，保留2位小数
                     YShow.setMessage("下载进度:${YNumber.fill(progress)}%")
                     YShow.setMessageOther(
-                        if (downloadSize > 1048576) "已下载:" + YNumber.fill(
-                            downloadSize / 1048576.0,
-                            2
-                        ) + "MB"
+                        if (downloadSize > 1048576) "已下载:" +
+                                YNumber.fill(downloadSize / 1048576.0, 2) + "MB"
                         else "已下载:" + downloadSize / 1024 + "KB"
                     )
                 } else YShow.finish()
