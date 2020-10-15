@@ -22,10 +22,7 @@ class MainActivity : BaseActivity() {
 
     override fun init() {
         YLog.setLogListener { type, tag, msg ->
-            show("卧槽，$msg")
-            if (tag == "啊啊")
-                return@setLogListener false
-            true
+            tag!= "忽略"
         }
         YLog.i("启动成功")
         //var a=findViewById<Button>(R.id.button1)

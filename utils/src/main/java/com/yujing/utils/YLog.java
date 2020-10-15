@@ -20,6 +20,9 @@ import java.util.List;
 /* 用法
     //保存日志开
     YLog.saveOpen(YPath.getFilePath(this,"log"))
+    YLog.setLogListener { type, tag, msg ->
+        tag!= "忽略"
+    }
     //保存最近30天日志
     YLog.delDaysAgo(30)
  */
@@ -142,7 +145,7 @@ public class YLog {
             boolean isSave = logListener.value(type, tag, msg);
             if (isSave)
                 save(saveLogDir + "/" + formatDate.format(new Date()) + ".log", type, tag, msg);
-        }else {
+        } else {
             save(saveLogDir + "/" + formatDate.format(new Date()) + ".log", type, tag, msg);
         }
     }
