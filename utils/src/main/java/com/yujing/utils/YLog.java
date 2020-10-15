@@ -1,6 +1,9 @@
 package com.yujing.utils;
 
+import android.annotation.SuppressLint;
 import android.util.Log;
+
+import com.yujing.contract.YLogListener;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -11,6 +14,7 @@ import java.util.List;
  * LOG显示类，解决AndroidStudio的logcat显示超长字符串的问题
  * 保存日志到本地文件夹
  * 清理某个时间点之前的日志
+ *
  * @author yujing 2020年10月12日17:06:15
  */
 /* 用法
@@ -21,7 +25,9 @@ import java.util.List;
  */
 @SuppressWarnings({"unused", "FieldCanBeLocal", "WeakerAccess"})
 public class YLog {
+    @SuppressLint("SimpleDateFormat")
     private static SimpleDateFormat formatDate = new SimpleDateFormat("yyyy-MM-dd");
+    @SuppressLint("SimpleDateFormat")
     private static SimpleDateFormat formatTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
     //是否保存日志
     private static boolean isSave = false;
@@ -29,7 +35,11 @@ public class YLog {
     private static String saveLogDir;
     //规定每段显示的长度
     private static int LOG_MAX_LENGTH = 4000;
+    //默认TAG
     private static String TAG = "YLog";
+    //日志回调监听
+    private static YLogListener logListener;
+    //类型
     private static final int VERBOSE = 2;
     private static final int DEBUG = 3;
     private static final int INFO = 4;
@@ -112,6 +122,14 @@ public class YLog {
         d(TAG, YUtils.jsonFormat(str));
     }
 
+    public static YLogListener getLogListener() {
+        return logListener;
+    }
+
+    public static void setLogListener(YLogListener logListener) {
+        YLog.logListener = logListener;
+    }
+
     //如 save("路径",“v”,“错误”,“网络异常”);
     public static void save(String path, String type, String tag, String msg) {
         String saveString = formatTime.format(new Date()) + "\t" + type + "\t" + (TAG.equals(tag) ? "log" : tag) + ":" + msg + "\n";
@@ -120,7 +138,13 @@ public class YLog {
 
     public static void save(String type, String tag, String msg) {
         if (saveLogDir == null) return;
-        save(saveLogDir + "/" + formatDate.format(new Date()) + ".log", type, tag, msg);
+        if (logListener != null) {
+            boolean isSave = logListener.value(type, tag, msg);
+            if (isSave)
+                save(saveLogDir + "/" + formatDate.format(new Date()) + ".log", type, tag, msg);
+        }else {
+            save(saveLogDir + "/" + formatDate.format(new Date()) + ".log", type, tag, msg);
+        }
     }
 
     /**
@@ -216,50 +240,4 @@ public class YLog {
                 save("e", TAG, msg);
         }
     }
-
-//    /**
-//     * 打印日志
-//     *
-//     * @param TAG  tag
-//     * @param msg  内容
-//     * @param tr   异常
-//     * @param type 类型
-//     */
-//    @Deprecated
-//    private static void println(String TAG, String msg, Throwable tr, int type) {
-//        int strLength = msg.length();
-//        int start = 0;
-//        int end = LOG_MAX_LENGTH;
-//        for (int i = 0; i < 100; i++) {
-//            //剩下的文本还是大于规定长度则继续重复截取并输出
-//            if (strLength > end) {
-//                String tag = TAG + i;
-//                if (type == VERBOSE)
-//                    Log.v(tag, msg.substring(start, end), tr);
-//                else if (type == DEBUG)
-//                    Log.d(tag, msg.substring(start, end), tr);
-//                else if (type == INFO)
-//                    Log.i(tag, msg.substring(start, end), tr);
-//                else if (type == WARN)
-//                    Log.w(tag, msg.substring(start, end), tr);
-//                else if (type == ERROR)
-//                    Log.e(tag, msg.substring(start, end), tr);
-//                start = end;
-//                end = end + LOG_MAX_LENGTH;
-//            } else {
-//                String tag = i == 0 ? TAG : TAG + i;
-//                if (type == VERBOSE) {
-//                    Log.v(tag, msg.substring(start, strLength), tr);
-//                } else if (type == DEBUG)
-//                    Log.d(tag, msg.substring(start, strLength), tr);
-//                else if (type == INFO)
-//                    Log.i(tag, msg.substring(start, strLength), tr);
-//                else if (type == WARN)
-//                    Log.w(tag, msg.substring(start, strLength), tr);
-//                else if (type == ERROR)
-//                    Log.e(tag, msg.substring(start, strLength), tr);
-//                break;
-//            }
-//        }
-//    }
 }
