@@ -9,8 +9,8 @@ android {
         applicationId "com.yujing.test"
         minSdkVersion 19
         targetSdkVersion 29
-        versionCode 23
-        versionName "1.2.3"
+        versionCode 24
+        versionName "1.2.4"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {

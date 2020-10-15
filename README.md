@@ -25,7 +25,7 @@ allprojects {
 
 ```
 dependencies {
-     implementation 'com.github.yutils:yutils:1.2.3'
+     implementation 'com.github.yutils:yutils:1.2.4'
 }
 ```
 
