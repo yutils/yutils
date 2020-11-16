@@ -23,7 +23,7 @@ import android.view.TextureView;
 /*
 用法：
 YPlayer yPlayer = new YPlayer(this, bind.textureView, url);
-yPlayer.setScreenStopTimeLimit(60);//屏幕卡死60秒无响应自动重启（建议播放流的时候设置）
+yPlayer.setScreenStopTimeLimit(60);//屏幕卡死60秒无响应自动重启（textureView有效，建议播放流的时候设置）
 yPlayer.setAutoRestartTimeLimit(60 * 3);//每三分钟自动重启播放（建议播放流的时候设置）
 
 @Override
