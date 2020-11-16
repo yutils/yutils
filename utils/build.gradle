@@ -62,7 +62,7 @@ dependencies {
 }
 
 //打包jar;doc;sources，请在Terminal中运行gradlew makeJar
-def jarName = "yutils1.2.5"
+def jarName = "yutils1.2.6"
 task makeJar(type: Copy) {
     //删除存在的
     delete 'build/libs/' + jarName + ".jar"

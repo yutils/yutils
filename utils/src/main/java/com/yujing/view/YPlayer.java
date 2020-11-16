@@ -13,7 +13,7 @@ import android.view.TextureView;
 /**
  * 多功能播放器
  *
- * @author yujing 2020年11月13日10:57:38
+ * @author yujing 2020年11月16日16:23:13
  * <p>
  * SurfaceView 一但到后台，会立即调用: surfaceDestroyed()
  * SurfaceView 回到前台，会立即调用: surfaceCreated()
@@ -22,6 +22,10 @@ import android.view.TextureView;
  */
 /*
 用法：
+//String url = Environment.getExternalStorageDirectory().getPath() + "/v.mp4";
+//String url = "android.resource://" + getPackageName() + "/raw/" + R.raw.v;
+//String url = "rtsp://yujing:pw123456@192.168.6.40:554/Stream/Channels/101";
+
 YPlayer yPlayer = new YPlayer(this, bind.textureView, url);
 yPlayer.setScreenStopTimeLimit(60);//屏幕卡死60秒无响应自动重启（textureView有效，建议播放流的时候设置）
 yPlayer.setAutoRestartTimeLimit(60 * 3);//每三分钟自动重启播放（建议播放流的时候设置）
@@ -50,16 +54,17 @@ public class YPlayer {
     private SurfaceView surfaceView;//surfaceView
     private boolean active = true;//页面是否是活跃的
     private String url;//地址
-    private MediaPlayer mediaPlayer;//播放器
+    private final MediaPlayer mediaPlayer = new MediaPlayer();//播放器
     private boolean isInit;//是否已经初始化
-    private boolean isStart;//是否已经播放
     private YPlayerInitListener yPlayerInitListener;//初始化完成监听
-    private YPlayerStartListener yPlayerStartListener;//播放出图像TextureUpdated监听
+    private MediaPlayer.OnPreparedListener onPreparedListener;//开始播放监听
     private Surface surface;
     private int screenStopTime = 0;//当前已经有多少秒屏幕没有响应
     private int screenStopTimeLimit = -1;//屏幕无响应重启时间,单位：秒,如果<0,则不重启播放
     private int autoRestartTime = 0;//自动重启时间
     private int autoRestartTimeLimit = -1;//自动重启时间,单位：秒,如果<0,则不重启播放
+    private boolean restartFromZero = true;//重新播放从0开始，否则继续播放
+    private int curIndex = 0;//播放位置
 
     public YPlayer(Activity activity, SurfaceView surfaceView, String url) {
         this.activity = activity;
@@ -85,7 +90,6 @@ public class YPlayer {
             //程序到后台自动调用
             @Override
             public void surfaceDestroyed(SurfaceHolder holder) {
-
             }
         });
         thread.start();
@@ -117,12 +121,7 @@ public class YPlayer {
 
             @Override
             public void onSurfaceTextureUpdated(SurfaceTexture surface) {
-                //屏幕更新回调
-                screenStopTime = 0;
-                if (!isStart && yPlayerStartListener != null) {
-                    isStart = true;
-                    yPlayerStartListener.start();
-                }
+                screenStopTime = 0;//最后一次屏幕更新时间0秒
             }
         });
         thread.start();
@@ -161,7 +160,6 @@ public class YPlayer {
         }
     });
 
-
     public MediaPlayer getMediaPlayer() {
         return mediaPlayer;
     }
@@ -174,26 +172,25 @@ public class YPlayer {
         this.screenStopTimeLimit = screenStopTimeLimit;
     }
 
-    public void setyPlayerInitListener(YPlayerInitListener yPlayerInitListener) {
+    public void setYPlayerInitListener(YPlayerInitListener yPlayerInitListener) {
         this.yPlayerInitListener = yPlayerInitListener;
-    }
-
-    public void setyPlayerStartListener(YPlayerStartListener yPlayerStartListener) {
-        this.yPlayerStartListener = yPlayerStartListener;
-    }
-
-    public int getAutoRestartTimeLimit() {
-        return autoRestartTimeLimit;
     }
 
     public void setAutoRestartTimeLimit(int autoRestartTimeLimit) {
         this.autoRestartTimeLimit = autoRestartTimeLimit;
     }
 
+    public void setOnPreparedListener(MediaPlayer.OnPreparedListener onPreparedListener) {
+        this.onPreparedListener = onPreparedListener;
+    }
+
+    public void setRestartFromZero(boolean restartFromZero) {
+        this.restartFromZero = restartFromZero;
+    }
+
     public boolean isPlaying() {
         return mediaPlayer.isPlaying();
     }
-
 
     /**
      * 播放视频的入口，当SurfaceTexture可得到时被调用
@@ -203,19 +200,21 @@ public class YPlayer {
             Log.e("YPlayer", "SurfaceTexture或者surfaceView未完成初始化");
             return;
         }
-        this.mediaPlayer = new MediaPlayer();
         try {
             Uri uri = Uri.parse(url);
+            mediaPlayer.reset();
             mediaPlayer.setDataSource(activity, uri);
             mediaPlayer.setSurface(surface);
             mediaPlayer.setLooping(false);
-            mediaPlayer.prepareAsync();
             //准备好监听
             mediaPlayer.setOnPreparedListener(mp -> {
-                if (mp != null) mp.start(); //视频开始播放
+                if (mp != null) {
+                    if (onPreparedListener != null) onPreparedListener.onPrepared(mp);
+                    mp.seekTo((restartFromZero) ? 0 : curIndex);
+                    mp.start(); //视频开始播放
+                }
             });
-            //播放完毕监听
-            mediaPlayer.setOnCompletionListener(null);
+            mediaPlayer.prepareAsync();
         } catch (Exception e1) {
             e1.printStackTrace();
         }
@@ -223,16 +222,16 @@ public class YPlayer {
 
     public void rePlay(String url) {
         if (url != null) this.url = url;
-        close();
-        if (textureView != null) {
-            if (surface != null) {
-                surface.release();
-                surface = null;
-            }
-            surface = new Surface(textureView.getSurfaceTexture());
-        } else if (surfaceView != null) {
-            surface = surfaceView.getHolder().getSurface();
-        }
+        mediaPlayer.stop();
+        //        if (textureView != null) {
+        //            if (surface != null) {
+        //                surface.release();
+        //                surface = null;
+        //            }
+        //            surface = new Surface(textureView.getSurfaceTexture());
+        //        } else if (surfaceView != null) {
+        //            surface = surfaceView.getHolder().getSurface();
+        //        }
         play();
     }
 
@@ -244,43 +243,29 @@ public class YPlayer {
         active = true;
         screenStopTime = 0;
         autoRestartTime = 0;
-        //textureView 回到到页面需要手动重新播放
-        if (mediaPlayer == null && isInit && textureView != null) {
+        //只有 textureView 回到到页面才需要手动重新播放
+        if (isInit && textureView != null) {
             play();
         }
     }
 
     public void onStop() {
         active = false;
-        close();
-    }
-
-    public void finish() {
-        close();
+        curIndex = mediaPlayer.getCurrentPosition();
+        mediaPlayer.pause();
     }
 
     public void onDestroy() {
         thread.interrupt();
-        close();
         if (surface != null) {
             surface.release();
             surface = null;
         }
-    }
-
-    public void close() {
-        if (mediaPlayer != null) {
-            mediaPlayer.stop();
-            mediaPlayer.release();
-            mediaPlayer = null;
-        }
+        mediaPlayer.stop();
+        mediaPlayer.release();
     }
 
     public interface YPlayerInitListener {
         void init();
-    }
-
-    public interface YPlayerStartListener {
-        void start();
     }
 }
