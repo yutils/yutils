@@ -38,7 +38,7 @@ class MainActivity : BaseActivity() {
         }
         button3.text = "剪切"
         button3.setOnClickListener {
-            YLog.i("啊啊", "剪切");
+            YLog.i("忽略", "剪切");
             uri?.let { yPicture.gotoCrop(this, uri, 400, 400) }
         }
         button4.text = "Date测试"

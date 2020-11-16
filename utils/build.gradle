@@ -6,11 +6,10 @@ group = 'com.github.yutils'
 apply plugin: 'org.jetbrains.dokka'
 
 android {
-    compileSdkVersion 29
-    buildToolsVersion "29.0.3"
+    compileSdkVersion 30
     defaultConfig {
         minSdkVersion 19
-        targetSdkVersion 29
+        targetSdkVersion 30
         versionCode 24
         versionName "1.2.4"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -63,7 +62,7 @@ dependencies {
 }
 
 //打包jar;doc;sources，请在Terminal中运行gradlew makeJar
-def jarName = "yutils1.2.4"
+def jarName = "yutils1.2.5"
 task makeJar(type: Copy) {
     //删除存在的
     delete 'build/libs/' + jarName + ".jar"
