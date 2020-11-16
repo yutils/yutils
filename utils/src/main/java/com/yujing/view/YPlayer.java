@@ -20,6 +20,30 @@ import android.view.TextureView;
  * <p>
  * TextureView前后台，不会释放surface
  */
+/*
+用法：
+YPlayer yPlayer = new YPlayer(this, bind.textureView, url);
+yPlayer.setScreenStopTimeLimit(60);//屏幕卡死60秒无响应自动重启（建议播放流的时候设置）
+yPlayer.setAutoRestartTimeLimit(60 * 3);//每三分钟自动重启播放（建议播放流的时候设置）
+
+@Override
+protected void onResume() {
+    super.onResume();
+    yPlayer.onResume();
+}
+
+@Override
+protected void onStop() {
+    super.onStop();
+    yPlayer.onStop();
+}
+
+@Override
+protected void onDestroy() {
+    super.onDestroy();
+    yPlayer.onDestroy();
+}
+ */
 public class YPlayer {
     private final Activity activity;
     private TextureView textureView;//textureView
