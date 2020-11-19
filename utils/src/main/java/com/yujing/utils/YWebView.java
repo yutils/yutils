@@ -127,10 +127,10 @@ public class YWebView {
         //webSettings.setAppCacheMaxSize (Long.MAX_VALUE);
 
         //是否禁止从网络（通过http和https URI schemes访问的资源）下载图片资源，默认值为false。注意，除非getLoadsImagesAutomatically()返回true,否则该方法无效。还请注意，即使此项设置为false，使用setBlockNetworkLoads(boolean)禁止所有网络加载也会阻止网络图片的加载。当此项设置的值从true变为false，WebView当前显示的内容所引用的网络图片资源会自动获取。
-        webSettings.setBlockNetworkImage(true);
+        webSettings.setBlockNetworkImage(false);
 
         //是否禁止从网络下载数据，如果app有INTERNET权限，默认值为false，否则默认为true。使用setBlockNetworkImage(boolean) 只会禁止图片资源的加载。注意此值由true变为false，当前WebView展示的内容所引用的网络资源不会自动加载，直到调用了重载。如果APP没有INTERNET权限，设置此值为false会抛出SecurityException。
-        webSettings.setBlockNetworkLoads(true);
+        webSettings.setBlockNetworkLoads(false);
 
         //是否使用内置的缩放机制。内置的缩放机制包括屏幕上的缩放控件（浮于WebView内容之上）和缩放手势的运用。通过setDisplayZoomControls(boolean)可以控制是否显示这些控件，默认值为false。
         webSettings.setBuiltInZoomControls(true);
