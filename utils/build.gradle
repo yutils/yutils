@@ -8,7 +8,7 @@ apply plugin: 'org.jetbrains.dokka'
 android {
     compileSdkVersion 30
     defaultConfig {
-        minSdkVersion 19
+        minSdkVersion 21
         targetSdkVersion 30
         versionCode 24
         versionName "1.2.4"
