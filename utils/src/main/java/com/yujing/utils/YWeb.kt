@@ -17,25 +17,35 @@ import com.yujing.utils.YWebView
  */
 /*
 用法
-lateinit var yWeb: YWeb
-override fun init() {
-    val url = "http://www.nangua5.com/"
-    yWeb = YWeb(this, binding.webView, binding.flVideoContainer)
-    yWeb.loadUrl(url)
-}
+class MainActivity: YBaseActivity<ActivityMainBinding>(R.layout.activity_main) {
+    private val eventBack: YEventCount = YEventCount(2000, 2)//2秒内按2次退出
+    lateinit var yWeb: YWeb
+    override fun init() {
+        eventBack.setEventSuccessListener { finish() }
+        eventBack.setEventFailListener { show("再按一次退出") }
 
-override fun onConfigurationChanged(newConfig: Configuration) {
-    super.onConfigurationChanged(newConfig)
-    yWeb.onConfigurationChanged(newConfig)
-}
+        val url = "http://www.nangua5.com/"
+        yWeb = YWeb(this, binding.webView, binding.flVideoContainer)
+        yWeb.loadUrl(url)
+    }
 
-override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-    return yWeb.onKeyDown(keyCode, event)
-}
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        yWeb.onConfigurationChanged(newConfig)
+    }
 
-override fun onDestroy() {
-    yWeb.onDestroy()
-    super.onDestroy()
+    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        return if (yWeb.onKeyDown(keyCode, event)) true else super.onKeyDown(keyCode, event)
+    }
+
+    override fun onDestroy() {
+        yWeb.onDestroy()
+        super.onDestroy()
+    }
+
+    override fun onBackPressed() {
+        eventBack.event()
+    }
 }
  */
 class YWeb(var activity: Activity, var webView: WebView, var frameLayout: FrameLayout) {
@@ -106,13 +116,11 @@ class YWeb(var activity: Activity, var webView: WebView, var frameLayout: FrameL
      * 返回
      */
     fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            if (webView.canGoBack()) {
-                webView.goBack() //返回上个页面
-            }
+        if (keyCode == KeyEvent.KEYCODE_BACK && webView.canGoBack()) {
+            webView.goBack() //返回上个页面
             return true
         }
-        return activity.onKeyDown(keyCode, event)
+        return false
     }
 
     /**
