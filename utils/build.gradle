@@ -11,7 +11,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 30
         versionCode 24
-        versionName "1.2.4"
+        versionName "1.2.7"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -62,7 +62,7 @@ dependencies {
 }
 
 //打包jar;doc;sources，请在Terminal中运行gradlew makeJar
-def jarName = "yutils1.2.6"
+def jarName = "yutils1.2.7"
 task makeJar(type: Copy) {
     //删除存在的
     delete 'build/libs/' + jarName + ".jar"
