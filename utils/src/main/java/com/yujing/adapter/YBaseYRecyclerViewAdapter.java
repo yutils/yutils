@@ -16,19 +16,48 @@ import java.util.Objects;
  * @author yujing 2018年11月30日12:13:23
  */
 /*用法举例:
+//java
+import androidx.databinding.DataBindingUtil;
+import com.yujing.adapter.YBaseYRecyclerViewAdapter;
+public class MAdapter extends YBaseYRecyclerViewAdapter {
+    public MAdapter(Context context, List list) {
+        super(context, list);
+    }
+    @Override
+    public int setLayout() {
+        return  R.layout.activity_page1;
+    }
+    @Override
+    public BaseViewHolder setViewHolder(View itemView) {
+        return new BaseViewHolder(itemView) {
+            ActivityPage1Binding binding;
+            @Override
+            public void findView(View convertView) {
+                binding= DataBindingUtil.bind(convertView);
+            }
+            @Override
+            public void setData(int position, Object obj, List adapterList, YBaseYRecyclerViewAdapter adapter) {
+
+            }
+        };
+    }
+}
+
+
+//kotlin
+import androidx.databinding.DataBindingUtil
+import com.yujing.adapter.YBaseYRecyclerViewAdapter
 class MyAccountAdapter(context: Context?, list: List<*>?) :
     YBaseYRecyclerViewAdapter<Any?>(context, list) {
     override fun setLayout(): Int {
         return R.layout.activity_my_account_item
     }
-
     override fun setViewHolder(itemView: View?): BaseViewHolder {
         return object : BaseViewHolder(itemView) {
-            var binding: ActivityMyAccountItemBinding? = null
+            lateinit var binding: ActivityMyAccountItemBinding
             override fun findView(view: View) {
-                binding = DataBindingUtil.bind(view)
+                binding = DataBindingUtil.bind(view)!!
             }
-
             override fun setData(position: Int, obj: Any?, adapterList: MutableList<Any?>?, adapter: YBaseYRecyclerViewAdapter<*>?) {
 
             }
