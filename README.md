@@ -5,7 +5,7 @@
 
 安卓各种工具详见doc文档。
 
-##当前最新版：————>[![](https://jitpack.io/v/yutils/yutils.svg)](https://jitpack.io/#yutils/yutils)
+## 当前最新版：————>[![](https://jitpack.io/v/yutils/yutils.svg)](https://jitpack.io/#yutils/yutils)
 
 **[releases里面有JAR包。点击前往](https://github.com/yutils/yutils/releases)**
 
@@ -25,7 +25,7 @@ allprojects {
 
 ```
 dependencies {
-     implementation 'com.github.yutils:yutils:1.2.8'
+     implementation 'com.github.yutils:yutils:1.2.9'
 }
 ```
 
@@ -37,6 +37,8 @@ Github地址：[https://github.com/yutils/yutils](https://github.com/yutils/yuti
 感谢关注微博：[细雨若静](https://weibo.com/32005200)
 
 # 下面列举一些主要类的方法，具体每个类方法和和使用，请看文档或源码，欢迎给我提出修改意见。
+
+### 因为一直在新增，所以这儿不全
 
 ## 类 YUtils
 ```

@@ -25,7 +25,7 @@ import java.util.List;
  * 连接线程：连接线程每一定时间根据（connect）检查一连接，如果连接断开就重新连接，更新socket，并通知连接状态。
  *
  * @author YuJing
- * @version 1.3 2020年9月7日10:16:34
+ * @version 1.4 2020年12月21日17:29:39
  */
 
 /*
@@ -117,6 +117,7 @@ public class YSocket {
     protected boolean showLog = true;// 显示日志
     protected InputStreamReadListener inputStreamReadListener;//读取InputStream接口
     private Object handler;
+    protected CreateSocketInterceptor createSocketInterceptor;//创建Socket
 
     /**
      * 构造函数
@@ -345,7 +346,7 @@ public class YSocket {
             while (!isInterrupted()) {
                 if (socket == null || !connect) {
                     try {
-                        socket = new Socket();
+                        socket = (createSocketInterceptor != null) ? createSocketInterceptor.create() : new Socket();
                         SocketAddress socAddress = new InetSocketAddress(ip, port);// 连接
                         socket.connect(socAddress, 1000 * 5);
                         socket.setKeepAlive(true);
@@ -566,8 +567,6 @@ public class YSocket {
             });
             YThreadPool.add(thread);
         }
-
-
     }
 
     /**
@@ -599,6 +598,15 @@ public class YSocket {
     }
 
     /**
+     * 如果实现了此接口，创建socket将从此接口中获取
+     *
+     * @param createSocketInterceptor 创建socket拦截器
+     */
+    public void setCreateSocketInterceptor(CreateSocketInterceptor createSocketInterceptor) {
+        this.createSocketInterceptor = createSocketInterceptor;
+    }
+
+    /**
      * 读取数据监听接口
      */
     public interface DataListener {
@@ -617,5 +625,12 @@ public class YSocket {
      */
     public interface InputStreamReadListener {
         byte[] inputStreamToBytes(InputStream inputStream) throws IOException;
+    }
+
+    /**
+     * 创建socket
+     */
+    public interface CreateSocketInterceptor {
+        Socket create() throws IOException;
     }
 }

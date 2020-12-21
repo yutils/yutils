@@ -4,6 +4,7 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'com.github.dcendents.android-maven'
 group = 'com.github.yutils'
 apply plugin: 'org.jetbrains.dokka'
+apply plugin: 'kotlin-kapt'
 
 android {
     compileSdkVersion 30
@@ -11,7 +12,7 @@ android {
         minSdkVersion 19
         targetSdkVersion 30
         versionCode 24
-        versionName "1.2.8"
+        versionName "1.2.9"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -31,6 +32,10 @@ android {
     compileOptions {
         sourceCompatibility = 1.8
         targetCompatibility = 1.8
+    }
+
+    buildFeatures {
+        dataBinding = true
     }
 
     kotlinOptions {
@@ -59,10 +64,21 @@ dependencies {
 //    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.9.6'
     // https://mvnrepository.com/artifact/org.objenesis/objenesis
 //    implementation group: 'org.objenesis', name: 'objenesis', version: '2.6'
+
+    //____________________________________________________________RxJava____________________________________________________________
+    //rxjava2，https://mvnrepository.com/artifact/io.reactivex.rxjava2/rxjava
+    implementation group: 'io.reactivex.rxjava2', name: 'rxjava', version: '2.2.20'
+    //rxandroid，https://mvnrepository.com/artifact/io.reactivex.rxjava2/rxandroid
+    implementation group: 'io.reactivex.rxjava2', name: 'rxandroid', version: '2.1.1'
+    //自动解绑，https://mvnrepository.com/artifact/com.trello.rxlifecycle3/rxlifecycle-components
+    implementation group: 'com.trello.rxlifecycle3', name: 'rxlifecycle-components', version: '3.1.0'
+    // https://mvnrepository.com/artifact/com.blankj/rxbus
+    implementation group: 'com.blankj', name: 'rxbus', version: '1.6'
+    //____________________________________________________________RxJava____________________________________________________________
 }
 
 //打包jar;doc;sources，请在Terminal中运行gradlew makeJar
-def jarName = "yutils1.2.8"
+def jarName = "yutils1.2.9"
 task makeJar(type: Copy) {
     //删除存在的
     delete 'build/libs/' + jarName + ".jar"
