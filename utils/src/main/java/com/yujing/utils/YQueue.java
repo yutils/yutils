@@ -2,6 +2,7 @@ package com.yujing.utils;
 
 import android.app.Activity;
 import android.os.Handler;
+import android.os.Looper;
 
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
@@ -37,7 +38,7 @@ public class YQueue {
         //如果是能找到Handler对象，说明是安卓
         try {
             Class.forName("android.os.Handler");
-            handler = new Handler();
+            handler = new Handler(Looper.getMainLooper());
         } catch (Exception ignored) {
         }
         Object finalHandler = handler;

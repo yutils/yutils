@@ -1,6 +1,7 @@
 package com.yujing.socket;
 
 import android.os.Handler;
+import android.os.Looper;
 
 import com.yujing.utils.YLog;
 import com.yujing.utils.YThreadPool;
@@ -131,7 +132,7 @@ public class YSocket {
         //如果是能找到Handler对象，说明是安卓
         try {
             Class.forName("android.os.Handler");
-            handler = new Handler();
+            handler = new Handler(Looper.getMainLooper());
         } catch (Exception ignored) {
         }
     }

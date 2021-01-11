@@ -8,6 +8,7 @@ import android.bluetooth.BluetoothGattService;
 import android.content.Context;
 import android.os.Build;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import com.yujing.contract.YListener1;
@@ -43,7 +44,7 @@ public class YBle implements YBluetoothDeviceConnect {
     private YListener1<byte[]> readListener;
 
     BluetoothDevice bluetoothDevice;
-    Handler handler=new Handler();
+    Handler handler=new Handler(Looper.getMainLooper());
 
     public YBle(Context context) {
         this.context = context;

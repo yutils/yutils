@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import com.yujing.contract.YListener1;
@@ -25,7 +26,7 @@ public class YBt implements YBluetoothDeviceConnect {
     private YListener1<byte[]> readListener;
     private YReadInputStream readInputStream;
     Context context;
-    Handler handler = new Handler();
+    Handler handler = new Handler(Looper.getMainLooper());
     InputStreamReadListener inputStreamReadListener=null;
 
     public YBt(Context context) {
@@ -54,7 +55,6 @@ public class YBt implements YBluetoothDeviceConnect {
      *
      * @param device   蓝牙设备对象
      * @param listener 结果回调事件
-     * @return
      */
     @Override
     public void connect(BluetoothDevice device, YSuccessFailListener<BluetoothDevice, String> listener) {
