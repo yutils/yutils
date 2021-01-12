@@ -1,13 +1,14 @@
-package com.yujing.contract
+package com.yujing.bus
 
 import java.io.Serializable
-
 
 /**
  * 消息类，发送或者接收消息
  * @author yujing 2020年7月27日19:51:20
- * RxBus用法 RxBus.getDefault().post(YMessage<Any?>(key,value))
  */
+/*
+RxBus用法 RxBus.getDefault().post(YMessage<Any?>(key,value))
+*/
 open class YMessage<T>(var type: String?, var data: T?) : Serializable {
     /**
      *重写string方法，打印type和data的值

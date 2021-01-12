@@ -19,6 +19,10 @@ public class YActivityUtil {
     private static Stack<Activity> activityStack = new Stack<>();
     private static YActivityLifecycleCallbacks yAlc;
 
+    public static void init(Application context) {
+        context.registerActivityLifecycleCallbacks(getActivityLifecycleCallbacks());
+    }
+
     //单例
     public static YActivityLifecycleCallbacks getActivityLifecycleCallbacks() {
         if (yAlc == null)

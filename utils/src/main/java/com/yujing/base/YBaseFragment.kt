@@ -9,7 +9,8 @@ import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import com.blankj.rxbus.RxBus
 import com.yujing.base.fragment.YFragment
-import com.yujing.contract.YMessage
+import com.yujing.bus.YBusUtil
+import com.yujing.bus.YMessage
 import com.yujing.utils.YToast
 import io.reactivex.android.schedulers.AndroidSchedulers
 
@@ -48,6 +49,7 @@ abstract class YBaseFragment<B : ViewDataBinding>(var layout: Int) : YFragment()
         this.container = container
         binding//第一次使用变量的时候调用lazy初始化变量
         RxBus.getDefault().subscribeSticky(this, AndroidSchedulers.mainThread(), defaultCallback)
+        YBusUtil.init(this)
         init()
         return binding.root
     }
@@ -95,6 +97,7 @@ abstract class YBaseFragment<B : ViewDataBinding>(var layout: Int) : YFragment()
 
     override fun onDestroy() {
         RxBus.getDefault().unregister(this)
+        YBusUtil.onDestroy(this)
         super.onDestroy()
     }
 

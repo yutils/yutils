@@ -74,7 +74,6 @@ import java.util.Objects;
 @SuppressWarnings("unused")
 @SuppressLint("MissingPermission")
 public class YUtils {
-
     /**
      * 重新计算listView高度
      *
@@ -925,6 +924,19 @@ public class YUtils {
             shellRoot("setprop service.adb.tcp.port " + port, "start adbd");
             return true;
         } catch (Exception e) {
+            return false;
+        }
+    }
+
+    /**
+     * 判断是否是安卓中运行
+     * @return 是否安卓
+     */
+    public static boolean isAndroid() {
+        try {
+            Class.forName("android.os.Handler");
+            return true;
+        } catch (Exception ignored) {
             return false;
         }
     }

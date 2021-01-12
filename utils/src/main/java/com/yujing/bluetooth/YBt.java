@@ -4,13 +4,12 @@ import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 
 import com.yujing.contract.YListener1;
 import com.yujing.contract.YSuccessFailListener;
 import com.yujing.utils.YReadInputStream;
+import com.yujing.utils.YThread;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,6 +18,7 @@ import java.util.UUID;
 
 /**
  * 蓝牙连接类，实现连接，发送数据，读取数据
+ *
  * @author yujing 2020年7月16日17:43:04
  */
 @SuppressLint("MissingPermission")
@@ -26,8 +26,7 @@ public class YBt implements YBluetoothDeviceConnect {
     private YListener1<byte[]> readListener;
     private YReadInputStream readInputStream;
     Context context;
-    Handler handler = new Handler(Looper.getMainLooper());
-    InputStreamReadListener inputStreamReadListener=null;
+    InputStreamReadListener inputStreamReadListener = null;
 
     public YBt(Context context) {
         this.context = context;
@@ -45,11 +44,13 @@ public class YBt implements YBluetoothDeviceConnect {
 
     /**
      * 设置解析inputStream
+     *
      * @param readInputStream
      */
     public void setReadInputStream(YReadInputStream readInputStream) {
         this.readInputStream = readInputStream;
     }
+
     /**
      * 尝试连接一个设备，子线程中完成，因为会线程阻塞
      *
@@ -74,11 +75,11 @@ public class YBt implements YBluetoothDeviceConnect {
                         bluetoothSocket.connect();
                     }
                     Log.d("blueTooth", "已经链接");
-                    handler.post(() -> listener.success(device));
+                    YThread.runOnUiThread(() -> listener.success(device));
                     read();
                 } catch (Exception e) {
                     Log.e("blueTooth", "...连接失败");
-                    handler.post(() -> listener.fail("连接失败"));
+                    YThread.runOnUiThread(() -> listener.fail("连接失败"));
                     try {
                         bluetoothSocket.close();
                     } catch (IOException e1) {
@@ -110,16 +111,16 @@ public class YBt implements YBluetoothDeviceConnect {
     @Override
     public void read() {
         //如果没有设置读取监听，直接返回
-        if (readListener==null)
+        if (readListener == null)
             return;
         //如果设置inputStream读取监听，那就就是用户自己解析inputStream
-        if (inputStreamReadListener!=null){
+        if (inputStreamReadListener != null) {
             try {
                 readListener.value(inputStreamReadListener.inputStreamToBytes(bluetoothSocket.getInputStream()));
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }else{
+        } else {
             //否则使用readInputStream读取
             if (readInputStream != null) {
                 readInputStream.stop();

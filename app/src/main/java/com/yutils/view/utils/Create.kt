@@ -94,5 +94,17 @@ class Create {
             linearLayout?.addView(view)
             return view
         }
+
+        //添加空行
+        fun space(linearLayout: ViewGroup?): Space {
+            val view = Space(linearLayout?.context)
+            val layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+            view.layoutParams = layoutParams
+            linearLayout?.addView(view)
+            return view
+        }
     }
 }

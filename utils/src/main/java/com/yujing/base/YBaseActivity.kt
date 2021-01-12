@@ -8,7 +8,8 @@ import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import com.blankj.rxbus.RxBus
 import com.yujing.base.activity.YActivity
-import com.yujing.contract.YMessage
+import com.yujing.bus.YBusUtil
+import com.yujing.bus.YMessage
 import com.yujing.utils.YShow
 import com.yujing.utils.YToast
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -36,6 +37,20 @@ public class OldActivity extends YBaseActivity<Activity1101Binding> {
     @Override
     protected void init() { }
 }
+
+
+
+RxBus用法
+RxBus.getDefault().post(YMessage<Any?>(key,value))
+
+YBus用法
+//发送消息
+YBusUtil.post("tag1","123456789")
+//接收消息
+@YBus("tag1")
+fun message(message: Any) {
+    YLog.i("收到：$message")
+}
  */
 abstract class YBaseActivity<B : ViewDataBinding>(var layout: Int) : YActivity() {
     open val binding: B by lazy { DataBindingUtil.setContentView(this, layout) }
@@ -43,6 +58,7 @@ abstract class YBaseActivity<B : ViewDataBinding>(var layout: Int) : YActivity()
         super.onCreate(savedInstanceState)
         binding//第一次使用变量的时候调用lazy初始化变量
         RxBus.getDefault().subscribeSticky(this, AndroidSchedulers.mainThread(), defaultCallback)
+        YBusUtil.init(this)
         //YPermissions.requestAll(this)
         init()
     }
@@ -111,6 +127,7 @@ abstract class YBaseActivity<B : ViewDataBinding>(var layout: Int) : YActivity()
     override fun onDestroy() {
         System.gc() // 系统自动回收
         RxBus.getDefault().unregister(this)
+        YBusUtil.onDestroy(this)
         super.onDestroy()
     }
 

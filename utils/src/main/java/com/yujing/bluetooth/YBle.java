@@ -7,13 +7,12 @@ import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
 import android.content.Context;
 import android.os.Build;
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 
 import com.yujing.contract.YListener1;
 import com.yujing.contract.YSuccessFailListener;
 import com.yujing.utils.YConvert;
+import com.yujing.utils.YThread;
 
 import java.util.Arrays;
 import java.util.List;
@@ -23,6 +22,7 @@ import static android.bluetooth.BluetoothDevice.TRANSPORT_LE;
 
 /**
  * 低功耗蓝牙连接类，实现连接，发送数据，读取数据
+ *
  * @author yujing 2020年7月16日17:43:04
  */
 public class YBle implements YBluetoothDeviceConnect {
@@ -44,7 +44,6 @@ public class YBle implements YBluetoothDeviceConnect {
     private YListener1<byte[]> readListener;
 
     BluetoothDevice bluetoothDevice;
-    Handler handler=new Handler(Looper.getMainLooper());
 
     public YBle(Context context) {
         this.context = context;
@@ -85,6 +84,7 @@ public class YBle implements YBluetoothDeviceConnect {
             }
         }
     }
+
     private BluetoothGattCallback gattCallback = new BluetoothGattCallback() {
         /**
          * 断开或连接 状态发生变化时调用
@@ -106,7 +106,7 @@ public class YBle implements YBluetoothDeviceConnect {
                 mBluetoothGatt.close();
                 //连接失败
                 if (listener != null)
-                    handler.post(() -> listener.fail("连接失败"));
+                    YThread.runOnUiThread(() -> listener.fail("连接失败"));
             }
         }
 
@@ -125,7 +125,7 @@ public class YBle implements YBluetoothDeviceConnect {
                     .getService(notify_UUID_service).getCharacteristic(notify_UUID_chara), true);
             //连接成功
             if (listener != null)
-                handler.post(() -> listener.success(bluetoothDevice));
+                YThread.runOnUiThread(() -> listener.success(bluetoothDevice));
             read();
         }
 
@@ -156,9 +156,9 @@ public class YBle implements YBluetoothDeviceConnect {
             Log.e(TAG, "onCharacteristicChanged()" + Arrays.toString(characteristic.getValue()));
             byte[] data = characteristic.getValue();
             if (listener != null)
-                handler.post(() -> listener.success(bluetoothDevice));
+                YThread.runOnUiThread(() -> listener.success(bluetoothDevice));
             if (readListener != null)
-                handler.post(() -> readListener.value(data));
+                YThread.runOnUiThread(() -> readListener.value(data));
         }
     };
 
@@ -166,15 +166,16 @@ public class YBle implements YBluetoothDeviceConnect {
     public void setReadListener(YListener1<byte[]> readListener) {
         this.readListener = readListener;
     }
+
     @Override
     public void connect(BluetoothDevice bluetoothDevice, YSuccessFailListener<BluetoothDevice, String> listener) {
-        this.listener=listener;
-        this. bluetoothDevice=bluetoothDevice;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                mBluetoothGatt = bluetoothDevice.connectGatt(context, true, gattCallback, TRANSPORT_LE);
-            } else {
-                mBluetoothGatt = bluetoothDevice.connectGatt(context, true, gattCallback);
-            }
+        this.listener = listener;
+        this.bluetoothDevice = bluetoothDevice;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            mBluetoothGatt = bluetoothDevice.connectGatt(context, true, gattCallback, TRANSPORT_LE);
+        } else {
+            mBluetoothGatt = bluetoothDevice.connectGatt(context, true, gattCallback);
+        }
 
     }
 
@@ -183,6 +184,7 @@ public class YBle implements YBluetoothDeviceConnect {
         BluetoothGattCharacteristic characteristic = mBluetoothGatt.getService(read_UUID_service).getCharacteristic(read_UUID_chara);
         mBluetoothGatt.readCharacteristic(characteristic);
     }
+
     @Override
     public void send(byte[] data) {
         BluetoothGattService service = mBluetoothGatt.getService(write_UUID_service);
@@ -212,6 +214,7 @@ public class YBle implements YBluetoothDeviceConnect {
             mBluetoothGatt.writeCharacteristic(charaWrite);
         }
     }
+
     @Override
     public void onDestroy() {
         if (mBluetoothGatt != null)

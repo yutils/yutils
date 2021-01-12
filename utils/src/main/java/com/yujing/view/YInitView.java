@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 
 import androidx.fragment.app.Fragment;
+
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
@@ -23,6 +24,23 @@ import java.util.Objects;
  * 初始化View，找控件
  *
  * @author yujing 2018年7月18日16:11:11
+ */
+/* 用法
+public void show(Activity activity, View view) {
+    View contentView = LayoutInflater.from(activity).inflate(R.layout.popupWindow_setting, null);
+    YInitView.initByTag(this, contentView, 1);
+}
+
+@YInitView.OnClickByTag(id = R.id.ll_item_1, tag = 1)
+public void item1(View view) {
+    popupWindow.dismiss();
+}
+
+@YInitView.OnClickByTag(id = R.id.ll_item_2, tag = 1)
+public void item2(View view) {
+    popupWindow.dismiss();
+    RxBus.getDefault().post(new RxBusMessage<String>(Constants.设置_退出, null));
+}
  */
 @SuppressWarnings("unused")
 public class YInitView {

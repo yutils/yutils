@@ -1,10 +1,9 @@
 package com.yujing.socket;
 
-import android.os.Handler;
-import android.os.Looper;
-
 import com.yujing.utils.YLog;
+import com.yujing.utils.YThread;
 import com.yujing.utils.YThreadPool;
+import com.yujing.utils.YUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -117,7 +116,6 @@ public class YSocket {
     protected int CheckConnectTime = 1000 * 3;// 检查连接时间
     protected boolean showLog = true;// 显示日志
     protected InputStreamReadListener inputStreamReadListener;//读取InputStream接口
-    private Object handler;
     protected CreateSocketInterceptor createSocketInterceptor;//创建Socket
 
     /**
@@ -129,12 +127,6 @@ public class YSocket {
     public YSocket(String ip, int port) {
         this.ip = ip;
         this.port = port;
-        //如果是能找到Handler对象，说明是安卓
-        try {
-            Class.forName("android.os.Handler");
-            handler = new Handler(Looper.getMainLooper());
-        } catch (Exception ignored) {
-        }
     }
 
     private static volatile YSocket instance;
@@ -520,14 +512,12 @@ public class YSocket {
                 Thread thread = new Thread(() -> {
                     try {
                         for (DataListener dataListener : dataListeners) {
-                            if (handler != null && handler instanceof Handler) {
-                                ((Handler) handler).post(() -> {
-                                    if (dataListener != null) {
+                            if (dataListener != null) {
+                                if (YUtils.isAndroid()) {
+                                    YThread.runOnUiThread(() -> {
                                         dataListener.data(bytes);
-                                    }
-                                });
-                            } else {
-                                if (dataListener != null) {
+                                    });
+                                } else {
                                     dataListener.data(bytes);
                                 }
                             }
@@ -552,8 +542,8 @@ public class YSocket {
         if (stateListener != null) {
             Thread thread = new Thread(() -> {
                 try {
-                    if (handler != null && handler instanceof Handler) {
-                        ((Handler) handler).post(() -> {
+                    if (YUtils.isAndroid()) {
+                        YThread.runOnUiThread(() -> {
                             stateListener.isSuccess(status);
                         });
                     } else {

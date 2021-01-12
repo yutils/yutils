@@ -1,9 +1,5 @@
 package com.yujing.utils;
 
-import android.app.Activity;
-import android.os.Handler;
-import android.os.Looper;
-
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 /**
@@ -32,48 +28,16 @@ public class YQueue {
      * @param time     时间毫秒
      * @param runnable 回调
      */
-    @SuppressWarnings({"UnclearExpression", "ConditionCoveredByFurtherCondition", "ConstantConditions"})
+    @SuppressWarnings({"UnclearExpression"})
     public void run(final int time, final Runnable runnable) {
-        Object handler = null;
-        //如果是能找到Handler对象，说明是安卓
-        try {
-            Class.forName("android.os.Handler");
-            handler = new Handler(Looper.getMainLooper());
-        } catch (Exception ignored) {
-        }
-        Object finalHandler = handler;
         Thread thread = new Thread(() -> {
             try {
-                if (finalHandler != null && finalHandler instanceof Handler) {
-                    ((Handler) finalHandler).post(runnable);
-                } else {
+                if (YUtils.isAndroid())
+                    YThread.runOnUiThread(runnable);
+                else
                     runnable.run();
-                }
                 Thread.sleep(time);
             } catch (InterruptedException ignored) {
-            }
-        });
-        add(thread);
-    }
-
-    /**
-     * 运行
-     *
-     * @param activity activity
-     * @param time     时间毫秒
-     * @param runnable 回调
-     */
-    public void run(final Activity activity, final int time, final Runnable runnable) {
-        Thread thread = new Thread(() -> {
-            try {
-                activity.runOnUiThread(() -> {
-                    if (activity.isDestroyed()) return;
-                    runnable.run();
-                });
-                Thread.sleep(time);
-            } catch (InterruptedException ignored) {
-            } finally {
-                shutdown();
             }
         });
         add(thread);

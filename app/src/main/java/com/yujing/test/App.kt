@@ -2,6 +2,7 @@ package com.yujing.test
 
 import android.app.Application
 import com.yujing.utils.YActivityUtil
+import com.yujing.utils.YApp
 import com.yujing.utils.YLog
 import com.yujing.utils.YPath
 import com.yujing.ycrash.YCrash
@@ -36,5 +37,7 @@ class App : Application() {
         YLog.saveOpen(YPath.getFilePath(this,"log"))
         //保存最近30天日志
         YLog.delDaysAgo(30)
+        //保存Application
+        YApp.init(this)
     }
 }

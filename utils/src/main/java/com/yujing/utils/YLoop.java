@@ -1,6 +1,5 @@
 package com.yujing.utils;
 
-import android.app.Activity;
 import android.util.Log;
 
 import java.lang.reflect.Method;
@@ -13,7 +12,7 @@ import java.util.Map;
  *
  * @author yujing 2020年9月6日21:09:28
  */
-@SuppressWarnings({"unused", "WeakerAccess"})
+@SuppressWarnings({"WeakerAccess"})
 /* 用法举例
 //每秒调用一次run方法，run不能为private，不能有参数
 YLoop.start(this,"run",1000);
@@ -54,6 +53,7 @@ public class YLoop {
             MethodStatus.put(sign, true);// 记录该方法被启用
             Thread thread = new Thread(new Runnable() {
                 int num = cycleNum;// 倒计时剩下执行次数
+
                 @Override
                 public void run() {
                     while (MethodStatus.get(sign) != null && MethodStatus.get(sign)) {
@@ -62,24 +62,15 @@ public class YLoop {
                             if (cycleNum > 0 && num <= 0)
                                 break;
                             num--;// 循环次数减1
-                            try {
-                                Class.forName("android.app.Activity");
-                                if (obj instanceof Activity) {
-                                    Activity activity = (Activity) obj;
-                                    if (activity.isDestroyed()) {
-                                        break;
+                            if (YUtils.isAndroid()) {
+                                YThread.runOnUiThread(() -> {
+                                    try {
+                                        method.invoke(obj);
+                                    } catch (Exception e) {
+                                        Log.e("YLoopAndroid", "调用 method.invoke(obj) 时发生异常", e);
                                     }
-                                    activity.runOnUiThread(() -> {
-                                        try {
-                                            method.invoke(obj);
-                                        } catch (Exception e) {
-                                            Log.e("YLoopAndroid", "调用 method.invoke(obj) 时发生异常", e);
-                                        }
-                                    });
-                                } else {
-                                    method.invoke(obj);
-                                }
-                            } catch (Exception ignored) {
+                                });
+                            } else {
                                 method.invoke(obj);
                             }
                             Thread.sleep(interval);
@@ -120,9 +111,8 @@ public class YLoop {
         // 循环读取类，直到读取到Object类为止
         beakLoop:
         for (Class<?> clazz = obj.getClass(); clazz != Object.class; clazz = clazz.getSuperclass()) {
-            if (clazz == null) {
+            if (clazz == null)
                 return null;
-            }
             // 获取遍历当前类全部方法
             Method[] methods = clazz.getMethods();
             for (Method method1 : methods) {
