@@ -41,11 +41,29 @@ public class TestDialog extends YBaseDialog<TestDialogBinding> {
     }
 }
  */
-abstract class YBaseDialog<B : ViewDataBinding>(
-    protected var activity: Activity,
-    var layout: Int
-) :
-    Dialog(activity, android.R.style.Theme_DeviceDefault_Dialog_NoActionBar) {
+abstract class YBaseDialog<B : ViewDataBinding> : Dialog {
+    constructor(
+        activity: Activity, layout: Int,
+        style: Int = android.R.style.Theme_DeviceDefault_Dialog_NoActionBar
+    ) : super(activity, style) {
+        this.activity = activity
+        this.layout = layout
+    }
+
+    constructor(
+        activity: Activity, view: View,
+        style: Int = android.R.style.Theme_DeviceDefault_Dialog_NoActionBar
+    ) : super(activity, style) {
+        this.activity = activity
+        this.view = view
+    }
+    companion object {
+        /** 开发屏幕最小宽度 */
+        protected var DevelopmentScreenWidthDp = 720f
+    }
+    var activity: Activity
+    var layout: Int? = null
+
     lateinit var view: View
     lateinit var binding: B
     var mCancelable = true
@@ -74,12 +92,14 @@ abstract class YBaseDialog<B : ViewDataBinding>(
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        view = LayoutInflater.from(activity).inflate(layout, null)
+        if (layout != null)
+            view = LayoutInflater.from(activity).inflate(layout!!, null)
+
         setContentView(view) // 设置布局view
         binding = DataBindingUtil.bind(view)!!
         val window = window
         window?.let { initWindow(it) }
-        setCancelable(mCancelable) // 是否允许按返回键
+        super.setCancelable(mCancelable) // 是否允许按返回键
         setCanceledOnTouchOutside(mCancelable) // 触摸屏幕其他区域不关闭对话框
         //打开动画否
         if (openAnimation) {
@@ -88,18 +108,30 @@ abstract class YBaseDialog<B : ViewDataBinding>(
             //入场动画
             view.startAnimation(yAnimation.startAnimation)
         }
+        initBefore()
         init()
+        initAfter()
     }
 
     /**
      * 初始化数据
      */
     protected abstract fun init()
-    fun ismCancelable(): Boolean {
+    open fun initBefore() {}
+    open fun initAfter() {}
+
+    /**
+     * 是否能取消
+     */
+    open fun ismCancelable(): Boolean {
         return mCancelable
     }
 
+    /**
+     * 设置弹窗是否可以关闭
+     */
     override fun setCancelable(cancelable: Boolean) {
+        super.setCancelable(mCancelable)
         mCancelable = cancelable
     }
 
@@ -129,10 +161,10 @@ abstract class YBaseDialog<B : ViewDataBinding>(
         //设置window的Background为圆角
         val gradientDrawable = GradientDrawable()
         //当前屏幕与开发屏幕的比例
-        val ScaleScreenWidthDp =
+        val scaleScreenWidthDp =
             activity.resources.configuration.smallestScreenWidthDp / DevelopmentScreenWidthDp
-        val strokeWidth = 2 * ScaleScreenWidthDp // 2dp 边框宽度，乘以屏幕比例
-        val roundRadius = 20 * ScaleScreenWidthDp // 20dp 圆角半径，乘以屏幕比例
+        val strokeWidth = 2 * scaleScreenWidthDp // 2dp 边框宽度，乘以屏幕比例
+        val roundRadius = 20 * scaleScreenWidthDp // 20dp 圆角半径，乘以屏幕比例
         gradientDrawable.setColor(fillColor)
         gradientDrawable.cornerRadius = YScreenUtil.dp2px(context, roundRadius).toFloat()
         gradientDrawable.setStroke(YScreenUtil.dp2px(context, strokeWidth), strokeColor)
@@ -156,7 +188,7 @@ abstract class YBaseDialog<B : ViewDataBinding>(
         }
     }
 
-    fun show(str: String?) {
+    open fun show(str: String?) {
         if (str == null || str.isEmpty()) return
         YToast.show(context, str)
     }
@@ -164,7 +196,7 @@ abstract class YBaseDialog<B : ViewDataBinding>(
     /**
      * 缩放动画起点和结束点，在屏幕上的相对位置,x，y为占比。
      */
-    fun setAnimationLocation(animationX: Float, animationY: Float) {
+    open fun setAnimationLocation(animationX: Float, animationY: Float) {
         if (openAnimation) {
             yAnimation.setAnimationLocation(animationX, animationY)
         }
@@ -177,10 +209,5 @@ abstract class YBaseDialog<B : ViewDataBinding>(
         } else {
             super.dismiss()
         }
-    }
-
-    companion object {
-        //开发屏幕最小宽度
-        protected var DevelopmentScreenWidthDp = 720f
     }
 }

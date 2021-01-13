@@ -7,7 +7,7 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
  *
  * @author yujing 2019年2月15日17:23:15
  */
-@SuppressWarnings({"unused", "WeakerAccess"})
+@SuppressWarnings({"WeakerAccess"})
 /* 用法举例
 val yQueue=YQueue()
 //每秒最多赋值一次你好

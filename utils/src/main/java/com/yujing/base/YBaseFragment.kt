@@ -7,12 +7,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
-import com.blankj.rxbus.RxBus
 import com.yujing.base.fragment.YFragment
+import com.yujing.bus.YBus
 import com.yujing.bus.YBusUtil
 import com.yujing.bus.YMessage
 import com.yujing.utils.YToast
-import io.reactivex.android.schedulers.AndroidSchedulers
 
 /**
  * 基础aFragment
@@ -36,67 +35,69 @@ public class OldFragment extends YBaseFragment<Activity1101Binding> {
     }
 }
  */
-abstract class YBaseFragment<B : ViewDataBinding>(var layout: Int) : YFragment() {
-    open val binding: B by lazy { DataBindingUtil.inflate(inflater, layout, container, false) }
+abstract class YBaseFragment<B : ViewDataBinding>(var layout: Int?) : YFragment() {
+    lateinit var binding: B // open val binding: B by lazy { DataBindingUtil.inflate(inflater, layout, container, false) }
     lateinit var inflater: LayoutInflater
     var container: ViewGroup? = null
     var isShow = false
+
+    /** onCreateView*/
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         this.inflater = inflater
         this.container = container
-        binding//第一次使用变量的时候调用lazy初始化变量
-        RxBus.getDefault().subscribeSticky(this, AndroidSchedulers.mainThread(), defaultCallback)
+        if (layout != null)//如果layout==null，请在initBefore里面给binding赋值
+            binding = DataBindingUtil.inflate(inflater, layout!!, container, false)
         YBusUtil.init(this)
+        initBefore()
         init()
+        initAfter()
         return binding.root
     }
 
     /**
-     * 注册默认RxBus
-     */
-    var defaultCallback = object : RxBus.Callback<YMessage<Any>>() {
-        override fun onEvent(yMessage: YMessage<Any>) {
-            this@YBaseFragment.onEvent(yMessage)
-        }
-    }
-
-    /**
-     * RxBus回调
+     * YBus总线消息
      *
-     * @param yMessage 回调内容
+     * @param yMessage 总线内容
      */
-    open fun onEvent(yMessage: YMessage<Any>) {}
+    @YBus()
+    open fun onEvent(yMessage: YMessage<Any>) {
+    }
 
     /**
      * 初始化数据
      */
     protected abstract fun init()
+    open fun initBefore() {}
+    open fun initAfter() {}
 
-    fun show(str: String?) {
+    /**
+     * 显示toast
+     */
+    open fun show(str: String?) {
+        if (str == null) return
         YToast.show(activity, str)
     }
 
-    fun startActivity(classActivity: Class<*>?) {
+    open fun startActivity(classActivity: Class<*>?) {
         val intent = Intent()
         intent.setClass(activity!!, classActivity!!)
         startActivity(intent)
     }
 
-    fun startActivity(classActivity: Class<*>?, resultCode: Int) {
+    open fun startActivity(classActivity: Class<*>?, resultCode: Int) {
         startActivityForResult(classActivity, resultCode)
     }
 
-    fun startActivityForResult(classActivity: Class<*>?, resultCode: Int) {
+    open fun startActivityForResult(classActivity: Class<*>?, resultCode: Int) {
         val intent = Intent()
         intent.setClass(activity!!, classActivity!!)
         startActivityForResult(intent, resultCode)
     }
 
     override fun onDestroy() {
-        RxBus.getDefault().unregister(this)
         YBusUtil.onDestroy(this)
         super.onDestroy()
     }

@@ -18,10 +18,14 @@ import com.yujing.utils.YScreenUtil
  * YBaseDialog的启动关闭动画
  */
 class YBaseDialogAnimation {
+    companion object {
+        private const val TAG = "YAnimation"
+    }
     private var animationX = 0.5f
     private var animationY = 0.5f //动画缩放开始点
     private var dialog: Dialog? = null
     private var view: View? = null
+
     fun init(dialog: Dialog?, view: View?) {
         this.dialog = dialog
         this.view = view
@@ -106,9 +110,5 @@ class YBaseDialogAnimation {
         gradientDrawable.setStroke(YScreenUtil.dp2px(dialog!!.context, strokeWidth), strokeColor)
         //应用背景颜色
         window.setBackgroundDrawable(gradientDrawable)
-    }
-
-    companion object {
-        private const val TAG = "YAnimation"
     }
 }

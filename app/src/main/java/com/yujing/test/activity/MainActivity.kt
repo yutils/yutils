@@ -2,9 +2,11 @@ package com.yujing.test.activity
 
 import android.widget.EditText
 import android.widget.TextView
+import androidx.databinding.DataBindingUtil
 import com.yujing.base.YBaseActivity
 import com.yujing.bus.YBus
 import com.yujing.bus.YBusUtil
+import com.yujing.bus.YMessage
 import com.yujing.test.R
 import com.yujing.test.databinding.ActivityAllTestBinding
 import com.yujing.utils.YDelay
@@ -13,10 +15,13 @@ import com.yujing.utils.YPermissions
 import com.yutils.view.utils.Create
 
 
-class MainActivity : YBaseActivity<ActivityAllTestBinding>(R.layout.activity_all_test) {
+class MainActivity : YBaseActivity<ActivityAllTestBinding>(null) {
     lateinit var textView1: TextView
     lateinit var textView2: TextView
     lateinit var editText1: EditText
+    override fun initBefore() {
+        binding= DataBindingUtil.setContentView(this, R.layout.activity_all_test)
+    }
     override fun init() {
         YPermissions.requestAll(this)
         binding.wll.removeAllViews()
@@ -36,22 +41,29 @@ class MainActivity : YBaseActivity<ActivityAllTestBinding>(R.layout.activity_all
         Create.space(binding.wll)//换行
         editText1 = Create.editText(binding.wll, "123456789")
         Create.button(binding.wll, "发送总线消息") {
+            textView1.text=""
             YBusUtil.post("tag1", editText1.text.toString())
         }
         Create.button(binding.wll, "消息22") {
-            YBusUtil.post("tag2", "22222")
+            textView1.text=""
+            YBusUtil.post("tag2", "222222222")
         }
     }
 
     @YBus("tag1")
-    fun message(message: Any) {
-        YLog.i("收到：$message")
-        textView1.text = "收到:$message"
+    fun message1(message: Any) {
+        YLog.i("收到1：$message")
+        textView1.text = textView1.text.toString() + "收到1:$message \n"
     }
 
     @YBus()
-    fun message(key: Any,message: Any) {
-        YLog.i("收到：$key:$message")
-        textView1.text = "收到：$key:$message"
+    fun message2(key: Any, message: Any) {
+        YLog.i("收到2：$key:$message")
+        textView1.text = textView1.text.toString() +"收到2：$key:$message \n"
+    }
+
+    override fun onEvent(yMessage: YMessage<Any>) {
+        YLog.i("收到3：${yMessage.type}:${yMessage.data}")
+        textView1.text = textView1.text.toString() +"收到3：${yMessage.type}:${yMessage.data} \n"
     }
 }

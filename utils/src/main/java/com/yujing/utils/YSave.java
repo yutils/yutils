@@ -19,8 +19,8 @@ public class YSave {
     private static HashMap<String, Object> cache;    // 缓存，临时缓存
     private static volatile boolean useCache = true;//是否启用缓存
 
-    private Gson gson = new Gson();
-    private Context context;
+    private final Gson gson = new Gson();
+    private final Context context;
     private String path; //保存文件位置
     private String extensionName; //扩展名
 
@@ -129,6 +129,7 @@ public class YSave {
     }
 
     // 读取
+    @SuppressWarnings("unchecked")
     public <T> T get(String key, Class<T> classOfT, Object defaultObject) {
         // 如果使用缓存，直接返回
         if (useCache) {

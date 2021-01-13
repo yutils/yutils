@@ -1,6 +1,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-parcelize'//apply plugin: 'kotlin-android-extensions'
 apply plugin: 'com.github.dcendents.android-maven'
 group = 'com.github.yutils'
 apply plugin: 'org.jetbrains.dokka'
@@ -11,8 +11,8 @@ android {
     defaultConfig {
         minSdkVersion 19
         targetSdkVersion 30
-        versionCode 25
-        versionName "1.3.0"
+        versionCode 26
+        versionName "1.3.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -40,6 +40,33 @@ android {
 
     kotlinOptions {
         jvmTarget = '1.8'
+    }
+
+    dokka {
+        // 输出格式，目前支持五种，html, javadoc,html-as-java, markdown,kotlin-website*
+        outputFormat = 'javadoc'
+        // 文档输出目录(app/build/dokka)
+        outputDirectory = "$buildDir/doc"
+        //配置方式一
+        configuration {
+            noJdkLink = true
+            noStdlibLink = true
+            noAndroidSdkLink = true
+            skipDeprecated = true // Do not output deprecated members
+            reportUndocumented = true // Emit warnings about not documented members.
+            skipEmptyPackages = true // Do not create index pages for empty packages
+        }
+        //配置方式二
+        //configuration {
+        //    noJdkLink = true
+        //    noStdlibLink = true
+        //    noAndroidSdkLink = true
+        //    externalDocumentationLink {
+        //        url = new URL("https://developer.android.google.cn/reference/")
+        //        packageListUrl = new URL("https://developer.android.google.cn/reference/package-list")
+        //        //packageListUrl = new URL("file:///${rootDir}/package-list")
+        //    }
+        //}
     }
 }
 
@@ -77,8 +104,8 @@ dependencies {
     //____________________________________________________________RxJava____________________________________________________________
 }
 
-//打包jar;doc;sources，请在Terminal中运行gradlew makeJar
-def jarName = "yutils1.3.0"
+//打包jar;doc;sources，请在Terminal中运行:gradlew docJar,gradlew sourcesJar,gradlew makeJar
+def jarName = "yutils1.3.1"
 task makeJar(type: Copy) {
     //删除存在的
     delete 'build/libs/' + jarName + ".jar"
@@ -96,28 +123,37 @@ makeJar.dependsOn(build)
 tasks.withType(JavaCompile) {
     options.encoding = "UTF-8"
 }
-task generateSourcesJar(type: Jar) {
+
+task sourcesJar(type: Jar) {
     group = 'jar'
     from android.sourceSets.main.java.srcDirs
     classifier = 'sources'
     archiveName = jarName + '-sources.jar'
 }
-task javadoc(type: Javadoc) {
-    source = android.sourceSets.main.java.srcDirs
-    options.encoding = "UTF-8"
-    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-}
-task dokkaJavadoc(type: org.jetbrains.dokka.gradle.DokkaTask) {
-    outputFormat = "javadoc"
-    outputDirectory = javadoc.destinationDir
-}
-task generateJavadoc(type: Jar, dependsOn: dokkaJavadoc) {
+
+task docJar(type: Jar) {
     group = 'jar'
-    classifier = 'javadoc'
-    from javadoc.destinationDir
-    archiveName = jarName + '-javadoc.jar'
+    from "$buildDir/doc"
+    archiveName = jarName + '-doc.jar'
 }
-artifacts {
-    archives generateJavadoc
-    archives generateSourcesJar
-}
+
+//task javadoc(type: Javadoc) {
+//    source = android.sourceSets.main.java.srcDirs
+//    options.encoding = "UTF-8"
+//    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+//}
+
+//task dokkaJavadoc(type: org.jetbrains.dokka.gradle.DokkaTask) {
+//    outputFormat = "javadoc"
+//    outputDirectory = javadoc.destinationDir
+//}
+//task generateJavadoc(type: Jar, dependsOn: dokkaJavadoc) {
+//    group = 'jar'
+//    classifier = 'javadoc'
+//    from javadoc.destinationDir
+//    archiveName = jarName + '-javadoc.jar'
+//}
+//artifacts {
+//    archives generateJavadoc
+//    archives generateSourcesJar
+//}

@@ -1,9 +1,6 @@
 package com.yujing.bus
 
-import java.lang.annotation.Documented
 import java.lang.annotation.Inherited
-import java.lang.annotation.Retention
-import java.lang.annotation.RetentionPolicy
 
 /**
  * bus注解
@@ -33,9 +30,9 @@ fun message(key: Any,message: Any) {
 //解绑该类
 YBusUtil.onDestroy(this)
 */
-@Documented
+@MustBeDocumented
 @Inherited
-@Retention(RetentionPolicy.RUNTIME) // 注解会在class字节码文件中存在，在运行时可以通过反射获取到
+@kotlin.annotation.Retention(AnnotationRetention.RUNTIME) // 注解会在class字节码文件中存在，在运行时可以通过反射获取到
 @Target(
     AnnotationTarget.FUNCTION,
     AnnotationTarget.PROPERTY_GETTER,
@@ -46,9 +43,7 @@ YBusUtil.onDestroy(this)
     AnnotationTarget.LOCAL_VARIABLE
 )
 annotation class YBus(vararg val tag: String)
-/*
-
-/*___________________________________华丽的分割线,下面是注解______________________________________*/
+/*___________________________________华丽的分割线,下面是注解______________________________________
  @Target(ElementType.TYPE) //接口、类、枚举、注解
  @Target(ElementType.FIELD) //字段、枚举的常量
  @Target(ElementType.METHOD) //方法

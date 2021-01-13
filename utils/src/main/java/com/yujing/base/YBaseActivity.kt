@@ -6,19 +6,18 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
-import com.blankj.rxbus.RxBus
 import com.yujing.base.activity.YActivity
+import com.yujing.bus.YBus
 import com.yujing.bus.YBusUtil
 import com.yujing.bus.YMessage
 import com.yujing.utils.YShow
 import com.yujing.utils.YToast
-import io.reactivex.android.schedulers.AndroidSchedulers
 
 /**
  * 基础activity
  *
  * @param <B> ViewDataBinding
- * @author yujing 2020年12月21日17:01:19
+ * @author yujing 2021年1月13日10:13:26
  */
 /*
 用法：
@@ -38,8 +37,6 @@ public class OldActivity extends YBaseActivity<Activity1101Binding> {
     protected void init() { }
 }
 
-
-
 RxBus用法
 RxBus.getDefault().post(YMessage<Any?>(key,value))
 
@@ -52,42 +49,39 @@ fun message(message: Any) {
     YLog.i("收到：$message")
 }
  */
-abstract class YBaseActivity<B : ViewDataBinding>(var layout: Int) : YActivity() {
-    open val binding: B by lazy { DataBindingUtil.setContentView(this, layout) }
+abstract class YBaseActivity<B : ViewDataBinding>(var layout: Int?) : YActivity() {
+    //open val binding: B by lazy { DataBindingUtil.setContentView(this, layout) }
+    lateinit var binding: B
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding//第一次使用变量的时候调用lazy初始化变量
-        RxBus.getDefault().subscribeSticky(this, AndroidSchedulers.mainThread(), defaultCallback)
+        if (layout != null)//如果layout==null，请在initBefore里面给binding赋值
+            binding = DataBindingUtil.setContentView(this, layout!!)
         YBusUtil.init(this)
-        //YPermissions.requestAll(this)
+        initBefore()//初始化之前执行，这儿可以请求权限：YPermissions.requestAll(this)
         init()
+        initAfter()
     }
 
     /**
-     * 注册默认RxBus
-     */
-    private var defaultCallback = object : RxBus.Callback<YMessage<Any>>() {
-        override fun onEvent(yMessage: YMessage<Any>) {
-            this@YBaseActivity.onEvent(yMessage)
-        }
-    }
-
-    /**
-     * RxBus回调
+     * YBus总线消息
      *
-     * @param yMessage 回调内容
+     * @param yMessage 总线内容
      */
-    open fun onEvent(yMessage: YMessage<Any>) {}
+    @YBus()
+    open fun onEvent(yMessage: YMessage<Any>) {
+    }
 
     /**
      * 初始化数据
      */
     protected abstract fun init()
+    open fun initBefore() {}
+    open fun initAfter() {}
 
     /**
      * 跳转
      */
-    fun startActivity(classActivity: Class<*>?) {
+    open fun startActivity(classActivity: Class<*>?) {
         val intent = Intent()
         intent.setClass(this, classActivity!!)
         startActivity(intent)
@@ -96,14 +90,14 @@ abstract class YBaseActivity<B : ViewDataBinding>(var layout: Int) : YActivity()
     /**
      * 跳转
      */
-    fun startActivity(classActivity: Class<*>?, resultCode: Int) {
+    open fun startActivity(classActivity: Class<*>?, resultCode: Int) {
         startActivityForResult(classActivity, resultCode)
     }
 
     /**
      * 跳转
      */
-    fun startActivityForResult(classActivity: Class<*>?, resultCode: Int) {
+    open fun startActivityForResult(classActivity: Class<*>?, resultCode: Int) {
         val intent = Intent()
         intent.setClass(this, classActivity!!)
         startActivityForResult(intent, resultCode)
@@ -112,21 +106,13 @@ abstract class YBaseActivity<B : ViewDataBinding>(var layout: Int) : YActivity()
     /**
      * 显示toast
      */
-    fun show(str: String?) {
+    open fun show(str: String?) {
         if (str == null) return
         YToast.showLong(applicationContext, str)
     }
 
-    /**
-     * 窗口焦点改变监听
-     */
-    override fun onWindowFocusChanged(hasFocus: Boolean) {
-        super.onWindowFocusChanged(hasFocus)
-    }
-
     override fun onDestroy() {
         System.gc() // 系统自动回收
-        RxBus.getDefault().unregister(this)
         YBusUtil.onDestroy(this)
         super.onDestroy()
     }
