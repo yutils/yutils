@@ -89,7 +89,7 @@ class YBusUtil {
                 //如果只有一个接收参数，而且 @YBus(tag) tag值不为空，就直接返回data
                 val yBus = method.getAnnotation(YBus::class.java)
                 if (yBus != null) {
-                    for (tag in yBus.tag) {
+                    for (tag in yBus.value) {
                         if (tag == yMessage.type) {
                             //如果这个方法有一个参数，直接返回messageData。
                             // 如果这个方法没有参数，直接调用
