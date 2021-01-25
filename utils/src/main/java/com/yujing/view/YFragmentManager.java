@@ -1,7 +1,6 @@
 package com.yujing.view;
 
 import androidx.annotation.IdRes;
-
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
@@ -44,7 +43,7 @@ public class YFragmentManager {
      *
      * @param targetFragment fragment
      */
-    public void showFragment(Fragment targetFragment) {
+    public synchronized void showFragment(Fragment targetFragment) {
         FragmentTransaction transaction = fragmentManager
                 .beginTransaction();
         if (!targetFragment.isAdded()) {
@@ -64,7 +63,7 @@ public class YFragmentManager {
      *
      * @param targetFragment fragment
      */
-    public void hideFragment(Fragment targetFragment) {
+    public synchronized void hideFragment(Fragment targetFragment) {
         if (targetFragment.isAdded())
             fragmentManager.beginTransaction().hide(targetFragment).commit();
     }
@@ -72,7 +71,7 @@ public class YFragmentManager {
     /**
      * 隐藏当前fragment
      */
-    public void hideCurrent() {
+    public synchronized void hideCurrent() {
         if (currentFragment != null && currentFragment.isAdded())
             fragmentManager.beginTransaction().hide(currentFragment).commit();
     }
@@ -80,7 +79,7 @@ public class YFragmentManager {
     /**
      * 显示当前fragment
      */
-    public void showCurrent() {
+    public synchronized void showCurrent() {
         if (currentFragment != null && currentFragment.isAdded())
             fragmentManager.beginTransaction().show(currentFragment).commit();
     }
