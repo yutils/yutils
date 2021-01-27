@@ -47,7 +47,7 @@ interface YLifeEventInterface {
         yEventListener?.let { yEventListeners.remove(yEventListener) }
     }
 
-    fun clearEventListener(yEventListener: YLifeEventListener?) {
+    fun clearEventListener() {
         yEventListeners.clear()
     }
 

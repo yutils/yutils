@@ -3,7 +3,6 @@ package com.yujing.base.activity
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
-import android.view.MotionEvent
 import com.trello.rxlifecycle3.components.support.RxAppCompatActivity
 import com.yujing.base.contract.YLifeEventInterface
 import com.yujing.base.contract.YLifeEventListener
@@ -105,5 +104,6 @@ abstract class YActivity : RxAppCompatActivity(), YLifeEventInterface {
     override fun onDestroy() {
         super<RxAppCompatActivity>.onDestroy()
         super<YLifeEventInterface>.onDestroy()
+        clearEventListener()
     }
 }
