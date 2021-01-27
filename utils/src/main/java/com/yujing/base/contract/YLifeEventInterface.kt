@@ -43,6 +43,14 @@ interface YLifeEventInterface {
         yEventListener?.let { this.yEventListeners.add(it) }
     }
 
+    fun removeEventListener(yEventListener: YLifeEventListener?) {
+        yEventListener?.let { yEventListeners.remove(yEventListener) }
+    }
+
+    fun clearEventListener(yEventListener: YLifeEventListener?) {
+        yEventListeners.clear()
+    }
+
     fun onCreate(savedInstanceState: Bundle?) {
         for (yEventListener in yEventListeners) yEventListener.event(YLifeEvent.onCreate, null)
     }
