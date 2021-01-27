@@ -37,25 +37,28 @@ base.setEventListener { event, obj ->
  */
 interface YLifeEventInterface {
     //-------------------------------------public-------------------------------------
-    var yEventListener: YLifeEventListener?
+    var yEventListeners: MutableList<YLifeEventListener>
 
     fun setEventListener(yEventListener: YLifeEventListener?) {
-        this.yEventListener = yEventListener
+        yEventListener?.let { this.yEventListeners.add(it) }
     }
 
     fun onCreate(savedInstanceState: Bundle?) {
-        yEventListener?.event(YLifeEvent.onCreate, null)
+        for (yEventListener in yEventListeners) yEventListener.event(YLifeEvent.onCreate, null)
     }
 
     fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        yEventListener?.event(
+        for (yEventListener in yEventListeners) yEventListener.event(
             YLifeEvent.onActivityResult,
             YReturn3(requestCode, resultCode, data)
         )
     }
 
     fun onConfigurationChanged(newConfig: Configuration) {
-        yEventListener?.event(YLifeEvent.onConfigurationChanged, newConfig)
+        for (yEventListener in yEventListeners) yEventListener.event(
+            YLifeEvent.onConfigurationChanged,
+            newConfig
+        )
     }
 
     fun onRequestPermissionsResult(
@@ -63,7 +66,7 @@ interface YLifeEventInterface {
         permissions: Array<String>,
         grantResults: IntArray
     ) {
-        yEventListener?.event(
+        for (yEventListener in yEventListeners) yEventListener.event(
             YLifeEvent.onRequestPermissionsResult,
             YReturn3(requestCode, permissions, grantResults)
         )
@@ -71,59 +74,64 @@ interface YLifeEventInterface {
 
 
     fun onStart() {
-        yEventListener?.event(YLifeEvent.onStart, null)
+        for (yEventListener in yEventListeners) yEventListener.event(YLifeEvent.onStart, null)
     }
 
     fun onResume() {
-        yEventListener?.event(YLifeEvent.onResume, null)
+        for (yEventListener in yEventListeners) yEventListener.event(YLifeEvent.onResume, null)
     }
 
     fun onPause() {
-        yEventListener?.event(YLifeEvent.onPause, null)
+        for (yEventListener in yEventListeners) yEventListener.event(YLifeEvent.onPause, null)
     }
 
     fun onRestart() {
-        yEventListener?.event(YLifeEvent.onRestart, null)
+        for (yEventListener in yEventListeners) yEventListener.event(YLifeEvent.onRestart, null)
     }
 
     fun onStop() {
-        yEventListener?.event(YLifeEvent.onStop, null)
+        for (yEventListener in yEventListeners) yEventListener.event(YLifeEvent.onStop, null)
     }
 
     fun onDestroy() {
-        yEventListener?.event(YLifeEvent.onDestroy, null)
+        for (yEventListener in yEventListeners) yEventListener.event(YLifeEvent.onDestroy, null)
     }
 
     //-------------------------------------activity-------------------------------------
 
     fun onNewIntent(intent: Intent?) {
-        yEventListener?.event(YLifeEvent.onNewIntent, null)
+        for (yEventListener in yEventListeners) yEventListener.event(YLifeEvent.onNewIntent, null)
     }
 
     fun onBackPressed() {
-        yEventListener?.event(YLifeEvent.onBackPressed, null)
+        for (yEventListener in yEventListeners) yEventListener.event(YLifeEvent.onBackPressed, null)
     }
 
     fun finish() {
-        yEventListener?.event(YLifeEvent.finish, null)
+        for (yEventListener in yEventListeners) yEventListener.event(YLifeEvent.finish, null)
     }
     //-------------------------------------fragment-------------------------------------
 
     fun onHiddenChanged(hidden: Boolean) {
-        yEventListener?.event(YLifeEvent.onHiddenChanged, hidden)
+        for (yEventListener in yEventListeners) yEventListener.event(
+            YLifeEvent.onHiddenChanged,
+            hidden
+        )
     }
 
     fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        yEventListener?.event(YLifeEvent.onViewCreated, YReturn2(view, savedInstanceState))
+        for (yEventListener in yEventListeners) yEventListener.event(
+            YLifeEvent.onViewCreated,
+            YReturn2(view, savedInstanceState)
+        )
     }
 
-
     fun onDestroyView() {
-        yEventListener?.event(YLifeEvent.onDestroyView, null)
+        for (yEventListener in yEventListeners) yEventListener.event(YLifeEvent.onDestroyView, null)
     }
 
     fun onDetach() {
-        yEventListener?.event(YLifeEvent.onDetach, null)
+        for (yEventListener in yEventListeners) yEventListener.event(YLifeEvent.onDetach, null)
     }
 
 }

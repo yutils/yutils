@@ -52,6 +52,7 @@ fun message(message: Any) {
 abstract class YBaseActivity<B : ViewDataBinding>(var layout: Int?) : YActivity() {
     //open val binding: B by lazy { DataBindingUtil.setContentView(this, layout) }
     lateinit var binding: B
+    var isActive = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (layout != null)//如果layout==null，请在initBefore里面给binding赋值
@@ -111,14 +112,24 @@ abstract class YBaseActivity<B : ViewDataBinding>(var layout: Int?) : YActivity(
         YToast.showLong(applicationContext, str)
     }
 
-    override fun onDestroy() {
-        System.gc() // 系统自动回收
-        YBusUtil.onDestroy(this)
-        super.onDestroy()
+    override fun onStop() {
+        isActive = false
+        super.onStop()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        isActive = true
     }
 
     override fun finish() {
         super.finish()
         YShow.finish()
+    }
+
+    override fun onDestroy() {
+        System.gc() // 系统自动回收
+        YBusUtil.onDestroy(this)
+        super.onDestroy()
     }
 }
