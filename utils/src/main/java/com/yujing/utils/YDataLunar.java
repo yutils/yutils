@@ -10,7 +10,7 @@ import java.util.Locale;
  * @author yujing 2020年7月25日10:09:59
  * 如：20200601 转换后   2020年 闰四月 初十 星期一（鼠年)
  */
-/*
+/*用法
 YDataLunar lunarCalendar = new YDataLunar();
 lunarCalendar.setDate(2020, 6, 1);
 String s = "" + lunarCalendar.getLunarYear() + "\n";//2020

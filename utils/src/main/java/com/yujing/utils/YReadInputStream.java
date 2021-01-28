@@ -12,7 +12,6 @@ import java.io.InputStream;
  *
  * @author yujing 2020年9月22日17:27:55
  */
-
 public class YReadInputStream {
     private static final String TAG = "YRead";
     private static boolean showLog = false;

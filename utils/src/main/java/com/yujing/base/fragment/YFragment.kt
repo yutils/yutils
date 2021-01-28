@@ -27,7 +27,7 @@ activity.lifecycle().subscribe { life ->
 }
  */
 abstract class YFragment : RxFragment(), YLifeEventInterface {
-    override var yEventListener: YLifeEventListener? = null
+    override var yEventListeners: MutableList<YLifeEventListener> = ArrayList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super<RxFragment>.onCreate(savedInstanceState)

@@ -11,6 +11,22 @@ import androidx.fragment.app.FragmentTransaction;
  *
  * @author yujing 2019年11月15日11:07:23
  */
+/*用法
+private var yFragmentManager: YFragmentManager? = null
+private var fragment1: Fragment1? = null
+private var fragment2: Fragment2? = null
+private var fragment3: Fragment3? = null
+
+//实例化fragment
+yFragmentManager = YFragmentManager(R.id.fl_main, this)
+fragment1 = Fragment1()
+fragment2 = Fragment2()
+fragment3 = Fragment3()
+
+
+//显示/切换fragment
+yFragmentManager!!.showFragment(fragment1)
+ */
 public class YFragmentManager {
     private Fragment currentFragment;//当前fragment
     private int layout; //布局

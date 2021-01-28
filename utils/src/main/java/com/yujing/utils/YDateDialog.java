@@ -27,6 +27,19 @@ import java.util.Objects;
  * @author 余静 2018年5月25日09:12:20
  * 最后一次修改
  */
+/*用法
+YDateDialog.setDefaultFullScreen(true);
+YDateDialog yDateDialog = new YDateDialog(activity);
+yDateDialog.setFormat("yyyy年MM月dd日");// 设置日期格式（如："yyyy年MM月dd日HH:mm"）
+yDateDialog.initTime("2018年6月27日");//设置初始化日期，必须和设置格式相同（如："2016年07月01日15:19"）
+yDateDialog.setShowDay(true);// 设置是否显示日滚轮,默认显示
+yDateDialog.setShowTime(false);// 设置是否显示时间滚轮,默认显示
+yDateDialog.setShowMonth(true);// 设置是否显示时间滚轮,默认显示
+yDateDialog.setWindowListener(window -> );
+yDateDialog.show((format, calendar, date, yyyy, MM, dd, HH, mm) -> {
+    
+});
+ */
 @SuppressWarnings({"unused"})
 public class YDateDialog {
     private static volatile boolean defaultFullScreen = false;
@@ -209,20 +222,6 @@ public class YDateDialog {
     public interface DataListener {
         @SuppressWarnings("EmptyMethod")
         void getDataTime(String format, Calendar calendar, Date date, String yyyy, String MM, String dd, String HH, String mm);
-    }
-
-    public static void TEST(Activity activity) {
-        YDateDialog.setDefaultFullScreen(true);
-        YDateDialog yDateDialog = new YDateDialog(activity);
-        yDateDialog.setFormat("yyyy年MM月dd日");// 设置日期格式（如："yyyy年MM月dd日HH:mm"）
-        yDateDialog.initTime("2018年6月27日");//设置初始化日期，必须和设置格式相同（如："2016年07月01日15:19"）
-        yDateDialog.setShowDay(true);// 设置是否显示日滚轮,默认显示
-        yDateDialog.setShowTime(false);// 设置是否显示时间滚轮,默认显示
-        yDateDialog.setShowMonth(true);// 设置是否显示时间滚轮,默认显示
-        yDateDialog.setWindowListener(window -> {
-        });
-        yDateDialog.show((format, calendar, date, yyyy, MM, dd, HH, mm) -> {
-        });
     }
 
     public boolean isCancelable() {

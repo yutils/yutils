@@ -15,7 +15,25 @@ import java.util.Properties;
  *
  * @author 余静 2018年5月15日19:00:17
  */
-@SuppressWarnings({"WeakerAccess", "unused"})
+/*用法
+    public static void TEST() {
+        String path = "tt.properties";
+        HashMap<String, String> ht = new HashMap<>();
+        ht.put("name", "00");
+        // 创建或修改
+        YPropertiesUtils.setValue(path, ht);
+        // 删除
+        YPropertiesUtils.removeValue(path, new String[]{"age", "age2"});
+        // 删除
+        YPropertiesUtils.removeValue(path, "age7777");
+        // 取值
+        String v = YPropertiesUtils.getValue(path, "name");
+        System.out.println("value1 = " + v);
+        // 取值全部
+        Map<String, String> ht2 = YPropertiesUtils.getAll(path);
+        System.out.println(ht2.get("age2"));
+    }
+ */
 public class YPropertiesUtils {
     // ppts的注释
     private static final String NOTES = "this is YuJing property";
@@ -180,27 +198,5 @@ public class YPropertiesUtils {
             } catch (IOException ignored) {
             }
         }
-    }
-
-    public static void main(String[] args) {
-        TEST();
-    }
-
-    public static void TEST() {
-        String path = "tt.properties";
-        HashMap<String, String> ht = new HashMap<>();
-        ht.put("name", "00");
-        // 创建或修改
-        YPropertiesUtils.setValue(path, ht);
-        // 删除
-        YPropertiesUtils.removeValue(path, new String[]{"age", "age2"});
-        // 删除
-        YPropertiesUtils.removeValue(path, "age7777");
-        // 取值
-        String v = YPropertiesUtils.getValue(path, "name");
-        System.out.println("value1 = " + v);
-        // 取值全部
-        Map<String, String> ht2 = YPropertiesUtils.getAll(path);
-        System.out.println(ht2.get("age2"));
     }
 }

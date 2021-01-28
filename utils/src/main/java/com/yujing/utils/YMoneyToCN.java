@@ -8,7 +8,12 @@ import java.math.BigDecimal;
  *
  * @author 余静 2018年5月15日19:00:17
  */
-@SuppressWarnings("unused")
+/*用法
+double money = 2020004.01;
+BigDecimal numberOfMoney = new BigDecimal(money);
+String s = YMoneyToCN.number2CN(numberOfMoney);
+System.out.println("你输入的金额为：【" + money + "】   #--# [" + s + "]");
+ */
 public class YMoneyToCN {
     /**
      * 汉语中数字大写
@@ -122,13 +127,5 @@ public class YMoneyToCN {
             sb.append(CN_FULL);
         }
         return sb.toString();
-    }
-
-    //测试
-    public static void TEST() {
-        double money = 2020004.01;
-        BigDecimal numberOfMoney = new BigDecimal(money);
-        String s = YMoneyToCN.number2CN(numberOfMoney);
-        System.out.println("你输入的金额为：【" + money + "】   #--# [" + s + "]");
     }
 }

@@ -3,6 +3,7 @@ package com.yujing.base.contract
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.View
 import com.yujing.contract.YReturn2
 import com.yujing.contract.YReturn3
@@ -80,6 +81,14 @@ interface YLifeEventInterface {
         )
     }
 
+    fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        for (yEventListener in yEventListeners) yEventListener.event(
+            YLifeEvent.onKeyDown,
+            YReturn2(keyCode, event)
+        )
+        //这儿返回值，不作判断，无效，因为可能多个地方调用onKeyDown，无法判断应返回内容
+        return true
+    }
 
     fun onStart() {
         for (yEventListener in yEventListeners) yEventListener.event(YLifeEvent.onStart, null)

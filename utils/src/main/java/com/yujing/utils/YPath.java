@@ -12,7 +12,12 @@ import static android.os.Environment.MEDIA_MOUNTED;
  *
  * @author yujing  2019年3月28日09:48:19
  */
-
+/*常用
+    常用1
+    val path = YPath.getFilePath(App.get(), "配置") + "/" + "name.txt"
+    常用2
+    val file = File(YPath.getFilePath(App.get()) + "/" + "name.txt")
+ */
 @SuppressWarnings({"unused"})
 public class YPath {
     /**
@@ -72,11 +77,11 @@ public class YPath {
     /**
      * 获得缓存目录，不需要申请权限
      * 优先
-     *
+     * <p>
      * 用于获取APP的在SD卡中的cache目录
      * /mnt/sdcard/Android/data/com.xx.xx/cache
      * /storage/emulated/0/Android/data/com.xx.xx/cache
-     *
+     * <p>
      * 用于获取APP的cache目录
      * /data/data/com.xx.xx/cache
      * /data/user/0/com.xx.xx/cache
@@ -170,6 +175,7 @@ public class YPath {
      * 需要申请权限
      * /storage/emulated/0
      * /sdcard
+     *
      * @return 路径
      */
     public static String getSDCard() {

@@ -20,6 +20,27 @@ import java.util.List;
  *
  * @author yujing 2020年2月12日16:01:27
  */
+/*用法
+//请求全部Manifest中注册的权限，不判断成功
+YPermissions.requestAll(this)
+
+或者,//请求部分权限，并且判断成功
+lateinit  var yPermissions:YPermissions
+
+override fun initAfter() {
+    yPermissions= YPermissions(this)
+    //请求部分权限
+    yPermissions.request( Manifest.permission.WRITE_SETTINGS, Manifest.permission.READ_PHONE_STATE)
+    //yPermissions.requestAll()//请求全部Manifest中注册的权限
+    yPermissions.setSuccessListener {   }//请求权限成功
+    yPermissions.setFailListener { list ->   }//未拿到的权限列表
+}
+
+override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+    super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    yPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults)
+}
+ */
 public class YPermissions {
     public static int requestCode = 888;
     private Activity activity;

@@ -1,34 +1,51 @@
-package com.yutils.view;
+package com.yujing.view;
 
 
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
-
-
-import com.yujing.test.R;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * 瀑布流布局
+ *
+ * @author yujing 2021年1月28日13:43:33
  */
-public class WarpLinearLayout extends ViewGroup {
+/*用法
+//xml
+<com.yujing.view.YWarpLinearLayout
+    android:id="@+id/wll"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center" />
+
+//动态改变
+binding.wll.vertical_Space = 20F //垂直间距
+binding.wll.horizontal_Space = 20F //水平间距
+binding.wll.gravity = 2 //对齐方式 right 0，left 1，center 2
+//binding.wll.isFull = true //横屏拉伸
+binding.wll.requestLayout() //刷新view内容
+binding.wll.invalidate()    //刷新view大小
+ */
+public class YWarpLinearLayout extends ViewGroup {
     private Type mType;
     private List<WarpLine> mWarpLineGroup;
 
-    public WarpLinearLayout(Context context) {
+    public YWarpLinearLayout(Context context) {
         this(context, null);
+        mType = new Type(context, null);
     }
 
-    public WarpLinearLayout(Context context, AttributeSet attrs) {
-        this(context, attrs, R.style.WarpLinearLayoutDefault);
+    public YWarpLinearLayout(Context context, AttributeSet attrs) {
+        //this(context, attrs, R.style.WarpLinearLayoutDefault);
+        super(context, attrs);
+        mType = new Type(context, attrs);
     }
 
-    public WarpLinearLayout(Context context, AttributeSet attrs, int defStyleAttr) {
+    public YWarpLinearLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         mType = new Type(context, attrs);
     }
@@ -145,7 +162,7 @@ public class WarpLinearLayout extends ViewGroup {
                     view.layout(left, t, left + view.getMeasuredWidth() + lastWidth / warpLine.lineView.size(), t + view.getMeasuredHeight());
                     left += view.getMeasuredWidth() + mType.horizontal_Space + lastWidth / warpLine.lineView.size();
                 } else {
-                    switch (getGrivate()) {
+                    switch (getGravity()) {
                         case 0://右对齐
                             view.layout(left + lastWidth, t, left + lastWidth + view.getMeasuredWidth(), t + view.getMeasuredHeight());
                             break;
@@ -194,7 +211,7 @@ public class WarpLinearLayout extends ViewGroup {
         /*
          *对齐方式 right 0，left 1，center 2
          */
-        private int grivate;
+        private int gravity;
         /**
          * 水平间距,单位px
          */
@@ -209,19 +226,23 @@ public class WarpLinearLayout extends ViewGroup {
         private boolean isFull;
 
         Type(Context context, AttributeSet attrs) {
-            if (attrs == null) {
-                return;
-            }
-            TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.WarpLinearLayout);
-            grivate = typedArray.getInt(R.styleable.WarpLinearLayout_grivate, grivate);
-            horizontal_Space = typedArray.getDimension(R.styleable.WarpLinearLayout_horizontal_Space, horizontal_Space);
-            vertical_Space = typedArray.getDimension(R.styleable.WarpLinearLayout_vertical_Space, vertical_Space);
-            isFull = typedArray.getBoolean(R.styleable.WarpLinearLayout_isFull, isFull);
+            gravity = 1;
+            horizontal_Space = 0;
+            vertical_Space = 0;
+            isFull = false;
+            //if (attrs == null) {
+            //    return;
+            //}
+            //TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.WarpLinearLayout);
+            //grivate = typedArray.getInt(R.styleable.WarpLinearLayout_gravity, grivate);
+            //horizontal_Space = typedArray.getDimension(R.styleable.WarpLinearLayout_horizontal_Space, horizontal_Space);
+            //vertical_Space = typedArray.getDimension(R.styleable.WarpLinearLayout_vertical_Space, vertical_Space);
+            //isFull = typedArray.getBoolean(R.styleable.WarpLinearLayout_isFull, isFull);
         }
     }
 
-    public int getGrivate() {
-        return mType.grivate;
+    public int getGravity() {
+        return mType.gravity;
     }
 
     public float getHorizontal_Space() {
@@ -236,8 +257,12 @@ public class WarpLinearLayout extends ViewGroup {
         return mType.isFull;
     }
 
-    public void setGrivate(int grivate) {
-        mType.grivate = grivate;
+    public void setFull(boolean isFull) {
+        mType.isFull = isFull;
+    }
+
+    public void setGravity(int gravity) {
+        mType.gravity = gravity;
     }
 
     public void setHorizontal_Space(float horizontal_Space) {
@@ -246,9 +271,5 @@ public class WarpLinearLayout extends ViewGroup {
 
     public void setVertical_Space(float vertical_Space) {
         mType.vertical_Space = vertical_Space;
-    }
-
-    public void setIsFull(boolean isFull) {
-        mType.isFull = isFull;
     }
 }

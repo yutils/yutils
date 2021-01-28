@@ -23,33 +23,32 @@ import java.util.Objects;
  * @author yujing 2020年8月8日00:08:58
  * @version 1.2 兼容安卓10.0
  */
-/*
-    用法:
-     //创建对象
-     private val yPicture: YPicture = YPicture()
-     //打开相机
-     yPicture.gotoCamera(this)
-     //打开相册
-     yPicture.gotoAlbum(this)
-     //剪切图片
-     uri?.let { yPicture.gotoCrop(this, uri, 400, 400) }
-     //设置拍照回调
-     yPicture.setPictureFromCameraListener { uri, file, Flag ->
-        val bitmap = YConvert.uri2Bitmap(this, uri)
-    }
-    //设置剪切回调
-    yPicture.setPictureFromCropListener { uri, file, Flag ->
-        val bitmap = YConvert.uri2Bitmap(this, uri)
-    }
-    //设置相册回调
-    yPicture.setPictureFromAlbumListener { uri, file, Flag ->
-        val bitmap = YConvert.uri2Bitmap(this, uri)
-    }
-    //onActivityResult
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        yPicture.onActivityResult(requestCode, resultCode, data)
-    }
+/*用法:
+//创建对象
+private val yPicture: YPicture = YPicture()
+//打开相机
+yPicture.gotoCamera(this)
+//打开相册
+yPicture.gotoAlbum(this)
+//剪切图片
+uri?.let { yPicture.gotoCrop(this, uri, 400, 400) }
+//设置拍照回调
+yPicture.setPictureFromCameraListener { uri, file, Flag ->
+    val bitmap = YConvert.uri2Bitmap(this, uri)
+}
+//设置剪切回调
+yPicture.setPictureFromCropListener { uri, file, Flag ->
+    val bitmap = YConvert.uri2Bitmap(this, uri)
+}
+//设置相册回调
+yPicture.setPictureFromAlbumListener { uri, file, Flag ->
+    val bitmap = YConvert.uri2Bitmap(this, uri)
+}
+//onActivityResult
+override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+    super.onActivityResult(requestCode, resultCode, data)
+    yPicture.onActivityResult(requestCode, resultCode, data)
+}
  */
 @SuppressWarnings("unused")
 public class YPicture {

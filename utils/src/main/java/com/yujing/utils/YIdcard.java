@@ -16,6 +16,15 @@ import java.util.Set;
  * --18位身份证号码
  * ：第7、8、9、10位为出生年份(四位数)，第11、第12位为出生月份，第13、14位代表出生日期，第17位代表性别，奇数为男，偶数为女。
  */
+/*用法
+String idcard15 = "142431199001145";// 15位
+String idcard18 = "511321199206255595";// 18位
+YIdcard iv = new YIdcard();
+System.out.println(idcard15+":"+iv.isIdcard(idcard15));
+System.out.println(idcard18+":"+iv.isIdcard(idcard18));
+IdcardInfo ie = (new YIdcard()).new IdcardInfo(idcard18);
+System.out.println(ie.toString());
+ */
 @SuppressWarnings({ "unchecked", "unused", "all" })
 public class YIdcard {
 
@@ -473,14 +482,5 @@ public class YIdcard {
 			return "省份：" + this.province + ",性别：" + this.gender + ",出生日期："
 					+ this.birthday;
 		}
-	}
-	public static void Test() {
-		String idcard15 = "142431199001145";// 15位
-		String idcard18 = "511321199206255595";// 18位
-		YIdcard iv = new YIdcard();
-		System.out.println(idcard15+":"+iv.isIdcard(idcard15));
-		System.out.println(idcard18+":"+iv.isIdcard(idcard18));
-		IdcardInfo ie = (new YIdcard()).new IdcardInfo(idcard18);
-		System.out.println(ie.toString());
 	}
 }

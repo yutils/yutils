@@ -6,6 +6,7 @@ import android.view.TextureView;
 
 /**
  * 可以调整到指定的纵横比的TextureView
+ * YCamera用到
  */
 public class AutoFitTextureView extends TextureView {
 

@@ -16,6 +16,7 @@ public enum YLifeEvent {
     onStop,
     onDestroy,
     //activity
+    onKeyDown,
     onNewIntent,
     onBackPressed,
     finish,

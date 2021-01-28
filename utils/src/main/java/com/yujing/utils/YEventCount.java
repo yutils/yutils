@@ -5,6 +5,17 @@ package com.yujing.utils;
  *
  * @author 余静 2018年5月15日19:00:17
  */
+/*
+private var eventBack = YEventCount(2000, 2) //2秒内按2次
+
+//退出
+eventBack.setEventSuccessListener { finish() }
+eventBack.setEventFailListener { _: Long -> show("再按一次退出") }
+
+override fun onBackPressed() {
+    eventBack.event()
+}
+ */
 @SuppressWarnings("unused")
 public class YEventCount {
     private int frequency = 1;//当前是第几次

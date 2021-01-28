@@ -3,6 +3,7 @@ package com.yujing.base.activity
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
+import android.view.KeyEvent
 import com.trello.rxlifecycle3.components.support.RxAppCompatActivity
 import com.yujing.base.contract.YLifeEventInterface
 import com.yujing.base.contract.YLifeEventListener
@@ -66,6 +67,12 @@ abstract class YActivity : RxAppCompatActivity(), YLifeEventInterface {
         super<YLifeEventInterface>.onNewIntent(intent)
     }
 
+    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        //这儿返回值，不作判断，无效，因为可能多个地方调用onKeyDown，无法判断应返回内容
+        super<YLifeEventInterface>.onKeyDown(keyCode, event)
+        return super<RxAppCompatActivity>.onKeyDown(keyCode, event)
+    }
+
     override fun onStart() {
         super<RxAppCompatActivity>.onStart()
         super<YLifeEventInterface>.onStart()
@@ -106,4 +113,5 @@ abstract class YActivity : RxAppCompatActivity(), YLifeEventInterface {
         super<YLifeEventInterface>.onDestroy()
         clearEventListener()
     }
+
 }
