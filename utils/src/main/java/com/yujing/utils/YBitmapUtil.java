@@ -147,4 +147,43 @@ public class YBitmapUtil {
         }
         return mBitmap;
     }
+
+    /**
+     * 截取中心正方形
+     * @param bitmap     原图
+     * @param edgeLength 希望得到的正方形部分的边长
+     * @return 缩放截取正中部分后的位图。
+     * 需要注的是bitmap参数一定要是从原图得到的，如果是已经经过BitmapFactory inSampleSize压缩过的，可能会不是到正方形。
+     */
+    public static Bitmap centerSquareScaleBitmap(Bitmap bitmap, int edgeLength) {
+        if (null == bitmap || edgeLength <= 0)
+            return null;
+        Bitmap result = bitmap;
+        int widthOrg = bitmap.getWidth();
+        int heightOrg = bitmap.getHeight();
+        if (widthOrg > edgeLength && heightOrg > edgeLength) {
+            //压缩到一个最小长度是edgeLength的bitmap
+            int longerEdge = (int) (edgeLength * Math.max(widthOrg, heightOrg) / Math.min(widthOrg, heightOrg));
+            int scaledWidth = widthOrg > heightOrg ? longerEdge : edgeLength;
+            int scaledHeight = widthOrg > heightOrg ? edgeLength : longerEdge;
+            Bitmap scaledBitmap;
+            try {
+                scaledBitmap = Bitmap.createScaledBitmap(bitmap, scaledWidth, scaledHeight, true);
+            } catch (Exception e) {
+                YLog.e("裁剪正方形bitmap异常",e);
+                return null;
+            }
+            //从图中截取正中间的正方形部分。
+            int xTopLeft = (scaledWidth - edgeLength) / 2;
+            int yTopLeft = (scaledHeight - edgeLength) / 2;
+            try {
+                result = Bitmap.createBitmap(scaledBitmap, xTopLeft, yTopLeft, edgeLength, edgeLength);
+                scaledBitmap.recycle();
+            } catch (Exception e) {
+                YLog.e("裁剪正方形bitmap异常", e);
+                return null;
+            }
+        }
+        return result;
+    }
 }
