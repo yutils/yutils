@@ -121,7 +121,7 @@ public class YDateDialog {
             try {
                 calendar.setTime(Objects.requireNonNull(sdf.parse(initDateTime)));
             } catch (ParseException e) {
-                Log.e("YDateDialog", Objects.requireNonNull(e.getMessage()));
+                Log.e("YDateDialog", "show异常", e);
             }
         }
         if (initDate != null) {

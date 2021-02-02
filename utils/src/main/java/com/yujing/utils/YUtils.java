@@ -290,9 +290,8 @@ public class YUtils {
         int verCode = -1;
         try {
             verCode = context.getPackageManager().getPackageInfo(packageName, 0).versionCode;
-            Log.d("getVersionCode:", String.valueOf(verCode));
         } catch (PackageManager.NameNotFoundException e) {
-            Log.e("getVersionCode", Objects.requireNonNull(e.getMessage()));
+            Log.e("getVersionCode", "异常", e);
         }
         return verCode;
     }
@@ -318,9 +317,8 @@ public class YUtils {
         String verName = "";
         try {
             verName = context.getPackageManager().getPackageInfo(packageName, 0).versionName;
-            Log.d("getVersionName:", verName);
         } catch (PackageManager.NameNotFoundException e) {
-            Log.e("getVersionName", Objects.requireNonNull(e.getMessage()));
+            Log.e("getVersionName", "异常", e);
         }
         return verName;
     }
@@ -780,8 +778,8 @@ public class YUtils {
                     }
                 }
             }
-        } catch (SocketException ex) {
-            Log.e("获取IPv6失败", ex.toString());
+        } catch (SocketException e) {
+            Log.e("获取IPv6失败", "异常", e);
         }
         return ips;
     }
@@ -803,8 +801,8 @@ public class YUtils {
                     }
                 }
             }
-        } catch (SocketException ex) {
-            Log.e("获取IPv4失败", ex.toString());
+        } catch (SocketException e) {
+            Log.e("获取IPv4失败", "异常", e);
         }
         return ips;
     }
@@ -930,6 +928,7 @@ public class YUtils {
 
     /**
      * 判断是否是安卓中运行
+     *
      * @return 是否安卓
      */
     public static boolean isAndroid() {

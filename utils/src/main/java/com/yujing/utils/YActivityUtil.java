@@ -9,10 +9,21 @@ import java.util.Stack;
 
 /**
  * activity操作记录类
- * 用法：在application的onCreate中加入：registerActivityLifecycleCallbacks(YActivityUtil.getActivityLifecycleCallbacks())
+ * 用法：在application的onCreate中加入：
+ * registerActivityLifecycleCallbacks(YActivityUtil.getActivityLifecycleCallbacks())
+ * 或
+ * ActivityUtil.init(mContext);
  *
  * @author yujing 2020年4月15日14:23:14
  */
+
+/*
+用法：
+//在application的onCreate中加入：
+ActivityUtil.init(mContext);
+//或
+registerActivityLifecycleCallbacks(YActivityUtil.getActivityLifecycleCallbacks())
+*/
 @SuppressWarnings("unused")
 public class YActivityUtil {
     //Stack(栈)，后进先出

@@ -15,7 +15,6 @@ public class YApp {
 
     public static void init(Application context) {
         mContext = context;
-        YActivityUtil.init(mContext);
     }
 
     public static Application get() {
