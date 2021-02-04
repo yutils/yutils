@@ -13,8 +13,8 @@ android {
     defaultConfig {
         minSdkVersion 19
         targetSdkVersion 30
-        versionCode 28
-        versionName "1.3.3"
+        versionCode 29
+        versionName "1.3.4"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -80,7 +80,7 @@ dependencies {
 }
 
 //打包jar;doc;sources，请在Terminal中运行：gradlew makeJar，如果失败，先执行：gradlew assembleDebug --rerun-tasks
-def jarName = "yutils1.3.3"
+def jarName = "yutils1.3.4"
 task makeJar(type: Copy) {
     //删除存在的
     delete 'build/libs/' + jarName + ".jar"
