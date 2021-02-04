@@ -108,7 +108,12 @@ class YBusUtil {
         }
 
         fun postSticky(tag: String, value: Any?) {
+            removeSticky()
             RxBus.getDefault().postSticky(YMessage(tag, value))
+        }
+
+        fun removeSticky() {
+            RxBus.getDefault().removeSticky(YMessage(null, null))
         }
 
         /**

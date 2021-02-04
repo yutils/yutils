@@ -57,10 +57,10 @@ abstract class YBaseActivity<B : ViewDataBinding>(var layout: Int?) : YActivity(
         super.onCreate(savedInstanceState)
         if (layout != null)//如果layout==null，请在initBefore里面给binding赋值
             binding = DataBindingUtil.setContentView(this, layout!!)
-        YBusUtil.init(this)
         initBefore()//初始化之前执行，这儿可以请求权限：YPermissions.requestAll(this)
         init()
         initAfter()
+        YBusUtil.init(this)
     }
 
     /**

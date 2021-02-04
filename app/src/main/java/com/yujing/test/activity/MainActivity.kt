@@ -7,14 +7,14 @@ import com.yujing.base.YBaseActivity
 import com.yujing.bus.YBus
 import com.yujing.bus.YBusUtil
 import com.yujing.bus.YMessage
-import com.yujing.test.App
 import com.yujing.test.R
 import com.yujing.test.databinding.ActivityAllTestBinding
-import com.yujing.utils.YDelay
 import com.yujing.utils.YLog
-import com.yujing.utils.YPath
 import com.yujing.utils.YPermissions
 import com.yutils.view.utils.Create
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 
 
 class MainActivity : YBaseActivity<ActivityAllTestBinding>(null) {
@@ -23,6 +23,7 @@ class MainActivity : YBaseActivity<ActivityAllTestBinding>(null) {
     lateinit var editText1: EditText
     override fun initBefore() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_all_test)
+        EventBus.getDefault().register(this)
     }
 
     override fun init() {
@@ -31,33 +32,6 @@ class MainActivity : YBaseActivity<ActivityAllTestBinding>(null) {
         binding.ll.removeAllViews()
         textView1 = Create.textView(binding.ll)
         textView2 = Create.textView(binding.ll)
-        Create.button(binding.wll, "弹出dialog") {
-            val testDialog = TestDialog(this)
-            testDialog.show()
-        }
-        Create.button(binding.wll, "测试") {
-            YDelay.run(2000) {
-                show("测试2")
-            }
-            show("测试1")
-        }
-        Create.space(binding.wll)//换行
-        editText1 = Create.editText(binding.wll, "123456789")
-        Create.button(binding.wll, "发送总线消息") {
-            textView1.text = ""
-            YBusUtil.post("tag1", editText1.text.toString())
-        }
-        Create.button(binding.wll, "消息22") {
-            textView1.text = ""
-            YBusUtil.post("tag2", "222222222")
-        }
-        Create.space(binding.wll)//换行
-
-        Create.button(binding.wll, "文件路径") {
-            val path = YPath.getFilePath(App.get(), "配置") + "/" + "AAA.txt"
-            YLog.i(path)
-            show(path)
-        }
         Create.button(binding.wll, "更改间距") {
             binding.wll.vertical_Space = 20F
             binding.wll.horizontal_Space = 20F
@@ -65,6 +39,58 @@ class MainActivity : YBaseActivity<ActivityAllTestBinding>(null) {
             //binding.wll.isFull = true
             binding.wll.requestLayout()
             binding.wll.invalidate()
+        }
+        Create.button(binding.wll, "弹出dialog") {
+            val testDialog = TestDialog(this)
+            testDialog.show()
+        }
+        Create.button(binding.wll, "清除屏幕") {
+            textView1.text = ""
+        }
+        //--------------------------------------------------------------------------------
+        Create.space(binding.wll)//换行
+        editText1 = Create.editText(binding.wll, "123456789")
+        Create.button(binding.wll, "Ybus发送消息1") {
+            YBusUtil.post("tag1", editText1.text.toString())
+        }
+        Create.button(binding.wll, "Ybus发送消息2") {
+            YBusUtil.post("tag2", "222222222")
+        }
+        //--------------------------------------------------------------------------------
+        Create.space(binding.wll)//换行
+        Create.button(binding.wll, "EventBus,发送0") {
+            EventBus.getDefault().post("你好0")
+
+        }
+        Create.button(binding.wll, "EventBus,粘性1") {
+            EventBus.getDefault().postSticky("你好1")
+        }
+        Create.button(binding.wll, "删除粘性1") {
+            EventBus.getDefault().removeStickyEvent("你好1")
+        }
+
+        val ym = YMessage("tag1", "value1")
+        Create.button(binding.wll, "EventBus,粘性2") {
+            EventBus.getDefault().postSticky(ym)
+        }
+
+        Create.button(binding.wll, "删除粘性2") {
+            EventBus.getDefault().removeStickyEvent(ym)
+        }
+
+        //--------------------------------------------------------------------------------
+        Create.space(binding.wll)//换行
+        Create.button(binding.wll, "发送粘性事件1") {
+            YBusUtil.postSticky("粘性事件", "你好啊！11")
+        }
+        Create.button(binding.wll, "发送粘性事件2") {
+            YBusUtil.postSticky("粘性事件", "你好啊！22")
+        }
+        Create.button(binding.wll, "删除粘性事件") {
+            YBusUtil.removeSticky()
+        }
+        Create.button(binding.wll, "跳转页面2") {
+            startActivity(Test2Activity::class.java)
         }
     }
 
@@ -74,14 +100,25 @@ class MainActivity : YBaseActivity<ActivityAllTestBinding>(null) {
         textView1.text = textView1.text.toString() + "收到1:$message \n"
     }
 
-    @YBus()
+    @YBus
     fun message2(key: Any, message: Any) {
         YLog.i("收到2：$key:$message")
         textView1.text = textView1.text.toString() + "收到2：$key:$message \n"
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
+    fun onGetMessage(message: String) {
+        YLog.i("收到4：$message")
+        textView1.text = textView1.text.toString() + "收到4：$message \n"
+    }
+
     override fun onEvent(yMessage: YMessage<Any>) {
         YLog.i("收到3：${yMessage.type}:${yMessage.data}")
         textView1.text = textView1.text.toString() + "收到3：${yMessage.type}:${yMessage.data} \n"
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        EventBus.getDefault().unregister(this)
     }
 }

@@ -50,10 +50,10 @@ abstract class YBaseFragment<B : ViewDataBinding>(var layout: Int?) : YFragment(
         this.container = container
         if (layout != null)//如果layout==null，请在initBefore里面给binding赋值
             binding = DataBindingUtil.inflate(inflater, layout!!, container, false)
-        YBusUtil.init(this)
         initBefore()
         init()
         initAfter()
+        YBusUtil.init(this)
         return binding.root
     }
 
