@@ -3,6 +3,7 @@ package com.yujing.test.activity
 import android.widget.EditText
 import android.widget.TextView
 import androidx.databinding.DataBindingUtil
+import com.blankj.utilcode.util.LogUtils
 import com.yujing.base.YBaseActivity
 import com.yujing.bus.YBus
 import com.yujing.bus.YBusUtil
@@ -92,6 +93,9 @@ class MainActivity : YBaseActivity<ActivityAllTestBinding>(null) {
         Create.button(binding.wll, "跳转页面2") {
             startActivity(Test2Activity::class.java)
         }
+
+        //--------------------------------------------------------------------------------
+
     }
 
     @YBus("tag1")

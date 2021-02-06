@@ -4,10 +4,12 @@ import android.annotation.SuppressLint;
 import android.util.Log;
 
 import com.yujing.contract.YLogListener;
+import com.yujing.contract.YLogSaveListener;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Formatter;
 import java.util.List;
 
 /**
@@ -42,6 +44,8 @@ public class YLog {
     private static String TAG = "YLog";
     //日志回调监听
     private static YLogListener logListener;
+    //日志保存回调监听
+    private static YLogSaveListener logSaveListener;
     //类型
     private static final int VERBOSE = 2;
     private static final int DEBUG = 3;
@@ -50,11 +54,11 @@ public class YLog {
     private static final int ERROR = 6;
 
     public static void v(String msg) {
-        v(TAG, msg);
+        println(TAG, msg, null, VERBOSE);
     }
 
     public static void v(String TAG, String msg) {
-        v(TAG, msg, null);
+        println(TAG, msg, null, VERBOSE);
     }
 
     public static void v(String TAG, String msg, Throwable tr) {
@@ -62,11 +66,11 @@ public class YLog {
     }
 
     public static void d(String msg) {
-        d(TAG, msg);
+        println(TAG, msg, null, DEBUG);
     }
 
     public static void d(String TAG, String msg) {
-        d(TAG, msg, null);
+        println(TAG, msg, null, DEBUG);
     }
 
     public static void d(String TAG, String msg, Throwable tr) {
@@ -74,11 +78,11 @@ public class YLog {
     }
 
     public static void i(String msg) {
-        i(TAG, msg);
+        println(TAG, msg, null, INFO);
     }
 
     public static void i(String TAG, String msg) {
-        i(TAG, msg, null);
+        println(TAG, msg, null, INFO);
     }
 
     public static void i(String TAG, String msg, Throwable tr) {
@@ -86,11 +90,11 @@ public class YLog {
     }
 
     public static void w(String msg) {
-        w(TAG, msg);
+        println(TAG, msg, null, WARN);
     }
 
     public static void w(String TAG, String msg) {
-        w(TAG, msg, null);
+        println(TAG, msg, null, WARN);
     }
 
     public static void w(String TAG, String msg, Throwable tr) {
@@ -98,31 +102,39 @@ public class YLog {
     }
 
     public static void e(String msg) {
-        e(TAG, msg);
+        println(TAG, "ERROR", null, ERROR);
     }
 
     public static void e(String TAG, String msg) {
-        e(TAG, msg, null);
+        println(TAG, "ERROR", null, ERROR);
     }
 
     public static void e(String TAG, Throwable tr) {
-        e(TAG, "ERROR", tr);
+        println(TAG, "ERROR", tr, ERROR);
     }
 
     public static void e(Throwable tr) {
-        e(TAG, "ERROR", tr);
+        println(TAG, "ERROR", tr, ERROR);
     }
 
     public static void e(String TAG, String msg, Throwable tr) {
         println(TAG, msg, tr, ERROR);
     }
 
-    public static void json(String str) {
-        json(TAG, str);
+    public static void dJson(String str) {
+        println(TAG, YUtils.jsonFormat(str), null, DEBUG);
     }
 
-    public static void json(String TAG, String str) {
-        d(TAG, YUtils.jsonFormat(str));
+    public static void dJson(String TAG, String str) {
+        println(TAG, YUtils.jsonFormat(str), null, DEBUG);
+    }
+
+    public static void iJson(String str) {
+        println(TAG, YUtils.jsonFormat(str), null, INFO);
+    }
+
+    public static void iJson(String TAG, String str) {
+        println(TAG, YUtils.jsonFormat(str), null, INFO);
     }
 
     public static YLogListener getLogListener() {
@@ -133,6 +145,14 @@ public class YLog {
         YLog.logListener = logListener;
     }
 
+    public static YLogSaveListener getLogSaveListener() {
+        return logSaveListener;
+    }
+
+    public static void setLogSaveListener(YLogSaveListener logSaveListener) {
+        YLog.logSaveListener = logSaveListener;
+    }
+
     //如 save("路径",“v”,“错误”,“网络异常”);
     public static void save(String path, String type, String tag, String msg) {
         String saveString = formatTime.format(new Date()) + "\t" + type + "\t" + (TAG.equals(tag) ? "log" : tag) + ":" + msg + "\n";
@@ -141,8 +161,8 @@ public class YLog {
 
     public static void save(String type, String tag, String msg) {
         if (saveLogDir == null) return;
-        if (logListener != null) {
-            boolean isSave = logListener.value(type, tag, msg);
+        if (logSaveListener != null) {
+            boolean isSave = logSaveListener.value(type, tag, msg);
             if (isSave)
                 save(saveLogDir + "/" + formatDate.format(new Date()) + ".log", type, tag, msg);
         } else {
@@ -214,21 +234,40 @@ public class YLog {
      * @param type 类型
      */
     private static void println(String TAG, String msg, Throwable tr, int type) {
-        List<StringBuilder> lines = YString.groupActual(msg, LOG_MAX_LENGTH);
+        if (msg == null) {
+            String codeLine = getLine(3);
+            Log.e(TAG, codeLine + " \n" + "日志内容为:null", tr);
+            return;
+        }
+        String codeLine = getLine(3);
+        List<StringBuilder> lines = YString.groupActual(msg, LOG_MAX_LENGTH - codeLine.length() - 10);
         int i = 1;
         for (StringBuilder item : lines) {
-            String tag = lines.size() == 1 ? TAG : TAG + i;
+            //第一行要显示代码line，只有行就不显示line1行数
+            String value = (i == 1 ? "★" + codeLine : "★--->" + i) + " \n" + item.toString();
             if (type == VERBOSE)
-                Log.v(tag, item.toString(), tr);
+                Log.v(TAG, value, tr);
             else if (type == DEBUG)
-                Log.d(tag, item.toString(), tr);
+                Log.d(TAG, value, tr);
             else if (type == INFO)
-                Log.i(tag, item.toString(), tr);
+                Log.i(TAG, value, tr);
             else if (type == WARN)
-                Log.w(tag, item.toString(), tr);
+                Log.w(TAG, value, tr);
             else if (type == ERROR)
-                Log.e(tag, item.toString(), tr);
+                Log.e(TAG, value, tr);
             i++;
+        }
+        if (logListener != null) {
+            if (type == VERBOSE)
+                logListener.value("v", TAG, msg);
+            else if (type == DEBUG)
+                logListener.value("d", TAG, msg);
+            else if (type == INFO)
+                logListener.value("i", TAG, msg);
+            else if (type == WARN)
+                logListener.value("w", TAG, msg);
+            else if (type == ERROR)
+                logListener.value("e", TAG, msg);
         }
         if (isSave) {
             if (type == VERBOSE)
@@ -242,5 +281,30 @@ public class YLog {
             else if (type == ERROR)
                 save("e", TAG, msg);
         }
+    }
+
+    public static String getLine(int stackIndex) {
+        final StackTraceElement[] stackTrace = new Throwable().getStackTrace();
+        StackTraceElement targetElement = stackTrace[stackIndex];
+        final String fileName = getFileName(targetElement);
+        return new Formatter()
+                .format("%s, %s.%s(%s:%d)",
+                        Thread.currentThread().getName(),
+                        targetElement.getClassName(),
+                        targetElement.getMethodName(),
+                        fileName,
+                        targetElement.getLineNumber())
+                .toString();
+    }
+
+    private static String getFileName(final StackTraceElement targetElement) {
+        String fileName = targetElement.getFileName();
+        if (fileName != null) return fileName;
+        String className = targetElement.getClassName();
+        String[] classNameInfo = className.split("\\.");
+        if (classNameInfo.length > 0) className = classNameInfo[classNameInfo.length - 1];
+        int index = className.indexOf('$');
+        if (index != -1) className = className.substring(0, index);
+        return className + ".java";
     }
 }
