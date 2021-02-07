@@ -82,6 +82,7 @@ dependencies {
 //打包jar;doc;sources，请在Terminal中运行：gradlew makeJar，如果失败，先执行：gradlew assembleDebug --rerun-tasks
 def jarName = "yutils1.3.5"
 task makeJar(type: Copy) {
+    group = 'jar'
     //删除存在的
     delete 'build/libs/' + jarName + ".jar"
     //设置拷贝的文件
@@ -93,33 +94,35 @@ task makeJar(type: Copy) {
     //重命名
     rename('classes.jar', jarName + ".jar")
 }
+//buid之后执行
 makeJar.dependsOn(build)
-//-encoding UTF-8  -charset UTF-8
 tasks.withType(JavaCompile) {
     options.encoding = "UTF-8"
 }
+//生成源码
 task generateSourcesJar(type: Jar) {
     group = 'jar'
-    from android.sourceSets.main.java.srcDirs
+    if (project.hasProperty("kotlin")) {
+        from android.sourceSets.main.java.getSrcDirs()
+    } else if (project.hasProperty("android")) {
+        from android.sourceSets.main.java.sourceFiles
+    } else {
+        println project
+        from sourceSets.main.allSource
+    }
     classifier = 'sources'
     archiveName = jarName + '-sources.jar'
 }
-task javadoc(type: Javadoc) {
-    source = android.sourceSets.main.java.srcDirs
-    options.encoding = "UTF-8"
-    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-}
-task dokkaJavadoc(type: org.jetbrains.dokka.gradle.DokkaTask) {
-    outputFormat = "javadoc"
-    outputDirectory = javadoc.destinationDir
-}
+
+//生成文档
 task generateJavadoc(type: Jar, dependsOn: dokkaJavadoc) {
     group = 'jar'
     classifier = 'javadoc'
-    from javadoc.destinationDir
+    from 'build/dokka/javadoc'
     archiveName = jarName + '-javadoc.jar'
 }
+//加入到build
 artifacts {
-    archives generateJavadoc
     archives generateSourcesJar
+    archives generateJavadoc
 }
