@@ -34,7 +34,8 @@ class App : Application() {
         YCrash.getInstance().appName = "AppName"
         registerActivityLifecycleCallbacks(YActivityUtil.getActivityLifecycleCallbacks())
         //保存日志开
-        YLog.saveOpen(YPath.getFilePath(this,"log"))
+        YLog.saveOpen(YPath.getFilePath(this, "log"))
+        YLog.setLogSaveListener { type, tag, msg -> return@setLogSaveListener type != YLog.DEBUG }
         //保存最近30天日志
         YLog.delDaysAgo(30)
         //保存Application

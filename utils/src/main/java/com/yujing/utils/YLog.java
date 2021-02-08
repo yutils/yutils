@@ -1,6 +1,7 @@
 package com.yujing.utils;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.util.Log;
 
 import com.yujing.contract.YLogListener;
@@ -13,22 +14,25 @@ import java.util.Formatter;
 import java.util.List;
 
 /**
- * LOG显示类，解决AndroidStudio的logcat显示超长字符串的问题
+ * LOG显示类
+ * 日志显示调用的类名和代码行号
+ * 解决AndroidStudio的logcat显示超长字符串的问题
  * 保存日志到本地文件夹
  * 清理某个时间点之前的日志
  *
- * @author yujing 2020年10月12日17:06:15
+ * @author yujing 2021年2月8日12:58:06
  */
 /* 用法
-    //保存日志开
-    YLog.saveOpen(YPath.getFilePath(this,"log"))
-    YLog.setLogListener { type, tag, msg ->
-        tag!= "忽略"
-    }
-    //保存最近30天日志
-    YLog.delDaysAgo(30)
+//保存日志开
+YLog.saveOpen(YPath.getFilePath(this, "log"))
+//保存日志监听
+YLog.setLogSaveListener { type, tag, msg -> return@setLogSaveListener type != YLog.DEBUG }
+//删除30天以前日志
+YLog.delDaysAgo(30)
+//日志监听
+YLog.setLogListener { type, tag, msg ->  }
  */
-@SuppressWarnings({"unused", "FieldCanBeLocal", "WeakerAccess"})
+@SuppressWarnings({"FieldCanBeLocal", "WeakerAccess"})
 public class YLog {
     @SuppressLint("SimpleDateFormat")
     private static SimpleDateFormat formatDate = new SimpleDateFormat("yyyy-MM-dd");
@@ -39,19 +43,19 @@ public class YLog {
     //保存日志目录
     private static String saveLogDir;
     //规定每段显示的长度
-    private static int LOG_MAX_LENGTH = 4000;
+    private static final int LOG_MAX_LENGTH = 4000;
     //默认TAG
-    private static String TAG = "YLog";
+    private static final String TAG = "YLog";
     //日志回调监听
     private static YLogListener logListener;
     //日志保存回调监听
     private static YLogSaveListener logSaveListener;
     //类型
-    private static final int VERBOSE = 2;
-    private static final int DEBUG = 3;
-    private static final int INFO = 4;
-    private static final int WARN = 5;
-    private static final int ERROR = 6;
+    public static final String VERBOSE = "v";   //VERBOSE
+    public static final String DEBUG = "d";     //DEBUG
+    public static final String INFO = "i";      //INFO
+    public static final String WARN = "w";      //WARN
+    public static final String ERROR = "e";     //ERROR
 
     public static void v(String msg) {
         println(TAG, msg, null, VERBOSE);
@@ -161,14 +165,12 @@ public class YLog {
 
     public static void save(String type, String tag, String msg) {
         if (saveLogDir == null) return;
+        String filePath = saveLogDir + "/" + formatDate.format(new Date()) + ".log";
         if (logSaveListener != null) {
-            boolean isSave = logSaveListener.value(type, tag, msg);
-            if (isSave)
-                save(saveLogDir + "/" + formatDate.format(new Date()) + ".log", type, tag, msg);
-        } else {
-            save(saveLogDir + "/" + formatDate.format(new Date()) + ".log", type, tag, msg);
-        }
+            if (logSaveListener.value(type, tag, msg)) save(filePath, type, tag, msg);
+        } else save(filePath, type, tag, msg);
     }
+
 
     /**
      * 打开日志本地保存
@@ -178,6 +180,17 @@ public class YLog {
     public static void saveOpen(String dir) {
         isSave = true;
         saveLogDir = dir;
+    }
+
+    /**
+     * 打开日志本地保存
+     * <p>
+     * 默认路径，/storage/emulated/0/Android/data/com.xx.xx/files/log/
+     *
+     * @param context Context
+     */
+    public static void saveOpen(Context context) {
+        saveOpen(YPath.getFilePath(context, "log"));
     }
 
     /**
@@ -199,12 +212,14 @@ public class YLog {
             if (index == -1) continue;
             String date = item.getName().substring(0, index);
             try {
-                long time = formatDate.parse(date).getTime();
-                if (time + (1000 * 60 * 60 * 24) * daysAgo < (new Date().getTime())) {
+                long timeOld = formatDate.parse(date).getTime();
+                long timeLimit = new Date().getTime() - 1000L * 60 * 60 * 24 * daysAgo;
+                if (timeOld < timeLimit) {
                     Log.i("清理日志", item.getPath());
                     del(date);
                 }
             } catch (Exception e) {
+                YLog.e("清理日志失败", e);
             }
         }
     }
@@ -233,7 +248,7 @@ public class YLog {
      * @param tr   异常
      * @param type 类型
      */
-    private static void println(String TAG, String msg, Throwable tr, int type) {
+    private static void println(String TAG, String msg, Throwable tr, String type) {
         if (msg == null) {
             String codeLine = getLine(3);
             Log.e(TAG, codeLine + " \n" + "日志内容为:null", tr);
@@ -245,41 +260,62 @@ public class YLog {
         for (StringBuilder item : lines) {
             //第一行要显示代码line，只有行就不显示line1行数
             String value = (i == 1 ? "★" + codeLine : "★--->" + i) + " \n" + item.toString();
-            if (type == VERBOSE)
-                Log.v(TAG, value, tr);
-            else if (type == DEBUG)
-                Log.d(TAG, value, tr);
-            else if (type == INFO)
-                Log.i(TAG, value, tr);
-            else if (type == WARN)
-                Log.w(TAG, value, tr);
-            else if (type == ERROR)
-                Log.e(TAG, value, tr);
+            switch (type) {
+                case VERBOSE:
+                    Log.v(TAG, value, tr);
+                    break;
+                case DEBUG:
+                    Log.d(TAG, value, tr);
+                    break;
+                case INFO:
+                    Log.i(TAG, value, tr);
+                    break;
+                case WARN:
+                    Log.w(TAG, value, tr);
+                    break;
+                case ERROR:
+                    Log.e(TAG, value, tr);
+                    break;
+            }
             i++;
         }
         if (logListener != null) {
-            if (type == VERBOSE)
-                logListener.value("v", TAG, msg);
-            else if (type == DEBUG)
-                logListener.value("d", TAG, msg);
-            else if (type == INFO)
-                logListener.value("i", TAG, msg);
-            else if (type == WARN)
-                logListener.value("w", TAG, msg);
-            else if (type == ERROR)
-                logListener.value("e", TAG, msg);
+            switch (type) {
+                case VERBOSE:
+                    logListener.value(VERBOSE, TAG, msg);
+                    break;
+                case DEBUG:
+                    logListener.value(DEBUG, TAG, msg);
+                    break;
+                case INFO:
+                    logListener.value(INFO, TAG, msg);
+                    break;
+                case WARN:
+                    logListener.value(WARN, TAG, msg);
+                    break;
+                case ERROR:
+                    logListener.value(ERROR, TAG, msg);
+                    break;
+            }
         }
         if (isSave) {
-            if (type == VERBOSE)
-                save("v", TAG, msg);
-            else if (type == DEBUG)
-                save("d", TAG, msg);
-            else if (type == INFO)
-                save("i", TAG, msg);
-            else if (type == WARN)
-                save("w", TAG, msg);
-            else if (type == ERROR)
-                save("e", TAG, msg);
+            switch (type) {
+                case VERBOSE:
+                    save(VERBOSE, TAG, msg);
+                    break;
+                case DEBUG:
+                    save(DEBUG, TAG, msg);
+                    break;
+                case INFO:
+                    save(INFO, TAG, msg);
+                    break;
+                case WARN:
+                    save(WARN, TAG, msg);
+                    break;
+                case ERROR:
+                    save(ERROR, TAG, msg);
+                    break;
+            }
         }
     }
 
