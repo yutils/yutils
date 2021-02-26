@@ -2,6 +2,9 @@ package com.yujing.utils;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
 import android.graphics.LinearGradient;
 import android.graphics.Matrix;
 import android.graphics.Paint;
@@ -43,6 +46,21 @@ public class YBitmapUtil {
                 matrix, true);
     }
 
+
+    /**
+     * 旋转图片
+     *
+     * @param bitmap 要旋转的图片
+     * @param angle  旋转角度
+     * @return bitmap
+     */
+    public static Bitmap rotate(Bitmap bitmap, int angle) {
+        Matrix matrix = new Matrix();
+        matrix.postRotate(angle);
+        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(),
+                bitmap.getHeight(), matrix, true);
+    }
+
     /**
      * 图片压缩返回byte[]
      *
@@ -63,10 +81,24 @@ public class YBitmapUtil {
         return baos.toByteArray();
     }
 
+    /**
+     * bitmap  Bitmap.Config.ARGB_8888 转 Bitmap.Config.RGB_565
+     *
+     * @param bitmap 输入bitmap
+     * @return 转换后的bitmap
+     */
+    public synchronized static Bitmap bitmap888To565(Bitmap bitmap) {
+        Bitmap bitmap565 = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.RGB_565);
+        Canvas canvas = new Canvas(bitmap565);
+        canvas.drawBitmap(bitmap, 0, 0, null);
+        return bitmap565;
+    }
+
 
     /**
      * 获得圆角图片的方法
-     * @param bitmap bitmap
+     *
+     * @param bitmap  bitmap
      * @param roundPx 圆弧的的像素量（从开始变幻曲线到顶点的距离）
      * @return Bitmap
      */
@@ -89,6 +121,7 @@ public class YBitmapUtil {
 
     /**
      * 获得带倒影的图片方法
+     *
      * @param bitmap bitmap
      * @return bitmap
      */
@@ -150,6 +183,7 @@ public class YBitmapUtil {
 
     /**
      * 截取中心正方形
+     *
      * @param bitmap     原图
      * @param edgeLength 希望得到的正方形部分的边长
      * @return 缩放截取正中部分后的位图。
@@ -170,7 +204,7 @@ public class YBitmapUtil {
             try {
                 scaledBitmap = Bitmap.createScaledBitmap(bitmap, scaledWidth, scaledHeight, true);
             } catch (Exception e) {
-                YLog.e("裁剪正方形bitmap异常",e);
+                YLog.e("裁剪正方形bitmap异常", e);
                 return null;
             }
             //从图中截取正中间的正方形部分。
@@ -185,5 +219,185 @@ public class YBitmapUtil {
             }
         }
         return result;
+    }
+
+    /**
+     * 添加文字到图片上（文字水印）
+     *
+     * @param src      原始图片
+     * @param content  文字
+     * @param textSize 大小
+     * @param color    颜色
+     * @param x        横坐标
+     * @param y        纵坐标
+     * @return 最终添加文字的图片
+     */
+    public static Bitmap addText(final Bitmap src,
+                                 final String content,
+                                 final int textSize,
+                                 @ColorInt final int color,
+                                 final float x,
+                                 final float y) {
+        return addText(src, content, textSize, color, x, y, false);
+    }
+
+    /**
+     * 添加文字到图片上（文字水印）
+     *
+     * @param src      原始图片
+     * @param content  文字
+     * @param textSize 大小
+     * @param color    颜色
+     * @param x        横坐标
+     * @param y        纵坐标
+     * @param recycle  最后是否释放图片
+     * @return 最终添加文字的图片
+     */
+    public static Bitmap addText(final Bitmap src,
+                                 final String content,
+                                 final float textSize,
+                                 @ColorInt final int color,
+                                 final float x,
+                                 final float y,
+                                 final boolean recycle) {
+        if (isEmptyBitmap(src) || content == null) return null;
+        Bitmap ret = src.copy(src.getConfig(), true);
+        Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        Canvas canvas = new Canvas(ret);
+        paint.setColor(color);
+        paint.setTextSize(textSize);
+        Rect bounds = new Rect();
+        paint.getTextBounds(content, 0, content.length(), bounds);
+        canvas.drawText(content, x, y + textSize, paint);
+        if (recycle && !src.isRecycled() && ret != src) src.recycle();
+        return ret;
+    }
+
+    /**
+     * 添加图片到图片上（图片水印）
+     *
+     * @param src       原始图片
+     * @param watermark 水印图片
+     * @param x         横坐标
+     * @param y         纵坐标
+     * @param alpha     透明度【0..255】
+     * @return 最终添加图片的图片
+     */
+    public static Bitmap addImage(final Bitmap src,
+                                  final Bitmap watermark,
+                                  final int x, final int y,
+                                  final int alpha) {
+        return addImage(src, watermark, x, y, alpha, false);
+    }
+
+    /**
+     * 添加图片到图片上（图片水印）
+     *
+     * @param src       原始图片
+     * @param watermark 水印图片
+     * @param x         横坐标
+     * @param y         纵坐标
+     * @param alpha     透明度【0..255】
+     * @param recycle   最后是否释放原图片
+     * @return 最终添加图片的图片
+     */
+    public static Bitmap addImage(final Bitmap src,
+                                  final Bitmap watermark,
+                                  final int x,
+                                  final int y,
+                                  final int alpha,
+                                  final boolean recycle) {
+        if (isEmptyBitmap(src)) return null;
+        Bitmap ret = src.copy(src.getConfig(), true);
+        if (!isEmptyBitmap(watermark)) {
+            Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            Canvas canvas = new Canvas(ret);
+            paint.setAlpha(alpha);
+            canvas.drawBitmap(watermark, x, y, paint);
+        }
+        if (recycle && !src.isRecycled() && ret != src) src.recycle();
+        return ret;
+    }
+
+    /**
+     * 返回带透明度的图片
+     *
+     * @param src 原始图片
+     * @return 带透明度的图片
+     */
+    public static Bitmap toAlpha(final Bitmap src) {
+        return toAlpha(src, false);
+    }
+
+    /**
+     * 返回带透明度的图片
+     *
+     * @param src     原始图片
+     * @param recycle 最后是否释放原图片
+     * @return 带透明度的图片
+     */
+    public static Bitmap toAlpha(final Bitmap src, final Boolean recycle) {
+        if (isEmptyBitmap(src)) return null;
+        Bitmap ret = src.extractAlpha();
+        if (recycle && !src.isRecycled() && ret != src) src.recycle();
+        return ret;
+    }
+
+    /**
+     * 返回黑白图片，灰阶度图片
+     *
+     * @param src 原始图片
+     * @return 灰阶度图片
+     */
+    public static Bitmap toGray(final Bitmap src) {
+        return toGray(src, false);
+    }
+
+    /**
+     * Return the gray bitmap.
+     *
+     * @param src     原始图片
+     * @param recycle 最后是否释放原图片
+     * @return 灰阶度图片
+     */
+    public static Bitmap toGray(final Bitmap src, final boolean recycle) {
+        if (isEmptyBitmap(src)) return null;
+        Bitmap ret = Bitmap.createBitmap(src.getWidth(), src.getHeight(), src.getConfig());
+        Canvas canvas = new Canvas(ret);
+        Paint paint = new Paint();
+        ColorMatrix colorMatrix = new ColorMatrix();
+        colorMatrix.setSaturation(0);
+        ColorMatrixColorFilter colorMatrixColorFilter = new ColorMatrixColorFilter(colorMatrix);
+        paint.setColorFilter(colorMatrixColorFilter);
+        canvas.drawBitmap(src, 0, 0, paint);
+        if (recycle && !src.isRecycled() && ret != src) src.recycle();
+        return ret;
+    }
+
+    //判断是否是空图片
+    private static boolean isEmptyBitmap(final Bitmap src) {
+        return src == null || src.getWidth() == 0 || src.getHeight() == 0;
+    }
+
+    /**
+     * 判断是否是黑白图片（灰阶度图片），需要格式为 Bitmap.Config.ARGB_8888
+     *
+     * @param bitmap 原始图片
+     * @return 是否是灰阶度图片
+     */
+    private static boolean isGray(Bitmap bitmap) {
+        if (isEmptyBitmap(bitmap)) return false;
+        //取三点，都是黑白就是黑白
+        // 中心原点
+        int centX = bitmap.getWidth() / 2;
+        int centY = bitmap.getHeight() / 2;
+        int px1 = bitmap.getPixel(centX, centY);
+        //4象限中心点
+        int px2 = bitmap.getPixel(centX + (bitmap.getWidth() - centX) / 2, centY + (bitmap.getHeight() - centY) / 2);
+        //2象限中心点
+        int px3 = bitmap.getPixel(centX - (bitmap.getWidth() - centX) / 2, centY - (bitmap.getHeight() - centY) / 2);
+        return ((Color.red(px1) == Color.green(px1) && Color.red(px1) == Color.blue(px1))
+                && (Color.red(px2) == Color.green(px2) && Color.red(px2) == Color.blue(px2))
+                && (Color.red(px3) == Color.green(px3) && Color.red(px3) == Color.blue(px3)));
     }
 }

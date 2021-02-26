@@ -106,23 +106,23 @@ public class YLog {
     }
 
     public static void e(String msg) {
-        println(TAG, "ERROR", null, ERROR);
+        println(TAG, msg, null, ERROR);
     }
 
     public static void e(String TAG, String msg) {
-        println(TAG, "ERROR", null, ERROR);
-    }
-
-    public static void e(String TAG, Throwable tr) {
-        println(TAG, "ERROR", tr, ERROR);
-    }
-
-    public static void e(Throwable tr) {
-        println(TAG, "ERROR", tr, ERROR);
+        println(TAG, msg, null, ERROR);
     }
 
     public static void e(String TAG, String msg, Throwable tr) {
         println(TAG, msg, tr, ERROR);
+    }
+
+    public static void e(String msg, Throwable tr) {
+        println(TAG, msg, tr, ERROR);
+    }
+
+    public static void e(Throwable tr) {
+        println(TAG, "ERROR", tr, ERROR);
     }
 
     public static void dJson(String str) {
