@@ -137,8 +137,8 @@ public class YBitmapUtil {
                 (height + height / 2), Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmapWithReflection);
         canvas.drawBitmap(bitmap, 0, 0, null);
-        Paint deafalutPaint = new Paint();
-        canvas.drawRect(0, height, width, height + reflectionGap, deafalutPaint);
+        Paint defaultPaint = new Paint();
+        canvas.drawRect(0, height, width, height + reflectionGap, defaultPaint);
         canvas.drawBitmap(reflectionImage, 0, height + reflectionGap, null);
         Paint paint = new Paint();
         LinearGradient shader = new LinearGradient(0, bitmap.getHeight(), 0,
@@ -179,6 +179,11 @@ public class YBitmapUtil {
             }
         }
         return mBitmap;
+    }
+
+    //判断是否是空图片
+    public static boolean isEmptyBitmap(final Bitmap src) {
+        return src == null || src.getWidth() == 0 || src.getHeight() == 0;
     }
 
     /**
@@ -374,18 +379,13 @@ public class YBitmapUtil {
         return ret;
     }
 
-    //判断是否是空图片
-    private static boolean isEmptyBitmap(final Bitmap src) {
-        return src == null || src.getWidth() == 0 || src.getHeight() == 0;
-    }
-
     /**
      * 判断是否是黑白图片（灰阶度图片），需要格式为 Bitmap.Config.ARGB_8888
      *
      * @param bitmap 原始图片
      * @return 是否是灰阶度图片
      */
-    private static boolean isGray(Bitmap bitmap) {
+    public static boolean isGray(Bitmap bitmap) {
         if (isEmptyBitmap(bitmap)) return false;
         //取三点，都是黑白就是黑白
         // 中心原点

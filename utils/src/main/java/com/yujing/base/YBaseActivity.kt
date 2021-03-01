@@ -83,8 +83,8 @@ abstract class YBaseActivity<B : ViewDataBinding>(var layout: Int?) : YActivity(
      * 跳转
      */
     open fun startActivity(classActivity: Class<*>?) {
-        val intent = Intent()
-        intent.setClass(this, classActivity!!)
+        isActive = false
+        val intent = Intent(this, classActivity!!)
         startActivity(intent)
     }
 
@@ -92,6 +92,7 @@ abstract class YBaseActivity<B : ViewDataBinding>(var layout: Int?) : YActivity(
      * 跳转
      */
     open fun startActivity(classActivity: Class<*>?, resultCode: Int) {
+        isActive = false
         startActivityForResult(classActivity, resultCode)
     }
 
@@ -99,8 +100,8 @@ abstract class YBaseActivity<B : ViewDataBinding>(var layout: Int?) : YActivity(
      * 跳转
      */
     open fun startActivityForResult(classActivity: Class<*>?, resultCode: Int) {
-        val intent = Intent()
-        intent.setClass(this, classActivity!!)
+        isActive = false
+        val intent = Intent(this, classActivity!!)
         startActivityForResult(intent, resultCode)
     }
 
