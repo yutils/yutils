@@ -19,6 +19,7 @@ import android.widget.LinearLayout;
 
 /**
  * 图片显示对话框
+ *
  * @author yujing 2020年9月6日21:07:18
  */
 /*用法举例
@@ -144,9 +145,7 @@ public class YImageDialog extends Dialog {
 
     public synchronized static void show(Activity activity, Bitmap bitmap, boolean cancelable) {
         finish();
-        if (activity == null || activity.isFinishing() || bitmap == null) {
-            return;
-        }
+        if (activity == null || activity.isFinishing() || bitmap == null) return;
         yDialog = new YImageDialog(activity);
         yDialog.setBitmap(bitmap);
         yDialog.setCancelable(cancelable);
@@ -155,9 +154,7 @@ public class YImageDialog extends Dialog {
 
     public synchronized static void show(Activity activity, int resource, boolean cancelable) {
         finish();
-        if (activity == null || activity.isFinishing()) {
-            return;
-        }
+        if (activity == null || activity.isFinishing()) return;
         yDialog = new YImageDialog(activity);
         yDialog.setResource(resource);
         yDialog.setCancelable(cancelable);
@@ -166,9 +163,8 @@ public class YImageDialog extends Dialog {
 
     public synchronized static void show(Activity activity, Drawable drawable, boolean cancelable) {
         finish();
-        if (activity == null || activity.isFinishing() || drawable == null) {
-            return;
-        }
+        if (activity == null || activity.isFinishing() || drawable == null) return;
+
         yDialog = new YImageDialog(activity);
         yDialog.setDrawable(drawable);
         yDialog.setCancelable(cancelable);
@@ -201,7 +197,7 @@ public class YImageDialog extends Dialog {
                 this.getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
                 super.show();
                 this.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
-            }else {
+            } else {
                 super.show();
             }
         } else {

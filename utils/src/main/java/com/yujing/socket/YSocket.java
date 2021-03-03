@@ -479,9 +479,7 @@ public class YSocket {
                 return;
             }
             // 判断消息为空直接丢弃
-            if (bytes == null || bytes.length == 0) {
-                return;
-            }
+            if (bytes == null || bytes.length == 0) return;
             // 发送消息
             try {
                 synchronized (socket) {

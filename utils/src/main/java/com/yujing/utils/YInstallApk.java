@@ -90,7 +90,7 @@ public class YInstallApk {
             if (haveInstallPermission) {
                 installApk(activity, apkUri);
             } else {
-                this.apkUri=apkUri;
+                this.apkUri = apkUri;
                 getPermission();
             }
         } else {
@@ -112,9 +112,7 @@ public class YInstallApk {
      * @param apkPath app存放路径
      */
     public static void installApk(Context context, String apkPath) {
-        if (context == null || TextUtils.isEmpty(apkPath)) {
-            return;
-        }
+        if (context == null || TextUtils.isEmpty(apkPath)) return;
         File file = new File(apkPath);
         installApk(context, file);
     }

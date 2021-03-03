@@ -385,7 +385,7 @@ public class YConvert {
      */
     public static File bytes2Files(byte[] b, String filePath) {
         File file = new File(filePath);
-        boolean success = YFileUtil.byteToFile(b, file);
+        boolean success = YFileUtil.byteToFile(file, b);
         return success ? file : null;
     }
 

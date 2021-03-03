@@ -3,6 +3,7 @@ package com.yujing.utils;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.Application;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.ClipData;
@@ -75,6 +76,16 @@ import java.util.Objects;
 @SuppressLint("MissingPermission")
 public class YUtils {
     /**
+     * 全局application
+     * 使用时：YApp.get();
+     *
+     * @param application application
+     */
+    public static void init(Application application) {
+        YApp.set(application);
+    }
+
+    /**
      * 重新计算listView高度
      *
      * @param listView 需要计算的对象
@@ -82,9 +93,7 @@ public class YUtils {
     public static void resetListViewHeight(ListView listView) {
         // 提示：最底层容器要用LinearLayout
         ListAdapter listAdapter = listView.getAdapter();
-        if (listAdapter == null) {
-            return;
-        }
+        if (listAdapter == null) return;
         int totalHeight = 0;
         for (int i = 0; i < listAdapter.getCount(); i++) {
             View listItem = listAdapter.getView(i, null, listView);
@@ -108,9 +117,7 @@ public class YUtils {
     public static void resetListViewHeight(ListView listView, Integer maxHeight, Integer itemHeight) {
         // 提示：最底层容器要用LinearLayout
         ListAdapter listAdapter = listView.getAdapter();
-        if (listAdapter == null) {
-            return;
-        }
+        if (listAdapter == null) return;
         int totalHeight = 0;
         for (int i = 0; i < listAdapter.getCount(); i++) {
             View listItem = listAdapter.getView(i, null, listView);

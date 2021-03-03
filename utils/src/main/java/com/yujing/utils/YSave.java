@@ -67,7 +67,7 @@ public class YSave {
 
         // 然后写盘,byte直接写入
         if (byte[].class.equals(data.getClass())) {
-            YFileUtil.byteToFile((byte[]) data, getFile(key));
+            YFileUtil.byteToFile(getFile(key), (byte[]) data);
             return;
         }
         // 如果是String，直接写入

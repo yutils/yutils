@@ -38,9 +38,7 @@ public class YSimpleItemTouchCallback extends ItemTouchHelper.Callback {
     @Override
     public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
         int position = viewHolder.getAdapterPosition();
-        if (mAdapter.getList().size() == 0) {
-            return;
-        }
+        if (mAdapter.getList().size() == 0) return;
         mAdapter.getList().remove(position);
         mAdapter.notifyItemRemoved(position);
         mAdapter.notifyItemRangeChanged(position, mAdapter.getItemCount() - position);

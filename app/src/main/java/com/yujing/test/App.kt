@@ -1,10 +1,7 @@
 package com.yujing.test
 
 import android.app.Application
-import com.yujing.utils.YActivityUtil
-import com.yujing.utils.YApp
-import com.yujing.utils.YLog
-import com.yujing.utils.YPath
+import com.yujing.utils.*
 import com.yujing.ycrash.YCrash
 
 
@@ -30,6 +27,7 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         instance = this
+        YUtils.init(this)
         YCrash.getInstance().init(this)
         YCrash.getInstance().appName = "AppName"
         registerActivityLifecycleCallbacks(YActivityUtil.getActivityLifecycleCallbacks())
@@ -38,7 +36,5 @@ class App : Application() {
         YLog.setLogSaveListener { type, tag, msg -> return@setLogSaveListener type != YLog.DEBUG }
         //保存最近30天日志
         YLog.delDaysAgo(30)
-        //保存Application
-        YApp.init(this)
     }
 }

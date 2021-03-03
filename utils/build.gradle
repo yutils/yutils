@@ -5,6 +5,7 @@ plugins {
     id 'kotlin-parcelize'
     id 'com.github.dcendents.android-maven'
     id 'org.jetbrains.dokka'
+    id 'maven-publish'
 }
 group = 'com.github.yutils'
 
@@ -13,8 +14,8 @@ android {
     defaultConfig {
         minSdkVersion 19
         targetSdkVersion 30
-        versionCode 33
-        versionName "1.3.8"
+        versionCode 34
+        versionName "1.3.9"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -80,7 +81,9 @@ dependencies {
 }
 
 //打包jar;doc;sources，请在Terminal中运行：gradlew makeJar，如果失败，先执行：gradlew assembleDebug --rerun-tasks
-def jarName = "yutils1.3.8"
+def lib_name = 'yutils'
+def lib_version = '1.3.9'
+def jarName = lib_name +"-"+ lib_version
 task makeJar(type: Copy) {
     group = 'jar'
     //删除存在的
@@ -125,4 +128,46 @@ task generateJavadoc(type: Jar, dependsOn: dokkaJavadoc) {
 artifacts {
     archives generateSourcesJar
     //archives generateJavadoc
+}
+
+
+//生成pom,先build再点击Gradle/publishing/publish
+def GROUP_ID = 'com.kotlinx.yutils'
+def ARTIFACT_ID = lib_name
+def VERSION_NAME = lib_version
+
+publishing {
+    publications {
+        aar_pub(MavenPublication) {
+            groupId = GROUP_ID
+            artifactId = ARTIFACT_ID
+            version = VERSION_NAME
+            artifact("$buildDir/outputs/aar/${project.getName()}-release.aar")
+            pom.withXml {
+                def dependenciesNode = asNode().appendNode('dependencies')
+                configurations.implementation.allDependencies.withType(ModuleDependency) { ModuleDependency dp ->
+                    if (dp.version != "unspecified") { // 过滤项目内library引用
+                        def dependencyNode = dependenciesNode.appendNode('dependency')
+                        dependencyNode.appendNode('groupId', dp.group)
+                        dependencyNode.appendNode('artifactId', dp.name)
+                        dependencyNode.appendNode('version', dp.version)
+                        // for exclusions
+                        if (dp.excludeRules.size() > 0) {
+                            def exclusions = dependencyNode.appendNode('exclusions')
+                            dp.excludeRules.each { ExcludeRule ex ->
+                                def exclusion = exclusions.appendNode('exclusion')
+                                exclusion.appendNode('groupId', ex.group)
+                                exclusion.appendNode('artifactId', ex.module)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    repositories {
+        maven {
+            url "$buildDir/repository"
+        }
+    }
 }

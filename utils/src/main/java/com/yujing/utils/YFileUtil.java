@@ -34,7 +34,7 @@ public class YFileUtil {
      * @param str  要转换的string
      */
     public static void stringToFile(File file, String str) {
-        byteToFile(str.getBytes(), file);
+        byteToFile(file, str.getBytes());
     }
 
     /**
@@ -45,7 +45,7 @@ public class YFileUtil {
      * @param charset 字符集
      */
     public static void stringToFile(File file, String str, Charset charset) {
-        byteToFile(str.getBytes(charset), file);
+        byteToFile(file, str.getBytes(charset));
     }
 
     /**
@@ -61,7 +61,6 @@ public class YFileUtil {
         return new String(data);
     }
 
-
     /**
      * bytes转file
      *
@@ -69,7 +68,7 @@ public class YFileUtil {
      * @param file  文件
      * @return 是否成功
      */
-    public static boolean byteToFile(byte[] bytes, File file) {
+    public static boolean byteToFile(File file, byte[] bytes) {
         if (!Objects.requireNonNull(file.getParentFile()).exists()) // 如果位置不存在
             file.getParentFile().mkdirs();
         if (file.exists())
@@ -114,12 +113,12 @@ public class YFileUtil {
     /**
      * 添加字符串到文件末尾
      *
-     * @param file  文件
-     * @param str 字符串
+     * @param file 文件
+     * @param str  字符串
      * @return 是否成功
      */
     public static boolean addStringToFile(File file, String str) {
-        return addByteToFile(file,str.getBytes());
+        return addByteToFile(file, str.getBytes());
     }
 
     /**

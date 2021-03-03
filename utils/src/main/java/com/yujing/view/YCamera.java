@@ -253,9 +253,7 @@ public class YCamera {
     }
 
     private void configureTransform(int viewWidth, int viewHeight) {
-        if (null == textureView || null == mPreviewSize) {
-            return;
-        }
+        if (null == textureView || null == mPreviewSize) return;
         int rotation = activity.getWindowManager().getDefaultDisplay().getRotation();
         Matrix matrix = new Matrix();
         //matrix.setScale(1, -1);上下镜像

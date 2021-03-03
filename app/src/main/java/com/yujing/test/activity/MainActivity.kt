@@ -9,8 +9,7 @@ import com.yujing.bus.YBusUtil
 import com.yujing.bus.YMessage
 import com.yujing.test.R
 import com.yujing.test.databinding.ActivityAllTestBinding
-import com.yujing.utils.YLog
-import com.yujing.utils.YPermissions
+import com.yujing.utils.*
 import com.yutils.view.utils.Create
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -93,7 +92,20 @@ class MainActivity : YBaseActivity<ActivityAllTestBinding>(null) {
             startActivity(Test2Activity::class.java)
         }
         //--------------------------------------------------------------------------------
-
+        Create.space(binding.wll)//换行
+        Create.button(binding.wll, "写文件") {
+            YSaveFiles.setBytes("文件", YConvert.bitmap2Bytes(YConvert.view2Bitmap(binding.wll)))
+        }
+        Create.button(binding.wll, "读文件") {
+            var byteArray = YSaveFiles.getBytes("文件")
+            if (byteArray != null) {
+                var bitmap = YConvert.bytes2Bitmap(byteArray)
+                YImageDialog.show(this, bitmap)
+            }
+        }
+        Create.button(binding.wll, "删文件") {
+            YSaveFiles.removeBytes("文件")
+        }
     }
 
     @YBus("tag1")

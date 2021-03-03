@@ -64,9 +64,7 @@ public class YGps {
 
     public void openGPSSettings(Activity activity) {
         LocationManager alm = (LocationManager) activity.getSystemService(Context.LOCATION_SERVICE);
-        if (alm == null) {
-            return;
-        }
+        if (alm == null) return;
         if (alm.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             Log.d("GPS", "GPS模块正常");
             return;
@@ -89,9 +87,7 @@ public class YGps {
         // GPS定位
         locationManagerGPS = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         try {
-            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                return;
-            }
+            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) return;
             locationManagerGPS.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, locationListener);
         } catch (Exception e) {
             Toast.makeText(context, "请给本APP获取位置权限", Toast.LENGTH_SHORT).show();
@@ -108,9 +104,7 @@ public class YGps {
         // 基站定位
         locationManagerNET = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         try {
-            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                return;
-            }
+            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) return;
             locationManagerNET.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, 1000, 0, locationListener);
         } catch (Exception e) {
             Toast.makeText(context, "请给本APP获取位置权限", Toast.LENGTH_SHORT).show();
@@ -127,9 +121,7 @@ public class YGps {
         // 基站定位
         locationManagerNET = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         try {
-            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                return;
-            }
+            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) return;
             locationManagerNET.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 0, locationListener);
         } catch (Exception e) {
             Toast.makeText(context, "请给本APP获取位置权限", Toast.LENGTH_SHORT).show();
