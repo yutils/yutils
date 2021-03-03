@@ -40,6 +40,16 @@ Github地址：[https://github.com/yutils/yutils](https://github.com/yutils/yuti
 
 ### 因为一直在新增，所以这儿不全
 
+## 部分功能需要传入application
+```
+class App : Application() {
+    override fun onCreate() {
+        super.onCreate()
+        YUtils.init(this)
+    }
+}
+```
+
 ## 类 YUtils
 ```
 static void	closeSoftKeyboard(android.app.Activity activity)
