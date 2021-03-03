@@ -97,9 +97,9 @@ class MainActivity : YBaseActivity<ActivityAllTestBinding>(null) {
             YSaveFiles.setBytes("文件", YConvert.bitmap2Bytes(YConvert.view2Bitmap(binding.wll)))
         }
         Create.button(binding.wll, "读文件") {
-            var byteArray = YSaveFiles.getBytes("文件")
+            val byteArray = YSaveFiles.getBytes("文件")
             if (byteArray != null) {
-                var bitmap = YConvert.bytes2Bitmap(byteArray)
+                val bitmap = YConvert.bytes2Bitmap(byteArray)
                 YImageDialog.show(this, bitmap)
             }
         }
