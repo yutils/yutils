@@ -1,6 +1,5 @@
 package com.yujing.db.control;
 
-
 import com.google.gson.Gson;
 
 import java.lang.reflect.Field;
