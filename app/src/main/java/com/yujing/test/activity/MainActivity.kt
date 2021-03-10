@@ -108,12 +108,6 @@ class MainActivity : YBaseActivity<ActivityAllTestBinding>(null) {
             YSaveFiles.removeBytes("文件")
         }
         Create.space(binding.wll)//换行
-        Create.button(binding.wll, "跳转到详细设置") {
-           YGoto.toOverlays(App.get())
-        }
-        Create.button(binding.wll, "跳转到开发人员选项") {
-            YGoto.toInstallApp(App.get())
-        }
     }
 
     @YBus("tag1")
