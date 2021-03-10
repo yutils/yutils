@@ -187,4 +187,25 @@ public class YGoto {
         if (!(context instanceof Activity)) intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
     }
+
+    /**
+     * 跳转到activity
+     *
+     * @param context context
+     * @param cls     页面
+     */
+    public static <T extends Activity> void startActivity(Context context, Class<T> cls) {
+        Intent intent = new Intent(context, cls);
+        if (!(context instanceof Activity)) intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(intent);
+    }
+
+    /**
+     * 跳转到activity
+     *
+     * @param cls 页面
+     */
+    public static <T extends Activity> void startActivity(Class<T> cls) {
+        startActivity(YApp.get(), cls);
+    }
 }
