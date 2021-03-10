@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.Settings;
 
 /**
@@ -50,6 +51,7 @@ com.android.settings.VoiceInputOutputSettings 语音输入与输出设置
 com.android.settings.WirelessSettings 无线和网络设置
  */
 public class YGoto {
+    public static final int INSTALL_APP_CODE = 8899;
     /**
      * 跳转到设置界面
      *
@@ -72,6 +74,44 @@ public class YGoto {
         intent.setData(Uri.parse("package:" + context.getPackageName()));
         if (!(context instanceof Activity)) intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
+    }
+
+
+    /**
+     * 跳转到悬浮窗设置
+     *
+     * @param context context
+     */
+    public static void toOverlays(Context context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {//8.0以上
+            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
+            intent.setData(Uri.parse("package:" + context.getPackageName()));
+            if (!(context instanceof Activity)) intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intent);
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {//6.0-8.0
+            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
+            intent.setData(Uri.parse("package:" + context.getPackageName()));
+            if (!(context instanceof Activity)) intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intent);
+        }
+    }
+
+    /**
+     * 跳转到运行安装第三方APP权限设置
+     * @param context context
+     */
+    public static void toInstallApp(Context context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {//8.0以上
+            Uri packageURI = Uri.parse("package:" + context.getPackageName());
+            Intent intent = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, packageURI);
+            if (context instanceof Activity) {
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                ((Activity) context).startActivityForResult(intent, INSTALL_APP_CODE);
+            } else {
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(intent);
+            }
+        }
     }
 
     /**

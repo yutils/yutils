@@ -109,10 +109,10 @@ class MainActivity : YBaseActivity<ActivityAllTestBinding>(null) {
         }
         Create.space(binding.wll)//换行
         Create.button(binding.wll, "跳转到详细设置") {
-           YGoto.toDetails(App.get())
+           YGoto.toOverlays(App.get())
         }
         Create.button(binding.wll, "跳转到开发人员选项") {
-            YGoto.toDevelopment(App.get())
+            YGoto.toInstallApp(App.get())
         }
     }
 
