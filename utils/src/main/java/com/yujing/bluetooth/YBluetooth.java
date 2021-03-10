@@ -88,9 +88,7 @@ public class YBluetooth implements YBluetoothDeviceConnect {
     public static YBluetooth getInstance() {
         if (yBluetooth == null) {
             synchronized (YBluetooth.class) {
-                if (yBluetooth == null) {
-                    yBluetooth = new YBluetooth();
-                }
+                if (yBluetooth == null) yBluetooth = new YBluetooth();
             }
         }
         return yBluetooth;

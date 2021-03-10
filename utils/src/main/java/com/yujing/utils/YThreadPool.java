@@ -47,8 +47,7 @@ public class YThreadPool {
      */
     public synchronized static void shutdown() {
         synchronized (sTpe) {
-            if (!sTpe.isShutdown())
-                sTpe.shutdown();
+            if (!sTpe.isShutdown()) sTpe.shutdown();
         }
     }
 

@@ -61,9 +61,7 @@ public class YToast {
             toast = Toast.makeText(context, text, Toast.LENGTH_SHORT);
             toast.show();
         } else {
-            if (yQueue == null) {
-                yQueue = new YQueue();
-            }
+            if (yQueue == null) yQueue = new YQueue();
             yQueue.run(queueTime, () -> show(context, text));
         }
     }
@@ -80,9 +78,7 @@ public class YToast {
             toast = Toast.makeText(context, text, Toast.LENGTH_LONG);
             toast.show();
         } else {
-            if (yQueue == null) {
-                yQueue = new YQueue();
-            }
+            if (yQueue == null) yQueue = new YQueue();
             yQueue.run(queueTime, () -> showLong(context, text));
         }
     }
@@ -102,5 +98,4 @@ public class YToast {
     public static void setQueueTime(int queueTime) {
         YToast.queueTime = queueTime;
     }
-
 }

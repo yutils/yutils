@@ -168,15 +168,13 @@ public abstract class YBaseYRecyclerViewAdapter<T> extends RecyclerView.Adapter<
         holder.findView(holder.itemView);
         //设置监听
         itemView.setOnClickListener(v -> {
-            if (onItemClickListener != null) {
+            if (onItemClickListener != null)
                 onItemClickListener.onItemClick(v, (Integer) v.getTag());
-            }
         });
         //长按监听
         itemView.setOnLongClickListener(v -> {
-            if (onItemLongClickListener != null) {
+            if (onItemLongClickListener != null)
                 onItemLongClickListener.onItemClick(v, (Integer) v.getTag());
-            }
             return false;
         });
         return holder;

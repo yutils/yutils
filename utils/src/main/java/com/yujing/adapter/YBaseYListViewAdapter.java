@@ -51,20 +51,16 @@ public abstract class YBaseYListViewAdapter<T> extends BaseAdapter {
         super();
         this.context = context;
         this.list = list;
-        if (list == null) {
+        if (list == null)
             list = new ArrayList<>();
-        }
         itemIsEmpty = (list.size() == 0);
-        if (list.size() == 0) {
+        if (list.size() == 0)
             this.list.add(null);
-        }
     }
 
     @Override
     public int getCount() {
-        if (itemIsEmpty) {
-            return 0;
-        }
+        if (itemIsEmpty) return 0;
         return (this.list != null) ? this.list.size() : 0;
     }
 
@@ -72,17 +68,13 @@ public abstract class YBaseYListViewAdapter<T> extends BaseAdapter {
         if (position >= 0 && position < list.size()) {
             list.remove(position);
             itemIsEmpty = (list.size() == 0);
-            if (itemIsEmpty) {
-                this.list.add(null);
-            }
+            if (itemIsEmpty) this.list.add(null);
             notifyDataSetChanged();
         }
     }
 
     public void addItem(int position, T t) {
-        if (itemIsEmpty) {
-            list = new ArrayList<>();
-        }
+        if (itemIsEmpty) list = new ArrayList<>();
         list.add(position, t);
         itemIsEmpty = (list.size() == 0);
         notifyDataSetChanged();
@@ -104,9 +96,7 @@ public abstract class YBaseYListViewAdapter<T> extends BaseAdapter {
 
     public void setList(List<T> list) {
         this.list = list;
-        if (this.list == null) {
-            this.list = new ArrayList<>();
-        }
+        if (this.list == null) this.list = new ArrayList<>();
         itemIsEmpty = (this.list.size() == 0);
         if (this.list.size() == 0) {
             this.list.add(null);

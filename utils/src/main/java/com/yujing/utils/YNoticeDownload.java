@@ -162,9 +162,7 @@ public class YNoticeDownload {
 
     public void setUrl(String url) {
         this.url = url;
-        if (url.length() > 4 && url.substring(url.length() - 4).toLowerCase().equals(".apk")) {
-            isAPK = true;
-        }
+        if (url.length() > 4 && url.substring(url.length() - 4).toLowerCase().equals(".apk")) isAPK = true;
     }
 
     public boolean isAPK() {
@@ -243,15 +241,12 @@ public class YNoticeDownload {
     }
 
     public void onResume() {
-        if (mReceiver != null)
-            activity.registerReceiver(mReceiver, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+        if (mReceiver != null) activity.registerReceiver(mReceiver, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
     }
 
     public void onDestroy() {
         //注销广播
-        if (myTimer != null)
-            myTimer.cancel();
-        if (mReceiver != null)
-            activity.unregisterReceiver(mReceiver);
+        if (myTimer != null) myTimer.cancel();
+        if (mReceiver != null) activity.unregisterReceiver(mReceiver);
     }
 }

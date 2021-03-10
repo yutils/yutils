@@ -73,9 +73,7 @@ public class YWarpLinearLayout extends ViewGroup {
                 break;
             case MeasureSpec.AT_MOST:
                 for (int i = 0; i < childCount; i++) {
-                    if (i != 0) {
-                        with += mType.horizontal_Space;
-                    }
+                    if (i != 0) with += mType.horizontal_Space;
                     with += getChildAt(i).getMeasuredWidth();
                 }
                 with += getPaddingLeft() + getPaddingRight();
@@ -83,9 +81,7 @@ public class YWarpLinearLayout extends ViewGroup {
                 break;
             case MeasureSpec.UNSPECIFIED:
                 for (int i = 0; i < childCount; i++) {
-                    if (i != 0) {
-                        with += mType.horizontal_Space;
-                    }
+                    if (i != 0) with += mType.horizontal_Space;
                     with += getChildAt(i).getMeasuredWidth();
                 }
                 with += getPaddingLeft() + getPaddingRight();
@@ -93,7 +89,6 @@ public class YWarpLinearLayout extends ViewGroup {
             default:
                 with = withSize;
                 break;
-
         }
         /**
          * 根据计算出的宽度，计算出所需要的行数
@@ -129,9 +124,7 @@ public class YWarpLinearLayout extends ViewGroup {
          */
         height = getPaddingTop() + getPaddingBottom();
         for (int i = 0; i < mWarpLineGroup.size(); i++) {
-            if (i != 0) {
-                height += mType.vertical_Space;
-            }
+            if (i != 0) height += mType.vertical_Space;
             height += mWarpLineGroup.get(i).height;
         }
         switch (heightMode) {
@@ -195,9 +188,8 @@ public class YWarpLinearLayout extends ViewGroup {
         private int height = 0;
 
         private void addView(View view) {
-            if (lineView.size() != 0) {
+            if (lineView.size() != 0)
                 lineWidth += mType.horizontal_Space;
-            }
             height = Math.max(height, view.getMeasuredHeight());
             lineWidth += view.getMeasuredWidth();
             lineView.add(view);
@@ -230,9 +222,7 @@ public class YWarpLinearLayout extends ViewGroup {
             horizontal_Space = 0;
             vertical_Space = 0;
             isFull = false;
-            //if (attrs == null) {
-            //    return;
-            //}
+            //if (attrs == null) return;
             //TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.WarpLinearLayout);
             //grivate = typedArray.getInt(R.styleable.WarpLinearLayout_gravity, grivate);
             //horizontal_Space = typedArray.getDimension(R.styleable.WarpLinearLayout_horizontal_Space, horizontal_Space);

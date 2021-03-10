@@ -7,6 +7,7 @@ import com.yujing.base.YBaseActivity
 import com.yujing.bus.YBus
 import com.yujing.bus.YBusUtil
 import com.yujing.bus.YMessage
+import com.yujing.test.App
 import com.yujing.test.R
 import com.yujing.test.databinding.ActivityAllTestBinding
 import com.yujing.utils.*
@@ -105,6 +106,13 @@ class MainActivity : YBaseActivity<ActivityAllTestBinding>(null) {
         }
         Create.button(binding.wll, "删文件") {
             YSaveFiles.removeBytes("文件")
+        }
+        Create.space(binding.wll)//换行
+        Create.button(binding.wll, "跳转到详细设置") {
+           YGoto.toDetails(App.get())
+        }
+        Create.button(binding.wll, "跳转到开发人员选项") {
+            YGoto.toDevelopment(App.get())
         }
     }
 

@@ -134,11 +134,7 @@ public class YShow extends Dialog {
         this.message1 = message;
         if (textView1 != null) {
             textView1.setText(this.message1);
-            if (message1 == null || message1.isEmpty()) {
-                textView1.setVisibility(View.GONE);// 没有值就隐藏textView
-            } else {
-                textView1.setVisibility(View.VISIBLE);
-            }
+            textView1.setVisibility(message1 == null || message1.isEmpty() ? View.GONE : View.VISIBLE);// 没有值就隐藏textView
         }
         return this;
     }
@@ -147,11 +143,7 @@ public class YShow extends Dialog {
         this.message2 = message;
         if (textView2 != null) {
             textView2.setText(this.message2);
-            if (message2 == null || message2.isEmpty()) {
-                textView2.setVisibility(View.GONE);
-            } else {
-                textView2.setVisibility(View.VISIBLE);
-            }
+            textView2.setVisibility(message2 == null || message2.isEmpty() ? View.GONE : View.VISIBLE);
         }
         return this;
     }
@@ -244,27 +236,19 @@ public class YShow extends Dialog {
 
     //设置文本
     public synchronized static void setMessage(String message) {
-        if (yDialog != null) {
-            yDialog.setMessage1(message);
-        }
+        if (yDialog != null) yDialog.setMessage1(message);
     }
 
     public synchronized static void setMessageOther(String message) {
-        if (yDialog != null) {
-            yDialog.setMessage2(message);
-        }
+        if (yDialog != null) yDialog.setMessage2(message);
     }
 
     public synchronized static void setColor(@ColorInt int color) {
-        if (yDialog != null) {
-            yDialog.setProgressBarColor(color);
-        }
+        if (yDialog != null) yDialog.setProgressBarColor(color);
     }
 
     public synchronized static void setCancel(boolean canCancel) {
-        if (yDialog != null) {
-            yDialog.setCancelable(canCancel);// 是否允许按返回键
-        }
+        if (yDialog != null) yDialog.setCancelable(canCancel);// 是否允许按返回键
     }
 
     public static boolean isDefaultFullScreen() {
@@ -290,19 +274,14 @@ public class YShow extends Dialog {
      * @return 是否正在显示
      */
     public synchronized static boolean isShow() {
-        if (yDialog != null) {
-            return yDialog.isShowing();
-        }
-        return false;
+        return yDialog != null && yDialog.isShowing();
     }
 
     /**
      * 关闭对话框
      */
     public static void finish() {
-        if (yDialog != null) {
-            yDialog.dismiss();
-        }
+        if (yDialog != null) yDialog.dismiss();
     }
 
     /**

@@ -70,7 +70,7 @@ import java.util.Objects;
 /**
  * 各种其他常用工具
  *
- * @author 余静 2018年5月18日14:52:58
+ * @author 余静 2021年3月10日10:46:57
  */
 @SuppressWarnings("unused")
 @SuppressLint("MissingPermission")
@@ -121,8 +121,7 @@ public class YUtils {
         int totalHeight = 0;
         for (int i = 0; i < listAdapter.getCount(); i++) {
             View listItem = listAdapter.getView(i, null, listView);
-            if (listItem == null)
-                continue;
+            if (listItem == null) continue;
             if (listItem instanceof LinearLayout) {
                 listItem.measure(0, 0);
                 totalHeight += listItem.getMeasuredHeight();
@@ -139,9 +138,8 @@ public class YUtils {
         }
         ViewGroup.LayoutParams params = listView.getLayoutParams();
         params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
-        if (maxHeight != null && params.height > maxHeight) {
+        if (maxHeight != null && params.height > maxHeight)
             params.height = maxHeight;
-        }
         ((ViewGroup.MarginLayoutParams) params).setMargins(0, 0, 0, 0);
         listView.setLayoutParams(params);
     }
@@ -192,16 +190,11 @@ public class YUtils {
     @SuppressLint("HardwareIds")
     @SuppressWarnings("deprecation")
     public static String getImei(Context context, int index) {
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED)
             return null;
-        }
         TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-        if (tm == null) {
-            return null;
-        }
-        if (Build.VERSION.SDK_INT >= 29) {
-            return getAndroidId(context);
-        }
+        if (tm == null) return null;
+        if (Build.VERSION.SDK_INT >= 29) return getAndroidId(context);
         //如果取0号卡的IMEI
         if (index == 0) {
             if (Build.VERSION.SDK_INT >= 26) {
@@ -349,8 +342,7 @@ public class YUtils {
      */
     @SuppressWarnings("unchecked")
     public static <T> T copyObject(T date) {
-        if (date == null)
-            return null;
+        if (date == null) return null;
         if (date instanceof Parcelable) {
             Log.i("copyObject", "采用Parcelable序列化");
             Parcel parcel = null;
@@ -408,11 +400,7 @@ public class YUtils {
      * @return SD卡路径
      */
     public static String getSDCardPath() {
-        if (isSDCardEnable()) {
-            return Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator;
-        } else {
-            return "";
-        }
+        return isSDCardEnable() ? Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator : "";
     }
 
     /**
@@ -421,11 +409,7 @@ public class YUtils {
      * @return File
      */
     public static File getSDCardFile() {
-        if (isSDCardEnable()) {
-            return Environment.getExternalStorageDirectory();
-        } else {
-            return null;
-        }
+        return isSDCardEnable() ? Environment.getExternalStorageDirectory() : null;
     }
 
     /**
@@ -434,11 +418,7 @@ public class YUtils {
      * @return String路径
      */
     public static String getSDCardRootPath() {
-        if (isSDCardEnable()) {
-            return Environment.getRootDirectory().getAbsolutePath() + File.separator;
-        } else {
-            return "";
-        }
+        return isSDCardEnable() ? Environment.getRootDirectory().getAbsolutePath() + File.separator : "";
     }
 
     /**
@@ -447,11 +427,7 @@ public class YUtils {
      * @return File
      */
     public static File getSDCardRootFile() {
-        if (isSDCardEnable()) {
-            return Environment.getRootDirectory();
-        } else {
-            return null;
-        }
+        return isSDCardEnable() ? Environment.getRootDirectory() : null;
     }
 
     /**
@@ -484,15 +460,9 @@ public class YUtils {
     public static long getSDCardSize() {
         if (isSDCardEnable()) {
             StatFs statFs = new StatFs(Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator);
-//            if (Build.VERSION.SDK_INT < 18) {
-//                int blockSize = statFs.getBlockSize();
-//                int blockCount = statFs.getBlockCount();
-//                return blockSize * blockCount;
-//            } else {
             long blockSize = statFs.getBlockSizeLong();
             long blockCount = statFs.getBlockCountLong();
             return blockSize * blockCount;
-//            }
         }
         return -1;
     }
@@ -507,15 +477,9 @@ public class YUtils {
     public static long getSDCardAvailableSize() {
         if (isSDCardEnable()) {
             StatFs statFs = new StatFs(Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator);
-//            if (Build.VERSION.SDK_INT < 18) {
-//                int blockSize = statFs.getBlockSize();
-//                int blockCount = statFs.getAvailableBlocks();
-//                return blockSize * blockCount;
-//            } else {
             long blockSize = statFs.getBlockSizeLong();
             long blockCount = statFs.getAvailableBlocksLong();
             return blockSize * blockCount;
-//            }
         }
         return -1;
     }
@@ -530,15 +494,9 @@ public class YUtils {
     public static long getRomTotalSize() {
         File path = Environment.getDataDirectory();
         StatFs statFs = new StatFs(path.getPath());
-//        if (Build.VERSION.SDK_INT < 19) {
-//            int blockSize = statFs.getBlockSize();
-//            int blockCount = statFs.getBlockCount();
-//            return blockSize * blockCount;
-//        } else {
         long blockSize = statFs.getBlockSizeLong();
         long blockCount = statFs.getBlockCountLong();
         return blockSize * blockCount;
-//        }
     }
 
     /**
@@ -551,15 +509,9 @@ public class YUtils {
     public static long getRomAvailableSize() {
         File path = Environment.getDataDirectory();
         StatFs statFs = new StatFs(path.getPath());
-//        if (Build.VERSION.SDK_INT < 19) {
-//            int blockSize = statFs.getBlockSize();
-//            int blockCount = statFs.getAvailableBlocks();
-//            return blockSize * blockCount;
-//        } else {
         long blockSize = statFs.getBlockSizeLong();
         long blockCount = statFs.getAvailableBlocksLong();
         return blockSize * blockCount;
-//        }
     }
 
     /**
@@ -599,21 +551,22 @@ public class YUtils {
      * @param text        短信内容
      * @param sendMessage 发送广播
      * @param receiver    接收广播
-     *                    <p>
-     *                    sendMessage = new BroadcastReceiver() {
-     *                    public void onReceive(Context context, Intent intent) {
-     *                    // 判断短信是否发送成功
-     *                    switch (getResultCode()) {
-     *                    case Activity.RESULT_OK: break;
-     *                    default: break;
-     *                    }
-     *                    }
-     *                    };
-     *                    receiver = new BroadcastReceiver() {
-     *                    public void onReceive(Context context, Intent intent) {
-     *                    // 表示对方成功收到短信
-     *                    }
-     *                    };
+     */
+    /*
+         sendMessage = new BroadcastReceiver() {
+         public void onReceive(Context context, Intent intent) {
+                 // 判断短信是否发送成功
+                 switch (getResultCode()) {
+                     case Activity.RESULT_OK: break;
+                     default: break;
+                 }
+             }
+         };
+         receiver = new BroadcastReceiver() {
+             public void onReceive(Context context, Intent intent) {
+                // 表示对方成功收到短信
+             }
+         };
      */
     public static void sendMessage(Context context, String phoneNumber, String text, BroadcastReceiver sendMessage, BroadcastReceiver receiver) {
         //发送与接收的广播
@@ -636,9 +589,8 @@ public class YUtils {
         //如果字数超过70,需拆分成多条短信发送
         if (text.length() > 70) {
             ArrayList<String> messages = smsManager.divideMessage(text);
-            for (String msg : messages) {
+            for (String msg : messages)
                 smsManager.sendTextMessage(phoneNumber, null, msg, sentPI, deliverPI);
-            }
         } else {
             smsManager.sendTextMessage(phoneNumber, null, text, sentPI, deliverPI);
         }
@@ -720,14 +672,9 @@ public class YUtils {
      */
     public static int getConnectedType(Context context) {
         ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (manager == null) {
-            return -1;
-        }
+        if (manager == null) return -1;
         NetworkInfo info = manager.getActiveNetworkInfo();
-        if (info != null) {
-            return info.getType();
-        }
-        return -1;
+        return info != null ? info.getType() : -1;
     }
 
     /**
@@ -749,9 +696,7 @@ public class YUtils {
             //}
             // ping的状态
             int status = p.waitFor();
-            if (status == 0) {
-                return true;
-            }
+            if (status == 0) return true;
         } catch (Exception e) {
             Log.e("-----ping-----", "ping出错：", e);
         }
@@ -780,9 +725,8 @@ public class YUtils {
                 NetworkInterface ni = en.nextElement();
                 for (Enumeration<InetAddress> item = ni.getInetAddresses(); item.hasMoreElements(); ) {
                     InetAddress inetAddress = item.nextElement();
-                    if (!inetAddress.isLoopbackAddress() && (inetAddress instanceof Inet6Address)) {
+                    if (!inetAddress.isLoopbackAddress() && (inetAddress instanceof Inet6Address))
                         ips.add(inetAddress.getHostAddress());
-                    }
                 }
             }
         } catch (SocketException e) {
@@ -803,9 +747,8 @@ public class YUtils {
                 NetworkInterface ni = en.nextElement();
                 for (Enumeration<InetAddress> item = ni.getInetAddresses(); item.hasMoreElements(); ) {
                     InetAddress inetAddress = item.nextElement();
-                    if (!inetAddress.isLoopbackAddress() && (inetAddress instanceof Inet4Address)) {
+                    if (!inetAddress.isLoopbackAddress() && (inetAddress instanceof Inet4Address))
                         ips.add(inetAddress.getHostAddress());
-                    }
                 }
             }
         } catch (SocketException e) {
@@ -849,9 +792,8 @@ public class YUtils {
         if (clipboard != null) {
             ClipData clipData = clipboard.getPrimaryClip();
             if (clipData != null)
-                for (int i = 0; i < clipData.getItemCount(); i++) {
+                for (int i = 0; i < clipData.getItemCount(); i++)
                     strings.add(clipData.getItemAt(0).getText().toString());
-                }
         }
         return strings;
     }

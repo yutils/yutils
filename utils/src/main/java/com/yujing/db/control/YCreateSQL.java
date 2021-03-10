@@ -27,9 +27,8 @@ public class YCreateSQL {
         Field[] fields = cls.getDeclaredFields();
         for (Field field : fields) {
             field.setAccessible(true);
-            if (!Modifier.isFinal(field.getModifiers())) {
+            if (!Modifier.isFinal(field.getModifiers()))
                 tempvalue += "`" + field.getName() + "`" + " TEXT NULL,";
-            }
         }
         tempvalue = tempvalue.substring(0, tempvalue.lastIndexOf(","));
         return "CREATE TABLE IF NOT EXISTS `" + cls.getSimpleName() + "` (" + tempvalue + ")";

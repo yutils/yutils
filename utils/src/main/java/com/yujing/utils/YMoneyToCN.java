@@ -119,13 +119,9 @@ public class YMoneyToCN {
             ++numIndex;
         }
         // 如果signum == -1，则说明输入的数字为负数，就在最前面追加特殊字符：负
-        if (sigNum == -1) {
-            sb.insert(0, CN_NEGATIVE);
-        }
+        if (sigNum == -1) sb.insert(0, CN_NEGATIVE);
         // 输入的数字小数点后两位为"00"的情况，则要在最后追加特殊字符：整
-        if (!(scale > 0)) {
-            sb.append(CN_FULL);
-        }
+        if (!(scale > 0)) sb.append(CN_FULL);
         return sb.toString();
     }
 }

@@ -50,7 +50,6 @@ public class YPropertiesUtils {
         return set(propertyFilePath, ht);
     }
 
-
     public static String getValue(String propertyFilePath, String key) {
         Properties ppts = loadPropertyFile(propertyFilePath);
         return ppts == null ? null : ppts.getProperty(key);
@@ -67,15 +66,11 @@ public class YPropertiesUtils {
     public static Map<String, String> getAll(String propertyFilePath) {
         Properties ppts = loadPropertyFile(propertyFilePath);
         Map<String, String> map = new HashMap<>();
-        if (ppts == null) {
-            return map;
-        }
+        if (ppts == null) return map;
         String key;
         String value;
         Enumeration<?> en = ppts.propertyNames();
-        if (en == null) {
-            return map;
-        }
+        if (en == null) return map;
         while (en.hasMoreElements()) {
             key = (String) en.nextElement();
             value = ppts.getProperty(key);
@@ -88,28 +83,21 @@ public class YPropertiesUtils {
         removeValue(propertyFilePath, new String[]{key});
     }
 
-
     public static boolean removeValue(String propertyFilePath, String[] key) {
         if (key == null) {
             System.out.println("key[] is null!");
             return false;
         }
         Properties ppts = loadPropertyFile(propertyFilePath);
-        if (ppts == null) {
-            return false;
-        }
-        for (String strKey : key) {
+        if (ppts == null) return false;
+        for (String strKey : key)
             ppts.remove(strKey);
-        }
         return commit(propertyFilePath, ppts);
     }
 
-
     public static boolean removeAll(String propertyFilePath) {
         Properties ppts = loadPropertyFile(propertyFilePath);
-        if (ppts == null) {
-            return false;
-        }
+        if (ppts == null) return false;
         ppts.clear();
         return commit(propertyFilePath, ppts);
     }
@@ -118,9 +106,8 @@ public class YPropertiesUtils {
     private static void createFile(String propertyFilePath) {
         java.io.File file = new java.io.File(propertyFilePath);
         java.io.File fileParent = file.getParentFile();
-        if (!Objects.requireNonNull(fileParent).exists()) {
+        if (!Objects.requireNonNull(fileParent).exists())
             fileParent.mkdirs();
-        }
         if (!file.exists()) {
             try {
                 file.createNewFile();
@@ -132,9 +119,8 @@ public class YPropertiesUtils {
 
     private static Properties loadPropertyFile(String propertyFilePath) {
         java.io.InputStream is = YPropertiesUtils.class.getResourceAsStream(propertyFilePath);
-        if (is == null) {
+        if (is == null)
             return loadPropertyFileByFileSystem(propertyFilePath);
-        }
         Properties ppts = new Properties();
         try {
             ppts.load(is);
@@ -182,9 +168,7 @@ public class YPropertiesUtils {
                 return false;
             }
         } finally {
-            if (stream == null) {
-                return false;
-            }
+            if (stream == null) return false;
         }
         try {
             ppts.store(stream, NOTES);

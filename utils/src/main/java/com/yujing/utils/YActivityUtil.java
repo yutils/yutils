@@ -142,9 +142,7 @@ public class YActivityUtil {
             String activityName = activity.getComponentName().getClassName();
             if (!TextUtils.equals(name, activityName)) {
                 index--;
-                if (index < 0) {
-                    break;
-                }
+                if (index < 0) break;
                 continue;
             }
             finishActivity(activity);

@@ -384,21 +384,7 @@ public class YDataLunar {
     }
 
     String festival = null;
-
     public String getFestival() {
         return festival;
-    }
-
-    public static void Test() {
-        YDataLunar lunarCalendar = new YDataLunar();
-        lunarCalendar.setDate(2020, 6, 1);
-        String s = "" + lunarCalendar.getLunarYear() + "\n";//2020
-        s += "" + lunarCalendar.getLunarMonthString() + "\n";//闰四月
-        s += "" + lunarCalendar.getLunarDayString() + "\n";//初十
-        s += "" + lunarCalendar.getFestival() + "节\n";//儿童节
-        s += "" + lunarCalendar.getWeek() + "\n";//1
-        s += lunarCalendar.getWeekString() + "\n";//星期一
-        s += lunarCalendar.toLunarString() + "\n";//2020年 闰四月 初十 星期一（鼠年)
-        System.out.println(s);
     }
 }

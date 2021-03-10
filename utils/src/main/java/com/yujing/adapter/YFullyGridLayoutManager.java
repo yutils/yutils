@@ -39,19 +39,11 @@ class YFullyGridLayoutManager extends GridLayoutManager {
             measureScrapChild(recycler, i, View.MeasureSpec.makeMeasureSpec(i, View.MeasureSpec.UNSPECIFIED), View.MeasureSpec.makeMeasureSpec(i, View.MeasureSpec.UNSPECIFIED), mMeasuredDimension);
 
             if (getOrientation() == HORIZONTAL) {
-                if (i % span == 0) {
-                    width = width + mMeasuredDimension[0];
-                }
-                if (i == 0) {
-                    height = mMeasuredDimension[1];
-                }
+                if (i % span == 0) width = width + mMeasuredDimension[0];
+                if (i == 0) height = mMeasuredDimension[1];
             } else {
-                if (i % span == 0) {
-                    height = height + mMeasuredDimension[1];
-                }
-                if (i == 0) {
-                    width = mMeasuredDimension[0];
-                }
+                if (i % span == 0) height = height + mMeasuredDimension[1];
+                if (i == 0) width = mMeasuredDimension[0];
             }
         }
 

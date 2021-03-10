@@ -25,8 +25,8 @@ public class YEventCount {
     private EventSuccessListener eventSuccessListener;
     private EventFailListener eventFailListener;
 
-    public YEventCount(long time, long count) {
-        this.time = time;
+    public YEventCount(long millisecond, long count) {
+        this.time = millisecond;
         this.count = count;
     }
 
@@ -47,20 +47,14 @@ public class YEventCount {
             if (++frequency >= count) {
                 frequency = 0;
                 oldTime = 0;
-                if (eventSuccessListener != null) {
-                    eventSuccessListener.success();
-                }
+                if (eventSuccessListener != null) eventSuccessListener.success();
             } else {
-                if (eventFailListener != null) {
-                    eventFailListener.fail(frequency);
-                }
+                if (eventFailListener != null) eventFailListener.fail(frequency);
             }
         } else {
             frequency = 1;
             oldTime = System.currentTimeMillis();
-            if (eventFailListener != null) {
-                eventFailListener.fail(frequency);
-            }
+            if (eventFailListener != null) eventFailListener.fail(frequency);
         }
     }
 

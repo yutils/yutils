@@ -34,9 +34,8 @@ public class AutoFitTextureView extends TextureView {
      * @param height 相对垂直尺寸
      */
     public void setAspectRatio(int width, int height) {
-        if (width < 0 || height < 0) {
+        if (width < 0 || height < 0)
             throw new IllegalArgumentException("大小不能为负数");
-        }
         mRatioWidth = width;
         mRatioHeight = height;
         requestLayout();

@@ -53,6 +53,10 @@ public class YConvert {
         return sb.toString();
     }
 
+    public static String BTHS(byte[] bArray) {
+        return bytesToHexString(bArray);
+    }
+
     /**
      * hexStringToByte
      *
@@ -77,6 +81,10 @@ public class YConvert {
             result[i] = (byte) (toByte(aChar[pos]) << 4 | toByte(aChar[pos + 1]));
         }
         return result;
+    }
+
+    public static byte[] HSTB(String hex) {
+        return hexStringToByte(hex);
     }
 
     /**
@@ -231,7 +239,6 @@ public class YConvert {
     public synchronized static Bitmap uri2Bitmap(Context context, Uri uri) {
         return YUri.getBitmap(context, uri);
     }
-
 
     /**
      * path2Bitmap

@@ -19,10 +19,6 @@ import java.util.Objects;
  */
 @SuppressWarnings("unused")
 public class YScreenUtil {
-
-    private YScreenUtil() {
-    }
-
     /**
      * 获取屏幕宽度，单位为px
      *

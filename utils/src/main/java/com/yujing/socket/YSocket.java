@@ -137,9 +137,8 @@ public class YSocket {
     public static synchronized YSocket getInstance() {
         if (instance == null) {
             synchronized (YSocket.class) {
-                if (instance == null) {
+                if (instance == null)
                     instance = new YSocket(null, 0);
-                }
             }
         }
         return instance;
@@ -151,9 +150,8 @@ public class YSocket {
     public static YSocket getInstance(String ip, int port) {
         if (instance == null) {
             synchronized (YSocket.class) {
-                if (instance == null) {
+                if (instance == null)
                     instance = new YSocket(ip, port);
-                }
             }
         }
         instance.setIp(ip);

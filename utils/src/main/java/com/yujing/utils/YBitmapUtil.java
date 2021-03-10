@@ -173,9 +173,7 @@ public class YBitmapUtil {
                 //在这说明一下 如果color 是全透明或者全黑返回值为0，全透明是0x00000000
                 int color = mBitmap.getPixel(j, i);
                 //将颜色值存在一个数组中 方便后面修改
-                if (color == oldColor) {
-                    mBitmap.setPixel(j, i, newColor);  //将白色替换成透明色
-                }
+                if (color == oldColor) mBitmap.setPixel(j, i, newColor);  //将白色替换成透明色
             }
         }
         return mBitmap;

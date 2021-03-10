@@ -246,9 +246,8 @@ public class YCamera {
         } catch (Exception e) {
             String msg = "相机打开失败";
             Log.e(TAG, msg, e);
-            if (errorListener != null) {
+            if (errorListener != null)
                 errorListener.value(msg);
-            }
         }
     }
 

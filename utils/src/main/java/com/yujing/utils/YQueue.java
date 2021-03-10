@@ -32,10 +32,8 @@ public class YQueue {
     public void run(final int time, final Runnable runnable) {
         Thread thread = new Thread(() -> {
             try {
-                if (YUtils.isAndroid())
-                    YThread.runOnUiThread(runnable);
-                else
-                    runnable.run();
+                if (YUtils.isAndroid()) YThread.runOnUiThread(runnable);
+                else runnable.run();
                 Thread.sleep(time);
             } catch (InterruptedException ignored) {
             }
@@ -65,8 +63,7 @@ public class YQueue {
      * 停止当前队列中全部请求
      */
     public void stopAll() {
-        if (sTEP != null)
-            sTEP.getQueue().clear();
+        if (sTEP != null) sTEP.getQueue().clear();
     }
 
     /**
@@ -74,8 +71,7 @@ public class YQueue {
      */
     public void shutdown() {
         synchronized (sTEP) {
-            if (!sTEP.isShutdown())
-                sTEP.shutdown();
+            if (!sTEP.isShutdown()) sTEP.shutdown();
         }
     }
 

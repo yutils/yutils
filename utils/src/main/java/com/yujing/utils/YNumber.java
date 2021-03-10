@@ -71,7 +71,6 @@ public class YNumber {
         return bd1.divide(bd2, scale, BigDecimal.ROUND_HALF_UP).doubleValue();
     }
 
-
     //四舍五入
     public synchronized static double rounding(double d, int scale) {
         return new BigDecimal(String.valueOf(d)).setScale(scale, BigDecimal.ROUND_HALF_UP).doubleValue();
@@ -101,7 +100,6 @@ public class YNumber {
     public synchronized static double S2D(String s) {
         return S2D(s, 2);
     }
-
 
     //scale位小数
     public synchronized static String D2S(double d, int scale) {
