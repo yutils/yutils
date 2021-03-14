@@ -7,7 +7,6 @@ import com.yujing.base.YBaseActivity
 import com.yujing.bus.YBus
 import com.yujing.bus.YBusUtil
 import com.yujing.bus.YMessage
-import com.yujing.test.App
 import com.yujing.test.R
 import com.yujing.test.databinding.ActivityAllTestBinding
 import com.yujing.utils.*
@@ -108,6 +107,10 @@ class MainActivity : YBaseActivity<ActivityAllTestBinding>(null) {
             YSaveFiles.removeBytes("文件")
         }
         Create.space(binding.wll)//换行
+        //--------------------------------------------------------------------------------
+        Create.button(binding.wll, "打印行号") {
+            YLog.i("打印行号:" + YStackTrace.getLine())
+        }
     }
 
     @YBus("tag1")

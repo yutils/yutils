@@ -8,6 +8,8 @@ import java.io.File
  * 保存文件到:Android/data/包名/files/文件名.txt  中
  */
 /*用法举例
+//初始化
+YUtils.init(this)
 
 //ip
 var IP: String

@@ -8,6 +8,9 @@ import android.app.Application;
  */
 
 /*用法
+//初始化
+YUtils.init(this)
+//获取Application
 YApp.get();
  */
 public class YApp {

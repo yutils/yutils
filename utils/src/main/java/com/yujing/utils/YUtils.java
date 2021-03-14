@@ -74,6 +74,10 @@ import java.util.Objects;
  */
 @SuppressWarnings("unused")
 @SuppressLint("MissingPermission")
+/*用法
+//初始化
+YUtils.init(this)
+ */
 public class YUtils {
     /**
      * 全局application

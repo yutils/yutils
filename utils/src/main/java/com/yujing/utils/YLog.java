@@ -10,7 +10,6 @@ import com.yujing.contract.YLogSaveListener;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Formatter;
 import java.util.List;
 
 /**
@@ -57,89 +56,178 @@ public class YLog {
     public static final String WARN = "w";      //WARN
     public static final String ERROR = "e";     //ERROR
 
+    //-------------------------------------------静态方法↓-------------------------------------------
+
     public static void v(String msg) {
-        println(TAG, msg, null, VERBOSE);
+        println(TAG, msg, null, VERBOSE, 0);
     }
 
     public static void v(String TAG, String msg) {
-        println(TAG, msg, null, VERBOSE);
+        println(TAG, msg, null, VERBOSE, 0);
     }
 
     public static void v(String TAG, String msg, Throwable tr) {
-        println(TAG, msg, tr, VERBOSE);
+        println(TAG, msg, tr, VERBOSE, 0);
     }
 
     public static void d(String msg) {
-        println(TAG, msg, null, DEBUG);
+        println(TAG, msg, null, DEBUG, 0);
     }
 
     public static void d(String TAG, String msg) {
-        println(TAG, msg, null, DEBUG);
+        println(TAG, msg, null, DEBUG, 0);
     }
 
     public static void d(String TAG, String msg, Throwable tr) {
-        println(TAG, msg, tr, DEBUG);
+        println(TAG, msg, tr, DEBUG, 0);
     }
 
     public static void i(String msg) {
-        println(TAG, msg, null, INFO);
+        println(TAG, msg, null, INFO, 0);
     }
 
     public static void i(String TAG, String msg) {
-        println(TAG, msg, null, INFO);
+        println(TAG, msg, null, INFO, 0);
     }
 
     public static void i(String TAG, String msg, Throwable tr) {
-        println(TAG, msg, tr, INFO);
+        println(TAG, msg, tr, INFO, 0);
     }
 
     public static void w(String msg) {
-        println(TAG, msg, null, WARN);
+        println(TAG, msg, null, WARN, 0);
     }
 
     public static void w(String TAG, String msg) {
-        println(TAG, msg, null, WARN);
+        println(TAG, msg, null, WARN, 0);
     }
 
     public static void w(String TAG, String msg, Throwable tr) {
-        println(TAG, msg, tr, WARN);
+        println(TAG, msg, tr, WARN, 0);
     }
 
     public static void e(String msg) {
-        println(TAG, msg, null, ERROR);
+        println(TAG, msg, null, ERROR, 0);
     }
 
     public static void e(String TAG, String msg) {
-        println(TAG, msg, null, ERROR);
+        println(TAG, msg, null, ERROR, 0);
     }
 
     public static void e(String TAG, String msg, Throwable tr) {
-        println(TAG, msg, tr, ERROR);
+        println(TAG, msg, tr, ERROR, 0);
     }
 
     public static void e(String msg, Throwable tr) {
-        println(TAG, msg, tr, ERROR);
+        println(TAG, msg, tr, ERROR, 0);
     }
 
     public static void e(Throwable tr) {
-        println(TAG, "ERROR", tr, ERROR);
+        println(TAG, "ERROR", tr, ERROR, 0);
     }
 
     public static void dJson(String str) {
-        println(TAG, YUtils.jsonFormat(str), null, DEBUG);
+        println(TAG, YUtils.jsonFormat(str), null, DEBUG, 0);
     }
 
     public static void dJson(String TAG, String str) {
-        println(TAG, YUtils.jsonFormat(str), null, DEBUG);
+        println(TAG, YUtils.jsonFormat(str), null, DEBUG, 0);
     }
 
     public static void iJson(String str) {
-        println(TAG, YUtils.jsonFormat(str), null, INFO);
+        println(TAG, YUtils.jsonFormat(str), null, INFO, 0);
     }
 
     public static void iJson(String TAG, String str) {
-        println(TAG, YUtils.jsonFormat(str), null, INFO);
+        println(TAG, YUtils.jsonFormat(str), null, INFO, 0);
     }
+
+    //-------------------------------------------静态方法_偏移行↓-------------------------------------------
+    public static void v(String msg, int lineDeviation) {
+        println(TAG, msg, null, VERBOSE, lineDeviation);
+    }
+
+    public static void v(String TAG, String msg, int lineDeviation) {
+        println(TAG, msg, null, VERBOSE, lineDeviation);
+    }
+
+    public static void v(String TAG, String msg, Throwable tr, int lineDeviation) {
+        println(TAG, msg, tr, VERBOSE, lineDeviation);
+    }
+
+    public static void d(String msg, int lineDeviation) {
+        println(TAG, msg, null, DEBUG, lineDeviation);
+    }
+
+    public static void d(String TAG, String msg, int lineDeviation) {
+        println(TAG, msg, null, DEBUG, lineDeviation);
+    }
+
+    public static void d(String TAG, String msg, Throwable tr, int lineDeviation) {
+        println(TAG, msg, tr, DEBUG, lineDeviation);
+    }
+
+    public static void i(String msg, int lineDeviation) {
+        println(TAG, msg, null, INFO, lineDeviation);
+    }
+
+    public static void i(String TAG, String msg, int lineDeviation) {
+        println(TAG, msg, null, INFO, lineDeviation);
+    }
+
+    public static void i(String TAG, String msg, Throwable tr, int lineDeviation) {
+        println(TAG, msg, tr, INFO, lineDeviation);
+    }
+
+    public static void w(String msg, int lineDeviation) {
+        println(TAG, msg, null, WARN, lineDeviation);
+    }
+
+    public static void w(String TAG, String msg, int lineDeviation) {
+        println(TAG, msg, null, WARN, lineDeviation);
+    }
+
+    public static void w(String TAG, String msg, Throwable tr, int lineDeviation) {
+        println(TAG, msg, tr, WARN, lineDeviation);
+    }
+
+    public static void e(String msg, int lineDeviation) {
+        println(TAG, msg, null, ERROR, lineDeviation);
+    }
+
+    public static void e(String TAG, String msg, int lineDeviation) {
+        println(TAG, msg, null, ERROR, lineDeviation);
+    }
+
+    public static void e(String TAG, String msg, Throwable tr, int lineDeviation) {
+        println(TAG, msg, tr, ERROR, lineDeviation);
+    }
+
+    public static void e(String msg, Throwable tr, int lineDeviation) {
+        println(TAG, msg, tr, ERROR, lineDeviation);
+    }
+
+    public static void e(Throwable tr, int lineDeviation) {
+        println(TAG, "ERROR", tr, ERROR, lineDeviation);
+    }
+
+    public static void dJson(String str, int lineDeviation) {
+        println(TAG, YUtils.jsonFormat(str), null, DEBUG, lineDeviation);
+    }
+
+    public static void dJson(String TAG, String str, int lineDeviation) {
+        println(TAG, YUtils.jsonFormat(str), null, DEBUG, lineDeviation);
+    }
+
+    public static void iJson(String str, int lineDeviation) {
+        println(TAG, YUtils.jsonFormat(str), null, INFO, lineDeviation);
+    }
+
+    public static void iJson(String TAG, String str, int lineDeviation) {
+        println(TAG, YUtils.jsonFormat(str), null, INFO, lineDeviation);
+    }
+    //-------------------------------------------静态方法↑-------------------------------------------
+
 
     public static YLogListener getLogListener() {
         return logListener;
@@ -240,21 +328,22 @@ public class YLog {
         YFileUtil.delFile(saveLogDir);
     }
 
+
     /**
      * 打印日志
      *
-     * @param TAG  tag
-     * @param msg  内容
-     * @param tr   异常
-     * @param type 类型
+     * @param TAG           tag
+     * @param msg           内容
+     * @param tr            异常
+     * @param type          类型
+     * @param lineDeviation 偏移行
      */
-    private static void println(String TAG, String msg, Throwable tr, String type) {
+    private static void println(String TAG, String msg, Throwable tr, String type, int lineDeviation) {
+        String codeLine = YStackTrace.getLine(2 + lineDeviation);
         if (msg == null) {
-            String codeLine = getLine(3);
             Log.e(TAG, codeLine + " \n" + "日志内容为:null", tr);
             return;
         }
-        String codeLine = getLine(3);
         List<StringBuilder> lines = YString.groupActual(msg, LOG_MAX_LENGTH - codeLine.length() - 10);
         int i = 1;
         for (StringBuilder item : lines) {
@@ -317,30 +406,5 @@ public class YLog {
                     break;
             }
         }
-    }
-
-    public static String getLine(int stackIndex) {
-        final StackTraceElement[] stackTrace = new Throwable().getStackTrace();
-        StackTraceElement targetElement = stackTrace[stackIndex];
-        final String fileName = getFileName(targetElement);
-        return new Formatter()
-                .format("%s, %s.%s(%s:%d)",
-                        Thread.currentThread().getName(),
-                        targetElement.getClassName(),
-                        targetElement.getMethodName(),
-                        fileName,
-                        targetElement.getLineNumber())
-                .toString();
-    }
-
-    private static String getFileName(final StackTraceElement targetElement) {
-        String fileName = targetElement.getFileName();
-        if (fileName != null) return fileName;
-        String className = targetElement.getClassName();
-        String[] classNameInfo = className.split("\\.");
-        if (classNameInfo.length > 0) className = classNameInfo[classNameInfo.length - 1];
-        int index = className.indexOf('$');
-        if (index != -1) className = className.substring(0, index);
-        return className + ".java";
     }
 }
