@@ -288,17 +288,17 @@ public class YPicture {
     public File createImageFile(String path) {
         // 判断是否有SD卡
         if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
-            Log.e("警告", "SD卡不存在！！");
+            YLog.e("警告", "SD卡不存在！！");
         }
         File file = new File(path);
         if (!Objects.requireNonNull(file.getParentFile()).exists()) {//如果文件夹不存在就创建
-            if (file.getParentFile().mkdirs()) Log.i("ImageUtil.path2Uri", "创建图片文件夹成功");
-            else Log.e("ImageUtil.path2Uri", "创建图片文件夹失败");
+            if (file.getParentFile().mkdirs()) YLog.i("ImageUtil.path2Uri", "创建图片文件夹成功");
+            else YLog.e("ImageUtil.path2Uri", "创建图片文件夹失败");
 
         }
         if (file.exists()) {
-            if (file.delete()) Log.i("ImageUtil.path2Uri", "删除源文件成功");
-            else Log.e("ImageUtil.path2Uri", "删除源文件失败");
+            if (file.delete()) YLog.i("ImageUtil.path2Uri", "删除源文件成功");
+            else YLog.e("ImageUtil.path2Uri", "删除源文件失败");
         }
         return file;
     }

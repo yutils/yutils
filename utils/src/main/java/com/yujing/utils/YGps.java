@@ -66,7 +66,7 @@ public class YGps {
         LocationManager alm = (LocationManager) activity.getSystemService(Context.LOCATION_SERVICE);
         if (alm == null) return;
         if (alm.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            Log.d("GPS", "GPS模块正常");
+            YLog.d("GPS", "GPS模块正常");
             return;
         }
         Toast.makeText(activity, "请手动开启GPS后再试！", Toast.LENGTH_SHORT).show();
@@ -203,7 +203,7 @@ public class YGps {
             }
             location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
         } catch (Exception e) {
-            Log.e("错误", "没有GPS权限");
+            YLog.e("错误", "没有GPS权限");
         }
         return location;
     }

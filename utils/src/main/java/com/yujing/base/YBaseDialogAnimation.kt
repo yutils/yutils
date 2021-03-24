@@ -3,7 +3,6 @@ package com.yujing.base
 import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
-import android.util.Log
 import android.view.View
 import android.view.Window
 import android.view.animation.AlphaAnimation
@@ -12,6 +11,7 @@ import android.view.animation.Animation.AnimationListener
 import android.view.animation.AnimationSet
 import android.view.animation.ScaleAnimation
 import com.yujing.contract.YListener
+import com.yujing.utils.YLog
 import com.yujing.utils.YScreenUtil
 
 /**
@@ -21,6 +21,7 @@ class YBaseDialogAnimation {
     companion object {
         private const val TAG = "YAnimation"
     }
+
     private var animationX = 0.5f
     private var animationY = 0.5f //动画缩放开始点
     private var dialog: Dialog? = null
@@ -45,7 +46,7 @@ class YBaseDialogAnimation {
     val startAnimation: Animation
         get() {
             if (view == null) {
-                Log.e(TAG, "请先初始化：init(Dialog dialog, View view)")
+                YLog.e(TAG, "请先初始化：init(Dialog dialog, View view)")
             }
             //缩放动画
             val scaleAnimation = ScaleAnimation( //起始X，结束X，起始Y，结束Y
@@ -67,7 +68,7 @@ class YBaseDialogAnimation {
     //出场动画
     fun getExitAnimation(endListener: YListener?): Animation? {
         if (view == null) {
-            Log.e(TAG, "请先初始化：init(Dialog dialog, View view)")
+            YLog.e(TAG, "请先初始化：init(Dialog dialog, View view)")
             return null
         }
         val window = dialog!!.window

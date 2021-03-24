@@ -77,7 +77,7 @@ public class YBitmapUtil {
             options -= 10;// 每次都减少10
             image.compress(Bitmap.CompressFormat.JPEG, options, baos);// 这里压缩options%，把压缩后的数据存放到baos中
         }
-        Log.d("图片压缩后大小", baos.toByteArray().length / 1024d + "KB  options:" + options);
+        YLog.d("图片压缩后大小", baos.toByteArray().length / 1024d + "KB  options:" + options);
         return baos.toByteArray();
     }
 

@@ -5,7 +5,10 @@ import com.yujing.contract.YListener1
 import com.yujing.utils.YConvert
 import com.yujing.utils.YLog
 import com.yujing.utils.YThread
-import java.net.*
+import java.net.DatagramPacket
+import java.net.DatagramSocket
+import java.net.InetAddress
+import java.net.SocketException
 
 /**
  * Udp通信
@@ -36,6 +39,7 @@ override fun onDestroy() {
 }
 */
 class YUdp(var ip: String, var port: Int) {
+
     //一次最多读取多长的数据
     var readMaxLength: Int = 1024
     var datagramSocket: DatagramSocket? = null
@@ -63,7 +67,7 @@ class YUdp(var ip: String, var port: Int) {
             try {
                 onDestroy()
                 datagramSocket = DatagramSocket()
-                YLog.i("UDP发送数据", YConvert.bytesToHexString(data))
+                if (showLog) YLog.i("UDP发送数据", YConvert.bytesToHexString(data))
                 datagramSocket?.send(
                     DatagramPacket(data, data.size, InetAddress.getByName(ip), port)
                 )
@@ -71,7 +75,7 @@ class YUdp(var ip: String, var port: Int) {
             } catch (e: SocketException) {
                 if ("Socket is closed" == e.message) YLog.i("发送数据时Socket关闭")
             } catch (e: Exception) {
-                YLog.e("发送数据时异常", e)
+                if (showLog) YLog.e("发送数据时异常", e)
             }
         }.start()
     }
@@ -91,16 +95,16 @@ class YUdp(var ip: String, var port: Int) {
                     //2.取出数据
                     val bytes = ByteArray(datagramPacketRead.length)
                     System.arraycopy(tempRead, 0, bytes, 0, datagramPacketRead.length)
-                    YLog.i("UDP收到数据", YConvert.bytesToHexString(bytes))
+                    if (showLog) YLog.i("UDP收到数据", YConvert.bytesToHexString(bytes))
                     YThread.runOnUiThread { readListener?.value(bytes) }
                     YBusUtil.post(tag, bytes)
                 } catch (e: SocketException) {
-                    if ("Socket closed" == e.message) YLog.i("读取数据时Socket关闭")
+                    if ("Socket closed" == e.message && showLog) YLog.i("读取数据时Socket关闭")
                     Thread.currentThread().interrupt()
                     break
                 } catch (e: Exception) {
                     Thread.currentThread().interrupt()
-                    YLog.e("读取数据时异常", e)
+                    if (showLog) YLog.e("读取数据时异常", e)
                     break
                 }
             }
@@ -115,6 +119,7 @@ class YUdp(var ip: String, var port: Int) {
 
     companion object {
         const val defaultTag = "UdpReceiveDefaultTagTag"
+        var showLog = false
 
         //同步发送
         fun sendSynchronized(

@@ -12,6 +12,7 @@ import android.util.Log;
 import com.yujing.contract.YListener1;
 import com.yujing.contract.YSuccessFailListener;
 import com.yujing.utils.YConvert;
+import com.yujing.utils.YLog;
 import com.yujing.utils.YThread;
 
 import java.util.Arrays;
@@ -58,28 +59,28 @@ public class YBle implements YBluetoothDeviceConnect {
                 if ((charaProp & BluetoothGattCharacteristic.PROPERTY_READ) > 0) {
                     read_UUID_chara = characteristic.getUuid();
                     read_UUID_service = bluetoothGattService.getUuid();
-                    Log.e(TAG, "read_chara=" + read_UUID_chara + "----read_service=" + read_UUID_service);
+                    YLog.e(TAG, "read_chara=" + read_UUID_chara + "----read_service=" + read_UUID_service);
                 }
                 if ((charaProp & BluetoothGattCharacteristic.PROPERTY_WRITE) > 0) {
                     write_UUID_chara = characteristic.getUuid();
                     write_UUID_service = bluetoothGattService.getUuid();
-                    Log.e(TAG, "write_chara=" + write_UUID_chara + "----write_service=" + write_UUID_service);
+                    YLog.e(TAG, "write_chara=" + write_UUID_chara + "----write_service=" + write_UUID_service);
                 }
                 if ((charaProp & BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE) > 0) {
                     write_UUID_chara = characteristic.getUuid();
                     write_UUID_service = bluetoothGattService.getUuid();
-                    Log.e(TAG, "write_chara=" + write_UUID_chara + "----write_service=" + write_UUID_service);
+                    YLog.e(TAG, "write_chara=" + write_UUID_chara + "----write_service=" + write_UUID_service);
 
                 }
                 if ((charaProp & BluetoothGattCharacteristic.PROPERTY_NOTIFY) > 0) {
                     notify_UUID_chara = characteristic.getUuid();
                     notify_UUID_service = bluetoothGattService.getUuid();
-                    Log.e(TAG, "notify_chara=" + notify_UUID_chara + "----notify_service=" + notify_UUID_service);
+                    YLog.e(TAG, "notify_chara=" + notify_UUID_chara + "----notify_service=" + notify_UUID_service);
                 }
                 if ((charaProp & BluetoothGattCharacteristic.PROPERTY_INDICATE) > 0) {
                     indicate_UUID_chara = characteristic.getUuid();
                     indicate_UUID_service = bluetoothGattService.getUuid();
-                    Log.e(TAG, "indicate_chara=" + indicate_UUID_chara + "----indicate_service=" + indicate_UUID_service);
+                    YLog.e(TAG, "indicate_chara=" + indicate_UUID_chara + "----indicate_service=" + indicate_UUID_service);
                 }
             }
         }
@@ -92,17 +93,17 @@ public class YBle implements YBluetoothDeviceConnect {
         @Override
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
             super.onConnectionStateChange(gatt, status, newState);
-            Log.e(TAG, "onConnectionStateChange()");
+            YLog.e(TAG, "onConnectionStateChange()");
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 //连接成功
                 if (newState == BluetoothGatt.STATE_CONNECTED) {
-                    Log.e(TAG, "连接成功");
+                    YLog.e(TAG, "连接成功");
                     //发现服务
                     gatt.discoverServices();
                 }
             } else {
                 //连接失败
-                Log.e(TAG, "失败==" + status);
+                YLog.e(TAG, "失败==" + status);
                 mBluetoothGatt.close();
                 //连接失败
                 if (listener != null)
@@ -117,7 +118,7 @@ public class YBle implements YBluetoothDeviceConnect {
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
             super.onServicesDiscovered(gatt, status);
             //直到这里才是真正建立了可通信的连接
-            Log.e(TAG, "onServicesDiscovered()---建立连接");
+            YLog.e(TAG, "onServicesDiscovered()---建立连接");
             //获取初始化服务和特征值
             initServiceAndChara();
             //订阅通知
@@ -135,7 +136,7 @@ public class YBle implements YBluetoothDeviceConnect {
         @Override
         public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
             super.onCharacteristicRead(gatt, characteristic, status);
-            Log.e(TAG, "onCharacteristicRead()");
+            YLog.e(TAG, "onCharacteristicRead()");
         }
 
         /**
@@ -144,7 +145,7 @@ public class YBle implements YBluetoothDeviceConnect {
         @Override
         public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
             super.onCharacteristicWrite(gatt, characteristic, status);
-            Log.e(TAG, "onCharacteristicWrite()  status=" + status + ",value=" + YConvert.bytesToHexString(characteristic.getValue()));
+            YLog.e(TAG, "onCharacteristicWrite()  status=" + status + ",value=" + YConvert.bytesToHexString(characteristic.getValue()));
         }
 
         /**
@@ -153,7 +154,7 @@ public class YBle implements YBluetoothDeviceConnect {
         @Override
         public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
             super.onCharacteristicChanged(gatt, characteristic);
-            Log.e(TAG, "onCharacteristicChanged()" + Arrays.toString(characteristic.getValue()));
+            YLog.e(TAG, "onCharacteristicChanged()" + Arrays.toString(characteristic.getValue()));
             byte[] data = characteristic.getValue();
             if (listener != null)
                 YThread.runOnUiThread(() -> listener.success(bluetoothDevice));
@@ -190,7 +191,7 @@ public class YBle implements YBluetoothDeviceConnect {
         BluetoothGattService service = mBluetoothGatt.getService(write_UUID_service);
         BluetoothGattCharacteristic charaWrite = service.getCharacteristic(write_UUID_chara);
         if (data.length > 20) {//数据大于个字节 分批次写入
-            Log.e(TAG, "writeData: length=" + data.length);
+            YLog.e(TAG, "writeData: length=" + data.length);
             int num = 0;
             if (data.length % 20 != 0) {
                 num = data.length / 20 + 1;

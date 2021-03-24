@@ -47,7 +47,7 @@ class YRunOnceOfTime(var time: Long, var tag: String, var lastTime: Long) {
         }
 
         @Synchronized
-        fun run(time: Long, tag: String, runnable: Runnable) {
+        fun run(time: Long, tag: String, runnable: Runnable?) {
             //移除过期对象后，找列表中是否有这个tag,如果有，就不执行，没有就执行并且记录
             //移除过期对象
             val currentTime = System.currentTimeMillis()
@@ -63,7 +63,7 @@ class YRunOnceOfTime(var time: Long, var tag: String, var lastTime: Long) {
 
             //如果没有找到对象，就创建并且运行
             if (!find) {
-                runnable.run()
+                runnable?.run()
                 list.add(YRunOnceOfTime(time, tag, System.currentTimeMillis()))
             }
         }

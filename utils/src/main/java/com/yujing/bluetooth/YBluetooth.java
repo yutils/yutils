@@ -12,6 +12,7 @@ import android.util.Log;
 import com.yujing.contract.YListener1;
 import com.yujing.contract.YListener2;
 import com.yujing.contract.YSuccessFailListener;
+import com.yujing.utils.YLog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -177,7 +178,7 @@ public class YBluetooth implements YBluetoothDeviceConnect {
                 } else {
                     bluetoothDevices.add(device);
                 }
-                Log.d(TAG, "已配对" + device.getName() + "：" + device.getAddress());
+                YLog.d(TAG, "已配对" + device.getName() + "：" + device.getAddress());
             }
         }
         return bluetoothDevices;
@@ -191,7 +192,7 @@ public class YBluetooth implements YBluetoothDeviceConnect {
             if (BluetoothDevice.ACTION_FOUND.equals(action)) {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 short rssi = (device.getBondState() != BluetoothDevice.BOND_BONDED) ? intent.getExtras().getShort(BluetoothDevice.EXTRA_RSSI) : 0;
-                Log.i(TAG, "搜索到设备：" + device.getName() + "," + device.getAddress() + ",信号强度：" + rssi);
+                YLog.i(TAG, "搜索到设备：" + device.getName() + "," + device.getAddress() + ",信号强度：" + rssi);
                 if (searchListener != null) {
                     if (TYPE_BT.equals(type)) {
                         if (device.getType() == 1)
@@ -208,13 +209,13 @@ public class YBluetooth implements YBluetoothDeviceConnect {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 switch (device.getBondState()) {
                     case BluetoothDevice.BOND_BONDING://正在配对
-                        Log.d(TAG, "正在配对......");
+                        YLog.d(TAG, "正在配对......");
                         break;
                     case BluetoothDevice.BOND_BONDED://配对结束
-                        Log.d(TAG, "完成配对");
+                        YLog.d(TAG, "完成配对");
                         break;
                     case BluetoothDevice.BOND_NONE://取消配对/未配对
-                        Log.d(TAG, "取消配对");
+                        YLog.d(TAG, "取消配对");
                     default:
                         break;
                 }

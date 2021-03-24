@@ -67,7 +67,7 @@ public class YLoop {
                                     try {
                                         method.invoke(obj);
                                     } catch (Exception e) {
-                                        Log.e("YLoopAndroid", "调用 method.invoke(obj) 时发生异常", e);
+                                        YLog.e("YLoopAndroid", "调用 method.invoke(obj) 时发生异常", e);
                                     }
                                 });
                             } else {

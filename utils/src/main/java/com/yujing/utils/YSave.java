@@ -13,6 +13,21 @@ import java.util.HashMap;
  *
  * @author 余静 2019年12月9日12:05:41
  */
+/*
+用法：
+//参数下载
+kotlin
+var parameterInfo: ParameterInfo
+    get() = YSave.get(App.get(), "ParameterInfo", ParameterInfo::class.java)
+    set(parameterInfo) = YSave.put(App.get(), "ParameterInfo", parameterInfo)
+java
+    public static String getP() {
+        return YSave.get(App.get(), "ParameterInfo", String.class);
+    }
+    public static void setP(String purchaseLine) {
+        YSave.put(App.get(), "ParameterInfo", purchaseLine);
+    }
+ */
 @SuppressWarnings("unused")
 public class YSave {
     private static final String TAG = "YSave"; //标记

@@ -4,11 +4,12 @@ import android.app.Activity;
 import android.graphics.SurfaceTexture;
 import android.media.MediaPlayer;
 import android.net.Uri;
-import android.util.Log;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.TextureView;
+
+import com.yujing.utils.YLog;
 
 /**
  * 多功能播放器
@@ -139,7 +140,7 @@ public class YPlayer {
                     if (textureView != null && screenStopTimeLimit > 0) {
                         screenStopTime++;
                         if (screenStopTime >= screenStopTimeLimit) {
-                            Log.e("YPlayer", "屏幕无响应时间大于" + screenStopTimeLimit + "秒，自动重启播放");
+                            YLog.e("YPlayer", "屏幕无响应时间大于" + screenStopTimeLimit + "秒，自动重启播放");
                             screenStopTime = 0;
                             rePlay();
                         }
@@ -148,7 +149,7 @@ public class YPlayer {
                     if (autoRestartTimeLimit > 0) {
                         autoRestartTime++;
                         if (autoRestartTime >= autoRestartTimeLimit) {
-                            Log.i("YPlayer", "稳定运行" + autoRestartTimeLimit + "秒，自动重启播放");
+                            YLog.i("YPlayer", "稳定运行" + autoRestartTimeLimit + "秒，自动重启播放");
                             autoRestartTime = 0;
                             rePlay();
                         }
@@ -197,7 +198,7 @@ public class YPlayer {
      */
     public synchronized void play() {
         if (!isInit) {
-            Log.e("YPlayer", "SurfaceTexture或者surfaceView未完成初始化");
+            YLog.e("YPlayer", "SurfaceTexture或者surfaceView未完成初始化");
             return;
         }
         try {

@@ -3,7 +3,6 @@ package com.yujing.utils;
 import android.content.Context;
 import android.os.Build;
 import android.speech.tts.TextToSpeech;
-import android.util.Log;
 
 import com.yujing.contract.YListener1;
 
@@ -31,16 +30,17 @@ public class YTts {
         }
         return yTts;
     }
+
     public static YTts getYTtsInstance(Context context) {
         return getYTtsInstance(context, null);
     }
 
-    public static YTts  getInstance(Context context, YListener1<Boolean> listener) {
-        return  getYTtsInstance(context,listener);
+    public static YTts getInstance(Context context, YListener1<Boolean> listener) {
+        return getYTtsInstance(context, listener);
     }
-    
-    public static YTts  getInstance(Context context) {
-        return  getYTtsInstance(context,null);
+
+    public static YTts getInstance(Context context) {
+        return getYTtsInstance(context, null);
     }
 
     public YTts(final Context context) {
@@ -51,14 +51,14 @@ public class YTts {
         textToSpeech = new TextToSpeech(context, status -> {
             if (status == TextToSpeech.SUCCESS) {
                 int result = textToSpeech.setLanguage(Locale.CHINA);
-                Log.e(TAG, "TTS状态:" + result);
+                YLog.e(TAG, "TTS状态:" + result);
                 if (result == TextToSpeech.LANG_MISSING_DATA) {
-                    Log.e(TAG, "语言包丢失");
+                    YLog.e(TAG, "语言包丢失");
                     initSuccess = false;
                 } else if (result == TextToSpeech.LANG_NOT_SUPPORTED) {
-                    Log.e(TAG, "语音不支持");
+                    YLog.e(TAG, "语音不支持");
                     initSuccess = false;
-                }else {
+                } else {
                     initSuccess = true;
                 }
             }

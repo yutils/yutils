@@ -109,7 +109,7 @@ class MainActivity : YBaseActivity<ActivityAllTestBinding>(null) {
         Create.space(binding.wll)//换行
         //--------------------------------------------------------------------------------
         Create.button(binding.wll, "打印行号") {
-            YLog.i("打印行号:" + YStackTrace.getLine())
+            YLog.i("打印行号:" + YStackTrace.printAll())
         }
     }
 

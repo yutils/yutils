@@ -3,11 +3,12 @@ package com.yujing.view;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 
 import androidx.fragment.app.Fragment;
+
+import com.yujing.utils.YLog;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -83,7 +84,7 @@ public class YInitView {
                 for (int id : onclick.value()) {//onclick.value()为数组
                     View view = ((Activity) object).findViewById(id);
                     if (view == null) {
-                        Log.e("错误", "设置OnClickListener时没有找到该View");
+                        YLog.e("错误", "设置OnClickListener时没有找到该View");
                         continue;
                     }
                     view.setOnClickListener(view1 -> {
@@ -119,7 +120,7 @@ public class YInitView {
             if (findview != null) {
                 View view = ((Activity) object).findViewById(findview.value());
                 if (view == null) {
-                    Log.e("错误", "设置Findview时没有找到该View");
+                    YLog.e("错误", "设置Findview时没有找到该View");
                     return;
                 }
                 field.set(object, view);
@@ -198,7 +199,7 @@ public class YInitView {
                 for (int id : onclick.value()) {//onclick.value()为数组
                     View view = v.findViewById(id);
                     if (view == null) {
-                        Log.e("错误", "设置OnClickListener时没有找到该View");
+                        YLog.e("错误", "设置OnClickListener时没有找到该View");
                         continue;
                     }
                     view.setOnClickListener(view1 -> {
@@ -234,7 +235,7 @@ public class YInitView {
             if (findview != null) {
                 View view = v.findViewById(findview.value());
                 if (view == null) {
-                    Log.e("错误", "设置Findview时没有找到该View");
+                    YLog.e("错误", "设置Findview时没有找到该View");
                     return;
                 }
                 field.set(object, view);
@@ -356,7 +357,7 @@ public class YInitView {
             if (findview != null && findview.tag() == tag) {
                 View viewTemp1 = view.findViewById(findview.id());
                 if (viewTemp1 == null) {
-                    Log.e("错误", "设置Findview时没有找到该View");
+                    YLog.e("错误", "设置Findview时没有找到该View");
                 }
                 field.set(object, viewTemp1);
             }
@@ -371,7 +372,7 @@ public class YInitView {
                 for (int id : onclick.id()) {//onclick.value()为数组
                     View viewTemp = view.findViewById(id);
                     if (viewTemp == null) {
-                        Log.e("错误", "设置OnClickListener时没有找到该View");
+                        YLog.e("错误", "设置OnClickListener时没有找到该View");
                         continue;
                     }
                     viewTemp.setOnClickListener(view1 -> {

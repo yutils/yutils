@@ -303,7 +303,7 @@ public class YLog {
                 long timeOld = formatDate.parse(date).getTime();
                 long timeLimit = new Date().getTime() - 1000L * 60 * 60 * 24 * daysAgo;
                 if (timeOld < timeLimit) {
-                    Log.i("清理日志", item.getPath());
+                    YLog.i("清理日志", item.getPath());
                     del(date);
                 }
             } catch (Exception e) {
@@ -328,7 +328,6 @@ public class YLog {
         YFileUtil.delFile(saveLogDir);
     }
 
-
     /**
      * 打印日志
      *
@@ -341,33 +340,47 @@ public class YLog {
     private static void println(String TAG, String msg, Throwable tr, String type, int lineDeviation) {
         String codeLine = YStackTrace.getLine(2 + lineDeviation);
         if (msg == null) {
-            Log.e(TAG, codeLine + " \n" + "日志内容为:null", tr);
+            if (YUtils.isAndroid())
+                Log.e(TAG, codeLine + " \n" + "日志内容为:null", tr);
+            else
+                System.err.print("TAG:" + TAG + "\tcodeLine:" + codeLine + " \n" + "日志内容为:null" + ((tr == null) ? "" : ("\tThrowable:" + tr.getMessage())));
             return;
         }
         List<StringBuilder> lines = YString.groupActual(msg, LOG_MAX_LENGTH - codeLine.length() - 10);
         int i = 1;
+
         for (StringBuilder item : lines) {
             //第一行要显示代码line，只有行就不显示line1行数
             String value = (i == 1 ? "★" + codeLine : "★--->" + i) + " \n" + item.toString();
-            switch (type) {
-                case VERBOSE:
-                    Log.v(TAG, value, tr);
-                    break;
-                case DEBUG:
-                    Log.d(TAG, value, tr);
-                    break;
-                case INFO:
-                    Log.i(TAG, value, tr);
-                    break;
-                case WARN:
-                    Log.w(TAG, value, tr);
-                    break;
-                case ERROR:
-                    Log.e(TAG, value, tr);
-                    break;
+            if (YUtils.isAndroid()) {
+                switch (type) {
+                    case VERBOSE:
+                        Log.v(TAG, value, tr);
+                        break;
+                    case DEBUG:
+                        Log.d(TAG, value, tr);
+                        break;
+                    case INFO:
+                        Log.i(TAG, value, tr);
+                        break;
+                    case WARN:
+                        Log.w(TAG, value, tr);
+                        break;
+                    case ERROR:
+                        Log.e(TAG, value, tr);
+                        break;
+                }
+            } else {
+                if (ERROR.equals(type)) {
+                    System.err.print("TAG:" + TAG + "\tvalue:" + value + ((tr == null) ? "" : ("\tThrowable:" + tr.getMessage())));
+                } else {
+                    System.out.print("TAG:" + TAG + "\tvalue:" + value + ((tr == null) ? "" : ("\tThrowable:" + tr.getMessage())));
+                }
             }
             i++;
         }
+
+
         if (logListener != null) {
             switch (type) {
                 case VERBOSE:

@@ -2,6 +2,8 @@ package com.yujing.crypt;
 
 import android.util.Log;
 
+import com.yujing.utils.YLog;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -58,7 +60,7 @@ public class YMd5 {
             MessageDigest md = MessageDigest.getInstance(MD5);
             resultString = byteToString(md.digest(bytes));
         } catch (NoSuchAlgorithmException e) {
-            Log.e("MD5", "getMd5(byte[] bytes)异常：", e);
+            YLog.e("MD5", "getMd5(byte[] bytes)异常：", e);
         }
         return resultString;
     }

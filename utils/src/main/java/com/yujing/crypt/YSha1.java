@@ -2,6 +2,8 @@ package com.yujing.crypt;
 
 import android.util.Log;
 
+import com.yujing.utils.YLog;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -39,7 +41,7 @@ public class YSha1 {
             }
             fingerprint = sb.toString();
         } catch (NoSuchAlgorithmException e) {
-            Log.e("YSha1", "getSha1(byte[] bytes)异常：", e);
+            YLog.e("YSha1", "getSha1(byte[] bytes)异常：", e);
         }
         return fingerprint;
     }
@@ -69,14 +71,14 @@ public class YSha1 {
             }
             return sha1;
         } catch (IOException | NoSuchAlgorithmException e) {
-            Log.e("YSha1", "getFileSha1(File file)异常：", e);
+            YLog.e("YSha1", "getFileSha1(File file)异常：", e);
         } finally {
             try {
                 if (in != null) {
                     in.close();
                 }
             } catch (IOException e) {
-                Log.e("YSha1", "in.close()异常：", e);
+                YLog.e("YSha1", "in.close()异常：", e);
             }
         }
         return null;

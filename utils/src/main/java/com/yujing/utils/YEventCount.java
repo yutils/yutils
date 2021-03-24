@@ -18,7 +18,7 @@ override fun onBackPressed() {
  */
 @SuppressWarnings("unused")
 public class YEventCount {
-    private int frequency = 1;//当前是第几次
+    private int frequency = 0;//当前是第几次
     private long oldTime = 0;//上次计时时间
     private long time;//多长时间内
     private long count;//触发多少次
@@ -38,6 +38,17 @@ public class YEventCount {
         this.eventFailListener = eventFailListener;
     }
 
+    /**
+     * 计时器恢复到初始值
+     */
+    public void initialization() {
+        frequency = 0;
+        oldTime = 0;
+    }
+
+    /**
+     * 触发一次事件
+     */
     public void event() {
         if (count <= 1) {
             eventSuccessListener.success();
@@ -45,8 +56,7 @@ public class YEventCount {
         }
         if (System.currentTimeMillis() - oldTime < time) {
             if (++frequency >= count) {
-                frequency = 0;
-                oldTime = 0;
+                initialization();
                 if (eventSuccessListener != null) eventSuccessListener.success();
             } else {
                 if (eventFailListener != null) eventFailListener.fail(frequency);
@@ -58,10 +68,16 @@ public class YEventCount {
         }
     }
 
+    /**
+     * 成功回调
+     */
     public interface EventSuccessListener {
         void success();
     }
 
+    /**
+     * 未达成条件回调
+     */
     public interface EventFailListener {
         void fail(long count);
     }

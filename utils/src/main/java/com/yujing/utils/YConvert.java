@@ -437,10 +437,10 @@ public class YConvert {
             in = new ObjectInputStream(byteIn);
             object = in.readObject();
         } catch (ClassNotFoundException e) {
-            Log.e("对象转换失败：", "Base64转对象时候发生错误,确保包名是否一致，ClassNotFoundException：" + e.getMessage());
+            YLog.e("对象转换失败：", "Base64转对象时候发生错误,确保包名是否一致，ClassNotFoundException：" + e.getMessage());
             return null;
         } catch (IOException e) {
-            Log.e("对象转换失败：", "Base64转对象时候发生错误IOException：" + e.getMessage());
+            YLog.e("对象转换失败：", "Base64转对象时候发生错误IOException：" + e.getMessage());
             return null;
         }
         return object;
@@ -462,7 +462,7 @@ public class YConvert {
             out = new ObjectOutputStream(byteOut);
             out.writeObject(object);
         } catch (IOException e) {
-            Log.e("对象转换失败", "错误:请检查" + object.getClass().getName() + "类是否序列化，如果没有请实现Serializable接口：" + e.getMessage());
+            YLog.e("对象转换失败", "错误:请检查" + object.getClass().getName() + "类是否序列化，如果没有请实现Serializable接口：" + e.getMessage());
             return null;
         }
         return byteOut.toByteArray();

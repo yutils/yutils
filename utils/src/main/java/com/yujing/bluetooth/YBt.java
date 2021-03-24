@@ -8,6 +8,7 @@ import android.util.Log;
 
 import com.yujing.contract.YListener1;
 import com.yujing.contract.YSuccessFailListener;
+import com.yujing.utils.YLog;
 import com.yujing.utils.YReadInputStream;
 import com.yujing.utils.YThread;
 
@@ -67,18 +68,18 @@ public class YBt implements YBluetoothDeviceConnect {
                 try {
                     //通过和服务器协商的uuid来进行连接
                     bluetoothSocket = device.createRfcommSocketToServiceRecord(SPP_UUID);
-                    Log.d("blueTooth", "开始连接...");
+                    YLog.d("blueTooth", "开始连接...");
                     //如果当前socket处于非连接状态则调用连接
                     if (!bluetoothSocket.isConnected()) {
                         //你应当确保在调用connect()时设备没有执行搜索设备的操作。
                         // 如果搜索设备也在同时进行，那么将会显著地降低连接速率，并很大程度上会连接失败。
                         bluetoothSocket.connect();
                     }
-                    Log.d("blueTooth", "已经链接");
+                    YLog.d("blueTooth", "已经链接");
                     YThread.runOnUiThread(() -> listener.success(device));
                     read();
                 } catch (Exception e) {
-                    Log.e("blueTooth", "...连接失败");
+                    YLog.e("blueTooth", "...连接失败");
                     YThread.runOnUiThread(() -> listener.fail("连接失败"));
                     try {
                         bluetoothSocket.close();

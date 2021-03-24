@@ -29,7 +29,6 @@ import android.telephony.TelephonyManager;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -87,6 +86,18 @@ public class YUtils {
      */
     public static void init(Application application) {
         YApp.set(application);
+    }
+
+    /**
+     * 全局application
+     * 使用时：YApp.get();
+     * 并且初始化YActivityUtil注册:registerActivityLifecycleCallbacks
+     *
+     * @param application application
+     */
+    public static void initAll(Application application) {
+        init(application);
+        YActivityUtil.init(application);
     }
 
     /**
@@ -226,7 +237,7 @@ public class YUtils {
                             return obj.toString();
                         }
                     } catch (Exception e) {
-                        Log.e("获取IMEI", "失败", e);
+                        YLog.e("获取IMEI", "失败", e);
                     }
                 }
             }
@@ -295,7 +306,7 @@ public class YUtils {
         try {
             verCode = context.getPackageManager().getPackageInfo(packageName, 0).versionCode;
         } catch (PackageManager.NameNotFoundException e) {
-            Log.e("getVersionCode", "异常", e);
+            YLog.e("getVersionCode", "异常", e);
         }
         return verCode;
     }
@@ -322,7 +333,7 @@ public class YUtils {
         try {
             verName = context.getPackageManager().getPackageInfo(packageName, 0).versionName;
         } catch (PackageManager.NameNotFoundException e) {
-            Log.e("getVersionName", "异常", e);
+            YLog.e("getVersionName", "异常", e);
         }
         return verName;
     }
@@ -348,7 +359,7 @@ public class YUtils {
     public static <T> T copyObject(T date) {
         if (date == null) return null;
         if (date instanceof Parcelable) {
-            Log.i("copyObject", "采用Parcelable序列化");
+            YLog.i("copyObject", "采用Parcelable序列化");
             Parcel parcel = null;
             try {
                 parcel = Parcel.obtain();
@@ -356,13 +367,13 @@ public class YUtils {
                 parcel.setDataPosition(0);
                 return (T) parcel.readParcelable(date.getClass().getClassLoader());
             } catch (Exception e) {
-                Log.e("copyObject", "复制错误", e);
+                YLog.e("copyObject", "复制错误", e);
             } finally {
                 parcel.recycle();
             }
         }
         if (date instanceof Serializable) {
-            Log.i("copyObject", "采用Serializable序列化");
+            YLog.i("copyObject", "采用Serializable序列化");
             try {
                 ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
                 ObjectOutputStream out = new ObjectOutputStream(byteOut);
@@ -371,20 +382,20 @@ public class YUtils {
                 ObjectInputStream in = new ObjectInputStream(byteIn);
                 return (T) in.readObject();
             } catch (IOException e) {
-                Log.e("copyObject", "复制发生IO错误", e);
+                YLog.e("copyObject", "复制发生IO错误", e);
             } catch (ClassNotFoundException e) {
-                Log.e("copyObject", "复制找不到对象错误", e);
+                YLog.e("copyObject", "复制找不到对象错误", e);
             } catch (Exception e) {
-                Log.e("copyObject", "复制错误", e);
+                YLog.e("copyObject", "复制错误", e);
             }
         }
-        Log.i("copyObject", "警告，对象未继承Serializable或Parcelable");
-        Log.i("copyObject", "尝试Gson序列化");
+        YLog.i("copyObject", "警告，对象未继承Serializable或Parcelable");
+        YLog.i("copyObject", "尝试Gson序列化");
         try {
             Gson gson = new Gson();
             return (T) gson.fromJson(gson.toJson(date), date.getClass());
         } catch (Exception e) {
-            Log.e("copyObject", "Gson序列化失败", e);
+            YLog.e("copyObject", "Gson序列化失败", e);
         }
         return null;
     }
@@ -702,7 +713,7 @@ public class YUtils {
             int status = p.waitFor();
             if (status == 0) return true;
         } catch (Exception e) {
-            Log.e("-----ping-----", "ping出错：", e);
+            YLog.e("-----ping-----", "ping出错：", e);
         }
         return false;
     }
@@ -734,7 +745,7 @@ public class YUtils {
                 }
             }
         } catch (SocketException e) {
-            Log.e("获取IPv6失败", "异常", e);
+            YLog.e("获取IPv6失败", "异常", e);
         }
         return ips;
     }
@@ -756,7 +767,7 @@ public class YUtils {
                 }
             }
         } catch (SocketException e) {
-            Log.e("获取IPv4失败", "异常", e);
+            YLog.e("获取IPv4失败", "异常", e);
         }
         return ips;
     }
@@ -884,13 +895,17 @@ public class YUtils {
      *
      * @return 是否安卓
      */
+    private static Boolean isAndroid = null;
+
     public static boolean isAndroid() {
+        if (isAndroid != null) return isAndroid;
         try {
             Class.forName("android.os.Handler");
-            return true;
+            isAndroid = true;
         } catch (Exception ignored) {
-            return false;
+            isAndroid = false;
         }
+        return isAndroid;
     }
 
     /**

@@ -10,6 +10,22 @@ import java.util.List;
  *
  * @author yujing 2021年3月14日15:07:47
  */
+/*
+用法
+//打印当前行
+//main, com.yujing.test.activity.MainActivity$init$18.onClick(MainActivity.kt:112)
+YStackTrace.getLine())
+
+//打印当前行，向上偏移一行
+YStackTrace.getLine(1))
+
+//打印全部栈
+//[main, com.yujing.test.activity.MainActivity$init$18.onClick(MainActivity.kt:112), main, android.view.View.performClick(View.java:5637), main, android.view.View$PerformClick.run(View.java:22445), main, android.os.Handler.handleCallback(Handler.java:755), main, android.os.Handler.dispatchMessage(Handler.java:95), main, android.os.Looper.loop(Looper.java:154), main, android.app.ActivityThread.main(ActivityThread.java:6157), main, java.lang.reflect.Method.invoke(Method.java:-2), main, com.android.internal.os.ZygoteInit$MethodAndArgsCaller.run(ZygoteInit.java:912), main, com.android.internal.os.ZygoteInit.main(ZygoteInit.java:802)]
+YStackTrace.getLines())
+
+//打印全部栈，自动换行
+YStackTrace.printAll()
+ */
 public class YStackTrace {
     /**
      * 返回调用此方法的堆栈跟踪代码行数

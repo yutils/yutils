@@ -121,7 +121,7 @@ public class YDateDialog {
             try {
                 calendar.setTime(Objects.requireNonNull(sdf.parse(initDateTime)));
             } catch (ParseException e) {
-                Log.e("YDateDialog", "show异常", e);
+                YLog.e("YDateDialog", "show异常", e);
             }
         }
         if (initDate != null) {
@@ -154,7 +154,7 @@ public class YDateDialog {
                 ((ViewGroup) ((ViewGroup) datePicker.getChildAt(0)).getChildAt(0)).getChildAt(2).setVisibility(View.GONE);
             }
         } catch (Exception e) {
-            Log.e("YDateDialog", "日历不兼容");
+            YLog.e("YDateDialog", "日历不兼容");
         }
 
         //初始化弹窗时间

@@ -1,15 +1,17 @@
 package com.yujing.adapter;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.yujing.utils.YLog;
+
 /**
  * 解决RecyclerView在ScrollView中的高度不正常问题
+ *
  * @author yujing 2018年11月30日12:14:26
  */
 @SuppressWarnings("unused")
@@ -35,7 +37,7 @@ class YFullyLinearLayoutManager extends LinearLayoutManager {
         final int widthSize = View.MeasureSpec.getSize(widthSpec);
         final int heightSize = View.MeasureSpec.getSize(heightSpec);
 
-        Log.i(TAG, "onMeasure called. \nwidthMode " + widthMode + " \nheightMode " + heightSpec + " \nwidthSize " + widthSize + " \nheightSize " + heightSize + " \ngetItemCount() " + getItemCount());
+        YLog.i(TAG, "onMeasure called. \nwidthMode " + widthMode + " \nheightMode " + heightSpec + " \nwidthSize " + widthSize + " \nheightSize " + heightSize + " \ngetItemCount() " + getItemCount());
 
         int width = 0;
         int height = 0;

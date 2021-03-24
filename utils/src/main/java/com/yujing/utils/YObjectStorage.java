@@ -174,7 +174,7 @@ public class YObjectStorage {
             String value = YConvert.object2Base64(object);
             YPropertiesUtils.setValue(path, key, value);
         } catch (Exception e) {
-            Log.e("ObjectStorage", "存盘错误" + e.getMessage());
+            YLog.e("ObjectStorage", "存盘错误" + e.getMessage());
         }
     }
 

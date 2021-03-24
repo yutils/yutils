@@ -25,7 +25,6 @@ import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.Image;
 import android.media.ImageReader;
 import android.os.Build;
-import android.util.Log;
 import android.util.Size;
 import android.util.SparseIntArray;
 import android.view.Surface;
@@ -34,6 +33,8 @@ import android.view.TextureView;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
+
+import com.yujing.utils.YLog;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -179,13 +180,13 @@ public class YCamera {
 
         @Override
         public void onDisconnected(@NonNull CameraDevice camera) {
-            Log.i(TAG, "摄像头设备断开连接");
+            YLog.i(TAG, "摄像头设备断开连接");
         }
 
         @Override
         public void onError(@NonNull CameraDevice camera, int error) {
             String msg = "摄像头设备异常";
-            Log.e(TAG, msg);
+            YLog.e(TAG, msg);
             if (errorListener != null) {
                 activity.runOnUiThread(() -> {
                     errorListener.value(msg);
@@ -209,7 +210,7 @@ public class YCamera {
         // 获取摄像头的管理者CameraManager
         CameraManager manager = (CameraManager) activity.getSystemService(Context.CAMERA_SERVICE);
         try {
-            Log.i(TAG, "相机个数：" + manager.getCameraIdList().length);
+            YLog.i(TAG, "相机个数：" + manager.getCameraIdList().length);
             // 遍历所有摄像头
             for (String item : manager.getCameraIdList()) {
                 CameraCharacteristics characteristics = manager.getCameraCharacteristics(item);
@@ -245,7 +246,7 @@ public class YCamera {
             manager.openCamera(mCameraId, stateCallback, null);
         } catch (Exception e) {
             String msg = "相机打开失败";
-            Log.e(TAG, msg, e);
+            YLog.e(TAG, msg, e);
             if (errorListener != null)
                 errorListener.value(msg);
         }
@@ -313,7 +314,7 @@ public class YCamera {
             mPreviewRequestBuilder.addTarget(mPreviewSurface);
             MeteringRectangle[] meteringRectangles = mPreviewRequestBuilder.get(CaptureRequest.CONTROL_AF_REGIONS);
             if (meteringRectangles != null && meteringRectangles.length > 0) {
-                Log.d(TAG, "PreviewRequestBuilder: AF_REGIONS=" + meteringRectangles[0].getRect().toString());
+                YLog.d(TAG, "PreviewRequestBuilder: AF_REGIONS=" + meteringRectangles[0].getRect().toString());
             }
             mPreviewRequestBuilder.set(CaptureRequest.CONTROL_MODE, CaptureRequest.CONTROL_MODE_AUTO);
             mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER, CaptureRequest.CONTROL_AF_TRIGGER_IDLE);
@@ -392,7 +393,7 @@ public class YCamera {
             }, null);
         } catch (Exception e) {
             String msg = "拍照失败";
-            Log.e(TAG, msg, e);
+            YLog.e(TAG, msg, e);
             if (errorListener != null) {
                 activity.runOnUiThread(() -> {
                     errorListener.value(msg);
@@ -478,7 +479,7 @@ public class YCamera {
                         screenStopTime++;
                         if (screenStopTime >= screenStopTimeLimit) {
                             String msg = "屏幕无响应时间大于" + screenStopTimeLimit + "秒";
-                            Log.e(TAG, msg);
+                            YLog.e(TAG, msg);
                             screenStopTime = 0;
                             if (errorListener != null) {
                                 activity.runOnUiThread(() -> errorListener.value(msg));

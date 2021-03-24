@@ -2,7 +2,6 @@ package com.yujing.utils;
 
 import android.annotation.SuppressLint;
 import android.os.Build;
-import android.util.Log;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -61,7 +60,7 @@ public class YWebView {
             webView.setBackgroundColor(0); // 设置背景色
             webView.getBackground().setAlpha(0); // 设置填充透明度 范围：0-255
         } catch (Exception e) {
-            Log.e("webView", "WebView背景设置透明错误，请在布局文件中添加android:background=\"#00000000\"", e);
+            YLog.e("webView", "WebView背景设置透明错误，请在布局文件中添加android:background=\"#00000000\"", e);
         }
     }
 

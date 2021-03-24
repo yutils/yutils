@@ -76,11 +76,11 @@ public class YReadInputStream {
     }
 
     private static void log(String string) {
-        if (showLog) Log.i(TAG, string);
+        if (showLog) YLog.i(TAG, string);
     }
 
     private static void log(String string, Exception e) {
-        if (showLog) Log.e(TAG, string, e);
+        if (showLog) YLog.e(TAG, string, e);
     }
 
     public static boolean isShowLog() {
