@@ -62,7 +62,7 @@ public class YLoop {
                             if (cycleNum > 0 && num <= 0)
                                 break;
                             num--;// 循环次数减1
-                            if (YUtils.isAndroid()) {
+                            if (YClass.isAndroid()) {
                                 YThread.runOnUiThread(() -> {
                                     try {
                                         method.invoke(obj);

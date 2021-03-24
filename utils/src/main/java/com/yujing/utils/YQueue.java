@@ -32,7 +32,7 @@ public class YQueue {
     public void run(final int time, final Runnable runnable) {
         Thread thread = new Thread(() -> {
             try {
-                if (YUtils.isAndroid()) YThread.runOnUiThread(runnable);
+                if (YClass.isAndroid()) YThread.runOnUiThread(runnable);
                 else runnable.run();
                 Thread.sleep(time);
             } catch (InterruptedException ignored) {

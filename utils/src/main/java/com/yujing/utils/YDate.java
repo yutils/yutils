@@ -6,6 +6,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Objects;
 
 /**
@@ -79,7 +80,7 @@ public class YDate {
      * @return Date
      */
     public static Date string2Date(String strTime, String formatType) {
-        @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter = new SimpleDateFormat(formatType);
+        SimpleDateFormat formatter = new SimpleDateFormat(formatType, Locale.getDefault());
         try {
             return formatter.parse(strTime);
         } catch (ParseException e) {
@@ -96,7 +97,7 @@ public class YDate {
      * @return 格式化后的数据
      */
     public static String date2String(Date date, String formatType) {
-        @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter = new SimpleDateFormat(formatType);
+        SimpleDateFormat formatter = new SimpleDateFormat(formatType, Locale.getDefault());
         return formatter.format(date);
     }
 
@@ -110,8 +111,8 @@ public class YDate {
      */
     public static String dateConvert(String oldDateString, String oldDateFormat, String newDateFormat) {
         String newDateString = "";
-        @SuppressLint("SimpleDateFormat") SimpleDateFormat dateFormatOld = new SimpleDateFormat(oldDateFormat);
-        @SuppressLint("SimpleDateFormat") SimpleDateFormat dateFormatNew = new SimpleDateFormat(newDateFormat);
+        SimpleDateFormat dateFormatOld = new SimpleDateFormat(oldDateFormat, Locale.getDefault());
+        SimpleDateFormat dateFormatNew = new SimpleDateFormat(newDateFormat, Locale.getDefault());
         try {
             Date date = dateFormatOld.parse(oldDateString);
             newDateString = dateFormatNew.format(Objects.requireNonNull(date));

@@ -71,8 +71,6 @@ import java.util.Objects;
  *
  * @author 余静 2021年3月10日10:46:57
  */
-@SuppressWarnings("unused")
-@SuppressLint("MissingPermission")
 /*用法
 //初始化
 YUtils.init(this)
@@ -180,7 +178,6 @@ public class YUtils {
      * @param context context
      * @return id
      */
-    @SuppressLint("HardwareIds")
     public static String getAndroidId(Context context) {
         return Settings.Secure.getString(context.getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
     }
@@ -202,8 +199,7 @@ public class YUtils {
      * @param index   第N个卡的imei，从0开始
      * @return imei
      */
-    @SuppressLint("HardwareIds")
-    @SuppressWarnings("deprecation")
+    @SuppressLint({"HardwareIds", "MissingPermission"})
     public static String getImei(Context context, int index) {
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED)
             return null;
@@ -557,7 +553,6 @@ public class YUtils {
         }
     }
 
-
     /**
      * 后台实现发送短信
      *
@@ -652,10 +647,8 @@ public class YUtils {
      */
     public static boolean isNetConnected(Context context) {
         ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (manager == null) {
-            return false;
-        }
-        NetworkInfo info = manager.getActiveNetworkInfo();
+        if (manager == null) return false;
+        @SuppressLint("MissingPermission") NetworkInfo info = manager.getActiveNetworkInfo();
         return Objects.requireNonNull(info).getState() == NetworkInfo.State.CONNECTED;
     }
 
@@ -688,7 +681,7 @@ public class YUtils {
     public static int getConnectedType(Context context) {
         ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         if (manager == null) return -1;
-        NetworkInfo info = manager.getActiveNetworkInfo();
+        @SuppressLint("MissingPermission") NetworkInfo info = manager.getActiveNetworkInfo();
         return info != null ? info.getType() : -1;
     }
 
@@ -888,24 +881,6 @@ public class YUtils {
         } catch (Exception e) {
             return false;
         }
-    }
-
-    /**
-     * 判断是否是安卓中运行
-     *
-     * @return 是否安卓
-     */
-    private static Boolean isAndroid = null;
-
-    public static boolean isAndroid() {
-        if (isAndroid != null) return isAndroid;
-        try {
-            Class.forName("android.os.Handler");
-            isAndroid = true;
-        } catch (Exception ignored) {
-            isAndroid = false;
-        }
-        return isAndroid;
     }
 
     /**

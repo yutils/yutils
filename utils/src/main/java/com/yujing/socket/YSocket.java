@@ -1,5 +1,6 @@
 package com.yujing.socket;
 
+import com.yujing.utils.YClass;
 import com.yujing.utils.YLog;
 import com.yujing.utils.YThread;
 import com.yujing.utils.YThreadPool;
@@ -509,7 +510,7 @@ public class YSocket {
                     try {
                         for (DataListener dataListener : dataListeners) {
                             if (dataListener != null) {
-                                if (YUtils.isAndroid()) {
+                                if (YClass.isAndroid()) {
                                     YThread.runOnUiThread(() -> {
                                         dataListener.data(bytes);
                                     });
@@ -538,7 +539,7 @@ public class YSocket {
         if (stateListener != null) {
             Thread thread = new Thread(() -> {
                 try {
-                    if (YUtils.isAndroid()) {
+                    if (YClass.isAndroid()) {
                         YThread.runOnUiThread(() -> {
                             stateListener.isSuccess(status);
                         });

@@ -19,6 +19,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Objects;
 
 /**
@@ -116,7 +117,7 @@ public class YDateDialog {
         //---------------------------------------------布局设置完毕------------------------------------
         //---------------------------------------------计算时间开始------------------------------------
         Calendar calendar = Calendar.getInstance();
-        @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat(format);
+        SimpleDateFormat sdf = new SimpleDateFormat(format, Locale.getDefault());
         if (initDateTime != null) {
             try {
                 calendar.setTime(Objects.requireNonNull(sdf.parse(initDateTime)));
@@ -204,7 +205,7 @@ public class YDateDialog {
         } else {
             calendar.set(datePicker.getYear(), datePicker.getMonth(), datePicker.getDayOfMonth(), timePicker.getCurrentHour(), timePicker.getCurrentMinute());
         }
-        @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat(format);
+        SimpleDateFormat sdf = new SimpleDateFormat(format, Locale.getDefault());
         dateTime = sdf.format(calendar.getTime());
         ad.setTitle(dateTime);
     }

@@ -25,7 +25,7 @@ public class YDelay {
     public static void run(final int time, final Runnable runnable) {
         new Thread(() -> {
             try {
-                if (YUtils.isAndroid()) {
+                if (YClass.isAndroid()) {
                     YThread.runOnUiThreadDelayed(runnable, time);
                 } else {
                     Thread.sleep(time);

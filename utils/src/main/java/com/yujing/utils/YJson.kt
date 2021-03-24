@@ -105,7 +105,6 @@ object YJson {
     /**
      * 获取一个格式化日期的 gson对象
      */
-    @SuppressLint("SimpleDateFormat")
     fun getGsonDate(dateFormat: String?): Gson {
         return  GsonBuilder().setDateFormat(dateFormat).create()
     }

@@ -1,6 +1,6 @@
 package com.yujing.utils;
 
-import android.annotation.SuppressLint;
+
 import android.content.Context;
 import android.util.Log;
 
@@ -11,6 +11,7 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * LOG显示类
@@ -33,10 +34,8 @@ YLog.setLogListener { type, tag, msg ->  }
  */
 @SuppressWarnings({"FieldCanBeLocal", "WeakerAccess"})
 public class YLog {
-    @SuppressLint("SimpleDateFormat")
-    private static SimpleDateFormat formatDate = new SimpleDateFormat("yyyy-MM-dd");
-    @SuppressLint("SimpleDateFormat")
-    private static SimpleDateFormat formatTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+    public static SimpleDateFormat formatDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+    public static SimpleDateFormat formatTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.getDefault());
     //是否保存日志
     private static boolean isSave = false;
     //保存日志目录
@@ -340,19 +339,18 @@ public class YLog {
     private static void println(String TAG, String msg, Throwable tr, String type, int lineDeviation) {
         String codeLine = YStackTrace.getLine(2 + lineDeviation);
         if (msg == null) {
-            if (YUtils.isAndroid())
+            if (YClass.isAndroid())
                 Log.e(TAG, codeLine + " \n" + "日志内容为:null", tr);
             else
-                System.err.print("TAG:" + TAG + "\tcodeLine:" + codeLine + " \n" + "日志内容为:null" + ((tr == null) ? "" : ("\tThrowable:" + tr.getMessage())));
+                System.err.println("TAG:" + TAG + "\tcodeLine:" + codeLine + " \n" + "日志内容为:null" + ((tr == null) ? "" : ("\tThrowable:" + tr.getMessage())));
             return;
         }
         List<StringBuilder> lines = YString.groupActual(msg, LOG_MAX_LENGTH - codeLine.length() - 10);
         int i = 1;
-
         for (StringBuilder item : lines) {
             //第一行要显示代码line，只有行就不显示line1行数
             String value = (i == 1 ? "★" + codeLine : "★--->" + i) + " \n" + item.toString();
-            if (YUtils.isAndroid()) {
+            if (YClass.isAndroid()) {
                 switch (type) {
                     case VERBOSE:
                         Log.v(TAG, value, tr);
@@ -372,52 +370,15 @@ public class YLog {
                 }
             } else {
                 if (ERROR.equals(type)) {
-                    System.err.print("TAG:" + TAG + "\tvalue:" + value + ((tr == null) ? "" : ("\tThrowable:" + tr.getMessage())));
+                    System.err.println("TAG:" + TAG + "\tvalue:" + value + ((tr == null) ? "" : ("\tThrowable:" + tr.getMessage())));
                 } else {
-                    System.out.print("TAG:" + TAG + "\tvalue:" + value + ((tr == null) ? "" : ("\tThrowable:" + tr.getMessage())));
+                    System.out.println("TAG:" + TAG + "\tvalue:" + value + ((tr == null) ? "" : ("\tThrowable:" + tr.getMessage())));
                 }
             }
             i++;
         }
-
-
-        if (logListener != null) {
-            switch (type) {
-                case VERBOSE:
-                    logListener.value(VERBOSE, TAG, msg);
-                    break;
-                case DEBUG:
-                    logListener.value(DEBUG, TAG, msg);
-                    break;
-                case INFO:
-                    logListener.value(INFO, TAG, msg);
-                    break;
-                case WARN:
-                    logListener.value(WARN, TAG, msg);
-                    break;
-                case ERROR:
-                    logListener.value(ERROR, TAG, msg);
-                    break;
-            }
-        }
-        if (isSave) {
-            switch (type) {
-                case VERBOSE:
-                    save(VERBOSE, TAG, msg);
-                    break;
-                case DEBUG:
-                    save(DEBUG, TAG, msg);
-                    break;
-                case INFO:
-                    save(INFO, TAG, msg);
-                    break;
-                case WARN:
-                    save(WARN, TAG, msg);
-                    break;
-                case ERROR:
-                    save(ERROR, TAG, msg);
-                    break;
-            }
-        }
+        //回调个监听函数
+        if (logListener != null) logListener.value(type, TAG, msg);
+        if (isSave) save(type, TAG, msg);
     }
 }
