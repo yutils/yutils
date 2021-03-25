@@ -46,7 +46,7 @@ dependencies {
     //关联lib
     implementation project(':utils')
     implementation 'com.github.yutils:ycrash:1.0.3'
-    implementation 'com.github.yutils:yhttp:1.0.7'
+    implementation 'com.github.yutils:yhttp:1.0.8'
 
     //gson <!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
     implementation 'com.google.code.gson:gson:2.8.6'
