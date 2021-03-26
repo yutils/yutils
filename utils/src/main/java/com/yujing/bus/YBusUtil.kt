@@ -1,7 +1,7 @@
 package com.yujing.bus
 
 import com.blankj.rxbus.RxBus
-import io.reactivex.android.schedulers.AndroidSchedulers
+import com.yujing.utils.YThread
 import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
 
@@ -39,9 +39,15 @@ class YBusUtil {
          * 必须调用
          */
         fun init(anyClass: Any) {
-            RxBus.getDefault().subscribeSticky(anyClass, AndroidSchedulers.mainThread(),
-                object : RxBus.Callback<YMessage<Any>>() {
+//            RxBus.getDefault().subscribeSticky(anyClass, AndroidSchedulers.mainThread(),
+//                object : RxBus.Callback<YMessage<Any>>() {
+//                    override fun onEvent(yMessage: YMessage<Any>) { } } )
+            //如果打开 AndroidSchedulers.mainThread(),数据量大了会下面异常
+            //E/RxBus: io.reactivex.exceptions.MissingBackpressureException: Could not emit value due to lack of requests
+            RxBus.getDefault().subscribeSticky(
+                anyClass, object : RxBus.Callback<YMessage<Any>>() {
                     override fun onEvent(yMessage: YMessage<Any>) {
+                        //开线程目的解决上下游流速不均
                         try {
                             //一层一层直到找到Object::class.java为止
                             var mClass = anyClass.javaClass
@@ -50,7 +56,8 @@ class YBusUtil {
                                 val methods = mClass.declaredMethods
                                 for (method in methods) {
                                     method.isAccessible = true //允许调用私有方法
-                                    doMessage(anyClass, method, yMessage) // 设置监听
+                                    // 设置监听
+                                    YThread.runOnUiThread { doMessage(anyClass, method, yMessage) }
                                 }
                                 mClass = mClass.superclass!!
                             }
@@ -104,12 +111,12 @@ class YBusUtil {
         }
 
         fun post(tag: String, value: Any?) {
-            RxBus.getDefault().post(YMessage(tag, value))
+            YThread.runOnUiThread { RxBus.getDefault().post(YMessage(tag, value)) }
         }
 
         fun postSticky(tag: String, value: Any?) {
             removeSticky()
-            RxBus.getDefault().postSticky(YMessage(tag, value))
+            YThread.runOnUiThread { RxBus.getDefault().postSticky(YMessage(tag, value)) }
         }
 
         fun removeSticky() {

@@ -59,7 +59,6 @@ class MainActivity : YBaseActivity<ActivityAllTestBinding>(null) {
         Create.space(binding.wll)//换行
         Create.button(binding.wll, "EventBus,发送0") {
             EventBus.getDefault().post("你好0")
-
         }
         Create.button(binding.wll, "EventBus,粘性1") {
             EventBus.getDefault().postSticky("你好1")
