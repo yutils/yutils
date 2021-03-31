@@ -15,7 +15,7 @@ android {
         minSdkVersion 19
         targetSdkVersion 30
         versionCode 37
-        versionName "1.4.4"
+        versionName "1.4.5"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -78,6 +78,8 @@ dependencies {
     // https://mvnrepository.com/artifact/com.blankj/rxbus
     implementation group: 'com.blankj', name: 'rxbus', version: '1.6'
     //____________________________________________________________RxJava____________________________________________________________
+    //https://mvnrepository.com/artifact/org.greenrobot/eventbus/3.2.0
+    implementation group: 'org.greenrobot', name: 'eventbus', version: '3.2.0'
 }
 
 //打包jar;doc;sources，请在Terminal中运行：gradlew makeJar，如果失败，先执行：gradlew assembleDebug --rerun-tasks

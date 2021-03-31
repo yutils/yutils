@@ -50,7 +50,9 @@ class MainActivity : YBaseActivity<ActivityAllTestBinding>(null) {
         Create.space(binding.wll)//换行
         editText1 = Create.editText(binding.wll, "123456789")
         Create.button(binding.wll, "Ybus发送消息1") {
-            YBusUtil.post("tag1", editText1.text.toString())
+            Thread {
+                YBusUtil.post("tag1", editText1.text.toString())
+            }.start()
         }
         Create.button(binding.wll, "Ybus发送消息2") {
             YBusUtil.post("tag2", "222222222")
@@ -112,7 +114,7 @@ class MainActivity : YBaseActivity<ActivityAllTestBinding>(null) {
         }
     }
 
-    @YBus("tag1")
+    @YBus("tag1", "tag2", mainThread = false)
     fun message1(message: Any) {
         YLog.i("收到1：$message")
         textView1.text = textView1.text.toString() + "收到1:$message \n"
@@ -124,16 +126,17 @@ class MainActivity : YBaseActivity<ActivityAllTestBinding>(null) {
         textView1.text = textView1.text.toString() + "收到2：$key:$message \n"
     }
 
+    override fun onEvent(yMessage: YMessage<Any>) {
+        YLog.i("收到3：${yMessage.type}:${yMessage.data}")
+        textView1.text = textView1.text.toString() + "收到3：${yMessage.type}:${yMessage.data} \n"
+    }
+
     @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
     fun onGetMessage(message: String) {
         YLog.i("收到4：$message")
         textView1.text = textView1.text.toString() + "收到4：$message \n"
     }
 
-    override fun onEvent(yMessage: YMessage<Any>) {
-        YLog.i("收到3：${yMessage.type}:${yMessage.data}")
-        textView1.text = textView1.text.toString() + "收到3：${yMessage.type}:${yMessage.data} \n"
-    }
 
     override fun onDestroy() {
         super.onDestroy()

@@ -42,5 +42,8 @@ YBusUtil.onDestroy(this)
 // 注解会在class字节码文件中存在，在运行时可以通过反射获取到
 @Target({ElementType.METHOD, ElementType.FIELD, ElementType.TYPE, ElementType.LOCAL_VARIABLE})
 public @interface YBus {
+
     String[] value() default "";
+
+    boolean mainThread() default true;
 }

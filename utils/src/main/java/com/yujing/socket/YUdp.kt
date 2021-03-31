@@ -5,14 +5,11 @@ import com.yujing.contract.YListener1
 import com.yujing.utils.YConvert
 import com.yujing.utils.YLog
 import com.yujing.utils.YThread
-import java.net.DatagramPacket
-import java.net.DatagramSocket
-import java.net.InetAddress
-import java.net.SocketException
+import java.net.*
 
 /**
  * Udp通信
- * @author yujing 2021年2月3日13:47:50
+ * @author yujing 2021年3月26日14:31:19
  */
 /*用法
 var yUdp: YUdp? = null
@@ -39,10 +36,19 @@ override fun onDestroy() {
 }
 */
 class YUdp(var ip: String, var port: Int) {
-
     //一次最多读取多长的数据
     var readMaxLength: Int = 1024
+
+    //超时时间
+    var soTimeout = 1000 * 5
+
+    //超时是否重新连接
+    var reconnect = true
+
+    //Socket
     var datagramSocket: DatagramSocket? = null
+
+    //读取成功监听
     var readListener: YListener1<ByteArray>? = null
 
     //YBus-Tag
@@ -90,6 +96,7 @@ class YUdp(var ip: String, var port: Int) {
                     // 1.创建数据报，用于接收服务器端响应的数据
                     val tempRead = ByteArray(readMaxLength)
                     val datagramPacketRead = DatagramPacket(tempRead, tempRead.size)
+                    datagramSocket?.soTimeout = soTimeout
                     datagramSocket?.receive(datagramPacketRead)
                     if (Thread.interrupted()) break
                     //2.取出数据
@@ -102,12 +109,17 @@ class YUdp(var ip: String, var port: Int) {
                     if ("Socket closed" == e.message && showLog) YLog.i("读取数据时Socket关闭")
                     Thread.currentThread().interrupt()
                     break
+                } catch (e: SocketTimeoutException) {
+                    Thread.currentThread().interrupt()
+                    if (showLog) YLog.e("读取超时", e.message)
+                    if (reconnect) reStart()
                 } catch (e: Exception) {
                     Thread.currentThread().interrupt()
                     if (showLog) YLog.e("读取数据时异常", e)
                     break
                 }
             }
+            if (showLog) YLog.d("退出读取线程")
         }
         readThread?.start()
     }

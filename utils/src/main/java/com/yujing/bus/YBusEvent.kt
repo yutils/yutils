@@ -1,17 +1,20 @@
 package com.yujing.bus
 
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+
 /**
  * bus 总线通信 工具类
- * 底层原理：循环遍历所有注册类
- * @author yujing 2021年3月31日11:37:59
+ * 底层eventBus
+ * @author yujing 2021年1月12日11:09:26
  */
 /*用法
 
 //注册该类
-YBusUtil.init(this)
+YBusEvent.init(this)
 
 //发送消息
-YBusUtil.post("tag1","123456789")
+YBusEvent.post("tag1","123456789")
 
 //接收消息
 @YBus("tag1")
@@ -27,29 +30,29 @@ fun message(key: Any,message: Any) {
 }
 
 //解绑该类
-YBusUtil.onDestroy(this)
+YBusEvent.onDestroy(this)
 */
-class YBusUtil {
+class YBusEvent {
     companion object {
+        init {
+            EventBus.getDefault().register(this)
+        }
+
         //类列表
         var listObject: MutableList<Any> = ArrayList()
-
-        //延迟事件
-        var anySticky: YMessage<Any>? = null
 
         /**
          * 必须调用，注册类
          */
         fun init(anyClass: Any) {
-            anySticky?.let { Utils.findMethod(anyClass, it) }
             listObject.add(anyClass)
         }
 
         /**
          * 接收事件，并且调用已经注册类中包含@YBus注解的类
          */
-        @Synchronized
-        private fun subscribe(yMessage: YMessage<Any>) {
+        @Subscribe(sticky = true)
+        fun subscribe(yMessage: YMessage<Any>) {
             for (any in listObject) Utils.findMethod(any, yMessage)
         }
 
@@ -57,30 +60,29 @@ class YBusUtil {
          * 发送事件
          */
         fun post(tag: String, value: Any?) {
-            subscribe(YMessage(tag, value))
+            EventBus.getDefault().post(YMessage(tag, value))
         }
 
         /**
          * 发送粘性事件
          */
         fun postSticky(tag: String, value: Any?) {
-            val message = YMessage(tag, value)
-            anySticky = message
-            subscribe(YMessage(tag, value))
+            removeSticky()
+            EventBus.getDefault().postSticky(YMessage(tag, value))
         }
 
         /**
          * 删除粘性事件
          */
         fun removeSticky() {
-            anySticky = null
+            EventBus.getDefault().removeStickyEvent(YMessage(null, null))
         }
 
         /**
          * 移除全部bus
          */
         fun destroyAll() {
-            listObject.clear()
+            YBusUtil.listObject.clear()
         }
 
         /**
@@ -88,6 +90,13 @@ class YBusUtil {
          */
         fun onDestroy(any: Any) {
             listObject.remove(any)
+        }
+
+        /**
+         * 退出APP时候调用
+         */
+        fun exitApp() {
+            EventBus.getDefault().removeStickyEvent(this)
         }
     }
 }
