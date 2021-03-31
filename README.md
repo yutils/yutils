@@ -143,6 +143,30 @@ static void	setFullScreen(android.app.Activity activity, boolean isFullScreen)
 static void	setImmersive(android.app.Activity activity, boolean isFullScreen)
 设置开启沉浸式
 ```
+## 类 YBusUtil
+```
+//注册该类
+YBusUtil.init(this)
+
+//发送消息
+YBusUtil.post("tag1","123456789")
+
+//接收消息
+@YBus("tag1")
+fun message(message: Any) {
+    YLog.i("收到：$message")
+}
+
+//接收全部消息
+@YBus()
+fun message(key: Any,message: Any) {
+    YLog.i("收到：$key:$message")
+    textView1.text = "收到：$key:$message"
+}
+
+//解绑该类
+YBusUtil.onDestroy(this)
+```
 
 ## 类 YActivityUtil
 ```
