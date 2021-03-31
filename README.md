@@ -143,6 +143,7 @@ static void	setFullScreen(android.app.Activity activity, boolean isFullScreen)
 static void	setImmersive(android.app.Activity activity, boolean isFullScreen)
 设置开启沉浸式
 ```
+
 ## 类 YBusUtil
 ```
 //注册该类
