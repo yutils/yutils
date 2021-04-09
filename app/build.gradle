@@ -12,7 +12,7 @@ android {
         minSdkVersion 19
         targetSdkVersion 30
         versionCode 37
-        versionName "1.4.5"
+        versionName "1.4.6"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -68,7 +68,7 @@ dependencies {
     implementation group: 'com.blankj', name: 'rxbus', version: '1.6'
     //____________________________________________________________RxJava____________________________________________________________
     //https://github.com/Blankj/AndroidUtilCode/blob/master/lib/utilcode/README-CN.md
-    implementation 'com.blankj:utilcodex:1.30.5'
+    implementation 'com.blankj:utilcodex:1.30.6'
 
     //https://mvnrepository.com/artifact/org.greenrobot/eventbus/3.2.0
     implementation group: 'org.greenrobot', name: 'eventbus', version: '3.2.0'

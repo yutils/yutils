@@ -112,6 +112,12 @@ class MainActivity : YBaseActivity<ActivityAllTestBinding>(null) {
         Create.button(binding.wll, "打印行号") {
             YLog.i("打印行号:" + YStackTrace.printAll())
         }
+        Create.button(binding.wll, "运行一次") {
+            YRunOnceOfTime.runUpdate(1000,"tag1") {
+                //运行内容
+                YLog.i("运行内容")
+            }
+        }
     }
 
     @YBus("tag1", "tag2", mainThread = false)
