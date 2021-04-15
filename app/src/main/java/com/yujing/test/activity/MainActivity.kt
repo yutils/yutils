@@ -118,24 +118,6 @@ class MainActivity : YBaseActivity<ActivityAllTestBinding>(null) {
                 YLog.i("运行内容")
             }
         }
-
-        Create.button(binding.wll, "打开查询打印APP") {
-            //YUtils.openAPP("com.hn.query","com.hn.query.activity.HomeActivity")
-
-            val i = YUtils.getAppIntent("com.hn.query", "com.hn.query.activity.HomeActivity")
-            i.putExtra("数据", "8888888888888")
-            YUtils.openAPP(i)
-        }
-        Create.button(binding.wll, "打开磅码APP") {
-            YUtils.openAPP("com.hn.bangma", "com.hn.bangma.activity.StartUpActivity")
-        }
-        Create.button(binding.wll, "打开排号APP") {
-            YUtils.openAPP("com.hn.jiaoyanpaihao", "com.hn.paihao.activity.StartUpActivity")
-        }
-
-        Create.button(binding.wll, "打开打包APP") {
-            YUtils.openAPP("打包设备")
-        }
     }
 
     @YBus("tag1", "tag2", mainThread = false)
