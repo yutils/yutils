@@ -8,11 +8,13 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.ClipData;
 import android.content.ClipboardManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -928,6 +930,174 @@ public class YUtils {
             } catch (IOException ignored) {
             }
         }
+    }
+
+    /**
+     * 获取打开APP的Intent
+     * 用法：
+     * val intent = YUtils.getAppIntent("com.xx.xx","com.xx.xx.MainActivity")
+     * intent.putExtra("数据", "8888888888888")
+     * YUtils.openAPP(intent)
+     *
+     * @param packageName  包名
+     * @param activityName activity类名
+     * @return Intent
+     */
+    public static Intent getAppIntent(String packageName, String activityName) {
+        ComponentName cn = new ComponentName(packageName, activityName);
+        Intent intent = new Intent();
+        intent.setComponent(cn);
+        return intent;
+    }
+
+    /**
+     * 获取打开APP的Intent
+     * 需要YUtils.init(this)
+     * 用法：
+     * val intent = YUtils.getAppIntent("微信")
+     * intent.putExtra("数据", "8888888888888")
+     * YUtils.openAPP(intent)
+     *
+     * @param appName app名称
+     * @return Intent
+     */
+    public static Intent getAppIntent(String appName) {
+        return getAppIntent(YApp.get(), appName);
+    }
+
+    /**
+     * 获取打开APP的Intent
+     * 用法：
+     * val intent = YUtils.getAppIntent(this,"微信")
+     * intent.putExtra("数据", "8888888888888")
+     * YUtils.openAPP(intent)
+     *
+     * @param context context
+     * @param appName app名称
+     * @return Intent
+     */
+    public static Intent getAppIntent(Context context, String appName) {
+        PackageManager packageManager = context.getPackageManager();
+        String packageName = null;
+        //获取所有安装的app
+        @SuppressLint("QueryPermissionsNeeded")
+        List<PackageInfo> installedPackages = packageManager.getInstalledPackages(0);
+        for (PackageInfo info : installedPackages) {
+            String pkg = info.packageName;//app包名
+            ApplicationInfo ai = null;
+            try {
+                ai = packageManager.getApplicationInfo(pkg, 0);
+            } catch (PackageManager.NameNotFoundException e) {
+                YLog.e("读取APP异常", e);
+            }
+            String name = (String) packageManager.getApplicationLabel(ai);//获取应用名称
+            if (appName.equals(name)) {
+                packageName = pkg;
+                break;
+            }
+        }
+        //查询是否找到package
+        if (packageName != null)
+            return context.getPackageManager().getLaunchIntentForPackage(packageName);
+        return null;
+    }
+
+    /**
+     * 打开其他APP
+     * 需要YUtils.init(this)
+     * 用法：
+     * YUtils.openAPP("com.xx.xx","com.xx.xx.MainActivity")
+     *
+     * @param packageName  包名
+     * @param activityName activity名称
+     * @return 是否成功
+     */
+    public static boolean openAPP(String packageName, String activityName) {
+        return openAPP(YApp.get(), packageName, activityName);
+    }
+
+    /**
+     * 打开其他APP
+     * 用法：
+     * YUtils.openAPP(this,"com.xx.xx","com.xx.xx.MainActivity")
+     *
+     * @param context      context
+     * @param packageName  包名
+     * @param activityName activity名称
+     * @return 是否成功
+     */
+    public static boolean openAPP(Context context, String packageName, String activityName) {
+        Intent intent = getAppIntent(packageName, activityName);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+        openAPP(context, intent);
+        return false;
+    }
+
+    /**
+     * 通过APP名称打开APP
+     * 需要YUtils.init(this)
+     * 用法:
+     * YUtils.openAPP("微信")
+     *
+     * @param appName APP名称
+     * @return 是否成功
+     */
+    public static boolean openAPP(String appName) {
+        return openAPP(YApp.get(), appName);
+    }
+
+    /**
+     * 通过APP名称打开APP
+     * 用法:
+     * YUtils.openAPP(this,"微信")
+     *
+     * @param context context
+     * @param appName APP名称
+     * @return 是否成功
+     */
+    public static boolean openAPP(Context context, String appName) {
+        Intent intent = getAppIntent(context, appName);
+        //查询是否找到package
+        if (intent != null) {
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+            openAPP(context, intent);
+            return true;
+        } else {
+            YLog.e("打开APP失败", "没有安装：" + appName);
+        }
+        return false;
+    }
+
+    /**
+     * 通过Intent打开APP
+     * 需要YUtils.init(this)
+     * 用法：
+     * YUtils.openAPP(intent)
+     *
+     * @param intent intent
+     * @return 是否成功
+     */
+    public static boolean openAPP(Intent intent) {
+        return openAPP(YApp.get(), intent);
+    }
+
+    /**
+     * 通过Intent打开APP
+     * 用法：
+     * YUtils.openAPP(this,intent)
+     *
+     * @param context context
+     * @param intent  intent
+     * @return 是否成功
+     */
+    public static boolean openAPP(Context context, Intent intent) {
+        try {
+            context.startActivity(intent);
+            return true;
+        } catch (Exception e) {
+            YLog.e("打开APP异常", e);
+        }
+        return false;
     }
 
     /**

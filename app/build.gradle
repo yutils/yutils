@@ -11,8 +11,8 @@ android {
         applicationId "com.yujing.test"
         minSdkVersion 19
         targetSdkVersion 30
-        versionCode 37
-        versionName "1.4.6"
+        versionCode 39
+        versionName "1.4.7"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
