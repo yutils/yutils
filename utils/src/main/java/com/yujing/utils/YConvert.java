@@ -169,6 +169,61 @@ public class YConvert {
     }
 
     /**
+     * 每8个Bit转成一个byte
+     * Bit转Byte数组，输入必须是8的整数倍
+     */
+    public static byte[] BitToByteArray(String byteStr) {
+        byte[] out = new byte[byteStr.length() / 8];
+        for (int i = 0; i < out.length; i++) {
+            String bitString = byteStr.substring(i * 8, i * 8 + 8);
+            out[i] = bitToByte(bitString);
+        }
+        return out;
+    }
+
+    /**
+     * 每个byte转8个Bit
+     */
+    public static String byteArrayToBit(byte[] b) {
+        StringBuilder builder = new StringBuilder();
+        for (byte value : b) builder.append(byteToBit(value));
+        return builder.toString();
+    }
+
+    /**
+     * Byte转Bit
+     */
+    public static String byteToBit(byte b) {
+        return "" + (byte) ((b >> 7) & 0x1) +
+                (byte) ((b >> 6) & 0x1) +
+                (byte) ((b >> 5) & 0x1) +
+                (byte) ((b >> 4) & 0x1) +
+                (byte) ((b >> 3) & 0x1) +
+                (byte) ((b >> 2) & 0x1) +
+                (byte) ((b >> 1) & 0x1) +
+                (byte) ((b) & 0x1);
+    }
+
+    /**
+     * Bit转Byte
+     */
+    public static byte bitToByte(String byteStr) {
+        int re, len;
+        if (null == byteStr) return 0;
+        len = byteStr.length();
+        if (len != 4 && len != 8) return 0;
+        if (len == 8) {// 8 bit处理
+            if (byteStr.charAt(0) == '0') {// 正数
+                re = Integer.parseInt(byteStr, 2);
+            } else {// 负数
+                re = Integer.parseInt(byteStr, 2) - 256;
+            }
+        } else {//4 bit处理
+            re = Integer.parseInt(byteStr, 2);
+        }
+        return (byte) re;
+    }
+    /**
      * 将list转化为数组
      *
      * @param list list

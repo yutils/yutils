@@ -13,7 +13,6 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Shader;
-import android.util.Log;
 
 import androidx.annotation.ColorInt;
 
@@ -397,5 +396,38 @@ public class YBitmapUtil {
         return ((Color.red(px1) == Color.green(px1) && Color.red(px1) == Color.blue(px1))
                 && (Color.red(px2) == Color.green(px2) && Color.red(px2) == Color.blue(px2))
                 && (Color.red(px3) == Color.green(px3) && Color.red(px3) == Color.blue(px3)));
+    }
+
+    /**
+     * bitmap转点阵图
+     * 黑色为true，白色为false
+     *
+     * @param bitmap bitmap
+     * @return boolean二维数组，[列][行]
+     */
+    public static boolean[][] bitmapToDot(Bitmap bitmap) {
+        return bitmapToDot(bitmap, 200);
+    }
+
+    /**
+     * bitmap转点阵图
+     * 黑色为true，白色为false
+     *
+     * @param bitmap    bitmap
+     * @param threshold 阈值，低于这个值就默认是黑色，0-255
+     * @return boolean二维数组，[列][行]
+     */
+    public static boolean[][] bitmapToDot(Bitmap bitmap, int threshold) {
+        if (YBitmapUtil.isEmptyBitmap(bitmap)) return null;
+        bitmap = YBitmapUtil.toGray(bitmap);
+        //转boolean 黑true
+        boolean[][] blacks = new boolean[bitmap.getHeight()][bitmap.getWidth()];
+        for (int y = 0; y < blacks.length; y++) {
+            for (int x = 0; x < blacks[y].length; x++) {
+                int px = bitmap.getPixel(x, y);
+                blacks[y][x] = Color.red(px) <= threshold;//小于阈值就为黑色
+            }
+        }
+        return blacks;
     }
 }

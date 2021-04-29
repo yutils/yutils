@@ -26,7 +26,7 @@ import com.yujing.utils.YLog;
 //String url = Environment.getExternalStorageDirectory().getPath() + "/v.mp4";
 //String url = "android.resource://" + getPackageName() + "/raw/" + R.raw.v;
 //String url = "rtsp://yujing:pw123456@192.168.6.40:554/Stream/Channels/101";
-
+//rtsp只能是h.264
 YPlayer yPlayer = new YPlayer(this, bind.textureView, url);
 yPlayer.setScreenStopTimeLimit(60);//屏幕卡死60秒无响应自动重启（textureView有效，建议播放流的时候设置）
 yPlayer.setAutoRestartTimeLimit(60 * 3);//每三分钟自动重启播放（建议播放流的时候设置）
