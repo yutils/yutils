@@ -19,10 +19,10 @@ public class YTts {
     private float speechRate = 1.0f;//速度
     private float pitch = 1.0f;//音调
     private boolean initSuccess = false;//初始化状态
-
+    //----------------------------------------------静态----------------------------------------------
     private static volatile YTts yTts;//单例
 
-    public static YTts getYTtsInstance(Context context, YListener1<Boolean> listener) {
+    public static YTts getInstance(Context context, YListener1<Boolean> listener) {
         if (yTts == null || yTts.textToSpeech == null) {
             synchronized (YTts.class) {
                 if (yTts == null || yTts.textToSpeech == null) yTts = new YTts(context, listener);
@@ -31,17 +31,22 @@ public class YTts {
         return yTts;
     }
 
-    public static YTts getYTtsInstance(Context context) {
-        return getYTtsInstance(context, null);
-    }
-
-    public static YTts getInstance(Context context, YListener1<Boolean> listener) {
-        return getYTtsInstance(context, listener);
-    }
-
     public static YTts getInstance(Context context) {
-        return getYTtsInstance(context, null);
+        return getInstance(context, null);
     }
+
+    public static YTts getInstance() {
+        return getInstance(YApp.get(), null);
+    }
+
+    public static void play(String speak) {
+        getInstance(YApp.get(), null).speak(speak);
+    }
+
+    public static void playQueue(String speak) {
+        getInstance(YApp.get(), null).speakQueue(speak);
+    }
+    //----------------------------------------------静态----------------------------------------------
 
     public YTts(final Context context) {
         this(context, null);

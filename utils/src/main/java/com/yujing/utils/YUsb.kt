@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.hardware.usb.*
-import android.os.Parcelable
 import com.yujing.contract.YListener1
 import java.nio.ByteBuffer
 
@@ -24,24 +23,32 @@ import java.nio.ByteBuffer
 //创建
 private val yUsb = YUsb()
 
+//usb监听
+usb.setStatusListener{ status ->
+    if (status) usb.open()
+    else //USB 已断开
+}
+
 //初始化
 yUsb.initUSB(4611,null)
 
 //打开
 if (!yUsb.open()) {
     speak("USB打开失败")
-    return
 }
 
 //发送
 yUsb.send(value.toByteArray(charset("GB18030")))
+
 //读取数据
 val result = read(maxLength, timeOut)
+
 //读取数据,直到有数据为止
 val result =yUsb.readWait()
 
 //持续读取监听，回调
 yUsb.startRead {  result->  }
+
 //停止持续读取监听
 yUsb.stopRead()
 
@@ -77,25 +84,75 @@ class YUsb {
     //Interface
     var usbInterface: UsbInterface? = null
 
-    //point，读或者写
+    //point，写
     var usbEndpointOut: UsbEndpoint? = null
+
+    //point，读
     var usbEndpointIn: UsbEndpoint? = null
+
+    //是否找到USB
+    var status = false
+
+    //供应商ID
+    var vendorId: Int? = null
+
+    //设备ID
+    var productId: Int? = null
 
     //连接
     var usbConnection: UsbDeviceConnection? = null
+
+    //USB连接监听，如果是自己的USB，连接就返回true，断开就返回false
+    private var statusListener: YListener1<Boolean>? = null
+
+    fun setStatusListener(statusListener: YListener1<Boolean>) {
+        this.statusListener = statusListener
+    }
 
     //动态光比，提示用户是否授予使用USB设备的权限
     private val mUsbReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             val action = intent.action
+            //权限
             if (ACTION_USB_PERMISSION == action) {
                 synchronized(this) {
-                    val device =
-                        intent.getParcelableExtra<Parcelable>(UsbManager.EXTRA_DEVICE) as UsbDevice?
+                    val device = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE) as UsbDevice?
                     if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
-                        if (device != null) {
-                            hasPermission = true
-                        }
+                        if (device != null) hasPermission = true
+                    }
+                }
+            }
+            //usb连接监听
+            if (UsbManager.ACTION_USB_DEVICE_ATTACHED == action) {
+                val device = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE) as UsbDevice?
+                device?.let {
+                    //万一用户只用vendorId连接
+                    if (it.vendorId == vendorId && productId == null) {
+                        this@YUsb.device = device
+                        status = true
+                        statusListener?.value(true)
+                    }
+                    //万一用户只用productId连接
+                    if (vendorId == null && it.productId == productId) {
+                        this@YUsb.device = device
+                        status = true
+                        statusListener?.value(true)
+                    }
+                    //万一用户同时需要判断vendorId和productId
+                    if (it.vendorId == vendorId && it.productId == productId) {
+                        this@YUsb.device = device
+                        status = true
+                        statusListener?.value(true)
+                    }
+                }
+            }
+            //usb断开监听
+            if (UsbManager.ACTION_USB_DEVICE_DETACHED == action) {
+                val device = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE) as UsbDevice?
+                device?.let {
+                    if (this@YUsb.device != null && this@YUsb.device == device) {
+                        status = false
+                        statusListener?.value(false)
                     }
                 }
             }
@@ -108,11 +165,22 @@ class YUsb {
      * @productId 设备ID
      */
     fun initUSB(vendorId: Int?, productId: Int?): Boolean {
+        this.vendorId = vendorId
+        this.productId = productId
         mUsbManager = YApp.get().getSystemService(Context.USB_SERVICE) as UsbManager
+        //初始化广播
         mPermissionIntent =
             PendingIntent.getBroadcast(YApp.get(), 0, Intent(ACTION_USB_PERMISSION), 0)
         val filter = IntentFilter(ACTION_USB_PERMISSION)
+        filter.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED);
+        filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
         YApp.get().registerReceiver(mUsbReceiver, filter)
+        //查找USB设备
+        return find(vendorId, productId)
+    }
+
+    //查找USB设备
+    fun find(vendorId: Int?, productId: Int?): Boolean {
         val deviceList = mUsbManager.deviceList
         if (showLog && deviceList.size == 0) YLog.e("没有USB设备")
         val deviceIterator: Iterator<UsbDevice> = deviceList.values.iterator()
@@ -120,25 +188,32 @@ class YUsb {
         while (deviceIterator.hasNext()) {
             deviceTemp = deviceIterator.next()
             if (vendorId == null && productId == null) break
+            //万一用户只用vendorId连接
             if (deviceTemp.vendorId == vendorId && productId == null) {
                 device = deviceTemp
                 break
             }
+            //万一用户只用productId连接
             if (vendorId == null && deviceTemp.productId == productId) {
                 device = deviceTemp
                 break
             }
+            //万一用户同时需要判断vendorId和productId
             if ((deviceTemp.vendorId == vendorId) && deviceTemp.productId == productId) {
                 device = deviceTemp
                 break
             }
         }
+        status = false
+        statusListener?.value(false)
         if (device == null) return false
         val mPermissionIntent = PendingIntent.getBroadcast(
             YApp.get(), 0,
             Intent(ACTION_USB_PERMISSION), PendingIntent.FLAG_ONE_SHOT
         )
         mUsbManager.requestPermission(device, mPermissionIntent)
+        status = true
+        statusListener?.value(true)
         return true
     }
 
@@ -147,6 +222,7 @@ class YUsb {
      * @return 成功返回true
      */
     fun open(): Boolean {
+        if (!status) return false
         return open(mUsbManager, device)
     }
 
@@ -189,6 +265,7 @@ class YUsb {
      * @str 字符串
      */
     fun send(str: String) {
+        if (!status) return
         send(str.toByteArray())
     }
 
@@ -197,6 +274,7 @@ class YUsb {
      * @bytes 发送的数据
      */
     fun send(bytes: ByteArray) {
+        if (!status) return
         Thread {
             sendSynchronization(bytes)
         }.start()
@@ -207,6 +285,7 @@ class YUsb {
      * @bytes 发送的数据
      */
     fun sendSynchronization(bytes: ByteArray): Boolean {
+        if (!status) return false
         try {
             val sendLength = 4096 //每次写入长度
             var count = 0 //统计已经发送长度
@@ -246,6 +325,7 @@ class YUsb {
      * @return 最终读取数据的真实长度
      */
     fun read(maxLength: Int, timeOut: Int): ByteArray? {
+        if (!status) return null
         val current = ByteArray(maxLength)
         val re = usbConnection?.bulkTransfer(usbEndpointIn, current, current.size, timeOut)
         if (re == null || re < 0) return null
@@ -260,6 +340,7 @@ class YUsb {
      * @return 最终读取数据的真实长度
      */
     fun readWait(): ByteArray? {
+        if (!status) return null
         val inMax = usbEndpointIn?.maxPacketSize
         val byteBuffer = ByteBuffer.allocate(inMax!!)
         val usbRequest = UsbRequest()
@@ -290,6 +371,14 @@ class YUsb {
         readThread?.interrupt()
         readThread = Thread {
             while (!Thread.interrupted()) {
+                if (!status) {
+                    try {
+                        Thread.sleep(10)
+                    } catch (e: Exception) {
+                        readThread?.interrupt()
+                    }
+                    continue
+                }
                 try {
                     // 接收服务器端响应的数据
                     val result = read(maxLength, timeOut) ?: continue
@@ -315,6 +404,7 @@ class YUsb {
     fun onDestroy() {
         stopRead()
         close()
+        status = false
         usbConnection?.releaseInterface(usbInterface)
         YApp.get().unregisterReceiver(mUsbReceiver)
     }

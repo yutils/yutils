@@ -934,6 +934,7 @@ public class YUtils {
 
     /**
      * 获取打开APP的Intent
+     * AndroidManifest.xml 的 activity 加入 android:exported="true"
      * 用法：
      * val intent = YUtils.getAppIntent("com.xx.xx","com.xx.xx.MainActivity")
      * intent.putExtra("数据", "8888888888888")
@@ -952,6 +953,7 @@ public class YUtils {
 
     /**
      * 获取打开APP的Intent
+     * AndroidManifest.xml 的 activity 加入 android:exported="true"
      * 需要YUtils.init(this)
      * 用法：
      * val intent = YUtils.getAppIntent("微信")
@@ -967,6 +969,7 @@ public class YUtils {
 
     /**
      * 获取打开APP的Intent
+     * AndroidManifest.xml 的 activity 加入 android:exported="true"
      * 用法：
      * val intent = YUtils.getAppIntent(this,"微信")
      * intent.putExtra("数据", "8888888888888")
@@ -1004,6 +1007,7 @@ public class YUtils {
 
     /**
      * 打开其他APP
+     * AndroidManifest.xml 的 activity 加入 android:exported="true"
      * 需要YUtils.init(this)
      * 用法：
      * YUtils.openAPP("com.xx.xx","com.xx.xx.MainActivity")
@@ -1018,6 +1022,7 @@ public class YUtils {
 
     /**
      * 打开其他APP
+     * AndroidManifest.xml 的 activity 加入 android:exported="true"
      * 用法：
      * YUtils.openAPP(this,"com.xx.xx","com.xx.xx.MainActivity")
      *
@@ -1035,6 +1040,7 @@ public class YUtils {
 
     /**
      * 通过APP名称打开APP
+     * AndroidManifest.xml 的 activity 加入 android:exported="true"
      * 需要YUtils.init(this)
      * 用法:
      * YUtils.openAPP("微信")
@@ -1048,6 +1054,7 @@ public class YUtils {
 
     /**
      * 通过APP名称打开APP
+     * AndroidManifest.xml 的 activity 加入 android:exported="true"
      * 用法:
      * YUtils.openAPP(this,"微信")
      *
@@ -1070,8 +1077,11 @@ public class YUtils {
 
     /**
      * 通过Intent打开APP
+     * AndroidManifest.xml 的 activity 加入 android:exported="true"
      * 需要YUtils.init(this)
      * 用法：
+     * val intent = YUtils.getAppIntent("微信")
+     * intent.putExtra("数据", "8888888888888")
      * YUtils.openAPP(intent)
      *
      * @param intent intent
@@ -1083,7 +1093,10 @@ public class YUtils {
 
     /**
      * 通过Intent打开APP
+     * AndroidManifest.xml 的 activity 加入 android:exported="true"
      * 用法：
+     * val intent = YUtils.getAppIntent("微信")
+     * intent.putExtra("数据", "8888888888888")
      * YUtils.openAPP(this,intent)
      *
      * @param context context
