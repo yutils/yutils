@@ -1,10 +1,8 @@
 package com.yujing.test.activity
 
-import android.annotation.SuppressLint
 import android.widget.EditText
 import android.widget.TextView
 import androidx.databinding.DataBindingUtil
-import com.yujing.base.YBaseActivity
 import com.yujing.bus.YBus
 import com.yujing.bus.YBusUtil
 import com.yujing.bus.YMessage

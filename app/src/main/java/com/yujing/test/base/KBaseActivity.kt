@@ -31,7 +31,7 @@ public class OldActivity extends YBaseActivity<Activity1101Binding> {
     protected void init() { }
 }
  */
-abstract class KBaseActivity<B : ViewDataBinding>(layout: Int) : YBaseActivity<B>(layout) {
+abstract class KBaseActivity<B : ViewDataBinding>(layout: Int?) : YBaseActivity<B>(layout) {
     lateinit var yPermissions: YPermissions
 
     override fun initAfter() {
