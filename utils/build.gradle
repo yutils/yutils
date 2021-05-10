@@ -4,7 +4,6 @@ plugins {
     id 'kotlin-kapt'
     id 'kotlin-parcelize'
     id 'com.github.dcendents.android-maven'
-    id 'org.jetbrains.dokka'
     id 'maven-publish'
 }
 group = 'com.github.yutils'
@@ -97,13 +96,6 @@ task generateSourcesJar(type: Jar) {
     archiveName = jarName + '-sources.jar'
 }
 
-//生成文档
-task generateJavadoc(type: Jar, dependsOn: dokkaJavadoc) {
-    group = 'jar'
-    classifier = 'javadoc'
-    from 'build/dokka/javadoc'
-    archiveName = jarName + '-javadoc.jar'
-}
 //加入到build
 artifacts {
     archives generateSourcesJar

@@ -12,8 +12,6 @@ buildscript {
         classpath 'com.android.tools.build:gradle:4.2.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1'
-        //kotlin打jar包生成文件,https://mvnrepository.com/artifact/org.jetbrains.dokka/dokka-gradle-plugin
-        classpath 'org.jetbrains.dokka:dokka-gradle-plugin:1.4.20'
     }
 }
 
