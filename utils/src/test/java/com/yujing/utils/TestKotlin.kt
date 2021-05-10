@@ -33,17 +33,17 @@ class TestKotlin {
         println("--------------------------------------------------json转list--------------------------------------------------")
         str = toJson(users, "yyyy-MM-dd HH:mm:ss")
         println(str)
-        val users2 = toList(str, User::class.java)
-        for (item in users2) {
-            println("★" + item.javaClass.name)
-            println("★$item")
-        }
-        println("--------------------------------------------------json转list--------------------------------------------------")
-        val users3: List<User> = toList(str, object : TypeToken<List<User?>?>() {}.type)
-        for (item in users3) {
-            println("★" + item.javaClass.name)
-            println("★$item")
-        }
+//        val users2 = toList(str, User::class.java)
+//        for (item in users2) {
+//            println("★" + item.javaClass.name)
+//            println("★$item")
+//        }
+//        println("--------------------------------------------------json转list--------------------------------------------------")
+//        val users3: List<User> = toList(str, object : TypeToken<List<User?>?>() {}.type)
+//        for (item in users3) {
+//            println("★" + item.javaClass.name)
+//            println("★$item")
+//        }
         println("--------------------------------------------------map转json--------------------------------------------------")
         val map: MutableMap<String, User> = HashMap()
         map["001"] = user

@@ -15,7 +15,6 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 
-
 class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
     lateinit var textView1: TextView
     lateinit var textView2: TextView
