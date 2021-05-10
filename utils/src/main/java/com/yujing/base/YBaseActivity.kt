@@ -7,9 +7,7 @@ import android.os.Bundle
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import com.yujing.base.activity.YActivity
-import com.yujing.bus.YBus
 import com.yujing.bus.YBusUtil
-import com.yujing.bus.YMessage
 import com.yujing.utils.YShow
 import com.yujing.utils.YToast
 
@@ -61,15 +59,6 @@ abstract class YBaseActivity<B : ViewDataBinding>(var layout: Int?) : YActivity(
         init()
         initAfter()
         YBusUtil.init(this)
-    }
-
-    /**
-     * YBus总线消息
-     *
-     * @param yMessage 总线内容
-     */
-    @YBus()
-    open fun onEvent(yMessage: YMessage<Any>) {
     }
 
     /**
@@ -129,8 +118,8 @@ abstract class YBaseActivity<B : ViewDataBinding>(var layout: Int?) : YActivity(
     }
 
     override fun onDestroy() {
-        System.gc() // 系统自动回收
         YBusUtil.onDestroy(this)
         super.onDestroy()
+        //System.gc() // 系统自动回收
     }
 }

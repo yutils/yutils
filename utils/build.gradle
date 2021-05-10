@@ -14,8 +14,8 @@ android {
     defaultConfig {
         minSdkVersion 19
         targetSdkVersion 30
-        versionCode 41
-        versionName "1.4.9"
+        versionCode 50
+        versionName "1.5.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -60,31 +60,13 @@ dependencies {
     // https://mvnrepository.com/artifact/com.google.code.gson/gson
     implementation group: 'com.google.code.gson', name: 'gson', version: '2.8.6'
 
-    // FST要用到以下3个包
-    // https://mvnrepository.com/artifact/de.ruedigermoeller/fst
-//    implementation group: 'de.ruedigermoeller', name: 'fst', version: '2.57'
-    // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core
-//    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.9.6'
-    // https://mvnrepository.com/artifact/org.objenesis/objenesis
-//    implementation group: 'org.objenesis', name: 'objenesis', version: '2.6'
-
-    //____________________________________________________________RxJava____________________________________________________________
-    //rxjava2，https://mvnrepository.com/artifact/io.reactivex.rxjava2/rxjava
-    implementation group: 'io.reactivex.rxjava2', name: 'rxjava', version: '2.2.20'
-    //rxandroid，https://mvnrepository.com/artifact/io.reactivex.rxjava2/rxandroid
-    implementation group: 'io.reactivex.rxjava2', name: 'rxandroid', version: '2.1.1'
-    //自动解绑，https://mvnrepository.com/artifact/com.trello.rxlifecycle3/rxlifecycle-components
-    implementation group: 'com.trello.rxlifecycle3', name: 'rxlifecycle-components', version: '3.1.0'
-    // https://mvnrepository.com/artifact/com.blankj/rxbus
-    implementation group: 'com.blankj', name: 'rxbus', version: '1.6'
-    //____________________________________________________________RxJava____________________________________________________________
     //https://mvnrepository.com/artifact/org.greenrobot/eventbus/3.2.0
     implementation group: 'org.greenrobot', name: 'eventbus', version: '3.2.0'
 }
 
 //打包jar;doc;sources，请在Terminal中运行：gradlew makeJar，如果失败，先执行：gradlew assembleDebug --rerun-tasks
 def lib_name = 'yutils'
-def lib_version = '1.4.9'
+def lib_version = '1.5.0'
 def jarName = lib_name +"-"+ lib_version
 task makeJar(type: Copy) {
     group = 'jar'

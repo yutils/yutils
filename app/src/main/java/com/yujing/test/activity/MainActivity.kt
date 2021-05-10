@@ -1,5 +1,6 @@
 package com.yujing.test.activity
 
+import android.annotation.SuppressLint
 import android.widget.EditText
 import android.widget.TextView
 import androidx.databinding.DataBindingUtil
@@ -8,6 +9,7 @@ import com.yujing.bus.YBus
 import com.yujing.bus.YBusUtil
 import com.yujing.bus.YMessage
 import com.yujing.test.R
+import com.yujing.test.base.KBaseActivity
 import com.yujing.test.databinding.ActivityAllTestBinding
 import com.yujing.utils.*
 import com.yutils.view.utils.Create
@@ -16,7 +18,7 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 
 
-class MainActivity : YBaseActivity<ActivityAllTestBinding>(null) {
+class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
     lateinit var textView1: TextView
     lateinit var textView2: TextView
     lateinit var editText1: EditText
@@ -50,12 +52,13 @@ class MainActivity : YBaseActivity<ActivityAllTestBinding>(null) {
         Create.space(binding.wll)//换行
         editText1 = Create.editText(binding.wll, "123456789")
         Create.button(binding.wll, "Ybus发送消息1") {
-            Thread {
-                YBusUtil.post("tag1", editText1.text.toString())
-            }.start()
+            YBusUtil.post("tag1", editText1.text.toString())
         }
         Create.button(binding.wll, "Ybus发送消息2") {
-            YBusUtil.post("tag2", "222222222")
+            Thread {
+                //线程发送。接受者也在同线程内，显示需要UIThread
+                YBusUtil.post("tag2", "222222222")
+            }.start()
         }
         //--------------------------------------------------------------------------------
         Create.space(binding.wll)//换行
@@ -132,7 +135,8 @@ class MainActivity : YBaseActivity<ActivityAllTestBinding>(null) {
         textView1.text = textView1.text.toString() + "收到2：$key:$message \n"
     }
 
-    override fun onEvent(yMessage: YMessage<Any>) {
+    @YBus
+    fun onEvent(yMessage: YMessage<Any>) {
         YLog.i("收到3：${yMessage.type}:${yMessage.data}")
         textView1.text = textView1.text.toString() + "收到3：${yMessage.type}:${yMessage.data} \n"
     }
@@ -142,7 +146,6 @@ class MainActivity : YBaseActivity<ActivityAllTestBinding>(null) {
         YLog.i("收到4：$message")
         textView1.text = textView1.text.toString() + "收到4：$message \n"
     }
-
 
     override fun onDestroy() {
         super.onDestroy()

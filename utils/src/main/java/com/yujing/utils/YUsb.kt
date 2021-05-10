@@ -70,16 +70,16 @@ class YUsb {
     }
 
     //USB管理
-    private lateinit var mUsbManager: UsbManager
+    lateinit var mUsbManager: UsbManager
 
     //注册广播
     private var mPermissionIntent: PendingIntent? = null
 
     //是否有USB权限
-    private var hasPermission = false
+    var hasPermission = false
 
     //usb设备
-    private var device: UsbDevice? = null
+    var device: UsbDevice? = null
 
     //Interface
     var usbInterface: UsbInterface? = null

@@ -4,7 +4,7 @@ import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.View
-import com.trello.rxlifecycle3.components.support.RxFragment
+import androidx.fragment.app.Fragment
 import com.yujing.base.contract.YLifeEventInterface
 import com.yujing.base.contract.YLifeEventListener
 
@@ -26,21 +26,21 @@ activity.lifecycle().subscribe { life ->
     YLog.d("当前生命周期状态：$life")
 }
  */
-abstract class YFragment : RxFragment(), YLifeEventInterface {
+abstract class YFragment : Fragment(), YLifeEventInterface {
     override var yEventListeners: MutableList<YLifeEventListener> = ArrayList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super<RxFragment>.onCreate(savedInstanceState)
+        super<Fragment>.onCreate(savedInstanceState)
         super<YLifeEventInterface>.onCreate(savedInstanceState)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super<RxFragment>.onActivityResult(requestCode, resultCode, data)
+        super<Fragment>.onActivityResult(requestCode, resultCode, data)
         super<YLifeEventInterface>.onActivityResult(requestCode, resultCode, data)
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
-        super<RxFragment>.onConfigurationChanged(newConfig)
+        super<Fragment>.onConfigurationChanged(newConfig)
         super<YLifeEventInterface>.onConfigurationChanged(newConfig)
     }
 
@@ -49,7 +49,7 @@ abstract class YFragment : RxFragment(), YLifeEventInterface {
         permissions: Array<String>,
         grantResults: IntArray
     ) {
-        super<RxFragment>.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        super<Fragment>.onRequestPermissionsResult(requestCode, permissions, grantResults)
         super<YLifeEventInterface>.onRequestPermissionsResult(
             requestCode,
             permissions,
@@ -58,48 +58,48 @@ abstract class YFragment : RxFragment(), YLifeEventInterface {
     }
 
     override fun onHiddenChanged(hidden: Boolean) {
-        super<RxFragment>.onHiddenChanged(hidden)
+        super<Fragment>.onHiddenChanged(hidden)
         super<YLifeEventInterface>.onHiddenChanged(hidden)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super<RxFragment>.onViewCreated(view, savedInstanceState)
+        super<Fragment>.onViewCreated(view, savedInstanceState)
         super<YLifeEventInterface>.onViewCreated(view, savedInstanceState)
     }
 
     override fun onPause() {
-        super<RxFragment>.onPause()
+        super<Fragment>.onPause()
         super<YLifeEventInterface>.onPause()
     }
 
     override fun onDestroyView() {
-        super<RxFragment>.onDestroyView()
+        super<Fragment>.onDestroyView()
         super<YLifeEventInterface>.onDestroyView()
     }
 
     override fun onDetach() {
-        super<RxFragment>.onDetach()
+        super<Fragment>.onDetach()
         super<YLifeEventInterface>.onDetach()
     }
 
     override fun onStart() {
-        super<RxFragment>.onStart()
+        super<Fragment>.onStart()
         super<YLifeEventInterface>.onStart()
     }
 
     override fun onResume() {
-        super<RxFragment>.onResume()
+        super<Fragment>.onResume()
         super<YLifeEventInterface>.onResume()
     }
 
 
     override fun onStop() {
-        super<RxFragment>.onStop()
+        super<Fragment>.onStop()
         super<YLifeEventInterface>.onStop()
     }
 
     override fun onDestroy() {
-        super<RxFragment>.onDestroy()
+        super<Fragment>.onDestroy()
         super<YLifeEventInterface>.onDestroy()
     }
 }

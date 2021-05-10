@@ -6,7 +6,7 @@ import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
 
 /**
- * 找出anyClass中全部包含YBus注解的方法，并且diaoy
+ * 找出anyClass中全部包含YBus注解的方法，并且调用
  */
 //internal 本包可以调用
 internal class Utils {

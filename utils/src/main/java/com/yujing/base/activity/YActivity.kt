@@ -4,7 +4,7 @@ import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.KeyEvent
-import com.trello.rxlifecycle3.components.support.RxAppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import com.yujing.base.contract.YLifeEventInterface
 import com.yujing.base.contract.YLifeEventListener
 
@@ -27,21 +27,21 @@ activity.lifecycle().subscribe { life ->
     YLog.d("当前生命周期状态：$life")
 }
  */
-abstract class YActivity : RxAppCompatActivity(), YLifeEventInterface {
+abstract class YActivity : AppCompatActivity(), YLifeEventInterface {
     override var yEventListeners: MutableList<YLifeEventListener> = ArrayList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super<RxAppCompatActivity>.onCreate(savedInstanceState)
+        super<AppCompatActivity>.onCreate(savedInstanceState)
         super<YLifeEventInterface>.onCreate(savedInstanceState)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super<RxAppCompatActivity>.onActivityResult(requestCode, resultCode, data)
+        super<AppCompatActivity>.onActivityResult(requestCode, resultCode, data)
         super<YLifeEventInterface>.onActivityResult(requestCode, resultCode, data)
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
-        super<RxAppCompatActivity>.onConfigurationChanged(newConfig)
+        super<AppCompatActivity>.onConfigurationChanged(newConfig)
         super<YLifeEventInterface>.onConfigurationChanged(newConfig)
     }
 
@@ -50,7 +50,7 @@ abstract class YActivity : RxAppCompatActivity(), YLifeEventInterface {
         permissions: Array<String>,
         grantResults: IntArray
     ) {
-        super<RxAppCompatActivity>.onRequestPermissionsResult(
+        super<AppCompatActivity>.onRequestPermissionsResult(
             requestCode,
             permissions,
             grantResults
@@ -63,55 +63,54 @@ abstract class YActivity : RxAppCompatActivity(), YLifeEventInterface {
     }
 
     override fun onNewIntent(intent: Intent?) {
-        super<RxAppCompatActivity>.onNewIntent(intent)
+        super<AppCompatActivity>.onNewIntent(intent)
         super<YLifeEventInterface>.onNewIntent(intent)
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
         //这儿返回值，不作判断，无效，因为可能多个地方调用onKeyDown，无法判断应返回内容
         super<YLifeEventInterface>.onKeyDown(keyCode, event)
-        return super<RxAppCompatActivity>.onKeyDown(keyCode, event)
+        return super<AppCompatActivity>.onKeyDown(keyCode, event)
     }
 
     override fun onStart() {
-        super<RxAppCompatActivity>.onStart()
+        super<AppCompatActivity>.onStart()
         super<YLifeEventInterface>.onStart()
     }
 
     override fun onResume() {
-        super<RxAppCompatActivity>.onResume()
+        super<AppCompatActivity>.onResume()
         super<YLifeEventInterface>.onResume()
     }
 
     override fun onPause() {
-        super<RxAppCompatActivity>.onPause()
+        super<AppCompatActivity>.onPause()
         super<YLifeEventInterface>.onPause()
     }
 
     override fun onRestart() {
-        super<RxAppCompatActivity>.onRestart()
+        super<AppCompatActivity>.onRestart()
         super<YLifeEventInterface>.onRestart()
     }
 
     override fun onStop() {
-        super<RxAppCompatActivity>.onStop()
+        super<AppCompatActivity>.onStop()
         super<YLifeEventInterface>.onStop()
     }
 
     override fun onBackPressed() {
-        super<RxAppCompatActivity>.onBackPressed()
+        super<AppCompatActivity>.onBackPressed()
         super<YLifeEventInterface>.onBackPressed()
     }
 
     override fun finish() {
-        super<RxAppCompatActivity>.finish()
+        super<AppCompatActivity>.finish()
         super<YLifeEventInterface>.finish()
     }
 
     override fun onDestroy() {
-        super<RxAppCompatActivity>.onDestroy()
+        super<AppCompatActivity>.onDestroy()
         super<YLifeEventInterface>.onDestroy()
         clearEventListener()
     }
-
 }

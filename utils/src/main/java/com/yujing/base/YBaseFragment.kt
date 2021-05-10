@@ -36,7 +36,8 @@ public class OldFragment extends YBaseFragment<Activity1101Binding> {
 }
  */
 abstract class YBaseFragment<B : ViewDataBinding>(var layout: Int?) : YFragment() {
-    lateinit var binding: B // open val binding: B by lazy { DataBindingUtil.inflate(inflater, layout, container, false) }
+    // open val binding: B by lazy { DataBindingUtil.inflate(inflater, layout, container, false) }
+    lateinit var binding: B
     lateinit var inflater: LayoutInflater
     var container: ViewGroup? = null
     var isShow = false
@@ -55,15 +56,6 @@ abstract class YBaseFragment<B : ViewDataBinding>(var layout: Int?) : YFragment(
         initAfter()
         YBusUtil.init(this)
         return binding.root
-    }
-
-    /**
-     * YBus总线消息
-     *
-     * @param yMessage 总线内容
-     */
-    @YBus()
-    open fun onEvent(yMessage: YMessage<Any>) {
     }
 
     /**
