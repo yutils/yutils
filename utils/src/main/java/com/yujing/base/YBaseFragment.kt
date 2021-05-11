@@ -1,6 +1,7 @@
 package com.yujing.base
 
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,9 +9,7 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import com.yujing.base.fragment.YFragment
-import com.yujing.bus.YBus
 import com.yujing.bus.YBusUtil
-import com.yujing.bus.YMessage
 import com.yujing.utils.YToast
 
 /**
@@ -89,13 +88,62 @@ abstract class YBaseFragment<B : ViewDataBinding>(var layout: Int?) : YFragment(
         startActivityForResult(intent, resultCode)
     }
 
-    override fun onDestroy() {
-        YBusUtil.onDestroy(this)
-        super.onDestroy()
-    }
-
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
         isShow = !hidden
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+    }
+
+    override fun onPause() {
+        super.onPause()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+    }
+
+    override fun onStart() {
+        super.onStart()
+    }
+
+    override fun onResume() {
+        super.onResume()
+    }
+
+
+    override fun onStop() {
+        super.onStop()
+    }
+
+    override fun onDestroy() {
+        YBusUtil.onDestroy(this)
+        super.onDestroy()
     }
 }

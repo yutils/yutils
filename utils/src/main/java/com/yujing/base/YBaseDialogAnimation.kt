@@ -21,7 +21,6 @@ class YBaseDialogAnimation {
     companion object {
         private const val TAG = "YAnimation"
     }
-
     private var animationX = 0.5f
     private var animationY = 0.5f //动画缩放开始点
     private var dialog: Dialog? = null

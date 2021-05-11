@@ -52,6 +52,7 @@ internal class Utils {
                     if (yBus.mainThread)
                         YThread.runOnUiThread { method.invoke(anyClass, yMessage) }
                     else method.invoke(anyClass, yMessage)
+
                 for (tag in yBus.value) {
                     if (tag != yMessage.type) continue
                     //如果这个方法有一个参数，直接返回messageData。

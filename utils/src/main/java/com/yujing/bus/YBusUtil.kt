@@ -50,7 +50,7 @@ class YBusUtil {
          */
         @Synchronized
         private fun subscribe(yMessage: YMessage<Any>) {
-            for (any in listObject) Utils.findMethod(any, yMessage)
+            for (i in listObject.indices) Utils.findMethod(listObject[i], yMessage)
         }
 
         /**
@@ -61,12 +61,27 @@ class YBusUtil {
         }
 
         /**
+         * 发送事件
+         */
+        fun post(tag: String) {
+            subscribe(YMessage(tag, null))
+        }
+
+
+        /**
          * 发送粘性事件
          */
         fun postSticky(tag: String, value: Any?) {
-            val message = YMessage(tag, value)
-            anySticky = message
+            anySticky = YMessage(tag, value)
             subscribe(YMessage(tag, value))
+        }
+
+        /**
+         * 发送粘性事件
+         */
+        fun postSticky(tag: String) {
+            anySticky = YMessage(tag, null)
+            subscribe(YMessage(tag, null))
         }
 
         /**

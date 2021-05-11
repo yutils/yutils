@@ -11,8 +11,8 @@ android {
         applicationId "com.yujing.test"
         minSdkVersion 19
         targetSdkVersion 30
-        versionCode 50
-        versionName "1.5.0"
+        versionCode 51
+        versionName "1.5.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -23,8 +23,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = 1.8
-        targetCompatibility = 1.8
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
     buildFeatures {
         dataBinding = true

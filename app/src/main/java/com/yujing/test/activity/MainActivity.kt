@@ -120,10 +120,12 @@ class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
         }
     }
 
+
     @YBus("tag1", "tag2", mainThread = false)
     fun message1(message: Any) {
         YLog.i("收到1：$message")
         textView1.text = textView1.text.toString() + "收到1:$message \n"
+        var b=B()
     }
 
     @YBus
@@ -147,5 +149,11 @@ class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
     override fun onDestroy() {
         super.onDestroy()
         EventBus.getDefault().unregister(this)
+    }
+}
+
+class B{
+    init {
+        YBusUtil.init(this)
     }
 }
