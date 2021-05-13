@@ -1,15 +1,30 @@
 package com.yujing.utils
 
-import com.google.gson.reflect.TypeToken
 import com.yujing.utils.YJson.toBean
 import com.yujing.utils.YJson.toJson
-import com.yujing.utils.YJson.toList
 import com.yujing.utils.YJson.toListMap
 import com.yujing.utils.YJson.toMap
 import org.junit.Test
 import java.util.*
 
 class TestKotlin {
+    @Test
+    fun run1() {
+        var list: MutableList<String> = ArrayList()
+        list.add("a")
+        list.add("b")
+        list.add("c")
+        list.add("d")
+        list.add("e")
+        list.add("f")
+//        val mIterator = list.iterator()
+//        while (mIterator.hasNext()) {
+//            val next = mIterator.next()
+//            if (next == "b") mIterator.remove()
+//            println(next)
+//        }
+    }
+
     @Test
     fun run2() {
         val user = User()

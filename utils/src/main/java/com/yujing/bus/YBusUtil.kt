@@ -1,5 +1,7 @@
 package com.yujing.bus
 
+import com.yujing.utils.YLog
+
 /**
  * bus 总线通信 工具类
  * 底层原理：循环遍历所有注册类
@@ -50,7 +52,23 @@ class YBusUtil {
          */
         @Synchronized
         private fun subscribe(yMessage: YMessage<Any>) {
-            for (i in listObject.indices) Utils.findMethod(listObject[i], yMessage)
+            try {
+                //不能用for (i in list)循环，因为list长度不固定，循环途中增加或删除元素，会导致并发修改异常
+                //list.forEach循环，增加元素会导致并发修改异常,删除不会
+                //不能用for (i in list.indices)循环，因为list长度不固定，循环途中增删除元素，会导致并发修改异常或数组越界，增加不会
+                //不能用for (i in 0..list.size-1)，同上
+                //不能用var i=0 while (i <list.size)，因为删除元素会导致错乱。比如，a，b，c，d，执行到b的时候，删除b，会发现，没有执行的是c
+                //不能使用迭代器，因为不知道删除的元素位置，不一定是当前迭代的元素
+
+                //所以，复制出临时listTemp
+                val listTemp: MutableList<Any> = ArrayList()
+                var i = 0
+                while (i < listObject.size) listTemp.add(listObject[i++])
+                i = 0
+                while (i < listTemp.size) Utils.findMethod(listTemp[i++], yMessage)
+            } catch (e: Exception) {
+                YLog.e("总线发生异常", e)
+            }
         }
 
         /**
