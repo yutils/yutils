@@ -10,12 +10,12 @@ group = 'com.github.yutils'
 
 android {
     compileSdkVersion 30
-    buildToolsVersion '30.0.3'
+    buildToolsVersion "30.0.3"
     defaultConfig {
         minSdkVersion 19
         targetSdkVersion 30
-        versionCode 52
-        versionName "1.5.2"
+        versionCode 53
+        versionName "1.5.3"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -62,7 +62,7 @@ dependencies {
 
 //打包jar;doc;sources，请在Terminal中运行：gradlew makeJar，如果失败，先执行：gradlew assembleDebug --rerun-tasks
 def lib_name = 'yutils'
-def lib_version = '1.5.2'
+def lib_version = '1.5.3'
 def jarName = lib_name +"-"+ lib_version
 task makeJar(type: Copy) {
     group = 'jar'

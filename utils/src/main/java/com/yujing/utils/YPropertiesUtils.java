@@ -85,7 +85,7 @@ public class YPropertiesUtils {
 
     public static boolean removeValue(String propertyFilePath, String[] key) {
         if (key == null) {
-            System.out.println("key[] is null!");
+            System.err.println("key[] is null!");
             return false;
         }
         Properties ppts = loadPropertyFile(propertyFilePath);
@@ -126,7 +126,7 @@ public class YPropertiesUtils {
             ppts.load(is);
             return ppts;
         } catch (Exception e) {
-            System.out.println("加载属性文件出错:" + propertyFilePath + "\n错误:" + e.getMessage());
+            System.err.println("加载属性文件出错:" + propertyFilePath + "\n错误:" + e.getMessage());
             return null;
         }
     }
@@ -137,10 +137,10 @@ public class YPropertiesUtils {
             ppts.load(new java.io.FileInputStream(propertyFilePath));
             return ppts;
         } catch (FileNotFoundException e) {
-            System.out.println("FileInputStream(\"" + propertyFilePath + "\")! FileNotFoundException: " + e.getMessage());
+            System.err.println("FileInputStream(\"" + propertyFilePath + "\")! FileNotFoundException: " + e.getMessage());
             return null;
         } catch (IOException e) {
-            System.out.println("Properties.load(InputStream)! IOException: " + e.getMessage());
+            System.err.println("Properties.load(InputStream)! IOException: " + e.getMessage());
             return null;
         }
     }
@@ -164,7 +164,7 @@ public class YPropertiesUtils {
             try {
                 stream = new FileOutputStream(path);
             } catch (FileNotFoundException e1) {
-                System.out.println("文件没有找到!" + e1.getMessage());
+                System.err.println("文件没有找到!" + e1.getMessage());
                 return false;
             }
         } finally {
@@ -174,7 +174,7 @@ public class YPropertiesUtils {
             ppts.store(stream, NOTES);
             return true;
         } catch (IOException e) {
-            System.out.println("文件写入错误" + e.getMessage());
+            System.err.println("文件写入错误" + e.getMessage());
             return false;
         } finally {
             try {

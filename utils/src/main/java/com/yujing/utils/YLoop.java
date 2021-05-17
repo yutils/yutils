@@ -1,7 +1,6 @@
 package com.yujing.utils;
 
-import android.util.Log;
-
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
@@ -66,16 +65,36 @@ public class YLoop {
                                 YThread.runOnUiThread(() -> {
                                     try {
                                         method.invoke(obj);
-                                    } catch (Exception e) {
-                                        YLog.e("YLoopAndroid", "调用 method.invoke(obj) 时发生异常", e);
+                                    } catch (InvocationTargetException e) {
+                                        Throwable t = e.getTargetException(); // 获取目标异常
+                                        if (t.getMessage() != null && t.getMessage().contains("checkNotNullParameter")) {
+                                            YLog.e(
+                                                    "YLoop",
+                                                    "调用的目标方法异常，发送数据有null，然接收参数却不能为null，可以设置接收参数后面加?", t
+                                            );
+                                        } else {
+                                            YLog.e("YLoop", "调用目标异常，如下:", t);
+                                        }
+                                    } catch (Throwable e) {
+                                        YLog.e("YLoop", "异常如下:", e);
                                     }
                                 });
                             } else {
                                 method.invoke(obj);
                             }
                             Thread.sleep(interval);
-                        } catch (Exception e) {
-                            e.printStackTrace();
+                        } catch (InvocationTargetException e) {
+                            Throwable t = e.getTargetException(); // 获取目标异常
+                            if (t.getMessage() != null && t.getMessage().contains("checkNotNullParameter")) {
+                                YLog.e(
+                                        "YLoop",
+                                        "调用的目标方法异常，发送数据有null，然接收参数却不能为null，可以设置接收参数后面加?", t
+                                );
+                            } else {
+                                YLog.e("YLoop", "调用目标异常，如下:", t);
+                            }
+                        } catch (Throwable e) {
+                            YLog.e("YLoop", "异常如下:", e);
                         }
                     }
                     MethodStatus.put(sign, false);

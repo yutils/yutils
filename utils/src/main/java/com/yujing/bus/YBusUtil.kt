@@ -22,8 +22,14 @@ fun message(message: Any) {
 }
 
 //接收全部消息
-@YBus()
+@YBus
 fun message(key: Any,message: Any) {
+    YLog.i("收到：$key:$message")
+    textView1.text = "收到：$key:$message"
+}
+//接收全部消息
+@YBus
+fun message(yMessage: YMessage<Any>) {
     YLog.i("收到：$key:$message")
     textView1.text = "收到：$key:$message"
 }

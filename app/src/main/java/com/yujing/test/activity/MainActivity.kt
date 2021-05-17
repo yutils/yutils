@@ -118,18 +118,23 @@ class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
                 YLog.i("运行内容")
             }
         }
+        Create.space(binding.wll)//换行
+        //--------------------------------------------------------------------------------
+        Create.button(binding.wll, "异常测试") {
+            YBusUtil.post("异常")
+        }
     }
 
 
     @YBus("tag1", "tag2", mainThread = false)
-    fun message1(message: Any) {
+    fun message1(message: Any?) {
         YLog.i("收到1：$message")
         textView1.text = textView1.text.toString() + "收到1:$message \n"
         var b=B()
     }
 
     @YBus
-    fun message2(key: Any, message: Any) {
+    fun message2(key: Any, message: Any?) {
         YLog.i("收到2：$key:$message")
         textView1.text = textView1.text.toString() + "收到2：$key:$message \n"
     }
@@ -144,6 +149,12 @@ class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
     fun onGetMessage(message: String) {
         YLog.i("收到4：$message")
         textView1.text = textView1.text.toString() + "收到4：$message \n"
+    }
+
+
+    @YBus("异常")
+    fun ex() {
+        YLog.i("收到：异常测试！")
     }
 
     override fun onDestroy() {

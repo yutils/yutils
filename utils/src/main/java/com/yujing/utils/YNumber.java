@@ -63,7 +63,7 @@ public class YNumber {
     //除
     public synchronized static double divide(double d1, double d2, int scale) {
         if (d2 == 0) {
-            System.out.println("分母是0");
+            System.err.println("分母是0");
             return 0d;
         }
         BigDecimal bd1 = new BigDecimal(Double.toString(d1));

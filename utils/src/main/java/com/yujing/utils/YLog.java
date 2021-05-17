@@ -304,7 +304,7 @@ public class YLog {
                     YLog.i("清理日志", item.getPath());
                     del(date);
                 }
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 YLog.e("清理日志失败", e);
             }
         }
@@ -371,7 +371,7 @@ public class YLog {
                 if (ERROR.equals(type)) {
                     System.err.println("TAG:" + TAG + "\tvalue:" + value + ((tr == null) ? "" : ("\tThrowable:" + tr.getMessage())));
                 } else {
-                    System.out.println("TAG:" + TAG + "\tvalue:" + value + ((tr == null) ? "" : ("\tThrowable:" + tr.getMessage())));
+                    System.err.println("TAG:" + TAG + "\tvalue:" + value + ((tr == null) ? "" : ("\tThrowable:" + tr.getMessage())));
                 }
             }
             i++;
