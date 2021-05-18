@@ -4,7 +4,6 @@ import com.yujing.utils.YClass;
 import com.yujing.utils.YLog;
 import com.yujing.utils.YThread;
 import com.yujing.utils.YThreadPool;
-import com.yujing.utils.YUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -566,9 +565,7 @@ public class YSocket {
             return inputStreamReadListener.inputStreamToBytes(inputStream);
         // 网络传输时候，这样获取真正长度
         int count = 0;
-        while (count == 0) {
-            count = inputStream.available();
-        }
+        while (count == 0) count = inputStream.available();
         byte[] bytes = new byte[count];
         // 一定要读取count个数据，如果inputStream.read(bytes);可能读不完
         int readCount = 0; // 已经成功读取的字节的个数

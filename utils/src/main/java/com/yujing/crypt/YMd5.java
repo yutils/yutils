@@ -60,7 +60,7 @@ public class YMd5 {
             MessageDigest md = MessageDigest.getInstance(MD5);
             resultString = byteToString(md.digest(bytes));
         } catch (NoSuchAlgorithmException e) {
-            YLog.e("MD5", "getMd5(byte[] bytes)异常：", e);
+            YLog.e("MD5", "getMd5(byte[] bytes)异常", e);
         }
         return resultString;
     }

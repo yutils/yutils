@@ -16,12 +16,15 @@ import kotlin.system.exitProcess
 /*使用说明,举例
 
 val url = "https://down.qq.com/qqweb/QQ_1/android_apk/AndroidQQ_8.4.5.4745_537065283.apk"
+
 //activity, 服务器版本号, 是否强制更新, apk下载地址
 val yVersionUpdate = YVersionUpdate(activity, 20, false, url)
+
 //或者activity, 服务器版本号, 是否强制更新, apk下载地址，服务器版版本名，更新说明
 //YVersionUpdate(this, 20, false, url,"1.1.2"，更新说明).checkUpdate()
 
-yVersionUpdate.checkUpdate()
+//需要更新时候才弹出，否则不弹出
+yVersionUpdate.updateNeedUpdateDisplay()
 
 override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
     super.onActivityResult(requestCode, resultCode, data)
@@ -34,27 +37,31 @@ fun onDestroy() {
 */
 
 /* 权限说明
- 1.运行下文件，首先创建res/xml/file_paths.xml
+安装apk
+如果是安卓8.0以上先请求打开位置来源
+权限：<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
-    <?xml version="1.0" encoding="UTF-8"?>
-    <resources>
-        <paths>
-            <external-path path="" name="download"/>
-        </paths>
-    </resources>
+1.首先创建res/xml/file_paths.xml
+内容：
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+    <paths>
+        <external-path path="" name="download"/>
+    </paths>
+</resources>
 
- 2.允许安装app，在AndroidManifest.xml  中的application加入
+2.再在AndroidManifest.xml  中的application加入
+<!--安装app-->
+<provider
+    android:name="androidx.core.content.FileProvider"
+    android:authorities="${applicationId}.provider"
+    android:exported="false"
+    android:grantUriPermissions="true">
+    <meta-data
+        android:name="android.support.FILE_PROVIDER_PATHS"
+        android:resource="@xml/file_paths" />
+</provider>
 
-    <!--安装app-->
-    <provider
-        android:name="androidx.core.content.FileProvider"
-        android:authorities="${applicationId}.provider"
-        android:exported="false"
-        android:grantUriPermissions="true">
-        <meta-data
-            android:name="android.support.FILE_PROVIDER_PATHS"
-            android:resource="@xml/file_paths" />
-    </provider>
  */
 
 @Suppress("MemberVisibilityCanBePrivate", "FunctionName", "unused")

@@ -56,7 +56,6 @@ public class YTts {
         textToSpeech = new TextToSpeech(context, status -> {
             if (status == TextToSpeech.SUCCESS) {
                 int result = textToSpeech.setLanguage(Locale.CHINA);
-                YLog.e(TAG, "TTS状态:" + result);
                 if (result == TextToSpeech.LANG_MISSING_DATA) {
                     YLog.e(TAG, "语言包丢失");
                     initSuccess = false;

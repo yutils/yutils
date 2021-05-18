@@ -41,7 +41,7 @@ public class YSha1 {
             }
             fingerprint = sb.toString();
         } catch (NoSuchAlgorithmException e) {
-            YLog.e("YSha1", "getSha1(byte[] bytes)异常：", e);
+            YLog.e("YSha1", "getSha1(byte[] bytes)异常", e);
         }
         return fingerprint;
     }
@@ -71,14 +71,14 @@ public class YSha1 {
             }
             return sha1;
         } catch (IOException | NoSuchAlgorithmException e) {
-            YLog.e("YSha1", "getFileSha1(File file)异常：", e);
+            YLog.e("YSha1", "getFileSha1(File file)异常", e);
         } finally {
             try {
                 if (in != null) {
                     in.close();
                 }
             } catch (IOException e) {
-                YLog.e("YSha1", "in.close()异常：", e);
+                YLog.e("YSha1", "in.close()异常", e);
             }
         }
         return null;

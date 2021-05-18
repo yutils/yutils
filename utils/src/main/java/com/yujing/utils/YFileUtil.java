@@ -299,7 +299,7 @@ public class YFileUtil {
         try {
             is = context.getResources().getAssets().open(fileName);
         } catch (IOException e) {
-            YLog.e("readAssets", "ERROR", e);
+            YLog.e("readAssets", "异常", e);
         }
         return is;
     }
