@@ -57,10 +57,10 @@ abstract class YBaseDialog<B : ViewDataBinding> : Dialog {
         this.activity = activity
         this.view = view
     }
-    companion object {
-        /** 开发屏幕最小宽度 */
-        protected var DevelopmentScreenWidthDp = 720f
-    }
+
+    /** 开发屏幕最小宽度 */
+    var screenWidthDp: Float? = null
+
     var activity: Activity
     var layout: Int? = null
 
@@ -92,6 +92,11 @@ abstract class YBaseDialog<B : ViewDataBinding> : Dialog {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        //720F
+        if (screenWidthDp == null) {
+            val sWidth = activity.resources.configuration.smallestScreenWidthDp //屏幕最小宽度
+            screenWidthDp = sWidth.toFloat()
+        }
         if (layout != null)
             view = LayoutInflater.from(activity).inflate(layout!!, null)
 
@@ -162,7 +167,7 @@ abstract class YBaseDialog<B : ViewDataBinding> : Dialog {
         val gradientDrawable = GradientDrawable()
         //当前屏幕与开发屏幕的比例
         val scaleScreenWidthDp =
-            activity.resources.configuration.smallestScreenWidthDp / DevelopmentScreenWidthDp
+            activity.resources.configuration.smallestScreenWidthDp / (if (screenWidthDp == null) 720F else screenWidthDp!!)
         val strokeWidth = 2 * scaleScreenWidthDp // 2dp 边框宽度，乘以屏幕比例
         val roundRadius = 20 * scaleScreenWidthDp // 20dp 圆角半径，乘以屏幕比例
         gradientDrawable.setColor(fillColor)
