@@ -123,6 +123,18 @@ class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
         Create.button(binding.wll, "异常测试") {
             YBusUtil.post("异常")
         }
+
+        Create.button(binding.wll, "GPS") {
+            //创建
+            val yGps = YGps(this)
+            //.每秒获取一次基站位置
+            yGps.getLocationNET { location ->
+                //location位置
+                var latitude = location.latitude//纬度
+                var longitude = location.longitude//经度
+                textView1.text = "基站：latitude=${latitude}longitude$longitude"
+            }
+        }
     }
 
 
@@ -130,7 +142,7 @@ class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
     fun message1(message: Any?) {
         YLog.i("收到1：$message")
         textView1.text = textView1.text.toString() + "收到1:$message \n"
-        var b=B()
+        var b = B()
     }
 
     @YBus
@@ -163,7 +175,7 @@ class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
     }
 }
 
-class B{
+class B {
     init {
         YBusUtil.init(this)
     }

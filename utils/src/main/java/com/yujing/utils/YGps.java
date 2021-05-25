@@ -11,23 +11,94 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.util.Log;
 import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
 
-//<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>//网络提供程序需要
-//<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>//GPS和被动提供程序所需要,也可以用于网络
-//latitude = location.getLatitude();//纬度
-//longitude = location.getLongitude();
-//time      = location.getTime();
-//altitude  = location.getAltitude();//海拔
-//provider=location.getProvider();//定位形式 基站还是GPS
-
 /**
  * 获取gps
  *
- * @author 余静 2018年5月15日19:00:17
+ * @author 余静 2021年5月25日15:24:39
+ */
+/*
+用法：
+
+//创建
+YGps yGps = new YGps(this);
+//方法1.立即获取一次定位，如果有GPS就获取GPS信息，若没有就获取网络定位
+Location location = yGps.getLocation();
+
+//方法2.每秒获取一次GSP位置
+yGps.getLocationGPS(new YGps.GpsLocation() {
+    @Override
+    public void backLocation(Location location) {
+        //location位置
+    }
+});
+
+//方法3.每秒获取一次基站位置
+yGps.getLocationNET(new YGps.GpsLocation() {
+    @Override
+    public void backLocation(Location location) {
+        //location位置
+    }
+});
+
+//停止
+yGps.StopGPS();
+
+//停止
+yGps.StopNET();
+
+double latitude     = location.getLatitude();//纬度
+double longitude    = location.getLongitude();//经度
+double time         = location.getTime();//时间
+double altitude     = location.getAltitude();//海拔
+String provider     = location.getProvider();//定位形式 基站还是GPS
+
+
+kotlin：
+
+//创建
+val yGps = YGps(this)
+//方法1.立即获取一次定位，如果有GPS就获取GPS信息，若没有就获取网络定位
+//val location = yGps.location
+
+
+//方法2.每秒获取一次GSP位置
+yGps.getLocationGPS { location->
+    //location位置
+    var latitude     = location.latitude//纬度
+    var longitude    = location.longitude//经度
+}
+
+//方法3.每秒获取一次基站位置
+yGps.getLocationNET {  location->
+    //location位置
+}
+ */
+/*
+权限：
+<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+
+获取权限
+private void initPermission() {
+    String[] permissions = {
+        Manifest.permission.ACCESS_FINE_LOCATION,
+        Manifest.permission.ACCESS_COARSE_LOCATION,
+    };
+    ArrayList<String> toApplyList = new ArrayList<>();
+    for (String perm : permissions) {
+        if (PackageManager.PERMISSION_GRANTED != ContextCompat.checkSelfPermission(this, perm)) {
+        toApplyList.add(perm); // 进入到这里代表没有权限.
+        }
+    }
+    String[] tmpList = new String[toApplyList.size()];
+    if (!toApplyList.isEmpty()) {
+        ActivityCompat.requestPermissions(this, toApplyList.toArray(tmpList), 123);
+    }
+}
  */
 @SuppressWarnings({"unused"})
 @SuppressLint("MissingPermission")
@@ -83,12 +154,23 @@ public class YGps {
      * @param gpsLocation 回调
      */
     public void getLocationGPS(GpsLocation gpsLocation) {
+        getLocationGPS(1000, gpsLocation);
+    }
+
+    /**
+     * 获取GPS信息
+     *
+     * @param minTimeMs   每minTimeMs毫秒一次
+     * @param gpsLocation 回调
+     */
+    public void getLocationGPS(long minTimeMs, GpsLocation gpsLocation) {
         this.gpsLocation = gpsLocation;
         // GPS定位
         locationManagerGPS = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         try {
-            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) return;
-            locationManagerGPS.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, locationListener);
+            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+                return;
+            locationManagerGPS.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTimeMs, 0, locationListener);
         } catch (Exception e) {
             Toast.makeText(context, "请给本APP获取位置权限", Toast.LENGTH_SHORT).show();
         }
@@ -100,29 +182,51 @@ public class YGps {
      * @param gpsLocation 回调
      */
     public void getLocationNET(GpsLocation gpsLocation) {
+        getLocationNET(1000, gpsLocation);
+    }
+
+    /**
+     * 获取网络定位信息
+     *
+     * @param minTimeMs   每minTimeMs毫秒一次
+     * @param gpsLocation 回调
+     */
+    public void getLocationNET(long minTimeMs, GpsLocation gpsLocation) {
         this.gpsLocation = gpsLocation;
         // 基站定位
         locationManagerNET = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         try {
-            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) return;
-            locationManagerNET.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, 1000, 0, locationListener);
+            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+                return;
+            locationManagerNET.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, minTimeMs, 0, locationListener);
         } catch (Exception e) {
             Toast.makeText(context, "请给本APP获取位置权限", Toast.LENGTH_SHORT).show();
         }
     }
 
     /**
-     * 获取网络定位信息
+     * 获取网络wifi定位信息
      *
      * @param gpsLocation 回调
      */
     public void getLocationWIFI(GpsLocation gpsLocation) {
+        getLocationWIFI(1000, gpsLocation);
+    }
+
+    /**
+     * 获取网络wifi定位信息
+     *
+     * @param minTimeMs   每minTimeMs毫秒一次
+     * @param gpsLocation 回调
+     */
+    public void getLocationWIFI(long minTimeMs, GpsLocation gpsLocation) {
         this.gpsLocation = gpsLocation;
         // 基站定位
         locationManagerNET = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         try {
-            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) return;
-            locationManagerNET.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 0, locationListener);
+            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+                return;
+            locationManagerNET.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, minTimeMs, 0, locationListener);
         } catch (Exception e) {
             Toast.makeText(context, "请给本APP获取位置权限", Toast.LENGTH_SHORT).show();
         }
