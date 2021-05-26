@@ -9,7 +9,7 @@ import androidx.fragment.app.FragmentTransaction;
 /**
  * fragment管理器
  *
- * @author yujing 2019年11月15日11:07:23
+ * @author 余静 2019年11月15日11:07:23
  */
 /*用法
 private var yFragmentManager: YFragmentManager? = null

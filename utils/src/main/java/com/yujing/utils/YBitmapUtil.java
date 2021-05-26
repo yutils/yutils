@@ -21,7 +21,7 @@ import java.io.ByteArrayOutputStream;
 /**
  * 对bitmap的一些处理方法
  *
- * @author yujing 2019年4月2日10:32:37
+ * @author 余静 2019年4月2日10:32:37
  */
 @SuppressWarnings("unused")
 public class YBitmapUtil {

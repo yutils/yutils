@@ -10,7 +10,7 @@ import java.security.NoSuchAlgorithmException;
 /**
  * MD5 算法
  *
- * @author yujing 2018年11月30日12:11:57
+ * @author 余静 2018年11月30日12:11:57
  */
 @SuppressWarnings({"unused"})
 public class YMd5 {

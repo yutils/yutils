@@ -13,7 +13,7 @@ import java.util.Objects;
 /**
  * RecyclerView 通用适配器
  *
- * @author yujing 2018年11月30日12:13:23
+ * @author 余静 2018年11月30日12:13:23
  */
 /*用法举例:
 //java

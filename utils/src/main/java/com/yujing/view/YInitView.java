@@ -24,7 +24,7 @@ import java.util.Objects;
 /**
  * 初始化View，找控件
  *
- * @author yujing 2018年7月18日16:11:11
+ * @author 余静 2018年7月18日16:11:11
  */
 /* 用法
 public void show(Activity activity, View view) {

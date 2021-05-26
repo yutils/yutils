@@ -6,7 +6,7 @@ import android.os.Looper;
 /**
  * 主线程操作
  *
- * @author yujing 2021年1月11日23:16:27
+ * @author 余静 2021年1月11日23:16:27
  */
 public final class YThread {
     private static final Handler HANDLER = new Handler(Looper.getMainLooper());

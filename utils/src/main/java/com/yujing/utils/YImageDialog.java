@@ -20,7 +20,7 @@ import android.widget.LinearLayout;
 /**
  * 图片显示对话框
  *
- * @author yujing 2020年9月6日21:07:18
+ * @author 余静 2020年9月6日21:07:18
  */
 /*用法举例
 

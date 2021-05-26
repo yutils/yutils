@@ -18,7 +18,7 @@ import java.util.List;
 /**
  * 权限请求
  *
- * @author yujing 2020年2月12日16:01:27
+ * @author 余静 2020年2月12日16:01:27
  */
 /*用法
 //请求全部Manifest中注册的权限，不判断成功

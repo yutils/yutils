@@ -12,7 +12,7 @@ import com.yujing.utils.YLog;
 /**
  * 解决RecyclerView在ScrollView中的高度不正常问题
  *
- * @author yujing 2018年11月30日12:14:26
+ * @author 余静 2018年11月30日12:14:26
  */
 @SuppressWarnings("unused")
 class YFullyLinearLayoutManager extends LinearLayoutManager {

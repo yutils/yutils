@@ -10,7 +10,7 @@ import kotlin.system.exitProcess
 
 /**
  * 更新APP
- * @author yujing 2020年9月6日20:37:04
+ * @author 余静 2020年9月6日20:37:04
  */
 
 /*使用说明,举例

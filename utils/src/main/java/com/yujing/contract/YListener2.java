@@ -5,7 +5,7 @@ package com.yujing.contract;
  *
  * @param <Value1> 回调类型
  * @param <Value2> 回调类型
- * @author yujing 2020年1月13日17:11:44
+ * @author 余静 2020年1月13日17:11:44
  */
 
 public interface YListener2<Value1, Value2> {

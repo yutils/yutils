@@ -11,7 +11,7 @@ import com.yujing.utils.*
  * 基础activity
  *
  * @param <B> ViewDataBinding
- * @author yujing 2020年9月7日21:40:20
+ * @author 余静 2020年9月7日21:40:20
  */
 /*
 用法：

@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * 对String的一些处理方法
  *
- * @author yujing  2019年4月2日10:27:01
+ * @author 余静  2019年4月2日10:27:01
  */
 @SuppressWarnings({"unused", "WeakerAccess"})
 public class YString {

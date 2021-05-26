@@ -5,7 +5,7 @@ import com.yujing.utils.YBase64;
 /**
  * 加密解密算法
  *
- * @author YuJing 2017年3月29日 下午6:16:57
+ * @author 余静 2017年3月29日 下午6:16:57
  */
 @SuppressWarnings("unused")
 @Deprecated

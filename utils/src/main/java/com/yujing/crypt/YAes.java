@@ -22,7 +22,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 /**
  * Aes128 加密解密
- * @author yujing 2020年9月17日18:59:38
+ * @author 余静 2020年9月17日18:59:38
  */
 /* 使用方法
 // AES CBC 加密

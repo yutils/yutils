@@ -17,7 +17,7 @@ import com.yujing.utils.YToast
  * 基础activity
  *
  * @param <B> ViewDataBinding
- * @author yujing 2021年1月13日10:13:26
+ * @author 余静 2021年1月13日10:13:26
  */
 /*
 用法：

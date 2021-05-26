@@ -14,21 +14,21 @@ import java.util.List;
 @SuppressWarnings("ALL")
 /*用法举例
 
-当这样获取db时需要初始化。
-YDB.getHelper("test.db").getDatabase();
 //初始化
 YUtils.init(this)
-//绑定，如果不绑定，当数据库版本有变化时候，其他表收不到变化信息
-YDB.getDefault().binding(UserDao())
-//或
-YDB.getHelper("test.db", 2).binding(UserDao()).binding(InfoDao())
+//然后创建Dao继承YBaseDao
 
-
-public class UserDao extends YBaseDao {
+//如：
+public class UserDao extends YBaseDao<User> {
     @Override
     public SQLiteDatabase getDB() {
-        // return SQLiteDatabase.openOrCreateDatabase(YPath.getFilePath(App.Companion.get()) + "/test.db", null);
-        return YDB.getHelper("test.db", 2).binding(this).getDatabase();
+        //return YDB.getDB("test.db");//无版本控制
+        //有版本控制
+        OnUpgradeListener listener = (db, oldVersion, newVersion) -> {
+            if (oldVersion != newVersion && oldVersion <= 1)
+                db.execSQL("alter table " + tableName() + " add `addr` TEXT");
+        };
+        return YDB.getHelper("test.db", 2).setOnUpgradeListener(listener).getDatabase();
     }
 
     @Override
@@ -38,79 +38,62 @@ public class UserDao extends YBaseDao {
 
     @Override
     public String createTableSql() {
-        //return YCreateSQL.create(User.class);
-
-        //Map<String,String> map=new HashMap<>();
-        //map.put("account","varchar(50)");
-        //map.put("password","TEXT");
-        //return YCreateSQL.create("user",map);
-
-        return "CREATE TABLE IF NOT EXISTS " + tableName() + " (account varchar(50),password TEXT)";
+        return "CREATE TABLE IF NOT EXISTS " + tableName() + " (id INTEGER,account TEXT,password TEXT)";
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
-    }
-
-    @Override
-    public List<?> cursorToDatas(Cursor cursor) {
-        List<User> datas = new ArrayList<User>();
+    public List<User> cursorToList(Cursor cursor) {
+        List<User> users = new ArrayList<>();
         if (cursor != null) {
             while (cursor.moveToNext()) {
-                User data = new User();
-                data.setAccount(cursor.getString(cursor.getColumnIndex("account")));
-                data.setPassword(cursor.getString(cursor.getColumnIndex("password")));
-                datas.add(data);
+                User user = new User();
+                user.setId(cursor.getInt(cursor.getColumnIndex("id")));
+                user.setAccount(cursor.getString(cursor.getColumnIndex("account")));
+                user.setPassword(cursor.getString(cursor.getColumnIndex("password")));
+                users.add(user);
             }
             cursor.close();
         }
-        return datas;
+        return users;
     }
 
-
     @Override
-    public ContentValues dataToValues(Object data) {
-        User history = (User) data;
+    public ContentValues dataToValues(User data) {
         ContentValues values = new ContentValues();
-        values.put("account", history.getAccount());
-        values.put("password", history.getPassword());
+        values.put("id", data.getId());
+        values.put("account", data.getAccount());
+        values.put("password", data.getPassword());
         return values;
     }
 
-    //插入或更新
-    public void insertOrUpdate(User data) {
-        // 查询，如果account不为0那么就修改，否则插入
-        Cursor cursor = getDB().query(tableName(), new String[]{"account"}, "account=?", new String[]{data.getAccount()}, null, null, null);
-        if (cursor.getCount() > 0) update(data);
+    //插入或更新，先查询，如果有就更新，否则插入
+    public void insertOrUpdateById(User data) {
+        Cursor cursor = getDB().query(tableName(), new String[]{"id"}, "id=?", new String[]{data.getId().toString()}, null, null, null);
+        if (cursor.getCount() > 0) updateById(data);
         else insert(data);
     }
 
-    public long update(User data) {
-        return update(data, "account=?", data.getAccount());
+    public long updateById(User data) {
+        return update(data, "id=?", data.getId().toString());
     }
 
-    public List<User> queryByAccount(String account) {
-        return (List<User>) query("account=?", account);
-    }
-
-    public List<User> queryByAccount(String account, String password, String unit) {
-        return (List<User>) query("account=? AND password=? AND unit=?", account, password, unit);
+    public List<User> queryByIdAndAccount(String id, String account) {
+        return query("id=? AND account=?", id, account);
     }
 }
  */
 public abstract class YBaseDao<T> {
+
     abstract public SQLiteDatabase getDB();
 
     abstract public String tableName();
 
+    //return "CREATE TABLE IF NOT EXISTS " + tableName() + " (id INTEGER,account TEXT,password TEXT)";
     abstract public String createTableSql();
 
-    abstract public List<T> cursorToDatas(Cursor cursor);
+    abstract public List<T> cursorToList(Cursor cursor);
 
     abstract public ContentValues dataToValues(T data);
-
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion){ }
 
     public YBaseDao() {
         //创建表
@@ -125,13 +108,13 @@ public abstract class YBaseDao<T> {
     // 查询全部
     public List<T> query() {
         Cursor cursor = getDB().query(tableName(), null, null, null, null, null, null);
-        return cursorToDatas(cursor);
+        return cursorToList(cursor);
     }
 
     // 查询
     public List<T> query(String whereClause, String... whereArgs) {
         Cursor cursor = getDB().query(tableName(), null, whereClause, whereArgs, null, null, null);
-        return cursorToDatas(cursor);
+        return cursorToList(cursor);
     }
 
     // 更新
@@ -154,7 +137,7 @@ public abstract class YBaseDao<T> {
         getDB().execSQL(createTableSql());
     }
 
-    //删除一张表
+    //删除当前表
     public void dropTable() {
         YLog.i("删除表：" + tableName());
         getDB().execSQL("DROP TABLE IF EXISTS " + tableName());

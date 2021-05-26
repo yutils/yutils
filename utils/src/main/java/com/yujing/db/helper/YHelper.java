@@ -9,29 +9,23 @@ import com.yujing.db.base.YBaseDao;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 获取一个SQLiteOpenHelper
+ * @author 余静 2021年5月26日10:55:21
+ */
 /*用法
-
-当这样获取db时需要初始化。
-YDB.getHelper("test.db").getDatabase();
-
 //初始化
 YUtils.init(this)
-//绑定，如果不绑定，当数据库版本有变化时候，其他表收不到变化信息
-YDB.getDefault().binding(UserDao())
-//或
-YDB.getHelper("test.db", 2).binding(UserDao()).binding(InfoDao())
 
-//再之后，自己写一个类继承YBaseDao
+//获得一个Helper，Database
+YHelper yHelper = new YHelper(YApp.get(), dbName, version);
+SQLiteDatabase db = yHelper.setOnUpgradeListener(listener).getDatabase();
 
+//或，获取一个Database
+SQLiteDatabase db = YDB.getHelper("test.db", 2).setOnUpgradeListener(onUpgradeListener).getDatabase();
  */
 public class YHelper extends SQLiteOpenHelper {
-    public List<YBaseDao<?>> daoAll = new ArrayList<>();
-
-    public YHelper binding(YBaseDao<?> dao) {
-        for (YBaseDao<?> item : daoAll) if (item.tableName().equals(dao.tableName())) return this;
-        daoAll.add(dao);
-        return this;
-    }
+   private OnUpgradeListener onUpgradeListener;
 
     public YHelper(Context context, String name, int version) {
         super(context, name, null, version);
@@ -48,11 +42,15 @@ public class YHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        for (YBaseDao<?> item : daoAll) item.onUpgrade(db, oldVersion, newVersion);
+        onUpgradeListener.onUpgrade(db,oldVersion,newVersion);
+    }
+
+    public YHelper setOnUpgradeListener(OnUpgradeListener onUpgradeListener) {
+        this.onUpgradeListener = onUpgradeListener;
+        return this;
     }
 
     public void onDestroy() {
-        daoAll.clear();
         getDatabase().close();
     }
 }

@@ -44,7 +44,33 @@ internal class Utils {
                 if (parameters.size == 2)
                     if (yBus.mainThread)
                         YThread.runOnUiThread {
-                            method.invoke(anyClass, yMessage.type, yMessage.data)
+                            try {
+                                method.invoke(anyClass, yMessage.type, yMessage.data)
+                            } catch (e: ClassNotFoundException) {
+                                YLog.e("YBus", "类没有找到", e)
+                            } catch (e: SecurityException) {
+                                YLog.e("YBus", "安全例外异常，检查权限", e)
+                            } catch (e: IllegalAccessException) {
+                                YLog.e("YBus", "调用方法权限不足", e)
+                            } catch (e: IllegalArgumentException) {
+                                YLog.e("YBus", "接口接收参数个数不匹配", e)
+                            } catch (e: InvocationTargetException) {
+                                // 获取目标异常
+                                val t = e.targetException
+                                if (t.message != null && t.message!!.contains("checkNotNullParameter")) {
+                                    YLog.e(
+                                        "YBus",
+                                        "调用的目标方法异常，发送数据有null，然接收参数却不能为null，可以设置接收参数后面加?，tag=${yMessage.type}",
+                                        t
+                                    )
+                                } else {
+                                    YLog.e("YBus", "调用目标异常，如下", t)
+                                }
+                            } catch (e: ArithmeticException) {
+                                YLog.e("YBus", "算术运算异常", e)
+                            } catch (e: Throwable) {
+                                YLog.e("YBus", "未知异常", e)
+                            }
                         }
                     else method.invoke(anyClass, yMessage.type, yMessage.data)
 

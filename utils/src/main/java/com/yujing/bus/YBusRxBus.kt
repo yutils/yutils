@@ -6,7 +6,7 @@ package com.yujing.bus
 ///**
 // * bus 总线通信 工具类
 // * 底层RxBus
-// * @author yujing 2021年1月12日11:09:26
+// * @author 余静 2021年1月12日11:09:26
 // */
 ///*用法
 //

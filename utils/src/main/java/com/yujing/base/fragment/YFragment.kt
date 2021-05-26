@@ -10,7 +10,7 @@ import com.yujing.base.contract.YLifeEventListener
 
 /**
  * 监听YFragment事件
- * @author yujing 2020年12月21日10:57:20
+ * @author 余静 2020年12月21日10:57:20
  */
 /*用法
 val base = fragment as YFragment

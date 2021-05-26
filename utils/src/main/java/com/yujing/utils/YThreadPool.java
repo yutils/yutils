@@ -5,7 +5,7 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 /**
  * 线程池管理类
  *
- * @author yujing 2019年5月31日15:53:51
+ * @author 余静 2019年5月31日15:53:51
  */
 @SuppressWarnings({"unused", "WeakerAccess"})
 public class YThreadPool {

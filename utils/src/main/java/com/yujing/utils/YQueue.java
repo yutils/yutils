@@ -5,7 +5,7 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 /**
  * 队列运行，等待指定时间后运行下一个。
  *
- * @author yujing 2019年2月15日17:23:15
+ * @author 余静 2019年2月15日17:23:15
  */
 @SuppressWarnings({"WeakerAccess"})
 /* 用法举例

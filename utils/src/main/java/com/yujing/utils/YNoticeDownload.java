@@ -22,7 +22,7 @@ import java.util.TimerTask;
 /**
  * 通知栏下载文件
  *
- * @author yujing 2020年8月30日11:52:28
+ * @author 余静 2020年8月30日11:52:28
  */
 /*使用方法举例
     private var yNoticeDownload: YNoticeDownload?=null

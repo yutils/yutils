@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
 /**
  * bus注解
  *
- * @author yujing 2021年1月12日11:09:26
+ * @author 余静 2021年1月12日11:09:26
  */
 /*用法
 

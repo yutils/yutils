@@ -5,7 +5,7 @@ import com.yujing.utils.YLog
 /**
  * bus 总线通信 工具类
  * 底层原理：循环遍历所有注册类
- * @author yujing 2021年3月31日11:37:59
+ * @author 余静 2021年3月31日11:37:59
  */
 /*用法
 

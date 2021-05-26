@@ -11,7 +11,7 @@ import java.io.InputStream;
 /**
  * 读取InputStream
  *
- * @author yujing  2021年5月18日14:03:25
+ * @author 余静  2021年5月18日14:03:25
  */
 public class YReadInputStream {
     private static final String TAG = "YRead";

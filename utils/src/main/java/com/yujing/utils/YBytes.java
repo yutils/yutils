@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * byte拼接类
  *
- * @author YuJing 2019年12月5日09:39:55
+ * @author 余静 2019年12月5日09:39:55
  */
 @SuppressWarnings("unused")
 public class YBytes {

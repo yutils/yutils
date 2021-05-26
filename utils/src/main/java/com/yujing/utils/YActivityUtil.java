@@ -14,7 +14,7 @@ import java.util.Stack;
  * 或
  * ActivityUtil.init(mContext);
  *
- * @author yujing 2020年4月15日14:23:14
+ * @author 余静 2020年4月15日14:23:14
  */
 
 /*

@@ -13,7 +13,7 @@ import com.yujing.utils.YWebView
 
 /**
  * YWeb，对webView二次封装，实现播放视频等操作
- * @author yujing 2020年11月24日14:57:04
+ * @author 余静 2020年11月24日14:57:04
  */
 /*
 用法

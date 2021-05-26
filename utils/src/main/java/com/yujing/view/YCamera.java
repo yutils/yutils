@@ -45,7 +45,7 @@ import java.util.List;
 /**
  * 相机类
  *
- * @author yujing 2020年11月23日16:22:38
+ * @author 余静 2020年11月23日16:22:38
  */
 /*
 用法：

@@ -9,7 +9,7 @@ import javax.crypto.spec.DESedeKeySpec;
 /**
  * DES加密解密
  *
- * @author yujing 2019年8月27日16:42:02
+ * @author 余静 2019年8月27日16:42:02
  */
 @SuppressWarnings("unused")
 public class YDes {

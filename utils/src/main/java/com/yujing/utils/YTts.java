@@ -11,7 +11,7 @@ import java.util.Locale;
 /**
  * TTS语音合成
  *
- * @author yujing 2019年12月5日09:21:06
+ * @author 余静 2019年12月5日09:21:06
  */
 public class YTts {
     private static String TAG = "YTts";

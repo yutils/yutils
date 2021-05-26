@@ -16,7 +16,7 @@ import com.yujing.utils.YToast
  * 基础aFragment
  *
  * @param <B> ViewDataBinding
- * @author yujing 2020年12月21日17:01:56
+ * @author 余静 2020年12月21日17:01:56
  */
 /* 用法举例
 //kotlin

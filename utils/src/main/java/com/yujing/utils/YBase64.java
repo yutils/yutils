@@ -6,7 +6,7 @@ import java.util.Objects;
 /**
  * YBase64 标准base64
  *
- * @author yujing
+ * @author 余静
  * 2020年4月15日14:18:47
  */
 @SuppressWarnings("unused")

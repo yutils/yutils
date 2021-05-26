@@ -24,7 +24,7 @@ import static android.bluetooth.BluetoothDevice.TRANSPORT_LE;
 /**
  * 低功耗蓝牙连接类，实现连接，发送数据，读取数据
  *
- * @author yujing 2020年7月16日17:43:04
+ * @author 余静 2020年7月16日17:43:04
  */
 public class YBle implements YBluetoothDeviceConnect {
     private static final String TAG = "YBle";

@@ -1,4 +1,4 @@
-package com.yujing.db.control;
+package com.yujing.db;
 
 import com.google.gson.Gson;
 
@@ -13,8 +13,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 创建SQL语句
- *
+ * 创建SQL语句，
+ * 如YCreateSQL.create（user）; 返回字符串 CREATE TABLE IF NOT EXISTS `User`(`id` TEXT NULL,`account` TEXT）
  * @author 余静
  */
 public class YCreateSQL {

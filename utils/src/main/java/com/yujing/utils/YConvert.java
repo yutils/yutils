@@ -31,7 +31,7 @@ import java.util.concurrent.TimeoutException;
 /**
  * 各种类型转换
  *
- * @author yujing 2019年12月12日14:09:50
+ * @author 余静 2019年12月12日14:09:50
  */
 @SuppressWarnings("unused")
 public class YConvert {

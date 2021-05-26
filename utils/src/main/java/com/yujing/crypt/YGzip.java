@@ -19,7 +19,7 @@ import java.util.zip.GZIPOutputStream;
 /**
  * GZIP工具
  *
- * @author yujing  2019年8月27日16:57:26
+ * @author 余静  2019年8月27日16:57:26
  */
 @SuppressWarnings("unused")
 public class YGzip {

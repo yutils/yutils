@@ -23,7 +23,7 @@ import java.util.Objects;
 /**
  * URI 工具类，转换类
  *
- * @author yujing  2020年1月14日09:12:47
+ * @author 余静  2020年1月14日09:12:47
  */
 public class YUri {
 

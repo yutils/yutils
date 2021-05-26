@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * 解决RecyclerView在ScrollView中的高度不正常问题
- * @author yujing 2018年11月30日12:14:20
+ * @author 余静 2018年11月30日12:14:20
  */
 @SuppressWarnings("unused")
 class YFullyGridLayoutManager extends GridLayoutManager {

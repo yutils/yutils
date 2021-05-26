@@ -9,7 +9,7 @@ import java.net.*
 
 /**
  * Udp通信
- * @author yujing 2021年3月26日14:31:19
+ * @author 余静 2021年3月26日14:31:19
  */
 /*用法
 var yUdp: YUdp? = null

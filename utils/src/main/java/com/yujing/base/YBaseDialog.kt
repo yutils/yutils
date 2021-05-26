@@ -15,7 +15,7 @@ import com.yujing.utils.YToast
  * 自定义dialog快速创建基类
  *
  * @param <B> dataBinding类
- * @author yujing 2020年12月21日16:22:07
+ * @author 余静 2020年12月21日16:22:07
 </B> */
 /*
 用法：

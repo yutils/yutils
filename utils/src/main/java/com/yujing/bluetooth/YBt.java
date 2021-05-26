@@ -20,7 +20,7 @@ import java.util.UUID;
 /**
  * 蓝牙连接类，实现连接，发送数据，读取数据
  *
- * @author yujing 2020年7月16日17:43:04
+ * @author 余静 2020年7月16日17:43:04
  */
 @SuppressLint("MissingPermission")
 public class YBt implements YBluetoothDeviceConnect {

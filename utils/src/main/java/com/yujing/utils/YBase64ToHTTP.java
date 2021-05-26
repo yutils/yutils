@@ -7,7 +7,7 @@ import java.util.Objects;
  * YBase64 非标准base64，+换成了-，base64DecodeChars的第43位换成了45位
  * 以为在http传输中+会被转义导致结果变化
  *
- * @author yujing
+ * @author 余静
  * 2017年3月13日 下午17:49:30
  */
 @SuppressWarnings("unused")

@@ -9,7 +9,7 @@ import android.provider.Settings;
 
 /**
  * 跳转到常用页面
- * @author yujing 2021年3月10日13:13:43
+ * @author 余静 2021年3月10日13:13:43
  */
 
 /*用法

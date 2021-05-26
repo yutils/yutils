@@ -10,7 +10,7 @@ import com.yujing.base.contract.YLifeEventListener
 
 /**
  * 监听activity事件
- * @author yujing 2020年12月21日12:56:03
+ * @author 余静 2020年12月21日12:56:03
  */
 /*
 用法：

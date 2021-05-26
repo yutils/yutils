@@ -11,7 +11,7 @@ import com.yujing.utils.YTts
  * 基础aFragment
  *
  * @param <B> ViewDataBinding
- * @author yujing 2020年9月7日21:40:20
+ * @author 余静 2020年9月7日21:40:20
  */
 /* 用法举例
 //kotlin

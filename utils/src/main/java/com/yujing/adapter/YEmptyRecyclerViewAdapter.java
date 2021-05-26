@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 /**
  * 空RecyclerViewAdapter显示“无数据”，主要给BaseYRecyclerViewAdapter类调用
  *
- * @author yujing 2018年11月30日12:13:46
+ * @author 余静 2018年11月30日12:13:46
  */
 public class YEmptyRecyclerViewAdapter extends RecyclerView.Adapter<YEmptyRecyclerViewAdapter.EmptyHolder> {
     private final Context context;

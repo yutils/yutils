@@ -15,7 +15,7 @@ import java.util.Objects;
 /**
  * 屏幕工具类，涉及到屏幕宽度、高度、密度比、(像素、dp、sp)之间的转换等。
  *
- * @author yujing 2018年11月30日12:11:39
+ * @author 余静 2018年11月30日12:11:39
  */
 @SuppressWarnings("unused")
 public class YScreenUtil {

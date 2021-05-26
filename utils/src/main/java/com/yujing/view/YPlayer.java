@@ -14,7 +14,7 @@ import com.yujing.utils.YLog;
 /**
  * 多功能播放器
  *
- * @author yujing 2020年11月16日16:23:13
+ * @author 余静 2020年11月16日16:23:13
  * <p>
  * SurfaceView 一但到后台，会立即调用: surfaceDestroyed()
  * SurfaceView 回到前台，会立即调用: surfaceCreated()

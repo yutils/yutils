@@ -8,7 +8,7 @@ import javax.crypto.spec.SecretKeySpec;
 /**
  * 3DES加密解密
  *
- * @author yujing 2019年8月27日16:28:05
+ * @author 余静 2019年8月27日16:28:05
  */
 @SuppressWarnings("unused")
 public class Y3des {

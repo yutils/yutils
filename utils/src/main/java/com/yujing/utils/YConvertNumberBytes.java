@@ -3,7 +3,7 @@ package com.yujing.utils;
 /**
  * Byte转换类，常用类型的转换
  *
- * @author yujing 2019年12月12日11:48:48
+ * @author 余静 2019年12月12日11:48:48
  * char、int、float、double和 byte[] 数组之间的转换关系还需继续研究实现。
  * 大端小端模式，小端模式后缀Min
  */

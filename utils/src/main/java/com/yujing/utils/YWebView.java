@@ -10,7 +10,7 @@ import android.webkit.WebViewClient;
 /**
  * WebView常用设置
  *
- * @author yujing 2018年11月30日12:07:59
+ * @author 余静 2018年11月30日12:07:59
  * 最后一次修改2020年4月15日09:41:26
  */
 @SuppressWarnings("unused")

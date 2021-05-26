@@ -2,7 +2,7 @@ package com.yujing.utils
 
 /**
  * time（millisecond）内只允许运行一次，多余的事件直接抛弃
- * @author yujing 2021年4月9日10:07:39
+ * @author 余静 2021年4月9日10:07:39
  */
 /*举例
 //这句语音每20秒只能说一次

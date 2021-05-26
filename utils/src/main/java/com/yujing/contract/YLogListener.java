@@ -3,7 +3,7 @@ package com.yujing.contract;
 /**
  * YLog 日志回调监听
  *
- * @author yujing 2020年10月15日15:18:01
+ * @author 余静 2020年10月15日15:18:01
  */
 public interface YLogListener {
     /**

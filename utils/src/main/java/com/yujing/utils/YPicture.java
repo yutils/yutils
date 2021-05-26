@@ -20,7 +20,7 @@ import java.util.Objects;
 /**
  * 拍照，剪切，相册选择照片
  *
- * @author yujing 2020年8月8日00:08:58
+ * @author 余静 2020年8月8日00:08:58
  * @version 1.2 兼容安卓10.0
  */
 /*用法:

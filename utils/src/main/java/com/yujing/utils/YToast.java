@@ -8,7 +8,7 @@ import android.widget.Toast;
  * Toast，当第一个未消失时调用，直接覆盖文本值，并延长两秒显示时间
  * 或者队列显示一条toast 至少显示queueTime时间
  *
- * @author yujing 2019年2月18日11:27:58
+ * @author 余静 2019年2月18日11:27:58
  */
 @SuppressWarnings("unused")
 public class YToast {

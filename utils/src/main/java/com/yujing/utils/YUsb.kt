@@ -12,7 +12,7 @@ import java.nio.ByteBuffer
 /**
  * USB使用通用方法
  * 包含连接，打开，发送数据，读取数据
- * @author yujing 2021年4月29日11:39:38
+ * @author 余静 2021年4月29日11:39:38
  */
 /*使用方法
 //权限
