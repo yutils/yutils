@@ -9,6 +9,7 @@ import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.security.SecureRandom;
 import java.security.Signature;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
@@ -25,6 +26,7 @@ import javax.crypto.Cipher;
  * @author 余静 2020年9月3日14:11:14
  */
 /*用法
+
 // 1.获取公钥私钥
 Map<String, Object> map = YRsa.getKey();
 String publicKeyString = YRsa.getPublicKey(map);
@@ -32,13 +34,13 @@ String privateKeyString = YRsa.getPrivateKey(map);
 
 System.out.println("公钥base64：" + publicKeyString);
 System.out.println("私钥base64：" + privateKeyString);
-String content = "123456";
+String content = "你好，余静。";
 System.out.println("加密的数据："+content);
 
 // 2.使用私钥加密
 System.out.println("============   分隔符     ===========");
 byte[] encodeContent = YRsa.encryptPrivateKey(content.getBytes(), privateKeyString);
-System.out.println("私钥加密后的数据base64：" + YConvert.bytesToHexString(encodeContent));
+System.out.println("私钥加密后的数据base64：" + YBase64.encode(encodeContent));
 
 // 3.使用公钥解密
 byte[] decodeContent = YRsa.decryptPublicKey(encodeContent, publicKeyString);
@@ -47,7 +49,7 @@ System.out.println("公钥解密后的数据：" + new String(decodeContent));
 // 4.使用公钥加密
 System.out.println("============   分隔符     ===========");
 byte[] encodeContent2 = YRsa.encryptPublicKey(content.getBytes(), publicKeyString);
-System.out.println("公钥加密后的数据base64：" + YConvert.bytesToHexString(encodeContent2));
+System.out.println("公钥加密后的数据base64：" + YBase64.encode(encodeContent2));
 
 // 5.使用私钥解密
 byte[] decodeContent2 = YRsa.decryptPrivateKey(encodeContent2, privateKeyString);
@@ -63,18 +65,74 @@ boolean result =  YRsa.verify(content.getBytes(), publicKeyString, sign);
 System.out.println("验签签名结果：" + result);
 
 //运行结果：
-公钥base64：MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCpS4l8Uq+G90mCNRcqxkT/yjeU4wC8UrHuq1/+4FlxKFWT0G6pihFNWftr/SNbJ5U2NQB90S6pWsE06Bfto5utN6udWUl2cbQhfz/OXGcfDbhj7kr3qwrpOTHxKuqhC7y3IXic2yEkNWAbRALMA+EycTX/fINMRtwsPNOkapMZBwIDAQAB
-私钥base64：MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAKlLiXxSr4b3SYI1FyrGRP/KN5TjALxSse6rX/7gWXEoVZPQbqmKEU1Z+2v9I1snlTY1AH3RLqlawTToF+2jm603q51ZSXZxtCF/P85cZx8NuGPuSverCuk5MfEq6qELvLcheJzbISQ1YBtEAswD4TJxNf98g0xG3Cw806RqkxkHAgMBAAECgYEAmrvLwbHhdL54lWXo8tOdJR2yh4ajmX0L3FUOvGpZ1a9D6IJNYvAquERSJHWN5zbajl0LQfP7bhbhGHY5yJ4NHloXDWVapB9xmeItyW09tHMjLmwxcABdM5K89MR8cWZrO6lqrdj5K8oc4K+e1d0yH1r/dA5A2lyTsX+yeH/DYOECQQDo/c6G5ZGpzDhd4nbaHcYXIGIkebxiwQOb5Cyjw5KHfQzqhpwDLHDvYMO4fRK91/yOkjAeL57CO2PMJvpOe55rAkEAugNwkxHQQf3976LemVoCEKGbmJ44Am7FfjA2V2IuSMWdGZDayo61Ekx/X+XGa2xTa8Pm1TPlMN6+eexPFede1QJAZ4DpELBHZ4EbwUlrtzXm3Ds8niuebtiD++r/kbi+DYaWCFHIWPiTKyR3jiux+bhLsCJtUduh0XOEwBrIs7jjBQJALhXeFUHrk/4GpRF4DwxiyJYRg71naQriuUHepMW5a+Qx6PyfiGHU8MStJig6gbDj9iYiEZ564SG+lVx7t5SMRQJAT+UU6b0uAwF7DfBQUmxnQ49VlO2NoUgLz93m4QUKZeWB7ZgU8u2qYLmABoB3ngKr3OuL4YCwamPjUIRQbtZgCg==
-加密的数据：123456
+公钥base64：MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCaR3uFHMlOjUEbz3DjxfwtE9T1KqHMpSU7Zg6WFz7li3iZfLFgraoYuU8w0rGfOsm8mswcsZx+yqbjL9MBvpMrOYPk23/3Ofw0F7ux4m3mXpXt3nWn/cdTNFA78WPvJQczHc4t4FzvUHUbCXWJ+/XgQfd7oWJCiWl3DuaA73eHxQIDAQAB
+私钥base64：MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJpHe4UcyU6NQRvPcOPF/C0T1PUqocylJTtmDpYXPuWLeJl8sWCtqhi5TzDSsZ86ybyazByxnH7KpuMv0wG+kys5g+Tbf/c5/DQXu7HibeZele3edaf9x1M0UDvxY+8lBzMdzi3gXO9QdRsJdYn79eBB93uhYkKJaXcO5oDvd4fFAgMBAAECgYAoxwAE3OjwVDGDUj76VRgkKfu9mTkOyA+hNYZhcV90eHq1xtlzPjOZOVGPDAFansU3joqoguFkOdgGcFuLOH3ZI9j0sCostFxRzhmTsHIA1PxL09sM4Deku+AnTHjMUkmwXsnVS1jqogXzcul6Vo/Eq8X8BGQpA3y5uocpeZ0AOQJBAMija3u03YkGQontUD5+tmHa/igz6LLyQs70CNF766rbo94Mr+mI9YmwW/CQsuw25NKj5W48FWMXPLMNNA58rzcCQQDE2V9RNWgoxdnA80XL7jkEbZnnR7yVdUDRlnDVAWRaAtlIxJgqG5CgILz00dhzPGg+baFWaLCv4xKdVfIJSibjAkBWgrA7nNbQ2FQkaKDq8XPuaaCg8RDq566K0Ypj2QzalO3pNos7JQTKI7Lg3WNompq7gFPS3jFSkphnk8/YV0atAkEAhkcFNx8oQw/bXzxTMy34ZOXioxqTMJyAL7fgldxSOPhSgcnhRm/xMtnCK3ptnQXq0hL0iD33sLNDwmGbLe0QIwJACcAwOI4/1PNcrnJ52jFPVxcJg6AsfbhvUD7ZBvY+AtE+0h8xzr1ga4TVRy5AIXJw7wgGOIzWJ/gD4OqXf4JuEg==
+加密的数据：你好，余静。
 ============   分隔符     ===========
-私钥加密后的数据base64：9AAC0569A7FC91DEF27975111A22C67429D62A02EADFEBE39D3167E97E83FF20710E3A9FC5CEFCA2C0F6D1685A92333341EC487C74915365F6F2D13465DD7CF005E132DBED27FEDFC849CF217EC0CBAFAF9942A51C737B309BD7693582C0B67A4E6D73707A91DBE3931629BA8ACF896EFAA2166544500E3E4183FA34BFCBD29D
-公钥解密后的数据：123456
+私钥加密后的数据base64：FBw+6EOklHrONL2sw0lz/IqAH0FmvOvobukNWfRM+k5yyJfmifwgHmNWRD6XhX9VBYK1ljUtUfi7jp4ZW0Wqr0MkG9aGHFBiMjIBSryd4rCIMfE9fn5ux9Bx9vUnTKjNiFlwYf6HPAYfdwL0ItPjFPdQ84qIMuKILII+a6xYDV0=
+公钥解密后的数据：你好，余静。
 ============   分隔符     ===========
-公钥加密后的数据base64：0475AF93BE8B33221189249F310E0AAFF1AFC4CFA8ED341E5D34440583FC833CD04481EED63B0A5D32ACFF5E4B7C16BCA4DE6919C0AF2212743990075C7C653493C43F52D1326CCF5A01B8ACC99190227A9EA7093B4DF9F20EB53D8EFA3838192D6FD95297E3F606CEA4ADB06E79F68BB6600CB3B12C10BAE5728A930467935D
-私钥解密后的数据：123456
+公钥加密后的数据base64：V0N+LEif30mnvjfBWCkyrNiSDmIMwmclUq1wCS2esJw0c8+OGIWJ9S7naPqPt55w51SwpghvDzrFyeqQ5zTUnxHA1GygGnuqjK/eo7Uumv+92qailypgpZeC+ssIgLh1WHx9syNDOluYYJk3HXdE0cjA5g8aEmMyC321pX5sndQ=
+私钥解密后的数据：你好，余静。
 ============   分隔符     ===========
-签名后的数据base64：L+PuojXFBCebOk9E3JOPmuc/6THQ7dctKMlaDTBbWuNS7oHOph1bfLsg6pgN+LkjmNwq8PKOWGVTUjQpSR+F7NFdobrY3rgV3yN8vZmfcPfN6OuEgivC2+iIZ+A+GpfjjCcBX4Qj13vWSYhZ0nG174BXThi4kIA2Kz4cSesXu8U=
+签名后的数据base64：jKbe0ckBtFDbwq9Y66S46h3f/ZuUZcJU/9Dd5Ky1kWKVKgj80HlX4S///DB3NxTqwYg73Eq5QfTBb9sSz/XlicO7zOe/YEh8OpZMkODzCJXx80K+POdQ/21senfhd6vIXTlimhX98d9wWJCCAY7U10gLdx/CGBYoG2BhTDKKlzM=
 验签签名结果：true
+ */
+
+/*
+加密模式和填充：
+Algorithm   Modes         Paddings        Supported API Levels
+   AES       CBC      ISO10126Padding              1+
+             CFB         NoPadding
+             CTR        PKCS5Padding
+             CTS
+             ECB
+             OFB
+             GCM         NoPadding                10+
+
+ AES_128     CBC         NoPadding                26+
+             ECB        PKCS5Padding
+             GCM         NoPadding                26+
+
+ AES_256     CBC         NoPadding                26+
+             ECB        PKCS5Padding
+             GCM         NoPadding                26+
+
+   ARC4      ECB         NoPadding                10+
+            NONE         NoPadding                28+
+
+ BLOWFISH    CBC      ISO10126Padding             10+
+             CFB         NoPadding
+             CTR        PKCS5Padding
+             CTS
+             ECB
+             OFB
+
+ ChaCha20   NONE         NoPadding                28+
+          Poly1305
+
+   DES       CBC      ISO10126Padding              1+
+             CFB         NoPadding
+             CTR        PKCS5Padding
+             CTS
+             ECB
+             OFB
+
+  DESede     CBC      ISO10126Padding              1+
+             CFB         NoPadding
+             CTR        PKCS5Padding
+             CTS
+             ECB
+             OFB
+
+   RSA       ECB         NoPadding                 1+
+            NONE        OAEPPadding
+                        PKCS1Padding
+                   OAEPwithSHA-1andMGF1Pa         10+
+                   OAEPwithSHA-256andMGF1Padding
+                   OAEPwithSHA-224andMGF1          23
+                   OAEPwithSHA-384andMGF1Padding
+                   OAEPwithSHA-512andMGF1Padding
  */
 public class YRsa {
     //加密解密方式
@@ -83,9 +141,24 @@ public class YRsa {
     private final static String RSA_PUBLIC_KEY = "RSAPublicKey";
     //私钥 map ----> key
     private final static String RSA_PRIVATE_KEY = "RSAPrivateKey";
-    //签名算法
+    //签名算法,SHA1withRSA
+    /*
+        SHA1withDSA
+        MD2withRSA
+        MD5withRSA
+        SHA1withRSA
+        SHA256withRSA
+        SHA384withRSA
+        SHA512withRSA
+     */
     public final static String SIGNATURE_ALGORITHM = "MD5withRSA";
     //填充方式
+    /*
+        RSA/ECB/PKCS1Padding
+        RSA/ECB
+        RSA//PKCS1Padding
+        RSA
+     */
     public static String RSA_PADDING_STYLE = "RSA/ECB/PKCS1Padding";
 
     /**
@@ -218,17 +291,28 @@ public class YRsa {
 
     /**
      * 获取一对公钥和私钥
-     *
+     * 加密位数1024（128byte），1024整数倍
      * @return Map，RSA_PUBLIC_KEY，RSA_PRIVATE_KEY
      * @throws NoSuchAlgorithmException NoSuchAlgorithmException
      */
     public static Map<String, Object> getKey() throws NoSuchAlgorithmException {
+        return getKey(1024);
+    }
+    /**
+     * 获取一对公钥和私钥
+     * @param digit 加密位数
+     * @return Map，RSA_PUBLIC_KEY，RSA_PRIVATE_KEY
+     * @throws NoSuchAlgorithmException NoSuchAlgorithmException
+     */
+    public static Map<String, Object> getKey(int digit) throws NoSuchAlgorithmException {
         // 因为只存公钥和私钥，所以指明Map的长度是2
         Map<String, Object> keyMap = new HashMap<>(2);
         // 获取RSA算法实例
         KeyPairGenerator keyPairGen = KeyPairGenerator.getInstance(RSA_ALGORITHM);
-        // 1024代表密钥二进制位数
-        keyPairGen.initialize(1024);
+        //SecureRandom sr = new SecureRandom();
+        //keyPairGen.initialize(digit,sr);
+        // 1024代表密钥二进制位数，128位
+        keyPairGen.initialize(digit);
         // 产生KeyPair工厂
         KeyPair keyPair = keyPairGen.generateKeyPair();
         RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();

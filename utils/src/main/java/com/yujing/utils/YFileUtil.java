@@ -1,7 +1,6 @@
 package com.yujing.utils;
 
 import android.content.Context;
-import android.util.Log;
 
 import androidx.annotation.RawRes;
 

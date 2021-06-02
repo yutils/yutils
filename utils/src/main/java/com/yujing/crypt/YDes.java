@@ -11,10 +11,65 @@ import javax.crypto.spec.DESedeKeySpec;
  *
  * @author 余静 2019年8月27日16:42:02
  */
+/*
+加密模式和填充：
+Algorithm   Modes         Paddings        Supported API Levels
+   AES       CBC      ISO10126Padding              1+
+             CFB         NoPadding
+             CTR        PKCS5Padding
+             CTS
+             ECB
+             OFB
+             GCM         NoPadding                10+
+
+ AES_128     CBC         NoPadding                26+
+             ECB        PKCS5Padding
+             GCM         NoPadding                26+
+
+ AES_256     CBC         NoPadding                26+
+             ECB        PKCS5Padding
+             GCM         NoPadding                26+
+
+   ARC4      ECB         NoPadding                10+
+            NONE         NoPadding                28+
+
+ BLOWFISH    CBC      ISO10126Padding             10+
+             CFB         NoPadding
+             CTR        PKCS5Padding
+             CTS
+             ECB
+             OFB
+
+ ChaCha20   NONE         NoPadding                28+
+          Poly1305
+
+   DES       CBC      ISO10126Padding              1+
+             CFB         NoPadding
+             CTR        PKCS5Padding
+             CTS
+             ECB
+             OFB
+
+  DESede     CBC      ISO10126Padding              1+
+             CFB         NoPadding
+             CTR        PKCS5Padding
+             CTS
+             ECB
+             OFB
+
+   RSA       ECB         NoPadding                 1+
+            NONE        OAEPPadding
+                        PKCS1Padding
+                   OAEPwithSHA-1andMGF1Pa         10+
+                   OAEPwithSHA-256andMGF1Padding
+                   OAEPwithSHA-224andMGF1          23
+                   OAEPwithSHA-384andMGF1Padding
+                   OAEPwithSHA-512andMGF1Padding
+ */
 @SuppressWarnings("unused")
 public class YDes {
-    private static final String ALGORITHM_MODE = "DESede";
-    private static final String ALGORITHM_DES = "DESede/ECB/NOPadding";
+    public static final String ALGORITHM_MODE = "DESede";
+    public static final String ALGORITHM_DES = "DESede/ECB/NOPadding";
 
     /**
      * DES加密算法

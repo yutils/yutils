@@ -7,7 +7,6 @@ import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
 import android.content.Context;
 import android.os.Build;
-import android.util.Log;
 
 import com.yujing.contract.YListener1;
 import com.yujing.contract.YSuccessFailListener;

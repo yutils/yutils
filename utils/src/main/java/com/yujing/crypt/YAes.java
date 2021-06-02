@@ -51,12 +51,69 @@ import javax.crypto.spec.SecretKeySpec;
     System.out.println("加密后：" + YBase64.encode(en));
     System.out.println("解密：" + new String(dec));
  */
+
+/*
+加密模式和填充：
+Algorithm   Modes         Paddings        Supported API Levels
+   AES       CBC      ISO10126Padding              1+
+             CFB         NoPadding
+             CTR        PKCS5Padding
+             CTS
+             ECB
+             OFB
+             GCM         NoPadding                10+
+
+ AES_128     CBC         NoPadding                26+
+             ECB        PKCS5Padding
+             GCM         NoPadding                26+
+
+ AES_256     CBC         NoPadding                26+
+             ECB        PKCS5Padding
+             GCM         NoPadding                26+
+
+   ARC4      ECB         NoPadding                10+
+            NONE         NoPadding                28+
+
+ BLOWFISH    CBC      ISO10126Padding             10+
+             CFB         NoPadding
+             CTR        PKCS5Padding
+             CTS
+             ECB
+             OFB
+
+ ChaCha20   NONE         NoPadding                28+
+          Poly1305
+
+   DES       CBC      ISO10126Padding              1+
+             CFB         NoPadding
+             CTR        PKCS5Padding
+             CTS
+             ECB
+             OFB
+
+  DESede     CBC      ISO10126Padding              1+
+             CFB         NoPadding
+             CTR        PKCS5Padding
+             CTS
+             ECB
+             OFB
+
+   RSA       ECB         NoPadding                 1+
+            NONE        OAEPPadding
+                        PKCS1Padding
+                   OAEPwithSHA-1andMGF1Pa         10+
+                   OAEPwithSHA-256andMGF1Padding
+                   OAEPwithSHA-224andMGF1          23
+                   OAEPwithSHA-384andMGF1Padding
+                   OAEPwithSHA-512andMGF1Padding
+ */
 @SuppressWarnings("unused")
 public class YAes {
     private static final String AES = "AES";
     public static String AES_CBC_Padding = "AES/CBC/PKCS5Padding";
+    //C# 不支持PKCS5，通用填充只有NoPadding和 "AES/ECB/ISO10126Padding";
     public static String AES_ECB_Padding = "AES/ECB/PKCS5Padding";
-    // C# 不支持PKCS5，通用填充只有NoPadding和 "AES/ECB/ISO10126Padding";
+
 
     /**
      * 创建一个随机秘钥

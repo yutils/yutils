@@ -12,7 +12,6 @@ import android.graphics.YuvImage;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.util.Base64;
-import android.util.Log;
 import android.view.View;
 
 import java.io.ByteArrayInputStream;

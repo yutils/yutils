@@ -1,7 +1,5 @@
 package com.yujing.crypt;
 
-import android.util.Log;
-
 import com.yujing.utils.YLog;
 
 import java.io.File;
