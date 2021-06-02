@@ -1,12 +1,12 @@
 package com.yujing.test
 
-import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
-
+import androidx.test.platform.app.InstrumentationRegistry
+import com.yujing.utils.YLog
+import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
 
-import org.junit.Assert.*
 
 /**
  * Instrumented test, which will execute on an Android device.
@@ -20,5 +20,6 @@ class ExampleInstrumentedTest {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
         assertEquals("com.yujing.test", appContext.packageName)
+        YLog.i("包名：" + appContext.packageName)
     }
 }
