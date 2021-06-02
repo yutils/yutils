@@ -1114,10 +1114,44 @@ public class YUtils {
     }
 
     /**
+     * 重启APP
+     *
+     * @param context       context
+     * @param activityClass activity
+     */
+    public static void reStartAPP(Context context, Class<? extends Activity> activityClass) {
+        Intent intent = new Intent(YActivityUtil.getCurrentActivity(), activityClass);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(intent);
+        YActivityUtil.closeAllActivity();
+        exit();
+    }
+
+    /**
+     * 重启APP
+     *
+     * @param context context
+     */
+    public static void reStartAPP(Context context) {
+        Intent intent = context.getPackageManager().getLaunchIntentForPackage(context.getPackageName());
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(intent);
+        exit();
+    }
+
+    /**
+     * 重启APP
+     */
+    public static void reStartAPP() {
+        reStartAPP(YApp.get());
+    }
+
+    /**
      * 退出APP
      */
     public static void exit() {
         YThreadPool.stopAll();
+        YActivityUtil.closeAllActivity();
         android.os.Process.killProcess(android.os.Process.myPid());
         System.exit(0);
     }

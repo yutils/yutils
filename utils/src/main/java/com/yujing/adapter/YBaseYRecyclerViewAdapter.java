@@ -52,6 +52,13 @@ class MyAccountAdapter(context: Context?, list: List<*>?) :
     override fun setLayout(): Int {
         return R.layout.activity_my_account_item
     }
+
+    var select: Int = -1
+    set(select) {
+        field = select
+        notifyDataSetChanged()
+    }
+
     override fun setViewHolder(itemView: View?): BaseViewHolder {
         return object : BaseViewHolder(itemView) {
             lateinit var binding: ActivityMyAccountItemBinding
@@ -60,6 +67,8 @@ class MyAccountAdapter(context: Context?, list: List<*>?) :
             }
             override fun setData(position: Int, obj: Any?, adapterList: MutableList<Any?>?, adapter: YBaseYRecyclerViewAdapter<*>?) {
 
+                //选中行变色
+                binding.ll.setBackgroundColor( if (position == select) Color.parseColor("#3000b2EE") else Color.parseColor("#00000000"))
             }
         }
     }

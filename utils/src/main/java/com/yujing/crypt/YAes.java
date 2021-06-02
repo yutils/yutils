@@ -26,13 +26,13 @@ import javax.crypto.spec.SecretKeySpec;
  */
 /* 使用方法
 // AES CBC 加密
-    YAes.AES_ECB_Padding="AES/ECB/ISO10126Padding";
     byte[] en = YAes.encryptCBC("余静".getBytes(), "123456".getBytes(), "8516144119920625");
     byte[] dec = YAes.decryptCBC(en, "123456".getBytes(), "8516144119920625");
     System.out.println("加密后：" + YBase64.encode(en));
     System.out.println("解密：" + new String(dec));
 
 // AES ECB 加密
+    YAes.AES_ECB_Padding="AES/ECB/ISO10126Padding";
     byte[] en = YAes.encryptECB("余静".getBytes(), "123456".getBytes());
     byte[] dec = YAes.decryptECB(en, "123456".getBytes());
     System.out.println("加密后：" + YBase64.encode(en));
@@ -55,7 +55,8 @@ import javax.crypto.spec.SecretKeySpec;
 public class YAes {
     private static final String AES = "AES";
     public static String AES_CBC_Padding = "AES/CBC/PKCS5Padding";
-    public static String AES_ECB_Padding = "AES/ECB/PKCS5Padding";// C# 不支持PKCS5，通用填充只有NoPadding和 "AES/ECB/ISO10126Padding";
+    public static String AES_ECB_Padding = "AES/ECB/PKCS5Padding";
+    // C# 不支持PKCS5，通用填充只有NoPadding和 "AES/ECB/ISO10126Padding";
 
     /**
      * 创建一个随机秘钥
