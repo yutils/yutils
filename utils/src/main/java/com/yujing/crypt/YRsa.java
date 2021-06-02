@@ -9,7 +9,6 @@ import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.security.SecureRandom;
 import java.security.Signature;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
@@ -62,21 +61,21 @@ System.out.println("签名后的数据base64：" + sign);
 
 // 7.验签
 boolean result =  YRsa.verify(content.getBytes(), publicKeyString, sign);
-System.out.println("验签签名结果：" + result);
+System.out.println("验证签名结果：" + result);
 
 //运行结果：
-公钥base64：MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCaR3uFHMlOjUEbz3DjxfwtE9T1KqHMpSU7Zg6WFz7li3iZfLFgraoYuU8w0rGfOsm8mswcsZx+yqbjL9MBvpMrOYPk23/3Ofw0F7ux4m3mXpXt3nWn/cdTNFA78WPvJQczHc4t4FzvUHUbCXWJ+/XgQfd7oWJCiWl3DuaA73eHxQIDAQAB
-私钥base64：MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJpHe4UcyU6NQRvPcOPF/C0T1PUqocylJTtmDpYXPuWLeJl8sWCtqhi5TzDSsZ86ybyazByxnH7KpuMv0wG+kys5g+Tbf/c5/DQXu7HibeZele3edaf9x1M0UDvxY+8lBzMdzi3gXO9QdRsJdYn79eBB93uhYkKJaXcO5oDvd4fFAgMBAAECgYAoxwAE3OjwVDGDUj76VRgkKfu9mTkOyA+hNYZhcV90eHq1xtlzPjOZOVGPDAFansU3joqoguFkOdgGcFuLOH3ZI9j0sCostFxRzhmTsHIA1PxL09sM4Deku+AnTHjMUkmwXsnVS1jqogXzcul6Vo/Eq8X8BGQpA3y5uocpeZ0AOQJBAMija3u03YkGQontUD5+tmHa/igz6LLyQs70CNF766rbo94Mr+mI9YmwW/CQsuw25NKj5W48FWMXPLMNNA58rzcCQQDE2V9RNWgoxdnA80XL7jkEbZnnR7yVdUDRlnDVAWRaAtlIxJgqG5CgILz00dhzPGg+baFWaLCv4xKdVfIJSibjAkBWgrA7nNbQ2FQkaKDq8XPuaaCg8RDq566K0Ypj2QzalO3pNos7JQTKI7Lg3WNompq7gFPS3jFSkphnk8/YV0atAkEAhkcFNx8oQw/bXzxTMy34ZOXioxqTMJyAL7fgldxSOPhSgcnhRm/xMtnCK3ptnQXq0hL0iD33sLNDwmGbLe0QIwJACcAwOI4/1PNcrnJ52jFPVxcJg6AsfbhvUD7ZBvY+AtE+0h8xzr1ga4TVRy5AIXJw7wgGOIzWJ/gD4OqXf4JuEg==
+公钥base64：MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCLcaf8qMbAvameflVHHatEBIDMko0kcLCdKkfNwkxrpzolRoOMu1IgVgy8fNB7ZiP+Ge1reNJb1MB9je3Bk31gv8yHB5mX2X7F6XbyP9sBgeqqSjg5hQi53Xma5BXJeb+6q2D9JKN73qrMf9xmv0JTUdyU0TEMqfhhY3zKR0HUewIDAQAB
+私钥base64：MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAItxp/yoxsC9qZ5+VUcdq0QEgMySjSRwsJ0qR83CTGunOiVGg4y7UiBWDLx80HtmI/4Z7Wt40lvUwH2N7cGTfWC/zIcHmZfZfsXpdvI/2wGB6qpKODmFCLndeZrkFcl5v7qrYP0ko3veqsx/3Ga/QlNR3JTRMQyp+GFjfMpHQdR7AgMBAAECgYB8vLn58PyCM+dEiVw9lpO675BL75jkjQ3gOY8rx3BXKKuB5rcMsBCCLpeMENbqW+88gfL5HYaHcSST699QN2CCTXqGmo2v1JUrxJnqaNnPMnWYT1YlA+SRJySyXZMbUcm76rtei5CIl1FHsVuDORn2HcK3x6p3nam6BIlqmJhd2QJBAO2m82XJ7sWbfrz5KAI/QAYKwlM6mXQ4DH6meSrDfSOgD6yT40sJmehKdZqVsVPWZy7gFQ5HfgJ7PNLFps2xh68CQQCWNa5MpTopT56fghzvQU2QM+SAlatONXzPJqbwVOI+HFv36v6Ue+m+nRgEI7BzsznV0oqE85zT/1w/sEy3+Sb1AkEAvVfxvpyXj3tnC7rbZIbuRKIX12Xt00nAsruB+E9Oia7CLjaZtjRNGmUQs/wmD2zYQuGoBPty6xkzCZ8OWf3i4wJAZHB0og+BeooguOvZySnTYW8xhcGOkHc3g5SG4AECXyG7ZWUe4c6Rl8GXg30Ryeu36oAj247B+QexeWy7f/D72QJABZ+9yNT2zx8rMO9gmzfN1lQhmcN3pIJmBxSf8kB72sAcmoobw6b8G2ZykDPML6XAo7BT+zyelGM/MlaTvlJM8w==
 加密的数据：你好，余静。
 ============   分隔符     ===========
-私钥加密后的数据base64：FBw+6EOklHrONL2sw0lz/IqAH0FmvOvobukNWfRM+k5yyJfmifwgHmNWRD6XhX9VBYK1ljUtUfi7jp4ZW0Wqr0MkG9aGHFBiMjIBSryd4rCIMfE9fn5ux9Bx9vUnTKjNiFlwYf6HPAYfdwL0ItPjFPdQ84qIMuKILII+a6xYDV0=
+私钥加密后的数据base64：EULFm3a9k3oukLdUP38fA1uiPHg/zwTMnf8iFwEb5ewd0zMv//TkIk57d8H3BI3TBlHWbrYfMDLOO7JL4ulQdvVg+8hDOGwYGYRFwkPI/JUY/BCahI6wa8xJWxsbeG7YkHFSJmq0wnJqBIU1VkH2a2xmOqtJ8N9K9M98DxLIeXs=
 公钥解密后的数据：你好，余静。
 ============   分隔符     ===========
-公钥加密后的数据base64：V0N+LEif30mnvjfBWCkyrNiSDmIMwmclUq1wCS2esJw0c8+OGIWJ9S7naPqPt55w51SwpghvDzrFyeqQ5zTUnxHA1GygGnuqjK/eo7Uumv+92qailypgpZeC+ssIgLh1WHx9syNDOluYYJk3HXdE0cjA5g8aEmMyC321pX5sndQ=
+公钥加密后的数据base64：UJRRswkhqodUepcMssM+5lg+OjOoU9ZAcdpqSJsAsHSWwuPe9e3yfuSVs2W4UYHL55f4irQGUKqfS/u4gxGhod5CEKPm9J8TOOxdQzeXgaiJssedc3hHh9r5VrIeOv86Xo75SNV5G0v0P9fiSrcdgA0DkibRJfMv4CbBHt4OJZQ=
 私钥解密后的数据：你好，余静。
 ============   分隔符     ===========
-签名后的数据base64：jKbe0ckBtFDbwq9Y66S46h3f/ZuUZcJU/9Dd5Ky1kWKVKgj80HlX4S///DB3NxTqwYg73Eq5QfTBb9sSz/XlicO7zOe/YEh8OpZMkODzCJXx80K+POdQ/21senfhd6vIXTlimhX98d9wWJCCAY7U10gLdx/CGBYoG2BhTDKKlzM=
-验签签名结果：true
+签名后的数据base64：EHI7CFc/dvDwn3zIHvuAfHtRuo4VVEvbnfSPiokPI0EqS4kb7gawZ1M+wagyH6BTsw7pGjkFZBHBA8+RQpRNzvlq7EbEkea/7ONKGohua2vMJagBFNXNf+/U33G3fzVXeFWkb6rx6OefGVpYrGQboFudRqr2DJU+8dNlGB0NCyk=
+验证签名结果：true
  */
 
 /*
@@ -141,24 +140,9 @@ public class YRsa {
     private final static String RSA_PUBLIC_KEY = "RSAPublicKey";
     //私钥 map ----> key
     private final static String RSA_PRIVATE_KEY = "RSAPrivateKey";
-    //签名算法,SHA1withRSA
-    /*
-        SHA1withDSA
-        MD2withRSA
-        MD5withRSA
-        SHA1withRSA
-        SHA256withRSA
-        SHA384withRSA
-        SHA512withRSA
-     */
-    public final static String SIGNATURE_ALGORITHM = "MD5withRSA";
-    //填充方式
-    /*
-        RSA/ECB/PKCS1Padding
-        RSA/ECB
-        RSA//PKCS1Padding
-        RSA
-     */
+    //签名算法：SHA1withDSA；MD2withRSA；MD5withRSA；SHA1withRSA；SHA256withRSA；SHA384withRSA；SHA512withRSA；
+    public final static String SIGNATURE_ALGORITHM = "SHA1withRSA";
+    //填充方式：RSA/ECB/PKCS1Padding；RSA/ECB；RSA//PKCS1Padding；RSA；
     public static String RSA_PADDING_STYLE = "RSA/ECB/PKCS1Padding";
 
     /**
@@ -292,14 +276,17 @@ public class YRsa {
     /**
      * 获取一对公钥和私钥
      * 加密位数1024（128byte），1024整数倍
+     *
      * @return Map，RSA_PUBLIC_KEY，RSA_PRIVATE_KEY
      * @throws NoSuchAlgorithmException NoSuchAlgorithmException
      */
     public static Map<String, Object> getKey() throws NoSuchAlgorithmException {
         return getKey(1024);
     }
+
     /**
      * 获取一对公钥和私钥
+     *
      * @param digit 加密位数
      * @return Map，RSA_PUBLIC_KEY，RSA_PRIVATE_KEY
      * @throws NoSuchAlgorithmException NoSuchAlgorithmException
