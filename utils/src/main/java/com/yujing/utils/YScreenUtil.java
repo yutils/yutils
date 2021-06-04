@@ -3,11 +3,15 @@ package com.yujing.utils;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
+import android.os.Build;
 import android.util.DisplayMetrics;
 import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
 
 import java.util.Objects;
@@ -19,6 +23,97 @@ import java.util.Objects;
  */
 @SuppressWarnings("unused")
 public class YScreenUtil {
+    /**
+     * 设置成横屏
+     *
+     * @param activity activity
+     */
+    public static void toPortrait(Activity activity) {
+        if (activity.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        }
+    }
+
+    /**
+     * 设置成竖屏
+     *
+     * @param activity activity
+     */
+    @SuppressLint("SourceLockedOrientationActivity")
+    public static void toLandscape(Activity activity) {
+        if (activity.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        }
+    }
+
+    /**
+     * 设置成自动旋转,用户启用自动旋转才会生效
+     *
+     * @param activity activity
+     */
+    public static void toAuto(Activity activity) {
+        if (activity.getRequestedOrientation() != ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED) {
+            activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+        }
+    }
+
+    /**
+     * 设置全屏
+     *
+     * @param activity     页面
+     * @param isFullScreen 全屏否
+     */
+    public static void setFullScreen(Activity activity, boolean isFullScreen) {
+        if (isFullScreen) {
+            activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);//隐藏通知栏,通知栏透明:FLAG_FORCE_NOT_FULLSCREEN
+        } else {
+            activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);//显示通知栏
+        }
+    }
+
+    /**
+     * 设置开启沉浸式
+     *
+     * @param activity     页面
+     * @param isFullScreen 沉浸式否
+     */
+    public static void setImmersive(Activity activity, boolean isFullScreen) {
+        if (isFullScreen) {
+            if (Build.VERSION.SDK_INT >= 19) {
+                Window window = activity.getWindow();
+                //沉浸式
+                View decorView = window.getDecorView();
+                decorView.setSystemUiVisibility(
+                        View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                                | View.SYSTEM_UI_FLAG_FULLSCREEN
+                                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+                //关闭输入法后，不显示虚拟按键
+                WindowManager.LayoutParams params = window.getAttributes();
+                params.systemUiVisibility = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE;
+                window.setAttributes(params);
+            }
+        } else {
+            if (Build.VERSION.SDK_INT >= 19) {
+                View decorView = activity.getWindow().getDecorView();
+                decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+            }
+        }
+    }
+
+    /**
+     * 获取屏幕最小宽度
+     * @param context context
+     * @return 应该是dp
+     */
+    public static int getSmallestScreenWidthDp(Context context) {
+        return context.getResources().getConfiguration().smallestScreenWidthDp;
+    }
+
     /**
      * 获取屏幕宽度，单位为px
      *
@@ -41,6 +136,7 @@ public class YScreenUtil {
 
     /**
      * 获取DPI
+     *
      * @param context context
      * @return Dpi
      */
@@ -89,7 +185,6 @@ public class YScreenUtil {
     public static int px2dp(Context context, int pxValue) {
         return (int) (pxValue / getDensity(context) + 0.5f);
     }
-
 
     /**
      * dip转px
@@ -222,6 +317,7 @@ public class YScreenUtil {
 
     /**
      * 获取DisplayMetrics对象
+     *
      * @param context context
      * @return DisplayMetrics
      */
