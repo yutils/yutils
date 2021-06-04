@@ -11,6 +11,11 @@ import android.graphics.Rect;
 import android.graphics.YuvImage;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.renderscript.Allocation;
+import android.renderscript.Element;
+import android.renderscript.RenderScript;
+import android.renderscript.ScriptIntrinsicYuvToRGB;
+import android.renderscript.Type;
 import android.util.Base64;
 import android.view.View;
 
@@ -414,17 +419,59 @@ public class YConvert {
      * @param height 高
      * @return Bitmap
      */
+    @Deprecated
     public static Bitmap yuv420spToBitmap(byte[] data, int width, int height) {
-        YuvImage image = new YuvImage(data, ImageFormat.NV21, width, height, null);
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        image.compressToJpeg(new Rect(0, 0, width, height), 100, stream);
-        Bitmap bitmap = BitmapFactory.decodeByteArray(stream.toByteArray(), 0, stream.size());
+        return nv21ToBitmap(data, width, height);
+    }
+
+    /**
+     * 低效，而且会内存泄露
+     * @param nv21 图片
+     * @param width 宽
+     * @param height 高
+     * @return Bitmap
+     */
+    @Deprecated
+    public static Bitmap nv21ToBitmap(byte[] nv21, int width, int height) {
+        Bitmap bitmap = null;
         try {
+            YuvImage image = new YuvImage(nv21, ImageFormat.NV21, width, height, null);
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            image.compressToJpeg(new Rect(0, 0, width, height), 100, stream);
+            bitmap = BitmapFactory.decodeByteArray(stream.toByteArray(), 0, stream.size());
             stream.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
         return bitmap;
+    }
+    /**
+     * 高效
+     * @param nv21 图片
+     * @param width 宽
+     * @param height 高
+     * @param context context
+     * @return Bitmap
+     */
+    public static Bitmap nv21ToBitmap(byte[] nv21, int width, int height, Context context) {
+        RenderScript rs = RenderScript.create(context);
+        ScriptIntrinsicYuvToRGB toRgb = ScriptIntrinsicYuvToRGB.create(rs, Element.U8_4(rs));
+        Type.Builder yuvType = (new Type.Builder(rs, Element.U8(rs))).setX(nv21.length);
+        Allocation in = Allocation.createTyped(rs, yuvType.create(), 1);
+        Type.Builder rgbaType = (new Type.Builder(rs, Element.RGBA_8888(rs))).setX(width).setY(height);
+        Allocation out = Allocation.createTyped(rs, rgbaType.create(), 1);
+
+        in.copyFrom(nv21);
+        toRgb.setInput(in);
+        toRgb.forEach(out);
+        Bitmap newBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        out.copyTo(newBitmap);
+
+        out.destroy();
+        in.destroy();
+        toRgb.destroy();
+        rs.destroy();
+        return newBitmap;
     }
 
     /**
