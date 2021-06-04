@@ -13,7 +13,6 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
-
 /**
  * Aes128 加密解密
  *
@@ -102,83 +101,6 @@ Algorithm   Modes         Paddings        Supported API Levels
                    OAEPwithSHA-224andMGF1          23
                    OAEPwithSHA-384andMGF1Padding
                    OAEPwithSHA-512andMGF1Padding
- */
-/*
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace PurClient.Common.Extension
-{
-    public class AESHelper
-    {
-        /// <summary>
-        /// AES加密
-        /// </summary>
-        /// <param name="plainStr">明文字符串</param>
-        /// <returns>密文</returns>
-        public static string AESEncrypt(string plainStr,string Key)
-        {
-            Encoding encoder = Encoding.UTF8;
-            byte[] keyArray = encoder.GetBytes(Key);
-            byte[] toEncryptArray = encoder.GetBytes(plainStr);
-            RijndaelManaged rDel = new RijndaelManaged();
-
-            rDel.Key = paddingData(keyArray); ;
-            rDel.Mode = CipherMode.ECB;
-            rDel.Padding = PaddingMode.ISO10126;
-            rDel.BlockSize = 128;
-
-            ICryptoTransform cTransform = rDel.CreateEncryptor();
-            byte[] resultArray = cTransform.TransformFinalBlock(toEncryptArray, 0, toEncryptArray.Length);
-            return Convert.ToBase64String(resultArray, 0, resultArray.Length);
-        }
-
-
-        /// <summary>
-        /// 解密
-        /// </summary>
-        /// <param name="encryptStr"></param>
-        /// <returns></returns>
-        public static string AESDecrypt(string encryptStr,string Key)
-        {
-            Encoding encoder = Encoding.UTF8;
-            byte[] keyArray = encoder.GetBytes(Key);
-            byte[] toEncryptArray = Convert.FromBase64String(encryptStr);
-            RijndaelManaged rDel = new RijndaelManaged();
-            rDel.Mode = CipherMode.ECB;
-            rDel.Padding = PaddingMode.ISO10126;
-            rDel.Key = paddingData(keyArray);
-            rDel.BlockSize = 128;
-
-            ICryptoTransform cTransform = rDel.CreateDecryptor();
-            byte[] resultArray = cTransform.TransformFinalBlock(toEncryptArray, 0, toEncryptArray.Length);
-            return encoder.GetString(resultArray);
-        }
-
-
-        //补齐的16位的整数倍
-        private static byte[] paddingData(byte[] bytes)
-        {
-            int length = bytes.Length / 16;
-            if (length * 16 < bytes.Length)
-            {
-                length++;
-            }
-            byte[] result = new byte[length * 16];
-            System.Array.Copy(bytes, 0, result, 0, bytes.Length);
-            for (int i = bytes.Length; i < result.Length; i++)
-            {
-                result[i] = 0x00;
-            }
-            return result;
-        }
-    }
-}
  */
 @SuppressWarnings("unused")
 public class YAes {
