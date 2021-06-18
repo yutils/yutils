@@ -21,6 +21,41 @@ import static android.os.Environment.MEDIA_MOUNTED;
 @SuppressWarnings({"unused"})
 public class YPath {
     /**
+     * 默认路径
+     * /data/data/< package name >/files
+     *
+     * @return 路径
+     */
+    public static String get() {
+        return getFilePath(YApp.get());
+    }
+
+    /**
+     * 默认路径
+     *
+     * @return 路径
+     */
+    public static String get(String dir) {
+        return getFilePath(YApp.get(), dir);
+    }
+
+    /**
+     * 如果路径不是以 / 结尾，那么后面加 /
+     *
+     * @param path 路径
+     * @return 路径
+     */
+    public static String toDir(String path) {
+        if (path != null && path.length() > 0) {
+            String last = path.substring(path.length() - 1);
+            if (last.equals(File.separator) || last.equals("/") || last.equals("\\"))
+                return path;
+            path += File.separator;
+        }
+        return path;
+    }
+
+    /**
      * 获取存储路径，优先使用外部储存，不需要申请权限
      * /storage/emulated/0/Android/data/com.xx.xx/files/xxDir
      * /data/data/< package name >/files/xxDir
@@ -52,7 +87,7 @@ public class YPath {
     /**
      * 获取存储路径，优先使用外部储存，不需要申请权限
      * /storage/emulated/0/Android/data/com.xx.xx/files/
-     * /data/data/< package name >/files/
+     * /data/data/< package name >/files
      * 忽略警告：1,空指针：ConstantConditions
      *
      * @param context 上下文

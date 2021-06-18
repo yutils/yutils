@@ -16,17 +16,32 @@ import java.util.HashMap;
 /*
 用法：
 //参数下载
-kotlin
-var parameterInfo: ParameterInfo
-    get() = YSave.get(App.get(), "ParameterInfo", ParameterInfo::class.java)
-    set(parameterInfo) = YSave.put(App.get(), "ParameterInfo", parameterInfo)
-java
-    public static String getP() {
-        return YSave.get(App.get(), "ParameterInfo", String.class);
-    }
-    public static void setP(String purchaseLine) {
-        YSave.put(App.get(), "ParameterInfo", purchaseLine);
-    }
+kotlin：
+var user: User
+    get() = YSave.get(YApp.get(), "user", User::class.java)
+    set(obj) = YSave.put(YApp.get(), "user", obj)
+
+//或
+var bl: Boolean
+    get() = YSave.getInstance().get("b", Boolean::class.java)
+    set(obj) = YSave.getInstance().put("b", obj)
+
+//或
+var bl: Boolean
+    get() = YSave.create(YPath.get(),".txt").get("test", Boolean::class.java)
+    set(obj) = YSave.create(YPath.get(),".txt").put("test", obj)
+
+java：
+public static String getP() {return YSave.get(YApp.get(), "p", String.class);}
+public static void setP(String purchaseLine) {YSave.put(YApp.get(), "p", purchaseLine);}
+
+//或
+public static boolean getP() { return YSave.getInstance().get("p", boolean.class); }
+public static void setP(Boolean b) { YSave.getInstance().put("p", b); }
+
+//或
+public static boolean getP() { return YSave.create(YPath.get(),"txt").get("p", boolean.class); }
+public static void setP(Boolean b) { YSave.create(YPath.get(),"txt").put("p", b); }
  */
 @SuppressWarnings("unused")
 public class YSave {
@@ -69,7 +84,7 @@ public class YSave {
 
     // 存放在默认位置，路径data/data/files/+ FOLDER_NAME +/+ Name +EXTENSION
     public String getPath() {
-        return (path != null) ? path : (context.getFilesDir() + File.separator + "YSave" + File.separator);
+        return (path != null) ? YPath.toDir(path) : (context.getFilesDir() + File.separator + "YSave" + File.separator);
     }
 
     // 写入
@@ -148,8 +163,29 @@ public class YSave {
     public <T> T get(String key, Class<T> classOfT, Object defaultObject) {
         // 如果使用缓存，直接返回
         if (useCache) {
-            T object = classOfT.cast(getCache().get(key));
-            if (object != null) return object;
+            try {
+                T object;
+                if (classOfT == boolean.class)
+                    classOfT = (Class<T>) Boolean.class;
+                else if (classOfT == int.class)
+                    classOfT = (Class<T>) Integer.class;
+                else if (classOfT == long.class)
+                    classOfT = (Class<T>) Long.class;
+                else if (classOfT == double.class)
+                    classOfT = (Class<T>) Double.class;
+                else if (classOfT == float.class)
+                    classOfT = (Class<T>) Float.class;
+                else if (classOfT == byte.class)
+                    classOfT = (Class<T>) Byte.class;
+                else if (classOfT == char.class)
+                    classOfT = (Class<T>) Character.class;
+                else if (classOfT == short.class)
+                    classOfT = (Class<T>) Short.class;
+                object = (T) classOfT.cast(getCache().get(key));
+                if (object != null) return object;
+            } catch (Exception e) {
+                YLog.i("类型转换失败,数据：" + getCache().get(key) + " 采用JSON反序列化模式运行。错误异常：" + e.getMessage());
+            }
         }
         // 读盘，如果是byte[]直接返回
         if (classOfT.equals(byte[].class)) {
@@ -162,15 +198,15 @@ public class YSave {
 
         //读盘，如果是String直接返回
         if (classOfT.equals(String.class)) {
-            T object = (T) json;
-            if (useCache) getCache().put(key, object);// 保存到内存中
-            return object;
+            T obj = (T) json;
+            if (useCache) getCache().put(key, obj);// 保存到内存中
+            return obj;
         }
 
         //如果是其他对象，转换后返回
-        T object = gson.fromJson(json, classOfT);
-        if (useCache) getCache().put(key, object);// 保存到内存中
-        return object;
+        T obj = gson.fromJson(json, classOfT);
+        if (useCache) getCache().put(key, obj);// 保存到内存中
+        return obj;
     }
 
     // 读取String
@@ -197,10 +233,13 @@ public class YSave {
         return this;
     }
 
-
     // ★★★★★★★★★★★★★★★★★★★★★★★静态方法开始★★★★★★★★★★★★★★★★★★★★★★★★★★
     @SuppressLint("StaticFieldLeak")
     private static volatile YSave ySave;//单例
+
+    public static YSave getInstance() {
+        return getInstance(YApp.get());
+    }
 
     public static YSave getInstance(Context context) {
         if (ySave == null) {
@@ -211,63 +250,67 @@ public class YSave {
         return ySave;
     }
 
+    public static YSave create() {
+        return new YSave(YApp.get());
+    }
+
     public static YSave create(Context context) {
         return new YSave(context);
+    }
+
+    public static YSave create(String path) {
+        return new YSave(YApp.get(), path);
     }
 
     public static YSave create(Context context, String path) {
         return new YSave(context, path);
     }
 
+    public static YSave create(String path, String extensionName) {
+        return new YSave(YApp.get(), path, extensionName);
+    }
+
     public static YSave create(Context context, String path, String extensionName) {
         return new YSave(context, path, extensionName);
     }
 
-    // 写入
-    public static <T> void put(Context context, String key, T data) {
-        YSave ySave = new YSave(context);
-        ySave.put(key, data);
-    }
-
     // 读取
     public static <T> T get(Context context, String key, Class<T> classOfT) {
-        YSave ySave = new YSave(context);
-        return ySave.get(key, classOfT);
+        return getInstance(context).get(key, classOfT);
     }
 
     // 读取
     public static <T> T get(Context context, String key, Class<T> classOfT, Object defaultObject) {
-        YSave ySave = new YSave(context);
-        return ySave.get(key, classOfT, defaultObject);
+        return getInstance(context).get(key, classOfT, defaultObject);
     }
 
     // 读取
     public static Object get(Context context, String key, java.lang.reflect.Type type) {
-        YSave ySave = new YSave(context);
-        return ySave.get(key, type);
+        return getInstance(context).get(key, type);
     }
 
     // 读取
     public static Object get(Context context, String key, java.lang.reflect.Type type, Object defaultObject) {
-        YSave ySave = new YSave(context);
-        return ySave.get(key, type, defaultObject);
+        return getInstance(context).get(key, type, defaultObject);
     }
 
     // 读取
     public static String getString(Context context, String key) {
-        YSave ySave = new YSave(context);
-        return ySave.getString(key);
+        return getInstance(context).getString(key);
+    }
+
+    // 写入
+    public static <T> void put(Context context, String key, T data) {
+        getInstance(context).put(key, data);
     }
 
     // 删除
     public static void remove(Context context, String key) {
-        YSave ySave = new YSave(context);
-        ySave.remove(key);
+        getInstance(context).remove(key);
     }
 
     // 删除全部
     public static void removeAll(Context context) {
-        YSave ySave = new YSave(context);
-        ySave.removeAll();
+        getInstance(context).removeAll();
     }
 }

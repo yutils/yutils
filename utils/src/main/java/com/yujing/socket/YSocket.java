@@ -29,75 +29,106 @@ import java.util.List;
  */
 
 /*
-	使用方法：
-    	YSocket ySocket = new YSocket("127.0.0.1", 5555);
-		ySocket.addConnectListener(isSuccess -> System.out.println("连接状态：" + isSuccess));
-		ySocket.addDataListener(bytes -> {
-			System.out.println("收到返回信息：" + Arrays.toString(bytes));
-		});
+使用方法：
 
-		//设置读取方法
-		ySocket.setInputStreamReadListener(inputStream -> {
-			//读取协议头
-			int count = 10;
-			byte[] bytes1 = new byte[count];
-			// 一定要读取count个数据，如果inputStream.read(bytes);可能读不完
-			int readCount = 0; // 已经成功读取的字节的个数
-			while (readCount < count) {
-				readCount += inputStream.read(bytes1, readCount, count - readCount);
-			}
-			if (bytes1[0] != 0x5A) {
-				return null;
-			}
-			//读取正文
-			int length = YConvertBytes.bytesToInt(bytes1, 6);
-			byte[] bytes2 = new byte[length];
-			int readContent = 0; // 已经成功读取的字节的个数
-			while (readContent < length) {
-				readContent += inputStream.read(bytes2, readContent, length - readContent);
-			}
-			//组装
-			byte[] bytes3 = new byte[bytes1.length + bytes2.length];
-			System.arraycopy(bytes1, 0, bytes3, 0, bytes1.length);
-			System.arraycopy(bytes2, 0, bytes3, bytes1.length, bytes2.length);
-			return bytes3;
-		});
-		ySocket.start();
+java：
 
-	//start或者reStart
-    fun start() {
-        //创建实例
-        YSocket.getInstance(Constants.IP, Constants.PORT.toInt())
-        //断开已有的连接
-        YSocket.getInstance().closeConnect()
-        //设置心跳内容
-        YSocket.getInstance().setHearBytes(getHearBytes())
-        //清空状态连接监听
-        YSocket.getInstance().clearConnectListener()
-        //清空返回消息监听
-        YSocket.getInstance().clearDataListener()
-        //设置读取方法
-        YSocket.getInstance().setInputStreamReadListener(inputStreamReadListener)
-        //添加状态连接监听
-        YSocket.getInstance().addConnectListener(stateListener)
-        //添加返回消息监听
-        YSocket.getInstance().addDataListener(dataListener)
-        //不显示日志
-        YSocket.getInstance().setShowLog(false)
-        //开始运行
-        YSocket.getInstance().start()
+YSocket ySocket = new YSocket("127.0.0.1", 5555);
+ySocket.addConnectListener(isSuccess -> System.out.println("连接状态：" + isSuccess));
+ySocket.addDataListener(bytes -> {
+    System.out.println("收到返回信息：" + Arrays.toString(bytes));
+});
+
+//设置读取方法
+ySocket.setInputStreamReadListener(inputStream -> {
+    //读取协议头
+    int count = 10;
+    byte[] bytes1 = new byte[count];
+    // 一定要读取count个数据，如果inputStream.read(bytes);可能读不完
+    int readCount = 0; // 已经成功读取的字节的个数
+    while (readCount < count) {
+        readCount += inputStream.read(bytes1, readCount, count - readCount);
     }
-
-    fun send(json:String) {
-        val heartMessage = Message(0)
-        heartMessage.data = json
-        YSocketAndroid.getInstance().send(heartMessage.getyBytes(),null)
+    if (bytes1[0] != 0x5A) {
+        return null;
     }
-
-    fun onDestroy() {
-        //退出APP
-        YSocketAndroid.getInstance().exit()
+    //读取正文
+    int length = YConvertBytes.bytesToInt(bytes1, 6);
+    byte[] bytes2 = new byte[length];
+    int readContent = 0; // 已经成功读取的字节的个数
+    while (readContent < length) {
+        readContent += inputStream.read(bytes2, readContent, length - readContent);
     }
+    //组装
+    byte[] bytes3 = new byte[bytes1.length + bytes2.length];
+    System.arraycopy(bytes1, 0, bytes3, 0, bytes1.length);
+    System.arraycopy(bytes2, 0, bytes3, bytes1.length, bytes2.length);
+    return bytes3;
+});
+ySocket.start();
+
+kotlin：
+
+//start或者reStart
+fun start() {
+    //创建实例
+    YSocket.getInstance("192.168.6.123", 502)
+    //断开已有的连接
+    YSocket.getInstance().closeConnect()
+    //设置心跳内容
+    YSocket.getInstance().setHearBytes("心跳内容".toByteArray())
+    //清空状态连接监听
+    YSocket.getInstance().clearConnectListener()
+    //清空返回消息监听
+    YSocket.getInstance().clearDataListener()
+    //设置读取方法
+    YSocket.getInstance().setInputStreamReadListener(readListener)
+    //添加状态连接监听
+    YSocket.getInstance().addConnectListener(stateListener)
+    //添加返回消息监听
+    YSocket.getInstance().addDataListener(dataListener)
+    //不显示日志
+    YSocket.getInstance().setShowLog(false)
+    //开始运行
+    YSocket.getInstance().start()
+}
+
+//解析InputStream方法
+var readListener = YSocket.InputStreamReadListener { inputStream ->
+    // 网络传输时候，这样获取真正长度
+    var count = 0
+    while (count == 0) count = inputStream.available()
+    val bytes = ByteArray(count)
+    // 一定要读取count个数据，如果inputStream.read(bytes);可能读不完
+    var readCount = 0 // 已经成功读取的字节的个数
+
+    while (readCount < count) {
+        readCount += inputStream.read(bytes, readCount, count - readCount)
+    }
+    return@InputStreamReadListener bytes
+}
+
+//连接状态监听
+var stateListener = YSocket.StateListener { success ->
+    YLog.i("连接：$success")
+}
+
+//收到数据监听
+var dataListener = YSocket.DataListener { bytes ->
+    YLog.i("收到：" + YConvert.bytesToHexString(bytes))
+}
+
+//发送
+fun send(str: String) {
+    YSocket.getInstance().send(str.toByteArray(), null)
+}
+
+//退出
+override fun onDestroy() {
+    super.onDestroy()
+
+    YSocket.getInstance().exit()
+}
 */
 
 @SuppressWarnings("WeakerAccess")

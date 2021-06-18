@@ -33,8 +33,6 @@ import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -49,11 +47,14 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
@@ -251,7 +252,7 @@ public class YUtils {
      * @param isFullScreen 全屏否
      */
     public static void setFullScreen(Activity activity, boolean isFullScreen) {
-       YScreenUtil.setFullScreen(activity, isFullScreen);
+        YScreenUtil.setFullScreen(activity, isFullScreen);
     }
 
     /**
@@ -666,16 +667,15 @@ public class YUtils {
      * @return 是ping通
      */
     public static boolean ping(String ip) {
-        String result = null;
         try {
             Process p = Runtime.getRuntime().exec("ping -c 3 -w 100 " + ip);// ping网址3次，每次间隔100毫秒
-            // 读取ping的内容，可以不加
-            //InputStream input = p.getInputStream();
-            //BufferedReader in = new BufferedReader(new InputStreamReader(input));
-            //String content;
-            //while ((content = in.readLine()) != null) {
-            //System.out.println(content);
-            //}
+            //读取ping的内容，可以不加
+            InputStream input = p.getInputStream();
+            BufferedReader in = new BufferedReader(new InputStreamReader(input));
+            String content;
+            while ((content = in.readLine()) != null) {
+                YLog.d("-----ping-----", content);
+            }
             // ping的状态
             int status = p.waitFor();
             if (status == 0) return true;

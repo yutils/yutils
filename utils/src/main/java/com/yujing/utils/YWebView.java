@@ -2,10 +2,18 @@ package com.yujing.utils;
 
 import android.annotation.SuppressLint;
 import android.os.Build;
+import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+
+import androidx.annotation.RequiresApi;
+
+import com.yujing.bus.YBusUtil;
+
+import java.util.Arrays;
 
 /**
  * WebView常用设置
@@ -13,8 +21,29 @@ import android.webkit.WebViewClient;
  * @author 余静 2018年11月30日12:07:59
  * 最后一次修改2020年4月15日09:41:26
  */
+/*
+用法
+
+YWebView.init(binding.webView)
+
+//或
+YWebView.setSettings(binding.webView);
+YWebView.setClient(binding.webView);
+YWebView.setBackgroundAlpha(binding.webView);
+binding.webView.loadUrl(url);
+
+@YBus(YWebView.页面发生错误)
+fun error(code :Int) {
+}
+
+@YBus(YWebView.页面加载完成)
+fun success() {
+}
+ */
 @SuppressWarnings("unused")
 public class YWebView {
+    public static final String 页面发生错误="页面发生错误";
+    public static final String 页面加载完成="页面加载完成";
     /**
      * 初始化WebView
      *
@@ -75,15 +104,60 @@ public class YWebView {
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
                 if (Build.VERSION.SDK_INT >= 21) {
                     String url = request.getUrl().toString();
-                    if (url.startsWith("mailto:") || url.startsWith("geo:") || url.startsWith("tel:") || url.startsWith("smsto:")) {
-                        //Intent intent = new Intent(Intent.ACTION_VIEW,Uri.parse(url));
-                        //startActivity(intent);
-                        return true;
+                    for (String item : Arrays.asList("mailto:", "geo:", "tel:", "smsto:")) {
+                        //startActivity(new Intent(Intent.ACTION_VIEW,Uri.parse(url)));
+                        if (url.startsWith(item)) return true;
                     }
                     view.loadUrl(url);
                 }
                 // 返回值是true的时候控制去WebView打开，为false调用系统浏览器或第三方浏览器
                 return true;
+            }
+
+            //页面加载完成
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+                YBusUtil.Companion.post(页面加载完成,null);
+            }
+
+            //避免404错误，500错误
+            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+            @Override
+            public void onReceivedHttpError(WebView view, WebResourceRequest request, WebResourceResponse errorResponse) {
+                super.onReceivedHttpError(view, request, errorResponse);
+                // 这个方法在6.0才出现
+                int statusCode = errorResponse.getStatusCode();
+                System.out.println("onReceivedHttpError code = " + statusCode);
+                if (404 == statusCode || 500 == statusCode) {
+                    view.loadUrl("about:blank");
+                    //这儿处理错误后的逻辑
+                    YBusUtil.Companion.post(页面发生错误,statusCode);
+                }
+            }
+
+            // 断网或者网络连接超时6.0之前
+            @Override
+            public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+                super.onReceivedError(view, errorCode, description, failingUrl);
+                if (errorCode == ERROR_HOST_LOOKUP || errorCode == ERROR_CONNECT || errorCode == ERROR_TIMEOUT) {
+                    view.loadUrl("about:blank");
+                    //这儿处理错误后的逻辑
+                    YBusUtil.Companion.post(页面发生错误,errorCode);
+                }
+            }
+
+            // 断网或者网络连接超时6.0之后
+            @RequiresApi(api = Build.VERSION_CODES.M)
+            @Override
+            public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
+                super.onReceivedError(view, request, error);
+                int errorCode = error.getErrorCode();
+                if (errorCode == ERROR_HOST_LOOKUP || errorCode == ERROR_CONNECT || errorCode == ERROR_TIMEOUT) {
+                    view.loadUrl("about:blank");
+                    //这儿处理错误后的逻辑
+                    YBusUtil.Companion.post(页面发生错误,errorCode);
+                }
             }
         });
     }

@@ -13,7 +13,7 @@ apply plugin: 'maven-publish'
 
 def GROUP_ID = 'com.github.yutils'
 def ARTIFACT_ID = 'yutils'
-def VERSION_NAME = '1.5.5'
+def VERSION_NAME = '1.5.6'
 def jarName = ARTIFACT_ID + "-" + VERSION_NAME
 
 task makeJar(type: Copy) {

@@ -6,6 +6,7 @@ import androidx.databinding.DataBindingUtil
 import com.yujing.bus.YBus
 import com.yujing.bus.YBusUtil
 import com.yujing.bus.YMessage
+import com.yujing.test.App
 import com.yujing.test.R
 import com.yujing.test.base.KBaseActivity
 import com.yujing.test.databinding.ActivityAllTestBinding
@@ -135,8 +136,42 @@ class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
                 textView1.text = "基站：latitude=${latitude}longitude$longitude"
             }
         }
+        Create.button(binding.wll, "boolean测试java") {
+            Test7.setP(true)
+            textView1.text = "存入：${true}"
+            textView2.text = "读取：${Test7.getP()}"
+        }
+        Create.button(binding.wll, "boolean测试kotlin") {
+            bl = true
+            textView1.text = "存入：${true}"
+            textView2.text = "读取：${bl}"
+        }
+        Create.button(binding.wll, "Double测试kotlin") {
+            db = 123.45
+            textView1.text = "存入：${123.45}"
+            textView2.text = "读取：${db}"
+        }
+        Create.button(binding.wll, "String测试kotlin") {
+            str = 6554.toByte()
+            textView1.text = "存入：${65}"
+            textView2.text = "读取：${str}"
+        }
     }
 
+    //boolean 测试
+    var bl: Boolean
+        get() = YSave.create(YPath.get(),".txt").get("test", Boolean::class.java)
+        set(obj) = YSave.create(YPath.get(),".txt").put("test", obj)
+
+    //double 测试
+    var db: Double
+        get() = YSave.get(YApp.get(), "Double_Test", Double::class.java)
+        set(obj) = YSave.put(YApp.get(), "Double_Test", obj)
+
+    //double 测试
+    var str: Byte
+        get() = YSave.get(YApp.get(), "String_Test", Byte::class.java)
+        set(obj) = YSave.put(YApp.get(), "String_Test", obj)
 
     @YBus("tag1", "tag2", mainThread = false)
     fun message1(message: Any?) {
