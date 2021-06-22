@@ -7,12 +7,17 @@ package com.yujing.utils;
  */
 /* 使用举例
 //2秒后打印“触发”
- YDelay.run(2000, new YDelay.DRun() {
+YDelay.run(2000, new Runnable() {
     @Override
     public void delayedRun() {
        System.out.println("触发");
     }
 });
+
+kotlin:
+YDelay.run(2000){
+    YLog.i("延迟运行")
+}
  */
 public class YDelay {
     /**
@@ -20,6 +25,10 @@ public class YDelay {
      *
      * @param time     时间毫秒
      * @param runnable 回调
+     */
+    /*
+      val run =Runnable{ YLog.i("延迟运行") }
+      YDelay.run(2000,run)
      */
     @SuppressWarnings({"UnclearExpression"})
     public static void run(final int time, final Runnable runnable) {
@@ -34,6 +43,19 @@ public class YDelay {
             } catch (InterruptedException ignored) {
             }
         }).start();
+    }
+
+    /**
+     * 移除还没运行的线程
+     *
+     * @param runnable runnable
+     */
+    /*
+      val run =Runnable{ YLog.i("延迟运行") }
+      YDelay.remove(run)
+     */
+    public static void remove(Runnable runnable) {
+        YThread.remove(runnable);
     }
 }
 

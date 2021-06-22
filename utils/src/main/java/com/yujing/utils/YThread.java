@@ -42,4 +42,11 @@ public final class YThread {
     public static void runOnUiThreadDelayed(final Runnable runnable, long delayMillis) {
         HANDLER.postDelayed(runnable, delayMillis);
     }
+
+    /**
+     * 移除还未运行的线程
+     */
+    public static void remove(final Runnable runnable) {
+        HANDLER.removeCallbacks(runnable);
+    }
 }

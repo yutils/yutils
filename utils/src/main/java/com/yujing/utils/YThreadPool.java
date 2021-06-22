@@ -19,8 +19,10 @@ public class YThreadPool {
         if (sTpe != null)
             sTpe.getQueue().clear();
     }
+
     /**
      * 把一个线程扔进线程池
+     *
      * @param runnable 要执行的线程
      */
     public synchronized static void add(Runnable runnable) {
@@ -29,13 +31,14 @@ public class YThreadPool {
             synchronized (sTpe) {
                 sTpe.execute(runnable);
             }
-        }else {
+        } else {
             sTpe.execute(runnable);
         }
     }
 
     /**
-     *  获取当前有多少线程
+     * 获取当前有多少线程
+     *
      * @return 线程数量
      */
     public static int getPoolSize() {
@@ -60,5 +63,13 @@ public class YThreadPool {
         YThreadPool.threadNum = threadNum;
         shutdown();
         sTpe = new ScheduledThreadPoolExecutor(threadNum);
+    }
+
+    /**
+     * 移除队列中线程
+     */
+    public static void remove(Runnable runnable) {
+        if (sTpe != null)
+            sTpe.remove(runnable);
     }
 }
