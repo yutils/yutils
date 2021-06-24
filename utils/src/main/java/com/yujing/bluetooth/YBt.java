@@ -21,6 +21,13 @@ import java.util.UUID;
  *
  * @author 余静 2020年7月16日17:43:04
  */
+/*
+<!--蓝牙权限，4个 6.0之后蓝牙还需要地理位置权限 -->
+<uses-permission android:name="android.permission.BLUETOOTH" />
+<uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+*/
 @SuppressLint("MissingPermission")
 public class YBt implements YBluetoothDeviceConnect {
     private YListener1<byte[]> readListener;

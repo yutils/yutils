@@ -8,6 +8,8 @@ import android.bluetooth.BluetoothGattService;
 import android.content.Context;
 import android.os.Build;
 
+import androidx.annotation.RequiresApi;
+
 import com.yujing.contract.YListener1;
 import com.yujing.contract.YSuccessFailListener;
 import com.yujing.utils.YConvert;
@@ -25,6 +27,14 @@ import static android.bluetooth.BluetoothDevice.TRANSPORT_LE;
  *
  * @author 余静 2020年7月16日17:43:04
  */
+/*
+<!--蓝牙权限，4个 6.0之后蓝牙还需要地理位置权限 -->
+<uses-permission android:name="android.permission.BLUETOOTH" />
+<uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+*/
+@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 public class YBle implements YBluetoothDeviceConnect {
     private static final String TAG = "YBle";
     private BluetoothGatt mBluetoothGatt;
@@ -123,6 +133,7 @@ public class YBle implements YBluetoothDeviceConnect {
             //订阅通知
             mBluetoothGatt.setCharacteristicNotification(mBluetoothGatt
                     .getService(notify_UUID_service).getCharacteristic(notify_UUID_chara), true);
+            mBluetoothGatt.requestMtu(512);
             //连接成功
             if (listener != null)
                 YThread.runOnUiThread(() -> listener.success(bluetoothDevice));
@@ -189,30 +200,32 @@ public class YBle implements YBluetoothDeviceConnect {
     public void send(byte[] data) {
         BluetoothGattService service = mBluetoothGatt.getService(write_UUID_service);
         BluetoothGattCharacteristic charaWrite = service.getCharacteristic(write_UUID_chara);
-        if (data.length > 20) {//数据大于个字节 分批次写入
-            YLog.d(TAG, "writeData: length=" + data.length);
-            int num = 0;
-            if (data.length % 20 != 0) {
-                num = data.length / 20 + 1;
-            } else {
-                num = data.length / 20;
-            }
-            for (int i = 0; i < num; i++) {
-                byte[] tempArr;
-                if (i == num - 1) {
-                    tempArr = new byte[data.length - i * 20];
-                    System.arraycopy(data, i * 20, tempArr, 0, data.length - i * 20);
-                } else {
-                    tempArr = new byte[20];
-                    System.arraycopy(data, i * 20, tempArr, 0, 20);
-                }
-                charaWrite.setValue(tempArr);
-                mBluetoothGatt.writeCharacteristic(charaWrite);
-            }
-        } else {
-            charaWrite.setValue(data);
-            mBluetoothGatt.writeCharacteristic(charaWrite);
-        }
+        //设置mtu可以突破20，最多512-3=509字节
+        charaWrite.setValue(data);
+        mBluetoothGatt.writeCharacteristic(charaWrite);
+
+//        if (data.length > 20) {
+//            charaWrite.setValue(data);
+//            mBluetoothGatt.writeCharacteristic(charaWrite);
+//            int num = data.length % 20 != 0 ? data.length / 20 + 1 : data.length / 20;
+//            new Thread(() -> {
+//                for (int i = 0; i < num; i++) {
+//                    byte[] send;
+//                    if (i == num - 1) {
+//                        send = new byte[data.length - i * 20];
+//                        System.arraycopy(data, i * 20, send, 0, data.length - i * 20);
+//                    } else {
+//                        send = new byte[20];
+//                        System.arraycopy(data, i * 20, send, 0, 20);
+//                    }
+//                    charaWrite.setValue(send);
+//                    mBluetoothGatt.writeCharacteristic(charaWrite);
+//
+//                    YLog.i("发送"+YConvert.bytesToHexString(send));
+//                    SystemClock.sleep(100);
+//                }
+//            }).start();
+//        }
     }
 
     @Override

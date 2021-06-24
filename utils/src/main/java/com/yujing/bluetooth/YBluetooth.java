@@ -25,9 +25,11 @@ import java.util.Set;
  * @author 余静 2020年7月16日17:44:50
  */
 /*
-  需要权限：
-    <uses-permission android:name="android.permission.BLUETOOTH" />
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
+<!--蓝牙权限，4个 6.0之后蓝牙还需要地理位置权限 -->
+<uses-permission android:name="android.permission.BLUETOOTH" />
+<uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
  //用法
   List<BluetoothDevice> connected = new ArrayList<>();
         //实例化，读BT
@@ -162,6 +164,11 @@ public class YBluetooth implements YBluetoothDeviceConnect {
         return this;
     }
 
+    //关闭蓝牙
+    public void close() {
+        if (bluetoothAdapter != null) bluetoothAdapter.disable();
+    }
+
     //获取已配对列表
     public List<BluetoothDevice> getConnected() {
         Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
@@ -184,7 +191,7 @@ public class YBluetooth implements YBluetoothDeviceConnect {
     }
 
     // 创建一个接受 ACTION_FOUND 的 BroadcastReceiver
-    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
+    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             // 当 Discovery 发现了一个设备
@@ -246,9 +253,11 @@ public class YBluetooth implements YBluetoothDeviceConnect {
 
     //关闭蓝牙
     public void onDestroy() {
-        if (context != null) context.unregisterReceiver(mReceiver);
-        //关闭蓝牙
-        if (bluetoothAdapter != null) bluetoothAdapter.disable();
+        if (context != null) {
+            if (mReceiver != null)
+                context.unregisterReceiver(mReceiver);
+            mReceiver = null;
+        }
         if (btAndBle != null) btAndBle.onDestroy();
     }
 }

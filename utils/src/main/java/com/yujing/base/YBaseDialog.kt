@@ -40,6 +40,15 @@ public class TestDialog extends YBaseDialog<TestDialogBinding> {
 
     }
 }
+//或者
+YBaseDialog dialog = new YBaseDialog<DialogInfoBinding>(this, R.layout.dialog_info,
+       android.R.style.Theme_DeviceDefault_Dialog_NoActionBar) {
+    @Override
+    protected void init() {
+
+    }
+};
+dialog.show();
  */
 abstract class YBaseDialog<B : ViewDataBinding> : Dialog {
     constructor(

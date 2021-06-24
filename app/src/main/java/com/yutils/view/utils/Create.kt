@@ -5,7 +5,7 @@ import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import com.yujing.test.App
+import com.yujing.utils.YApp
 import com.yujing.utils.YScreenUtil.dp2px
 
 /**
@@ -20,7 +20,7 @@ class Create {
                 LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
             )
-            val view = Button(App.get())
+            val view = Button(YApp.get())
             view.isAllCaps = false//不自动变大写
             name.let { view.text = it }
             view.layoutParams = layoutParams
@@ -44,7 +44,7 @@ class Create {
                 LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
             )
-            val view = TextView(App.get())
+            val view = TextView(YApp.get())
             value.let { view.text = it }
             view.layoutParams = layoutParams
             return view
@@ -58,18 +58,23 @@ class Create {
         }
 
         //动态创建EditText
-        fun editText(value: String = ""): EditText {
+        fun editText(value: String = "", hint: String = "在这儿输入内容"): EditText {
             val layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
             )
-            val view = EditText(App.get())
+            val view = EditText(YApp.get())
             view.setText(value)
-            view.hint = "在这儿输入内容"
+            view.hint = hint
             view.layoutParams = layoutParams
             return view
         }
-
+        //动态创建EditText
+        fun editText(linearLayout: ViewGroup?, value: String = "",hint: String = "在这儿输入内容"): EditText {
+            val view = editText(value,hint)
+            linearLayout?.addView(view)
+            return view
+        }
 
         //动态创建EditText
         fun editText(linearLayout: ViewGroup?, value: String = ""): EditText {
@@ -82,7 +87,7 @@ class Create {
         fun imageView(bitmap: Bitmap? = null): ImageView {
             val layoutParams = LinearLayout.LayoutParams(dp2px(300f), dp2px(300f))
             layoutParams.gravity = Gravity.CENTER_HORIZONTAL
-            val view = ImageView(App.get())
+            val view = ImageView(YApp.get())
             view.layoutParams = layoutParams
             bitmap.let { view.setImageBitmap(it) }
             return view
