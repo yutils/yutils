@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 按下颜色 -->
+    <item android:state_pressed="true">
+        <shape>
+            <!--solid和gradient不同时存在-->
+            <!-- <solid android:color="@color/trans_Black_2" />-->
+
+            <gradient android:angle="90" android:centerColor="#2000" android:endColor="#0000" android:startColor="#0000" android:type="linear" />
+
+            <stroke android:width="0.5dp" android:color="#1000" />
+
+            <corners android:bottomLeftRadius="2dp" android:bottomRightRadius="20dp" android:topLeftRadius="2dp" android:topRightRadius="2dp" />
+        </shape>
+    </item>
+    <!-- 抬起颜色 -->
+    <item android:state_pressed="false">
+        <shape>
+            <!--   <solid android:color="@color/title" />-->
+            <!--            android:centerColor="@color/blue_light_E"-->
+            <gradient android:angle="90" android:endColor="#017BC9" android:startColor="#01ACED" android:type="linear" />
+
+            <stroke android:width="0.5dp" android:color="#016CED" />
+
+            <corners android:bottomLeftRadius="2dp" android:bottomRightRadius="20dp" android:topLeftRadius="2dp" android:topRightRadius="2dp" />
+        </shape>
+    </item>
+</selector>

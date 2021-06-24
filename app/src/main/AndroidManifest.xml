@@ -32,7 +32,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.BleServerActivity" />
+        <activity android:name=".activity.bluetooth.BleServerActivity" />
+        <activity android:name=".activity.bluetooth.BleClientActivity" />
         <!--安装app-->
         <provider
             android:name="androidx.core.content.FileProvider"

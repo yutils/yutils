@@ -130,7 +130,6 @@ public class BleClient {
         /**
          * 断开或连接 状态发生变化时调用
          * */
-        @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
         @Override
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
             super.onConnectionStateChange(gatt, status, newState);
@@ -166,9 +165,10 @@ public class BleClient {
             initServiceAndChara();
             //订阅通知
             mBluetoothGatt.setCharacteristicNotification(mBluetoothGatt.getService(notify_UUID_service).getCharacteristic(notify_UUID_chara), true);
-            mBluetoothGatt.requestMtu(512);
+            //mBluetoothGatt.requestMtu(512);
             if (connectListener != null)
                 YThread.runOnUiThread(() -> connectListener.value(true));
+            read();
         }
 
         /**
@@ -251,12 +251,11 @@ public class BleClient {
         }
     }
 
-    public void readData() {
+    public void read() {
         BluetoothGattCharacteristic characteristic = mBluetoothGatt.getService(read_UUID_service).getCharacteristic(read_UUID_chara);
         mBluetoothGatt.readCharacteristic(characteristic);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public synchronized void send(byte[] data) {
         BluetoothGattService service = mBluetoothGatt.getService(write_UUID_service);
         BluetoothGattCharacteristic charaWrite = service.getCharacteristic(write_UUID_chara);

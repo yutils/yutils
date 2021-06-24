@@ -1,4 +1,4 @@
-package com.yujing.test.activity
+package com.yujing.test.activity.bluetooth
 
 import android.bluetooth.BluetoothDevice
 import android.graphics.Color
