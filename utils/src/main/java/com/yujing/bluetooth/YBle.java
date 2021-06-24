@@ -131,9 +131,8 @@ public class YBle implements YBluetoothDeviceConnect {
             //获取初始化服务和特征值
             initServiceAndChara();
             //订阅通知
-            mBluetoothGatt.setCharacteristicNotification(mBluetoothGatt
-                    .getService(notify_UUID_service).getCharacteristic(notify_UUID_chara), true);
-            mBluetoothGatt.requestMtu(512);
+            mBluetoothGatt.setCharacteristicNotification(mBluetoothGatt.getService(notify_UUID_service).getCharacteristic(notify_UUID_chara), true);
+//            mBluetoothGatt.requestMtu(512);
             //连接成功
             if (listener != null)
                 YThread.runOnUiThread(() -> listener.success(bluetoothDevice));
@@ -166,8 +165,6 @@ public class YBle implements YBluetoothDeviceConnect {
             super.onCharacteristicChanged(gatt, characteristic);
             YLog.d(TAG, "onCharacteristicChanged()" + Arrays.toString(characteristic.getValue()));
             byte[] data = characteristic.getValue();
-            if (listener != null)
-                YThread.runOnUiThread(() -> listener.success(bluetoothDevice));
             if (readListener != null)
                 YThread.runOnUiThread(() -> readListener.value(data));
         }
@@ -187,7 +184,6 @@ public class YBle implements YBluetoothDeviceConnect {
         } else {
             mBluetoothGatt = bluetoothDevice.connectGatt(context, true, gattCallback);
         }
-
     }
 
     @Override
@@ -196,11 +192,10 @@ public class YBle implements YBluetoothDeviceConnect {
         mBluetoothGatt.readCharacteristic(characteristic);
     }
 
-    @Override
-    public void send(byte[] data) {
+    public synchronized void send(byte[] data) {
         BluetoothGattService service = mBluetoothGatt.getService(write_UUID_service);
         BluetoothGattCharacteristic charaWrite = service.getCharacteristic(write_UUID_chara);
-        //设置mtu可以突破20，最多512-3=509字节
+        YLog.i(TAG, "发送数据长度：" + data.length + "字节");
         charaWrite.setValue(data);
         mBluetoothGatt.writeCharacteristic(charaWrite);
 

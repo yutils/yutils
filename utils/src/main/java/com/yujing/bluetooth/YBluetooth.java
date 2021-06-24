@@ -3,10 +3,15 @@ package com.yujing.bluetooth;
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.le.ScanCallback;
+import android.bluetooth.le.ScanResult;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Build;
+
+import androidx.annotation.RequiresApi;
 
 import com.yujing.contract.YListener1;
 import com.yujing.contract.YListener2;
@@ -30,36 +35,37 @@ import java.util.Set;
 <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
 <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
- //用法
-  List<BluetoothDevice> connected = new ArrayList<>();
-        //实例化，读BT
-        YBluetooth yBtDevice = YBluetooth.getInstance().init(context, YBluetooth.TYPE_BT);
-        yBtDevice.open();
-        //获取设备
-        yBtDevice.search(bluetoothDevice -> {
-            connected.add(bluetoothDevice);
-            //取消搜索
-            yBtDevice.cancelSearch();
-        });
-        //或者连接过的
-        connected.addAll(yBtDevice.getConnected());
-        yBtDevice.setReadListener(bytes -> {
-            //读取到的数据
-        });
-        yBtDevice.connect(connected.get(0), new YSuccessFailListener<BluetoothDevice, String>() {
-            @Override
-            public void success(BluetoothDevice bluetoothDevice) {
-                //连接成功
-            }
+//用法
+List<BluetoothDevice> connected = new ArrayList<>();
+//实例化，读BT
+YBluetooth yBtDevice = YBluetooth.getInstance().init(context, YBluetooth.TYPE_BT);
+yBtDevice.open();
+//获取设备
+yBtDevice.search(bluetoothDevice -> {
+    connected.add(bluetoothDevice);
+    //取消搜索
+    yBtDevice.cancelSearch();
+});
+//或者连接过的
+connected.addAll(yBtDevice.getConnected());
+yBtDevice.setReadListener((device, rssi) -> {
+    //读取到的数据
+});
+yBtDevice.connect(bluetoothDevice, new YSuccessFailListener<BluetoothDevice, String>() {
+    @Override
+    public void success(BluetoothDevice bluetoothDevice) {
+        //连接成功
+    }
 
-            @Override
-            public void fail(String s) {
-                //连接失败
-            }
-        });
-        yBtDevice.send("发送的内容".getBytes());
-        //yBtConnect.onDestroy();
+    @Override
+    public void fail(String s) {
+        //连接失败
+    }
+});
+yBtDevice.send("发送的内容".getBytes());
+//yBtConnect.onDestroy();
  */
+@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 @SuppressLint("MissingPermission")
 public class YBluetooth implements YBluetoothDeviceConnect {
     public static final String TYPE_BT = "TYPE_BT";
@@ -76,7 +82,6 @@ public class YBluetooth implements YBluetoothDeviceConnect {
     YBluetoothDeviceConnect btAndBle;
     //区分是BT还是BLE
     private String type = null;
-
     /**
      * 设置成单例模式
      */
@@ -106,7 +111,7 @@ public class YBluetooth implements YBluetoothDeviceConnect {
     private BluetoothAdapter bluetoothAdapter;
 
     //搜索监听
-    private YListener2<BluetoothDevice, Short> searchListener;
+    private YListener2<BluetoothDevice, Integer> searchListener;
 
     //初始化
     public YBluetooth init(Context context, String type) {
@@ -114,7 +119,7 @@ public class YBluetooth implements YBluetoothDeviceConnect {
         this.type = type;
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (bluetoothAdapter == null) {
-            // show("此设备不支持蓝牙");
+            YLog.e("不支持蓝牙");
             return null;
         }
         if (TYPE_BT.equals(type)) {
@@ -130,17 +135,36 @@ public class YBluetooth implements YBluetoothDeviceConnect {
         return this;
     }
 
+    ScanCallback scanCallback = new ScanCallback() {
+        @Override
+        public void onScanResult(int callbackType, ScanResult result) {
+            super.onScanResult(callbackType, result);
+            BluetoothDevice device = result.getDevice();
+            YLog.i(TAG, "搜索到设备：" + device.getName() + "，" + ((device.getType() == 1) ? "BT" : "BLE") + "，" + device.getAddress() + ",信号强度：" + result.getRssi());
+            searchListener.value(device, result.getRssi());
+        }
+    };
+
     //开始搜索
-    public YBluetooth search(YListener2<BluetoothDevice, Short> listener) {
+    public YBluetooth search(YListener2<BluetoothDevice, Integer> listener) {
         searchListener = listener;
-        bluetoothAdapter.startDiscovery();
+        if (TYPE_BT.equals(type)) {
+            bluetoothAdapter.startDiscovery();
+        } else if (TYPE_BLE.equals(type)) {
+            bluetoothAdapter.getBluetoothLeScanner().startScan(scanCallback);
+        }
         return this;
     }
 
     //停止搜索
     public YBluetooth cancelSearch() {
-        if (bluetoothAdapter.isDiscovering())
-            bluetoothAdapter.cancelDiscovery();
+        if (TYPE_BT.equals(type)) {
+            if (bluetoothAdapter.isDiscovering())
+                bluetoothAdapter.cancelDiscovery();
+        } else if (TYPE_BLE.equals(type)) {
+            //停止
+            bluetoothAdapter.getBluetoothLeScanner().stopScan(scanCallback);
+        }
         return this;
     }
 
@@ -151,7 +175,6 @@ public class YBluetooth implements YBluetoothDeviceConnect {
 
     //打开蓝牙
     public YBluetooth open() {
-        context.registerReceiver(mReceiver, intent);
         //没有打开蓝牙
         if (!bluetoothAdapter.isEnabled()) {
             //提示当前应用请求蓝牙
@@ -175,15 +198,15 @@ public class YBluetooth implements YBluetoothDeviceConnect {
         List<BluetoothDevice> bluetoothDevices = new ArrayList<>();
         if (pairedDevices.size() > 0) {
             for (BluetoothDevice device : pairedDevices) {
-                if (TYPE_BT.equals(type)) {
-                    if (device.getType() == 1)
-                        btAndBle = new YBt(context);
-                } else if (TYPE_BLE.equals(type)) {
-                    if (device.getType() == 2)
-                        btAndBle = new YBle(context);
-                } else {
-                    bluetoothDevices.add(device);
-                }
+//                if (TYPE_BT.equals(type)) {
+//                    if (device.getType() == 1)
+//                        btAndBle = new YBt(context);
+//                } else if (TYPE_BLE.equals(type)) {
+//                    if (device.getType() == 2)
+//                        btAndBle = new YBle(context);
+//                } else {
+//                    bluetoothDevices.add(device);
+//                }
                 YLog.d(TAG, "已配对" + device.getName() + "：" + device.getAddress());
             }
         }
@@ -198,16 +221,16 @@ public class YBluetooth implements YBluetoothDeviceConnect {
             if (BluetoothDevice.ACTION_FOUND.equals(action)) {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 short rssi = (device.getBondState() != BluetoothDevice.BOND_BONDED) ? intent.getExtras().getShort(BluetoothDevice.EXTRA_RSSI) : 0;
-                YLog.i(TAG, "搜索到设备：" + device.getName() + "," + device.getAddress() + ",信号强度：" + rssi);
+                YLog.i(TAG, "搜索到设备：" + device.getName() + "，" + ((device.getType() == 1) ? "BT" : "BLE") + "，" + device.getAddress() + ",信号强度：" + rssi);
                 if (searchListener != null) {
                     if (TYPE_BT.equals(type)) {
                         if (device.getType() == 1)
-                            searchListener.value(device, rssi);
+                            searchListener.value(device, (int) rssi);
                     } else if (TYPE_BLE.equals(type)) {
                         if (device.getType() == 2)
-                            searchListener.value(device, rssi);
+                            searchListener.value(device, (int) rssi);
                     } else {
-                        searchListener.value(device, rssi);
+                        searchListener.value(device, (int) rssi);
                     }
                 }
             } //状态改变时
@@ -237,7 +260,7 @@ public class YBluetooth implements YBluetoothDeviceConnect {
 
     @Override
     public void connect(BluetoothDevice device, YSuccessFailListener<BluetoothDevice, String> listener) {
-        bluetoothAdapter.cancelDiscovery();
+        cancelSearch();
         if (btAndBle != null) btAndBle.connect(device, listener);
     }
 
@@ -253,6 +276,7 @@ public class YBluetooth implements YBluetoothDeviceConnect {
 
     //关闭蓝牙
     public void onDestroy() {
+        cancelSearch();
         if (context != null) {
             if (mReceiver != null)
                 context.unregisterReceiver(mReceiver);
