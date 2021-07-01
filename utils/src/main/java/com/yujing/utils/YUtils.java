@@ -46,6 +46,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import com.yujing.contract.YListener1;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -53,7 +54,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -664,18 +664,56 @@ public class YUtils {
      * ping 一个ip地址
      *
      * @param ip ip
-     * @return 是ping通
+     * @return 是否ping通
      */
     public static boolean ping(String ip) {
+        return ping(ip, null);
+    }
+
+    /**
+     * ping 一个ip地址
+     *
+     * @param ip           ip
+     * @param dataListener ping中间数据
+     * @return 是否ping通
+     */
+    public static boolean ping(String ip, YListener1<String> dataListener) {
         try {
             Process p = Runtime.getRuntime().exec("ping -c 3 -w 100 " + ip);// ping网址3次，每次间隔100毫秒
             //读取ping的内容，可以不加
-            InputStream input = p.getInputStream();
-            BufferedReader in = new BufferedReader(new InputStreamReader(input));
-            String content;
-            while ((content = in.readLine()) != null) {
-                YLog.d("-----ping-----", content);
-            }
+            BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            BufferedReader er = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+            new Thread(() -> {
+                try {
+                    String content;
+                    while ((content = br.readLine()) != null) {
+                        if (dataListener != null) dataListener.value(content);
+                    }
+                } catch (Exception ignored) {
+                } finally {
+                    try {
+                        br.close();
+                        p.getInputStream().close();
+                    } catch (Exception ignored) {
+                    }
+                }
+            }).start();
+
+            new Thread(() -> {
+                try {
+                    String content;
+                    while ((content = er.readLine()) != null) {
+                        if (dataListener != null) dataListener.value(content);
+                    }
+                } catch (Exception ignored) {
+                } finally {
+                    try {
+                        er.close();
+                        p.getErrorStream().close();
+                    } catch (Exception ignored) {
+                    }
+                }
+            }).start();
             // ping的状态
             int status = p.waitFor();
             if (status == 0) return true;
@@ -892,8 +930,9 @@ public class YUtils {
         try {
             Process process = Runtime.getRuntime().exec("su");
             os = new DataOutputStream(process.getOutputStream());
-            for (String item : command)
+            for (String item : command) {
                 os.writeBytes(item + "\n");
+            }
             os.flush();
             return new String(YConvert.inputStreamToBytes(process.getInputStream(), 500));
         } finally {
