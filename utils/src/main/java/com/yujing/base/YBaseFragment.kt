@@ -39,7 +39,11 @@ abstract class YBaseFragment<B : ViewDataBinding>(var layout: Int?) : YFragment(
     lateinit var binding: B
     lateinit var inflater: LayoutInflater
     var container: ViewGroup? = null
-    var isShow = false
+    var isActive = false
+
+    //要判断是否添加，因为实例化后isHidden默认true
+    var isShow: Boolean? = false
+        get() = isAdded && !isHidden
 
     /** onCreateView*/
     override fun onCreateView(
@@ -69,12 +73,12 @@ abstract class YBaseFragment<B : ViewDataBinding>(var layout: Int?) : YFragment(
      */
     open fun show(str: String?) {
         if (str == null) return
-        YToast.show(activity, str)
+        YToast.show(requireActivity(), str)
     }
 
     open fun startActivity(classActivity: Class<*>?) {
         val intent = Intent()
-        intent.setClass(activity!!, classActivity!!)
+        intent.setClass(requireActivity(), classActivity!!)
         startActivity(intent)
     }
 
@@ -84,7 +88,7 @@ abstract class YBaseFragment<B : ViewDataBinding>(var layout: Int?) : YFragment(
 
     open fun startActivityForResult(classActivity: Class<*>?, resultCode: Int) {
         val intent = Intent()
-        intent.setClass(activity!!, classActivity!!)
+        intent.setClass(requireActivity(), classActivity!!)
         startActivityForResult(intent, resultCode)
     }
 
@@ -135,10 +139,12 @@ abstract class YBaseFragment<B : ViewDataBinding>(var layout: Int?) : YFragment(
 
     override fun onResume() {
         super.onResume()
+        isActive = true
     }
 
 
     override fun onStop() {
+        isActive = false
         super.onStop()
     }
 

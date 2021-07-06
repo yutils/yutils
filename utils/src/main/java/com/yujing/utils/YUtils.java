@@ -163,6 +163,15 @@ public class YUtils {
     /**
      * 当前是否是debug模式
      *
+     * @return 是或否
+     */
+    public static boolean isDebug() {
+        return isDebug(YApp.get());
+    }
+
+    /**
+     * 当前是否是debug模式
+     *
      * @param context context
      * @return 是或否
      */
@@ -173,6 +182,15 @@ public class YUtils {
         } catch (Exception ignored) {
         }
         return false;
+    }
+
+    /**
+     * 获取设备的唯一驱动id
+     *
+     * @return id
+     */
+    public static String getAndroidId() {
+        return getAndroidId(YApp.get());
     }
 
     /**
