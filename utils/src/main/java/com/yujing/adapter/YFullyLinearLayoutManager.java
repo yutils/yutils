@@ -37,7 +37,7 @@ class YFullyLinearLayoutManager extends LinearLayoutManager {
         final int widthSize = View.MeasureSpec.getSize(widthSpec);
         final int heightSize = View.MeasureSpec.getSize(heightSpec);
 
-        YLog.i(TAG, "onMeasure called. \nwidthMode " + widthMode + " \nheightMode " + heightSpec + " \nwidthSize " + widthSize + " \nheightSize " + heightSize + " \ngetItemCount() " + getItemCount());
+        //YLog.i(TAG, "onMeasure called. \nwidthMode " + widthMode + " \nheightMode " + heightSpec + " \nwidthSize " + widthSize + " \nheightSize " + heightSize + " \ngetItemCount() " + getItemCount());
 
         int width = 0;
         int height = 0;

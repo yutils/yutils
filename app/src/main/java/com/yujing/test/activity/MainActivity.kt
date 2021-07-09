@@ -1,5 +1,6 @@
 package com.yujing.test.activity
 
+import android.Manifest
 import android.widget.EditText
 import android.widget.TextView
 import androidx.databinding.DataBindingUtil
@@ -24,7 +25,6 @@ class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
     }
 
     override fun init() {
-        YPermissions.requestAll(this)
         binding.wll.removeAllViews()
         binding.ll.removeAllViews()
         textView1 = Create.textView(binding.ll)
@@ -62,6 +62,26 @@ class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
                 var longitude = location.longitude//经度
                 textView1.text = "基站：latitude=${latitude}longitude$longitude"
             }
+        }
+
+        val yPermissions = YPermissions(this)
+        yPermissions.register()
+
+        Create.button(binding.wll, "请求权限") {
+            yPermissions.request(
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.CAMERA
+            ).setSuccessListener {
+                YLog.i("成功$it")
+            }.setFailListener {
+                YLog.i("失败$it")
+            }.setAllSuccessListener {
+                YLog.i("全部成功")
+            }
+        }
+
+        Create.button(binding.wll, "请求全部权限") {
+            YPermissions.requestAll(this)
         }
 
         Create.button(binding.wll, "BLE_Server") {

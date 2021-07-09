@@ -44,7 +44,7 @@ public class BleClientActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        YPermissions.requestAll(this);
+        YPermissions.Companion.requestAll(this);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_ble_client);
         bleClient = new BleClient(this);
         bleClient.setConnectListener(aBoolean -> {

@@ -32,25 +32,12 @@ public class OldActivity extends YBaseActivity<Activity1101Binding> {
 }
  */
 abstract class KBaseActivity<B : ViewDataBinding>(layout: Int?) : YBaseActivity<B>(layout) {
-    lateinit var yPermissions: YPermissions
-
     override fun initAfter() {
         YUtils.setFullScreen(this, true)
         YUtils.setImmersive(this, true)
-        yPermissions = YPermissions(this)
-        yPermissions.requestAll()
-        yPermissions.setSuccessListener { /*请求权限成功*/ }
-        yPermissions.setFailListener { list -> /* show("部分权限未赋予")*/ }
+        //YPermissions.requestAll(this)
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        yPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults)
-    }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)
