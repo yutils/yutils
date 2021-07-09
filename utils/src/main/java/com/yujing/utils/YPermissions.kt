@@ -22,11 +22,10 @@ import java.util.*
 //请求全部Manifest中注册的权限，不判断成功
 YPermissions.requestAll(this)
 
-
 //实例化权限监听
 val yPermissions = YPermissions(this)
 
-//register需要在onAttach() 或 onCreate()调用
+//register需要在onAttach() 或 onCreate() 中调用
 yPermissions.register()
 
 //请求权限
@@ -40,7 +39,6 @@ yPermissions.request(
 }.setAllSuccessListener{
     YLog.i("全部成功")
 }
-
  */
 class YPermissions(val activity: AppCompatActivity) {
     companion object {
@@ -154,6 +152,12 @@ class YPermissions(val activity: AppCompatActivity) {
      */
     fun request(vararg permissions: String):
             YPermissions {
+        if (Build.VERSION.SDK_INT < 23) {
+            for (item in permissions)
+                successListener?.value(item)
+            allSuccessListener?.value()
+            return this
+        }
         //没有权限的列表
         val noPermissions = ArrayList<String>()
         for (item in permissions) {
@@ -164,7 +168,11 @@ class YPermissions(val activity: AppCompatActivity) {
             }
         }
         //列表如果不是空,请求权限
-        if (noPermissions.isNotEmpty()) {
+        if (noPermissions.isEmpty()) {
+            for (item in permissions)
+                successListener?.value(item)
+            allSuccessListener?.value()
+        } else {
             //旧的方法
             //ActivityCompat.requestPermissions(activity!!, toApplyList.toArray(tmpList), 888)
             array = noPermissions.toArray(arrayOfNulls<String>(noPermissions.size))
@@ -173,8 +181,6 @@ class YPermissions(val activity: AppCompatActivity) {
             } else {
                 ActivityCompat.requestPermissions(activity, array!!, 888)
             }
-        } else {
-            allSuccessListener?.value()
         }
         return this
     }

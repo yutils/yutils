@@ -66,7 +66,6 @@ class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
 
         val yPermissions = YPermissions(this)
         yPermissions.register()
-
         Create.button(binding.wll, "请求权限") {
             yPermissions.request(
                 Manifest.permission.WRITE_EXTERNAL_STORAGE,
@@ -77,11 +76,8 @@ class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
                 YLog.i("失败$it")
             }.setAllSuccessListener {
                 YLog.i("全部成功")
+                YPermissions.requestAll(this)
             }
-        }
-
-        Create.button(binding.wll, "请求全部权限") {
-            YPermissions.requestAll(this)
         }
 
         Create.button(binding.wll, "BLE_Server") {
