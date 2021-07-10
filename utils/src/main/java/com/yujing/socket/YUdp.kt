@@ -2,6 +2,7 @@ package com.yujing.socket
 
 import com.yujing.bus.YBusUtil
 import com.yujing.contract.YListener1
+import com.yujing.utils.YBytes
 import com.yujing.utils.YConvert
 import com.yujing.utils.YLog
 import com.yujing.utils.YThread
@@ -129,14 +130,25 @@ class YUdp(var ip: String, var port: Int) {
         datagramSocket?.close()
     }
 
+    fun sendSynchronized(data: ByteArray): ByteArray {
+        onDestroy()
+        return sendSynchronized(
+            data = data,
+            ip = ip,
+            port = port,
+            timeout = soTimeout,
+            readMaxLength = readMaxLength
+        )
+    }
+
     companion object {
         const val defaultTag = "UdpReceiveDefaultTagTag"
         var showLog = false
 
-        //同步发送
+        //同步发送,udp返回则返回
         fun sendSynchronized(
             data: ByteArray, ip: String, port: Int,
-            timeout: Int = 2000, readMaxLength: Int = 1204
+            timeout: Int = 2000, readMaxLength: Int = 1024
         ): ByteArray {
             //向服务器端发送数据
             // 1.定义服务器的地址、端口号、数据
@@ -161,6 +173,44 @@ class YUdp(var ip: String, var port: Int) {
             // 4.关闭资源
             datagramSocket.close()
             return bytes
+        }
+
+        //同步发送，连续读取指定时间，读取时间够了之后退出
+        fun sendSynchronizedContinuity(
+            data: ByteArray, ip: String, port: Int,
+            timeout: Int = 1000, readMaxLength: Int = 1024
+        ): ByteArray {
+            //向服务器端发送数据
+            // 1.定义服务器的地址、端口号、数据
+            val address = InetAddress.getByName(ip)
+            // 2.创建数据报，包含发送的数据信息
+            val datagramPacketSend = DatagramPacket(data, data.size, address, port)
+            // 3.创建DatagramSocket对象
+            val datagramSocket = DatagramSocket()
+            // 4.向服务器端发送数据报
+            datagramSocket.soTimeout = timeout
+            datagramSocket.send(datagramPacketSend)
+            val yBytes = YBytes()
+            val overdueTime = System.currentTimeMillis() + timeout
+            while (System.currentTimeMillis() < overdueTime) {
+                try {
+                    // 接收服务器端响应的数据
+                    // 1.创建数据报，用于接收服务器端响应的数据
+                    val tempRead = ByteArray(readMaxLength)
+                    val datagramPacketRead = DatagramPacket(tempRead, tempRead.size)
+                    // 2.接收服务器响应的数据
+                    datagramSocket.soTimeout = timeout
+                    datagramSocket.receive(datagramPacketRead)
+                    //3.取出数据
+                    val bytes = ByteArray(datagramPacketRead.length)
+                    System.arraycopy(tempRead, 0, bytes, 0, datagramPacketRead.length)
+                    yBytes.addByte(bytes)
+                } catch (ignore: Exception) {
+                }
+            }
+            // 4.关闭资源
+            datagramSocket.close()
+            return yBytes.bytes
         }
     }
 }
