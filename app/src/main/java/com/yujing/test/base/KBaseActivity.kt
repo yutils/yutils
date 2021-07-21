@@ -42,8 +42,8 @@ abstract class KBaseActivity<B : ViewDataBinding>(layout: Int?) : YBaseActivity<
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)
         if (hasFocus) {
-            YUtils.setFullScreen(this, true)
-            YUtils.setImmersive(this, true)
+//            YUtils.setFullScreen(this, true)
+//            YUtils.setImmersive(this, true)
         }
     }
 

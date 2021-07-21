@@ -14,6 +14,7 @@ import com.yujing.test.databinding.ActivityAllTestBinding
 import com.yujing.utils.YGps
 import com.yujing.utils.YLog
 import com.yujing.utils.YPermissions
+import com.yujing.utils.YScreenUtil
 import com.yutils.view.utils.Create
 
 class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {

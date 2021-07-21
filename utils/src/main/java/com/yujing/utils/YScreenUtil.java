@@ -14,8 +14,6 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
-import java.util.Objects;
-
 /**
  * 屏幕工具类，涉及到屏幕宽度、高度、密度比、(像素、dp、sp)之间的转换等。
  *
@@ -23,6 +21,7 @@ import java.util.Objects;
  */
 @SuppressWarnings("unused")
 public class YScreenUtil {
+
     /**
      * 设置成横屏
      *
@@ -106,7 +105,20 @@ public class YScreenUtil {
     }
 
     /**
+     * 设置屏幕变暗
+     *
+     * @param activity activity
+     * @param alpha    0.0-1.0 ，0.0为黑 1.0为亮
+     */
+    public static void setAlpha(Activity activity, float alpha) {
+        WindowManager.LayoutParams lp = activity.getWindow().getAttributes();
+        lp.alpha = alpha;
+        activity.getWindow().setAttributes(lp);
+    }
+
+    /**
      * 获取屏幕最小宽度
+     *
      * @param context context
      * @return 应该是dp
      */
@@ -115,7 +127,7 @@ public class YScreenUtil {
     }
 
     /**
-     * 获取屏幕宽度，单位为px
+     * 获取屏幕宽度（物理），单位为px
      *
      * @param context 应用程序上下文
      * @return 屏幕宽度，单位px
@@ -125,13 +137,37 @@ public class YScreenUtil {
     }
 
     /**
-     * 获取屏幕高度，单位为px
+     * 获取屏幕高度（物理），单位为px
      *
      * @param context 应用程序上下文
      * @return 屏幕高度，单位px
      */
     public static int getScreenHeight(Context context) {
         return getDisplayMetrics(context).heightPixels;
+    }
+
+    /**
+     * 获取当前应用屏幕宽度
+     *
+     * @param activity 页面
+     * @return 宽度
+     */
+    public static int getScreenWidthCurrent(Activity activity) {
+        DisplayMetrics dm = (new DisplayMetrics());
+        activity.getWindow().getWindowManager().getDefaultDisplay().getMetrics(dm);
+        return dm.widthPixels;
+    }
+
+    /**
+     * 获取当前应用屏幕高度
+     *
+     * @param activity 页面
+     * @return 宽度
+     */
+    public static int getScreenHeightCurrent(Activity activity) {
+        DisplayMetrics dm = new DisplayMetrics();
+        activity.getWindow().getWindowManager().getDefaultDisplay().getMetrics(dm);
+        return dm.heightPixels;
     }
 
     /**
@@ -231,31 +267,7 @@ public class YScreenUtil {
     }
 
     /**
-     * 获取屏幕宽度
-     *
-     * @param activity 页面
-     * @return 宽度
-     */
-    public static int getWidthPixels(Activity activity) {
-        DisplayMetrics dm = (new DisplayMetrics());
-        activity.getWindow().getWindowManager().getDefaultDisplay().getMetrics(dm);
-        return dm.widthPixels;
-    }
-
-    /**
-     * 获取屏幕高度
-     *
-     * @param activity 页面
-     * @return 宽度
-     */
-    public static int getHeightPixels(Activity activity) {
-        DisplayMetrics dm = new DisplayMetrics();
-        activity.getWindow().getWindowManager().getDefaultDisplay().getMetrics(dm);
-        return dm.heightPixels;
-    }
-
-    /**
-     * 获得状态栏的高度
+     * 获得状态栏（顶部）的高度
      *
      * @param context context
      * @return 高度
@@ -263,14 +275,35 @@ public class YScreenUtil {
     public static int getStatusHeight(Context context) {
         int statusHeight = -1;
         try {
-            @SuppressLint("PrivateApi") Class<?> clazz = Class.forName("com.android.internal.R$dimen");
-            Object object = clazz.newInstance();
-            int height = Integer.parseInt(Objects.requireNonNull(clazz.getField("status_bar_height").get(object)).toString());
-            statusHeight = context.getResources().getDimensionPixelSize(height);
+            Resources resources = context.getResources();
+            int resourceId = resources.getIdentifier("status_bar_height", "dimen", "android");
+            if (resourceId > 0) {
+                statusHeight = resources.getDimensionPixelSize(resourceId);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
         return statusHeight;
+    }
+
+    /**
+     * 获得导航栏（底部）的高度
+     *
+     * @param context context
+     * @return 高度
+     */
+    public static int getNavigationHeight(Context context) {
+        int navigationBarHeight = -1;
+        try {
+            Resources resources = context.getResources();
+            int resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android");
+            if (resourceId > 0) {
+                navigationBarHeight = resources.getDimensionPixelSize(resourceId);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return navigationBarHeight;
     }
 
     /**
