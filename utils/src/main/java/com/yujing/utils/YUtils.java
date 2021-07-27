@@ -354,7 +354,7 @@ public class YUtils {
                 parcel = Parcel.obtain();
                 parcel.writeParcelable((Parcelable) date, 0);
                 parcel.setDataPosition(0);
-                return (T) parcel.readParcelable(date.getClass().getClassLoader());
+                return parcel.readParcelable(date.getClass().getClassLoader());
             } catch (Exception e) {
                 YLog.e("copyObject", "复制错误", e);
             } finally {
@@ -933,7 +933,7 @@ public class YUtils {
      *
      * @return 是否成功
      */
-    public static String shell(String command) throws IOException {
+    public static String shell(String command) throws Exception {
         Process process = Runtime.getRuntime().exec(command);
         return new String(YConvert.inputStreamToBytes(process.getInputStream(), 500));
     }
@@ -943,7 +943,7 @@ public class YUtils {
      *
      * @return 是否成功
      */
-    public static String shellRoot(String... command) throws IOException {
+    public static String shellRoot(String... command) throws Exception {
         DataOutputStream os = null;
         try {
             Process process = Runtime.getRuntime().exec("su");

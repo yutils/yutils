@@ -30,7 +30,6 @@ import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.TimeoutException;
 
 /**
  * 各种类型转换
@@ -227,6 +226,7 @@ public class YConvert {
         }
         return (byte) re;
     }
+
     /**
      * 将list转化为数组
      *
@@ -426,8 +426,9 @@ public class YConvert {
 
     /**
      * 低效，而且会内存泄露
-     * @param nv21 图片
-     * @param width 宽
+     *
+     * @param nv21   图片
+     * @param width  宽
      * @param height 高
      * @return Bitmap
      */
@@ -445,11 +446,13 @@ public class YConvert {
         }
         return bitmap;
     }
+
     /**
      * 高效
-     * @param nv21 图片
-     * @param width 宽
-     * @param height 高
+     *
+     * @param nv21    图片
+     * @param width   宽
+     * @param height  高
      * @param context context
      * @return Bitmap
      */
@@ -605,7 +608,7 @@ public class YConvert {
      * @return byte[]
      * @throws IOException IOException
      */
-    public static byte[] inputStream2Bytes(InputStream inputStream) throws IOException {
+    public static byte[] inputStream2Bytes(InputStream inputStream) throws Exception {
         ByteArrayOutputStream bs = new ByteArrayOutputStream();
         byte[] buffer = new byte[1024];
         int len;
@@ -622,7 +625,7 @@ public class YConvert {
      * @return String
      * @throws IOException IOException
      */
-    public static String inputStream2String(InputStream inputStream) throws IOException {
+    public static String inputStream2String(InputStream inputStream) throws Exception {
         return new String(inputStream2Bytes(inputStream), StandardCharsets.UTF_8);
     }
 
@@ -634,15 +637,8 @@ public class YConvert {
      * @return byte[]
      * @throws IOException IOException
      */
-    public static byte[] inputStreamToBytes(InputStream inputStream) throws IOException {
-        int count = 0;
-        while (count == 0) count = inputStream.available();        //获取真正长度
-        byte[] bytes = new byte[count];
-        // 一定要读取count个数据，如果inputStream.read(bytes);可能读不完
-        int readCount = 0; // 已经成功读取的字节的个数
-        while (readCount < count)
-            readCount += inputStream.read(bytes, readCount, count - readCount);
-        return bytes;
+    public static byte[] inputStreamToBytes(InputStream inputStream) throws Exception {
+        return YReadInputStream.readOnce(inputStream);
     }
 
     /**
@@ -653,19 +649,8 @@ public class YConvert {
      * @return byte[]
      * @throws IOException IOException
      */
-    public static byte[] inputStreamToBytes(InputStream inputStream, long timeOut) throws IOException {
-        long startTime = System.currentTimeMillis();
-        int count = 0;
-        while (count == 0 && System.currentTimeMillis() - startTime < timeOut)
-            count = inputStream.available();        //获取真正长度
-        if (System.currentTimeMillis() - startTime >= timeOut)
-            new TimeoutException("读取超时").printStackTrace();
-        byte[] bytes = new byte[count];
-        // 一定要读取count个数据，如果inputStream.read(bytes);可能读不完
-        int readCount = 0; // 已经成功读取的字节的个数
-        while (readCount < count)
-            readCount += inputStream.read(bytes, readCount, count - readCount);
-        return bytes;
+    public static byte[] inputStreamToBytes(InputStream inputStream, long timeOut) throws Exception {
+        return YReadInputStream.readOnce(inputStream, timeOut);
     }
 
     /**
