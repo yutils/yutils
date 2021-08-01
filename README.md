@@ -59,7 +59,7 @@ allprojects {
 ```
 dependencies {
      //更新地址  https://github.com/yutils/yutils 建议过几天访问看下有没有新版本
-     implementation 'com.github.yutils:yutils:1.6.2'
+     implementation 'com.kotlinx:yutils:1.6.2'
 }
 ```
 
