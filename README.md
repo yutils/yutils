@@ -4,37 +4,15 @@
 采用java8.0，安卓11.0，API30，androidx。
 
 安卓各种工具详见doc文档。  
-主要包含：  
-各种基类  
-蓝牙控制  
-自定义总线  
-加密解密  
-SQLite数据库  
-Socket保持长连接  
-UDP通信  
-图片处理  
-日期处理  
-弹出自定义对话框  
-GSP获取  
-计时器  
-通知栏下载  
-处理队列  
-延迟操作  
-防粘连操作  
-文件处理保存  
-对象保存  
-线程池处理  
-单例toast  
-APP版本更新  
-快速拍照、选择相册、截图  
-webView封装  
-相机封装  
-多媒体播放封装  
-弹窗popupWindow快速实现  
-各种类型转换  
-APP启动，重启，shell执行  
-等...  
+主要包含：各种基类，蓝牙控制，自定义总线，加密解密，SQLite数据库，Socket保持长连接，UDP通信，图片处理，日期处理，弹出自定义对话框，GSP获取，计时器，通知栏下载，处理队列，延迟操作，防粘连操作，文件处理保存，对象保存，线程池处理，单例toast，APP版本更新，快速拍照、选择相册、截图，webView封装，相机封装，多媒体播放封装，弹窗popupWindow快速实现，各种类型转换，APP启动，重启，shell执行，等...  
 不断完善中。
+
+[![platform](https://img.shields.io/badge/platform-Android-lightgrey.svg)](https://developer.android.google.cn/studio/index.html)
+![Gradle](https://img.shields.io/badge/Gradle-7.1-brightgreen.svg)
+[![last commit](https://img.shields.io/github/last-commit/yutils/yutils.svg)](https://github.com/yutils/yutils/commits/master)
+![repo size](https://img.shields.io/github/repo-size/yutils/yutils.svg)
+![android studio](https://img.shields.io/badge/android%20studio-2020.3.1-green.svg)
+![maven](https://img.shields.io/badge/maven-search-green.svg)](https://search.maven.org/artifact/com.kotlinx/yserialport)
 
 ## 已经从jitpack.io仓库移动至maven中央仓库
 
@@ -51,7 +29,7 @@ allprojects {
 }
 ```
 
-2. 子module添加依赖，当前最新版：————> 1.6.2
+2. [子module添加依赖，当前最新版：————> 1.6.2  ![最新版](https://img.shields.io/badge/%E6%9C%80%E6%96%B0%E7%89%88-1.6.2-green.svg)](https://search.maven.org/artifact/com.kotlinx/yserialport)
 
 ```
 dependencies {
