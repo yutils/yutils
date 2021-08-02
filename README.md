@@ -29,7 +29,7 @@ allprojects {
 }
 ```
 
-2. [子module添加依赖，当前最新版：————> 1.6.2  ![最新版](https://img.shields.io/badge/%E6%9C%80%E6%96%B0%E7%89%88-1.6.2-green.svg)](https://search.maven.org/artifact/com.kotlinx/yutils)
+2. [子module添加依赖，当前最新版：————> 1.6.2　　　　![最新版](https://img.shields.io/badge/%E6%9C%80%E6%96%B0%E7%89%88-1.6.2-green.svg)](https://search.maven.org/artifact/com.kotlinx/yutils)
 
 ```
 dependencies {
