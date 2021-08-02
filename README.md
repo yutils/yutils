@@ -12,7 +12,7 @@
 [![last commit](https://img.shields.io/github/last-commit/yutils/yutils.svg)](https://github.com/yutils/yutils/commits/master)
 ![repo size](https://img.shields.io/github/repo-size/yutils/yutils.svg)
 ![android studio](https://img.shields.io/badge/android%20studio-2020.3.1-green.svg)
-![maven](https://img.shields.io/badge/maven-search-green.svg)](https://search.maven.org/artifact/com.kotlinx/yserialport)
+[![maven](https://img.shields.io/badge/maven-address-green.svg)](https://search.maven.org/artifact/com.kotlinx/yutils)
 
 ## 已经从jitpack.io仓库移动至maven中央仓库
 
@@ -29,7 +29,7 @@ allprojects {
 }
 ```
 
-2. [子module添加依赖，当前最新版：————> 1.6.2  ![最新版](https://img.shields.io/badge/%E6%9C%80%E6%96%B0%E7%89%88-1.6.2-green.svg)](https://search.maven.org/artifact/com.kotlinx/yserialport)
+2. [子module添加依赖，当前最新版：————> 1.6.2  ![最新版](https://img.shields.io/badge/%E6%9C%80%E6%96%B0%E7%89%88-1.6.2-green.svg)](https://search.maven.org/artifact/com.kotlinx/yutils)
 
 ```
 dependencies {
