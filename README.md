@@ -3,7 +3,7 @@
 工具类
 采用java8.0，安卓11.0，API30，androidx。
 
-安卓各种工具详见doc文档。  
+安卓各种工具详见...源码。  
 主要包含：各种基类，蓝牙控制，自定义总线，加密解密，SQLite数据库，Socket保持长连接，UDP通信，图片处理，日期处理，弹出自定义对话框，GSP获取，计时器，通知栏下载，处理队列，延迟操作，防粘连操作，文件处理保存，对象保存，线程池处理，单例toast，APP版本更新，快速拍照、选择相册、截图，webView封装，相机封装，多媒体播放封装，弹窗popupWindow快速实现，各种类型转换，APP启动，重启，shell执行，等...  
 不断完善中。
 
@@ -16,7 +16,7 @@
 
 ## 已经从jitpack.io仓库移动至maven中央仓库
 
-**[releases里面有JAR包。点击前往](https://github.com/yutils/yutils/releases)**
+**[releases里面有AAR包。点击前往](https://github.com/yutils/yutils/releases)**
 
 ## Gradle 引用
 
