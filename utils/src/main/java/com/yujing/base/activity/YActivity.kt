@@ -9,6 +9,7 @@ import com.yujing.base.contract.YLifeEvent
 import com.yujing.base.contract.YLifeEventListener
 import com.yujing.contract.YReturn2
 import com.yujing.contract.YReturn3
+import java.lang.Deprecated
 
 /**
  * 监听activity事件
@@ -45,6 +46,7 @@ abstract class YActivity : AppCompatActivity() {
         for (item in yEventListeners) item.event(YLifeEvent.onCreate, null)
     }
 
+    @Deprecated
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         for (item in yEventListeners) item.event(

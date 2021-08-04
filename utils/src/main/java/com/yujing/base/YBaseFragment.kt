@@ -103,12 +103,12 @@ abstract class YBaseFragment<B : ViewDataBinding>(var layout: Int?) : YFragment(
     }
 
     override fun onStop() {
-        isActive = false
         super.onStop()
+        isActive = false
     }
 
     override fun onDestroy() {
-        YBusUtil.onDestroy(this)
         super.onDestroy()
+        YBusUtil.onDestroy(this)
     }
 }

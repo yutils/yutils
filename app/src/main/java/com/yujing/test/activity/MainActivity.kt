@@ -106,12 +106,4 @@ class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
         YLog.i("收到：$message")
         textView1.text = textView1.text.toString() + "收到1:$message \n"
     }
-
-    override fun onDestroy() {
-        super.onDestroy()
-    }
-
-    override fun onStart() {
-        super.onStart()
-    }
 }

@@ -1,15 +1,16 @@
 package com.yujing.base
 
 import android.content.Intent
-import android.content.res.Configuration
 import android.os.Bundle
-import android.view.KeyEvent
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import com.yujing.base.activity.YActivity
 import com.yujing.bus.YBusUtil
+import com.yujing.utils.YApp
 import com.yujing.utils.YShow
 import com.yujing.utils.YToast
+import com.yujing.utils.YTts
+import java.lang.Deprecated
 
 /**
  * 基础activity
@@ -80,6 +81,7 @@ abstract class YBaseActivity<B : ViewDataBinding>(var layout: Int?) : YActivity(
     /**
      * 跳转
      */
+    @Deprecated
     open fun startActivity(classActivity: Class<*>?, resultCode: Int) {
         isActive = false
         startActivityForResult(classActivity, resultCode)
@@ -88,6 +90,7 @@ abstract class YBaseActivity<B : ViewDataBinding>(var layout: Int?) : YActivity(
     /**
      * 跳转
      */
+    @Deprecated
     open fun startActivityForResult(classActivity: Class<*>?, resultCode: Int) {
         isActive = false
         val intent = Intent(this, classActivity!!)
@@ -102,9 +105,25 @@ abstract class YBaseActivity<B : ViewDataBinding>(var layout: Int?) : YActivity(
         YToast.showLong(applicationContext, str)
     }
 
+    /**
+     * 播放语音
+     */
+    open fun speak(str: String?) {
+        if (str == null) return
+        YTts.getInstance(YApp.get()).speak(str)
+    }
+
+    /**
+     * 显示toast并播放语音
+     */
+    open fun showSpeak(str: String?) {
+        show(str)
+        speak(str)
+    }
+
     override fun onStop() {
-        isActive = false
         super.onStop()
+        isActive = false
     }
 
     override fun onResume() {
@@ -118,7 +137,7 @@ abstract class YBaseActivity<B : ViewDataBinding>(var layout: Int?) : YActivity(
     }
 
     override fun onDestroy() {
-        YBusUtil.onDestroy(this)
         super.onDestroy()
+        YBusUtil.onDestroy(this)
     }
 }
