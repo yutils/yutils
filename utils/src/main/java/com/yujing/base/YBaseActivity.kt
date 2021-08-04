@@ -102,53 +102,6 @@ abstract class YBaseActivity<B : ViewDataBinding>(var layout: Int?) : YActivity(
         YToast.showLong(applicationContext, str)
     }
 
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-    }
-
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        super.onConfigurationChanged(newConfig)
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(
-            requestCode,
-            permissions,
-            grantResults
-        )
-    }
-
-    override fun onNewIntent(intent: Intent?) {
-        super.onNewIntent(intent)
-    }
-
-    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-        //这儿返回值，不作判断，无效，因为可能多个地方调用onKeyDown，无法判断应返回内容
-        return super.onKeyDown(keyCode, event)
-    }
-
-    override fun onStart() {
-        super.onStart()
-    }
-
-
-    override fun onPause() {
-        super.onPause()
-    }
-
-    override fun onRestart() {
-        super.onRestart()
-    }
-
-    override fun onBackPressed() {
-        super.onBackPressed()
-    }
-
     override fun onStop() {
         isActive = false
         super.onStop()

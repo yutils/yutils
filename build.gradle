@@ -1,12 +1,6 @@
 buildscript {
     ext.kotlin_version = "1.5.21"
     repositories {
-        maven { url 'https://kotlinx.com/repository/' }
-//        maven { url 'https://maven.aliyun.com/repository/central' }
-//        maven { url 'https://maven.aliyun.com/repository/public' }
-//        maven { url 'https://maven.aliyun.com/repository/google' }
-//        maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
-        maven { url 'https://jitpack.io' }
         mavenCentral()
         google()
     }
@@ -18,12 +12,6 @@ buildscript {
 
 allprojects {
     repositories {
-        maven { url 'https://kotlinx.com/repository/' }
-//        maven { url 'https://maven.aliyun.com/repository/central' }
-//        maven { url 'https://maven.aliyun.com/repository/public' }
-//        maven { url 'https://maven.aliyun.com/repository/google' }
-//        maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
-        maven { url 'https://jitpack.io' }
         mavenCentral()
         google()
     }

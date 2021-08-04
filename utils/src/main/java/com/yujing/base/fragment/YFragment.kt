@@ -5,12 +5,14 @@ import android.content.res.Configuration
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
-import com.yujing.base.contract.YLifeEventInterface
+import com.yujing.base.contract.YLifeEvent
 import com.yujing.base.contract.YLifeEventListener
+import com.yujing.contract.YReturn2
+import com.yujing.contract.YReturn3
 
 /**
  * 监听YFragment事件
- * @author 余静 2020年12月21日10:57:20
+ * @author 余静 2021年8月4日16:31:50
  */
 /*用法
 val base = fragment as YFragment
@@ -21,27 +23,38 @@ base.setEventListener { event, obj ->
         val result = obj as YReturn3<Int, Int, Intent>
     }
 }
-
-activity.lifecycle().subscribe { life ->
-    YLog.d("当前生命周期状态：$life")
-}
  */
-abstract class YFragment : Fragment(), YLifeEventInterface {
-    override var yEventListeners: MutableList<YLifeEventListener> = ArrayList()
+abstract class YFragment : Fragment() {
+    var yEventListeners: MutableList<YLifeEventListener> = ArrayList()
+
+    fun setEventListener(yEventListener: YLifeEventListener) {
+        this.yEventListeners.add(yEventListener)
+    }
+
+    fun removeEventListener(yEventListener: YLifeEventListener) {
+        yEventListeners.remove(yEventListener)
+    }
+
+    fun clearEventListener() {
+        yEventListeners.clear()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super<Fragment>.onCreate(savedInstanceState)
-        super<YLifeEventInterface>.onCreate(savedInstanceState)
+        super.onCreate(savedInstanceState)
+        for (item in yEventListeners) item.event(YLifeEvent.onCreate, null)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super<Fragment>.onActivityResult(requestCode, resultCode, data)
-        super<YLifeEventInterface>.onActivityResult(requestCode, resultCode, data)
+        super.onActivityResult(requestCode, resultCode, data)
+        for (item in yEventListeners) item.event(
+            YLifeEvent.onActivityResult,
+            YReturn3(requestCode, resultCode, data)
+        )
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
-        super<Fragment>.onConfigurationChanged(newConfig)
-        super<YLifeEventInterface>.onConfigurationChanged(newConfig)
+        super.onConfigurationChanged(newConfig)
+        for (item in yEventListeners) item.event(YLifeEvent.onConfigurationChanged, newConfig)
     }
 
     override fun onRequestPermissionsResult(
@@ -49,57 +62,64 @@ abstract class YFragment : Fragment(), YLifeEventInterface {
         permissions: Array<String>,
         grantResults: IntArray
     ) {
-        super<Fragment>.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        super<YLifeEventInterface>.onRequestPermissionsResult(
-            requestCode,
-            permissions,
-            grantResults
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        for (item in yEventListeners) item.event(
+            YLifeEvent.onRequestPermissionsResult,
+            YReturn3(requestCode, permissions, grantResults)
         )
     }
 
     override fun onHiddenChanged(hidden: Boolean) {
-        super<Fragment>.onHiddenChanged(hidden)
-        super<YLifeEventInterface>.onHiddenChanged(hidden)
+        super.onHiddenChanged(hidden)
+        for (item in yEventListeners) item.event(
+            YLifeEvent.onHiddenChanged,
+            hidden
+        )
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super<Fragment>.onViewCreated(view, savedInstanceState)
-        super<YLifeEventInterface>.onViewCreated(view, savedInstanceState)
-    }
-
-    override fun onPause() {
-        super<Fragment>.onPause()
-        super<YLifeEventInterface>.onPause()
+        super.onViewCreated(view, savedInstanceState)
+        for (item in yEventListeners) item.event(
+            YLifeEvent.onViewCreated,
+            YReturn2(view, savedInstanceState)
+        )
     }
 
     override fun onDestroyView() {
-        super<Fragment>.onDestroyView()
-        super<YLifeEventInterface>.onDestroyView()
+        super.onDestroyView()
+        for (item in yEventListeners) item.event(YLifeEvent.onDestroyView, null)
     }
 
     override fun onDetach() {
-        super<Fragment>.onDetach()
-        super<YLifeEventInterface>.onDetach()
+        super.onDetach()
+        for (item in yEventListeners) item.event(YLifeEvent.onDetach, null)
     }
 
     override fun onStart() {
-        super<Fragment>.onStart()
-        super<YLifeEventInterface>.onStart()
+        super.onStart()
+        for (item in yEventListeners) item.event(YLifeEvent.onStart, null)
     }
 
     override fun onResume() {
-        super<Fragment>.onResume()
-        super<YLifeEventInterface>.onResume()
+        super.onResume()
+        for (item in yEventListeners) item.event(YLifeEvent.onResume, null)
     }
 
+    override fun onPause() {
+        super.onPause()
+        for (item in yEventListeners) item.event(YLifeEvent.onPause, null)
+
+    }
 
     override fun onStop() {
-        super<Fragment>.onStop()
-        super<YLifeEventInterface>.onStop()
+        super.onStop()
+        for (item in yEventListeners) item.event(YLifeEvent.onStop, null)
+
     }
 
     override fun onDestroy() {
-        super<Fragment>.onDestroy()
-        super<YLifeEventInterface>.onDestroy()
+        super.onDestroy()
+        for (item in yEventListeners) item.event(YLifeEvent.onDestroy, null)
+        clearEventListener()
     }
 }

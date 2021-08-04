@@ -5,12 +5,14 @@ import android.content.res.Configuration
 import android.os.Bundle
 import android.view.KeyEvent
 import androidx.appcompat.app.AppCompatActivity
-import com.yujing.base.contract.YLifeEventInterface
+import com.yujing.base.contract.YLifeEvent
 import com.yujing.base.contract.YLifeEventListener
+import com.yujing.contract.YReturn2
+import com.yujing.contract.YReturn3
 
 /**
  * 监听activity事件
- * @author 余静 2020年12月21日12:56:03
+ * @author 余静 2021年8月4日16:31:55
  */
 /*
 用法：
@@ -22,27 +24,38 @@ base.setEventListener { event, obj ->
         val result = obj as YReturn3<Int, Int, Intent>
     }
 }
-
-activity.lifecycle().subscribe { life ->
-    YLog.d("当前生命周期状态：$life")
-}
  */
-abstract class YActivity : AppCompatActivity(), YLifeEventInterface {
-    override var yEventListeners: MutableList<YLifeEventListener> = ArrayList()
+abstract class YActivity : AppCompatActivity() {
+    var yEventListeners: MutableList<YLifeEventListener> = ArrayList()
+
+    fun setEventListener(yEventListener: YLifeEventListener) {
+        this.yEventListeners.add(yEventListener)
+    }
+
+    fun removeEventListener(yEventListener: YLifeEventListener) {
+        yEventListeners.remove(yEventListener)
+    }
+
+    fun clearEventListener() {
+        yEventListeners.clear()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super<AppCompatActivity>.onCreate(savedInstanceState)
-        super<YLifeEventInterface>.onCreate(savedInstanceState)
+        super.onCreate(savedInstanceState)
+        for (item in yEventListeners) item.event(YLifeEvent.onCreate, null)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super<AppCompatActivity>.onActivityResult(requestCode, resultCode, data)
-        super<YLifeEventInterface>.onActivityResult(requestCode, resultCode, data)
+        super.onActivityResult(requestCode, resultCode, data)
+        for (item in yEventListeners) item.event(
+            YLifeEvent.onActivityResult,
+            YReturn3(requestCode, resultCode, data)
+        )
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
-        super<AppCompatActivity>.onConfigurationChanged(newConfig)
-        super<YLifeEventInterface>.onConfigurationChanged(newConfig)
+        super.onConfigurationChanged(newConfig)
+        for (item in yEventListeners) item.event(YLifeEvent.onConfigurationChanged, newConfig)
     }
 
     override fun onRequestPermissionsResult(
@@ -50,67 +63,62 @@ abstract class YActivity : AppCompatActivity(), YLifeEventInterface {
         permissions: Array<String>,
         grantResults: IntArray
     ) {
-        super<AppCompatActivity>.onRequestPermissionsResult(
-            requestCode,
-            permissions,
-            grantResults
-        )
-        super<YLifeEventInterface>.onRequestPermissionsResult(
-            requestCode,
-            permissions,
-            grantResults
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        for (item in yEventListeners) item.event(
+            YLifeEvent.onRequestPermissionsResult,
+            YReturn3(requestCode, permissions, grantResults)
         )
     }
 
     override fun onNewIntent(intent: Intent?) {
-        super<AppCompatActivity>.onNewIntent(intent)
-        super<YLifeEventInterface>.onNewIntent(intent)
+        super.onNewIntent(intent)
+        for (item in yEventListeners) item.event(YLifeEvent.onNewIntent, null)
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
         //这儿返回值，不作判断，无效，因为可能多个地方调用onKeyDown，无法判断应返回内容
-        super<YLifeEventInterface>.onKeyDown(keyCode, event)
-        return super<AppCompatActivity>.onKeyDown(keyCode, event)
+        for (item in yEventListeners) item.event(YLifeEvent.onKeyDown, YReturn2(keyCode, event))
+        return super.onKeyDown(keyCode, event)
     }
 
     override fun onStart() {
-        super<AppCompatActivity>.onStart()
-        super<YLifeEventInterface>.onStart()
+        super.onStart()
+        for (item in yEventListeners) item.event(YLifeEvent.onStart, null)
     }
 
     override fun onResume() {
-        super<AppCompatActivity>.onResume()
-        super<YLifeEventInterface>.onResume()
+        super.onResume()
+        for (item in yEventListeners) item.event(YLifeEvent.onResume, null)
     }
 
     override fun onPause() {
-        super<AppCompatActivity>.onPause()
-        super<YLifeEventInterface>.onPause()
+        super.onPause()
+        for (item in yEventListeners) item.event(YLifeEvent.onPause, null)
     }
 
     override fun onRestart() {
-        super<AppCompatActivity>.onRestart()
-        super<YLifeEventInterface>.onRestart()
+        super.onRestart()
+        for (item in yEventListeners) item.event(YLifeEvent.onRestart, null)
     }
 
     override fun onStop() {
-        super<AppCompatActivity>.onStop()
-        super<YLifeEventInterface>.onStop()
+        super.onStop()
+        for (item in yEventListeners) item.event(YLifeEvent.onStop, null)
     }
 
     override fun onBackPressed() {
-        super<AppCompatActivity>.onBackPressed()
-        super<YLifeEventInterface>.onBackPressed()
+        super.onBackPressed()
+        for (item in yEventListeners) item.event(YLifeEvent.onBackPressed, null)
     }
 
     override fun finish() {
-        super<AppCompatActivity>.finish()
-        super<YLifeEventInterface>.finish()
+        super.finish()
+        for (item in yEventListeners) item.event(YLifeEvent.finish, null)
     }
 
     override fun onDestroy() {
-        super<AppCompatActivity>.onDestroy()
-        super<YLifeEventInterface>.onDestroy()
+        super.onDestroy()
+        for (item in yEventListeners) item.event(YLifeEvent.onDestroy, null)
         clearEventListener()
     }
 }

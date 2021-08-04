@@ -4,6 +4,8 @@ import android.Manifest
 import android.widget.EditText
 import android.widget.TextView
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.LifecycleObserver
+import com.yujing.base.contract.YLifeEvent
 import com.yujing.bus.YBus
 import com.yujing.bus.YBusUtil
 import com.yujing.test.R
@@ -30,6 +32,15 @@ class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
         binding.ll.removeAllViews()
         textView1 = Create.textView(binding.ll)
         textView2 = Create.textView(binding.ll)
+        //生命周期监听
+        setEventListener { event, obj ->
+            if (event == YLifeEvent.onDestroy) {
+                YLog.d("关闭了")
+            } else if (event == YLifeEvent.onStart) {
+                YLog.d("onStart")
+            }
+        }
+
         Create.button(binding.wll, "退出APP") {
             finish()
         }
@@ -98,5 +109,9 @@ class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
 
     override fun onDestroy() {
         super.onDestroy()
+    }
+
+    override fun onStart() {
+        super.onStart()
     }
 }
