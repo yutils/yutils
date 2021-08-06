@@ -10,7 +10,9 @@ import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import com.yujing.base.fragment.YFragment
 import com.yujing.bus.YBusUtil
+import com.yujing.utils.YApp
 import com.yujing.utils.YToast
+import com.yujing.utils.YTts
 
 /**
  * 基础aFragment
@@ -73,7 +75,23 @@ abstract class YBaseFragment<B : ViewDataBinding>(var layout: Int?) : YFragment(
      */
     open fun show(str: String?) {
         if (str == null) return
-        YToast.show(requireActivity(), str)
+        YToast.show(YApp.get(), str)
+    }
+
+    /**
+     * 播放语音
+     */
+    open fun speak(str: String?) {
+        if (str == null) return
+        YTts.getInstance(YApp.get()).speak(str)
+    }
+
+    /**
+     * 显示toast并播放语音
+     */
+    open fun showSpeak(str: String?) {
+        show(str)
+        speak(str)
     }
 
     open fun startActivity(classActivity: Class<*>?) {

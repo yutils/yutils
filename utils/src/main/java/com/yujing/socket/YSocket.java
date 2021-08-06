@@ -1,9 +1,11 @@
 package com.yujing.socket;
 
+import static java.lang.System.currentTimeMillis;
+
 import com.yujing.utils.YClass;
 import com.yujing.utils.YLog;
+import com.yujing.utils.YReadInputStream;
 import com.yujing.utils.YThread;
-import com.yujing.utils.YThreadPool;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,6 +16,7 @@ import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeoutException;
 
 /**
  * YSocket，套接字连接
@@ -25,21 +28,64 @@ import java.util.List;
  * 连接线程：连接线程每一定时间根据（connect）检查一连接，如果连接断开就重新连接，更新socket，并通知连接状态。
  *
  * @author 余静
- * @version 1.4 2020年12月21日17:29:39
+ * @version 1.5 2021年8月6日10:17:35
  */
 
 /*
 使用方法：
 
-java：
+// 连接或者重新连接
+private void connect() {
+    // 断开已有的连接
+    YSocket.getInstance().exit();
+    // 创建实例
+    YSocket.getInstance("192.168.6.154", 8892);
+    //设置显示日志总开关
+    YSocket.getInstance().setShowLog(true);
+    // 显示接收日志
+    YSocket.getInstance().setShowReceiveLog(true);
+    // 显示发送日志
+    YSocket.getInstance().setShowSendLog(true);
+    // 设置心跳内容
+    YSocket.getInstance().setHearBytes(new byte[]{0x00});
+    // InputStream转化成bytes
+    YSocket.getInstance().setInputStreamReadListener(inputStreamReadListener);
+    // 添加返回消息监听
+    YSocket.getInstance().addDataListener(dataListener);
+    // 连接状态监听
+    YSocket.getInstance().setConnectListener(
+            success -> {
+                if (success) {
+                    // 连接成功
+                    System.out.println("连接成功");
+                } else {
+                    // 连接失败
+                    System.out.println("连接失败");
+                }
+            });
+    // 开始运行
+    YSocket.getInstance().start();
+}
 
-YSocket ySocket = new YSocket("127.0.0.1", 5555);
-ySocket.addConnectListener(isSuccess -> System.out.println("连接状态：" + isSuccess));
-ySocket.addDataListener(bytes -> {
-    System.out.println("收到返回信息：" + Arrays.toString(bytes));
-});
+//java 读取解析inputStream中的内容
+YSocket.InputStreamReadListener inputStreamReadListener = inputStream -> readOnce(inputStream, 1000 * 10);
+//只读一次，读取到就返回。读取不到，一直等直到超时，如果超时则向上抛异常,防止available()卡死
+public static byte[] readOnce(InputStream inputStream, long timeOut) throws Exception {
+    long startTime = System.currentTimeMillis();
+    int count = 0;
+    while (count == 0 && System.currentTimeMillis() - startTime < timeOut)
+        count = inputStream.available();//获取真正长度
+    if (System.currentTimeMillis() - startTime >= timeOut)
+        throw new TimeoutException("读取超时");
+    byte[] bytes = new byte[count];
+    // 一定要读取count个数据，如果inputStream.read(bytes);可能读不完
+    int readCount = 0; // 已经成功读取的字节的个数
+    while (readCount < count)
+        readCount += inputStream.read(bytes, readCount, count - readCount);
+    return bytes;
+}
 
-//设置读取方法
+//java 组包 读取解析inputStream中的内容
 ySocket.setInputStreamReadListener(inputStream -> {
     //读取协议头
     int count = 10;
@@ -67,52 +113,6 @@ ySocket.setInputStreamReadListener(inputStream -> {
 });
 ySocket.start();
 
-kotlin：
-
-//start或者reStart
-fun start() {
-    //创建实例
-    YSocket.getInstance("192.168.6.123", 502)
-    //断开已有的连接
-    YSocket.getInstance().closeConnect()
-    //设置心跳内容
-    YSocket.getInstance().setHearBytes("心跳内容".toByteArray())
-    //清空状态连接监听
-    YSocket.getInstance().clearConnectListener()
-    //清空返回消息监听
-    YSocket.getInstance().clearDataListener()
-    //设置读取方法
-    YSocket.getInstance().setInputStreamReadListener(readListener)
-    //添加状态连接监听
-    YSocket.getInstance().addConnectListener(stateListener)
-    //添加返回消息监听
-    YSocket.getInstance().addDataListener(dataListener)
-    //不显示日志
-    YSocket.getInstance().setShowLog(false)
-    //开始运行
-    YSocket.getInstance().start()
-}
-
-//解析InputStream方法
-var readListener = YSocket.InputStreamReadListener { inputStream ->
-    // 网络传输时候，这样获取真正长度
-    var count = 0
-    while (count == 0) count = inputStream.available()
-    val bytes = ByteArray(count)
-    // 一定要读取count个数据，如果inputStream.read(bytes);可能读不完
-    var readCount = 0 // 已经成功读取的字节的个数
-
-    while (readCount < count) {
-        readCount += inputStream.read(bytes, readCount, count - readCount)
-    }
-    return@InputStreamReadListener bytes
-}
-
-//连接状态监听
-var stateListener = YSocket.StateListener { success ->
-    YLog.i("连接：$success")
-}
-
 //收到数据监听
 var dataListener = YSocket.DataListener { bytes ->
     YLog.i("收到：" + YConvert.bytesToHexString(bytes))
@@ -126,7 +126,6 @@ fun send(str: String) {
 //退出
 override fun onDestroy() {
     super.onDestroy()
-
     YSocket.getInstance().exit()
 }
 */
@@ -145,7 +144,10 @@ public class YSocket {
     protected boolean connect;// 连接状态
     protected int heartTime = 1000 * 3;// 心跳间隔时间
     protected int CheckConnectTime = 1000 * 3;// 检查连接时间
+    protected int timeOut = 1000 * 30; // 每次读取最长时间，防止inputStream.available()卡死
     protected boolean showLog = true;// 显示日志
+    protected boolean showReceiveLog = false; // 显示接收日志
+    protected boolean showSendLog = false; // 显示发送日志
     protected InputStreamReadListener inputStreamReadListener;//读取InputStream接口
     protected CreateSocketInterceptor createSocketInterceptor;//创建Socket
 
@@ -198,6 +200,20 @@ public class YSocket {
     }
 
     /**
+     * 设置是否显示接收日志
+     */
+    public void setShowReceiveLog(boolean showReceiveLog) {
+        this.showReceiveLog = showReceiveLog;
+    }
+
+    /**
+     * 设置是否显示发送日志
+     */
+    public void setShowSendLog(boolean showSendLog) {
+        this.showSendLog = showSendLog;
+    }
+
+    /**
      * 读取到数据监听回调
      */
     public void addDataListener(DataListener dataListener) {
@@ -226,6 +242,14 @@ public class YSocket {
     public void addConnectListener(StateListener connectListener) {
         if (!connectListeners.contains(connectListener))
             this.connectListeners.add(connectListener);
+    }
+
+    /**
+     * 设置连接状态监听回调
+     */
+    public void setConnectListener(StateListener connectListener) {
+        this.connectListeners.clear();
+        this.connectListeners.add(connectListener);
     }
 
     /**
@@ -301,6 +325,24 @@ public class YSocket {
     }
 
     /**
+     * 每次读取最长时间，超过这个时间没数据就重新读取，防止inputStream.available()卡死
+     *
+     * @return 毫秒
+     */
+    public int getTimeOut() {
+        return timeOut;
+    }
+
+    /**
+     * 每次读取最长时间，超过这个时间没数据就重新读取，防止inputStream.available()卡死
+     *
+     * @param timeOut 毫秒
+     */
+    public void setTimeOut(int timeOut) {
+        this.timeOut = timeOut;
+    }
+
+    /**
      * 开始，此方法只能调一次，用于启动心跳发送线程和连接线程，当连接线程连接成功后启动读取数据线程，当收到连接断开消息后，关闭读取消息线程。
      */
     public void start() {
@@ -313,8 +355,8 @@ public class YSocket {
             } else {
                 closeReadThread();
             }
-            for (StateListener connectListener : connectListeners) {
-                backNotice(connectListener, success);
+            for (int i = 0; i < connectListeners.size(); i++) {
+                backNotice(connectListeners.get(i), success);
             }
         });
         connectThread.start();
@@ -334,6 +376,7 @@ public class YSocket {
                 }
                 send(hearBytes);
             }
+            printLog("退出心跳线程");
         }
 
         void send(final byte[] bytes) {
@@ -387,6 +430,7 @@ public class YSocket {
                     interrupt();
                 }
             }
+            printLog("退出保持连接线程");
         }
     }
 
@@ -401,26 +445,30 @@ public class YSocket {
                     InputStream is = socket.getInputStream();
                     byte[] resultBytes = inputStreamToBytes(is);
                     if (resultBytes == null) {
-                        printLog("resultByte==null");
+                        if (showReceiveLog) printLog("resultByte==null");
                         continue;
                     }
                     if (resultBytes.length == 0) {
-                        printLog("resultBytes.length==0");
+                        if (showReceiveLog) printLog("resultBytes.length==0");
                         continue;
                     }
-                    printLog("收到:" + Arrays.toString(resultBytes));
+                    if (showReceiveLog) printLog("收到:" + Arrays.toString(resultBytes));
                     connect = true;
                     backData(dataListeners, resultBytes);
+                } catch (TimeoutException ignored) {
                 } catch (Exception e) {
                     printLog("ReadThread：" + e.getMessage());
                     // 失败3秒后重新读取
-                    try {
-                        Thread.sleep(CheckConnectTime);
-                    } catch (InterruptedException e1) {
-                        interrupt();
+                    if (!isInterrupted()) {
+                        try {
+                            Thread.sleep(CheckConnectTime);
+                        } catch (InterruptedException e1) {
+                            interrupt();
+                        }
                     }
                 }
             }
+            printLog("退出读取线程");
         }
     }
 
@@ -433,8 +481,8 @@ public class YSocket {
         if (connectThread != null)
             connectThread.interrupt();
         closeReadThread();
-        for (StateListener connectListener : connectListeners) {
-            backNotice(connectListener, false);
+        for (int i = 0; i < connectListeners.size(); i++) {
+            backNotice(connectListeners.get(i), false);
         }
         closeSocket();
     }
@@ -446,6 +494,7 @@ public class YSocket {
         closeConnect();
         clearConnectListener();
         clearDataListener();
+        instance = null;
     }
 
     /**
@@ -454,6 +503,8 @@ public class YSocket {
     protected void closeSocket() {
         try {
             if (socket != null) {
+                socket.getInputStream().close();
+                socket.getOutputStream().close();
                 socket.close();
                 socket = null;
             }
@@ -466,8 +517,7 @@ public class YSocket {
      * 开启读取线程
      */
     protected void startReadThread() {
-        if (readThread != null)
-            readThread.interrupt();
+        closeReadThread();
         readThread = new ReadThread();
         readThread.start();
     }
@@ -516,18 +566,16 @@ public class YSocket {
                     os.write(bytes);
                     os.flush();
                 }
-                printLog("发送:" + Arrays.toString(bytes));
+                if (showSendLog) printLog("发送:" + Arrays.toString(bytes));
                 connect = true;
                 backNotice(stateListener, true);
             } catch (Exception e) {
                 connect = false;
                 backNotice(stateListener, false);
                 printLog("SendThread：" + e.getMessage());
-            } finally {
-                YThreadPool.shutdown();
             }
         });
-        YThreadPool.add(thread);
+        thread.start();
     }
 
     /**
@@ -579,11 +627,9 @@ public class YSocket {
                 } catch (Exception e) {
                     printLog("错误：" + e.getMessage());
                     e.printStackTrace();
-                } finally {
-                    YThreadPool.shutdown();
                 }
             });
-            YThreadPool.add(thread);
+            thread.start();
         }
     }
 
@@ -591,18 +637,20 @@ public class YSocket {
      * 读取inputStream到byte数组中，在网络数据读取中inputStream.available()可能读取不到真是大小，因此采用如下循环方式读取inputStream数据长度。
      * inputStream.read(bytes);可能读不完inputStream中全部数据，所以采用循环方式读取数据。
      */
-    public byte[] inputStreamToBytes(InputStream inputStream) throws IOException {
+    public byte[] inputStreamToBytes(InputStream inputStream) throws Exception {
         if (inputStreamReadListener != null)
             return inputStreamReadListener.inputStreamToBytes(inputStream);
-        // 网络传输时候，这样获取真正长度
+        long startTime = currentTimeMillis();
         int count = 0;
-        while (count == 0) count = inputStream.available();
+        while (count == 0 && currentTimeMillis() - startTime < timeOut)
+            count = inputStream.available();//获取真正长度
+        if (currentTimeMillis() - startTime >= timeOut)
+            throw new TimeoutException("读取超时");
         byte[] bytes = new byte[count];
         // 一定要读取count个数据，如果inputStream.read(bytes);可能读不完
         int readCount = 0; // 已经成功读取的字节的个数
-        while (readCount < count) {
+        while (readCount < count)
             readCount += inputStream.read(bytes, readCount, count - readCount);
-        }
         return bytes;
     }
 
@@ -640,7 +688,7 @@ public class YSocket {
      * inputSteam读取解析监听
      */
     public interface InputStreamReadListener {
-        byte[] inputStreamToBytes(InputStream inputStream) throws IOException;
+        byte[] inputStreamToBytes(InputStream inputStream) throws Exception;
     }
 
     /**

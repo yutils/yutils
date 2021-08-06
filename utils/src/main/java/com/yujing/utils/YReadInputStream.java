@@ -160,7 +160,7 @@ public class YReadInputStream {
      *
      * @param inputStream inputStream
      * @return byte[]
-     * @throws IOException IOException
+     * @throws Exception Exception
      */
     public static byte[] readOnce(InputStream inputStream) throws Exception {
         int count = 0;
@@ -179,7 +179,7 @@ public class YReadInputStream {
      * @param inputStream inputStream
      * @param timeOut     超时毫秒
      * @return byte[]
-     * @throws IOException IOException
+     * @throws Exception Exception
      */
     public static byte[] readOnce(InputStream inputStream, long timeOut) throws Exception {
         long startTime = System.currentTimeMillis();
@@ -187,7 +187,7 @@ public class YReadInputStream {
         while (count == 0 && System.currentTimeMillis() - startTime < timeOut)
             count = inputStream.available();//获取真正长度
         if (System.currentTimeMillis() - startTime >= timeOut)
-            new TimeoutException("读取超时").printStackTrace();
+           throw new TimeoutException("读取超时");
         byte[] bytes = new byte[count];
         // 一定要读取count个数据，如果inputStream.read(bytes);可能读不完
         int readCount = 0; // 已经成功读取的字节的个数
@@ -202,7 +202,7 @@ public class YReadInputStream {
      * @param inputStream inputStream
      * @param leastTime   读取超时时间，至少读取这么长时间
      * @return YBytes
-     * @throws IOException IO异常
+     * @throws Exception Exception
      */
     public static YBytes read(InputStream inputStream, int leastTime) throws Exception {
         final YBytes bytes = new YBytes();
@@ -236,7 +236,7 @@ public class YReadInputStream {
      * @param leastTime     读取超时时间，至少读取这么长时间
      * @param minReadLength 至少读取长度，即使没有读取到timeOut时间，只要读取长度大于等于minReadLength，直接返回
      * @return YBytes
-     * @throws IOException IO异常
+     * @throws Exception Exception
      */
     public static YBytes read(final InputStream inputStream, final int leastTime, final int minReadLength) throws Exception {
         final YBytes bytes = new YBytes();
