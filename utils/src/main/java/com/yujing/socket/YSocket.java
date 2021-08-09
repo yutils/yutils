@@ -139,6 +139,10 @@ public class YSocket {
     protected ConnectThread connectThread;// 连接线程
     protected HeartbeatThread heartbeat;// 心跳线程
     protected byte[] hearBytes = new byte[0];// 心跳包
+    //发送1个字节的紧急数据，默认情况下，服务器端没有开启紧急数据处理，不影响正常通信
+    protected int UrgentData = 0xFF;
+    //没有设置心跳包时,发送紧急数据
+    protected boolean noHeartbeatSendUrgentData = true;
     protected List<StateListener> connectListeners = new ArrayList<>();// 连接监听
     protected List<DataListener> dataListeners = new ArrayList<>();// 数据收到数据监听
     protected boolean connect;// 连接状态
@@ -343,6 +347,38 @@ public class YSocket {
     }
 
     /**
+     * 紧急数据
+     *
+     * @return 1个字节
+     */
+    public int getUrgentData() {
+        return UrgentData;
+    }
+
+    /**
+     * 紧急数据
+     */
+    public void setUrgentData(int urgentData) {
+        UrgentData = urgentData;
+    }
+
+    /**
+     * 是否开启没有设置心跳包时，发送紧急数据，默认情况下，服务器端没有开启紧急数据处理，不影响正常通信
+     *
+     * @return true的时候, 设置心跳包时, 发送紧急数据判断网络状态
+     */
+    public boolean isNoHeartbeatSendUrgentData() {
+        return noHeartbeatSendUrgentData;
+    }
+
+    /**
+     * 是否开启没有设置心跳包时，发送紧急数据，默认情况下，服务器端没有开启紧急数据处理，不影响正常通信
+     * true的时候,设置心跳包时,发送紧急数据判断网络状态
+     */
+    public void setNoHeartbeatSendUrgentData(boolean noHeartbeatSendUrgentData) {
+        this.noHeartbeatSendUrgentData = noHeartbeatSendUrgentData;
+    }
+    /**
      * 开始，此方法只能调一次，用于启动心跳发送线程和连接线程，当连接线程连接成功后启动读取数据线程，当收到连接断开消息后，关闭读取消息线程。
      */
     public void start() {
@@ -380,9 +416,13 @@ public class YSocket {
         }
 
         void send(final byte[] bytes) {
-            if (socket == null || bytes == null || bytes.length == 0)
-                return;
+            if (socket == null) return;
             try {
+                if (bytes == null || bytes.length == 0) {
+                    //如果开启了,没有设置心跳包时发送紧急数据
+                    if (noHeartbeatSendUrgentData) socket.sendUrgentData(UrgentData);
+                    return;
+                }
                 synchronized (socket) {
                     OutputStream os = socket.getOutputStream();// 获得输出流
                     os.write(bytes);
