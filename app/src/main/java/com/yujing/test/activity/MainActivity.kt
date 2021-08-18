@@ -4,7 +4,6 @@ import android.Manifest
 import android.widget.EditText
 import android.widget.TextView
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.LifecycleObserver
 import com.yujing.base.contract.YLifeEvent
 import com.yujing.bus.YBus
 import com.yujing.bus.YBusUtil
@@ -13,7 +12,9 @@ import com.yujing.test.activity.bluetooth.BleClientActivity
 import com.yujing.test.activity.bluetooth.BleServerActivity
 import com.yujing.test.base.KBaseActivity
 import com.yujing.test.databinding.ActivityAllTestBinding
-import com.yujing.utils.*
+import com.yujing.utils.YGps
+import com.yujing.utils.YLog
+import com.yujing.utils.YPermissions
 import com.yutils.view.utils.Create
 
 class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
@@ -67,8 +68,8 @@ class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
             //.每秒获取一次基站位置
             yGps.getLocationNET { location ->
                 //location位置
-                var latitude = location.latitude//纬度
-                var longitude = location.longitude//经度
+                val latitude = location.latitude//纬度
+                val longitude = location.longitude//经度
                 textView1.text = "基站：latitude=${latitude}longitude$longitude"
             }
         }
