@@ -95,20 +95,6 @@ class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
         Create.button(binding.wll, "BLE_Client") {
             startActivity(BleClientActivity::class.java)
         }
-
-        Create.button(binding.wll, "1111111") {
-           YRunOnceOfTime.run(8000,"1111111"){
-
-           }
-        }
-        Create.button(binding.wll, "2222222") {
-            YRunOnceOfTime.run(8000,"2222222"){
-
-            }
-        }
-        Create.button(binding.wll, "3333") {
-            YRunOnceOfTime.toString()
-        }
     }
 
 
