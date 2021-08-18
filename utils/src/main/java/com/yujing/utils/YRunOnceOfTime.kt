@@ -1,5 +1,9 @@
 package com.yujing.utils
 
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
+
 /**
  * time（millisecond）内只允许运行一次，多余的事件直接抛弃
  * @author 余静 2021年4月9日10:07:39
@@ -25,7 +29,7 @@ if (YRunOnceOfTime.check(1000,"tag1")) {
 */
 class YRunOnceOfTime(var time: Long, var tag: String, var lastTime: Long) {
     companion object {
-        private val list: MutableList<YRunOnceOfTime> = ArrayList()
+        val list: MutableList<YRunOnceOfTime> = ArrayList()
 
         /**
          * 清除全部
@@ -161,6 +165,21 @@ class YRunOnceOfTime(var time: Long, var tag: String, var lastTime: Long) {
                 runnable?.run()
                 list.add(YRunOnceOfTime(time, tag, System.currentTimeMillis()))
             }
+        }
+
+        var formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.getDefault())
+
+        override fun toString(): String {
+            check("")
+            var s = if (list.size == 0) "无数据" else ""
+            var i = 0
+            while (i < list.size) {
+                val item = list[i]
+                s += "间隔时间:${item.time}\t\t剩余:(${item.time - (System.currentTimeMillis() - item.lastTime)}毫秒)\t\t上次执行时间:${formatter.format(item.lastTime)}\t\ttag:${item.tag}\n"
+                i++
+            }
+            YLog.d("YRunOnceOfTime", s, 1)
+            return s
         }
     }
 }

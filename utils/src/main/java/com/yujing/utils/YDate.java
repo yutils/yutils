@@ -164,7 +164,7 @@ public class YDate {
      * @return yyyy-MM-dd HH:mm:ss
      */
     public static String getStringDate(Date date) {
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
         return formatter.format(date);
     }
 
@@ -184,7 +184,7 @@ public class YDate {
      * @return yyyy-MM-dd HH:mm:ss
      */
     public static String getStringDateChinese(Date date) {
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss", Locale.getDefault());
         return formatter.format(date);
     }
 
@@ -204,7 +204,7 @@ public class YDate {
      * @return 年月日
      */
     public static String getStringDateShort(Date date) {
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
         return formatter.format(date);
     }
 
@@ -224,7 +224,7 @@ public class YDate {
      * @return 年月日
      */
     public static String getStringDateShortChinese(Date date) {
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy年MM月dd日");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy年MM月dd日", Locale.getDefault());
         return formatter.format(date);
     }
 
@@ -244,7 +244,7 @@ public class YDate {
      * @return 时分秒
      */
     public static String getTimeShort(Date date) {
-        SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss");
+        SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
         return formatter.format(date);
     }
 

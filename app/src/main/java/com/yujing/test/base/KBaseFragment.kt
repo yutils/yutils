@@ -30,7 +30,7 @@ public class OldFragment extends YBaseFragment<Activity1101Binding> {
 }
  */
 abstract class KBaseFragment<B : ViewDataBinding>(layout: Int?) : YBaseFragment<B>(layout) {
-    fun speak(s: String) {
+    override fun speak(s: String?) {
         YTts.getInstance(YApp.get()).speak(s)
     }
 

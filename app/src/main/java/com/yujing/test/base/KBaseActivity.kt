@@ -39,31 +39,6 @@ abstract class KBaseActivity<B : ViewDataBinding>(layout: Int?) : YBaseActivity<
     }
 
 
-    override fun onWindowFocusChanged(hasFocus: Boolean) {
-        super.onWindowFocusChanged(hasFocus)
-        if (hasFocus) {
-//            YUtils.setFullScreen(this, true)
-//            YUtils.setImmersive(this, true)
-        }
-    }
-
-    var oldSpeak = ""
-    fun speak(str: String) {
-        var s = str
-        s = s.replace("皮重不合规", "皮众不合规")
-        YTts.getInstance(YApp.get()).speak(s)
-        YLog.i("speak", s,1)
-        oldSpeak = s
-    }
-
-    fun speakQueue(str: String) {
-        var s = str
-        s = s.replace("皮重不合规", "皮众不合规")
-        YTts.getInstance(YApp.get()).speakQueue(s)
-        YLog.i("speak", s,1)
-        oldSpeak = s
-    }
-
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
         return super.onKeyDown(keyCode, event)
     }

@@ -24,13 +24,15 @@ public class YToast {
      * @param text    内容
      */
     public static void show(Context context, String text) {
-        if (toast == null) {
-            toast = Toast.makeText(context, text, Toast.LENGTH_SHORT);
-        } else {
-            toast.setText(text);
-            toast.setDuration(Toast.LENGTH_SHORT);
-        }
-        toast.show();
+        YThread.runOnUiThread(() -> {
+            if (toast == null) {
+                toast = Toast.makeText(context, text, Toast.LENGTH_SHORT);
+            } else {
+                toast.setText(text);
+                toast.setDuration(Toast.LENGTH_SHORT);
+            }
+            toast.show();
+        });
     }
 
     public static void show(String text) {
@@ -44,13 +46,15 @@ public class YToast {
      * @param text    内容
      */
     public static void showLong(Context context, String text) {
-        if (toast == null) {
-            toast = Toast.makeText(context, text, Toast.LENGTH_LONG);
-        } else {
-            toast.setText(text);
-            toast.setDuration(Toast.LENGTH_LONG);
-        }
-        toast.show();
+        YThread.runOnUiThread(() -> {
+            if (toast == null) {
+                toast = Toast.makeText(context, text, Toast.LENGTH_LONG);
+            } else {
+                toast.setText(text);
+                toast.setDuration(Toast.LENGTH_LONG);
+            }
+            toast.show();
+        });
     }
 
     public static void showLong(String text) {
@@ -64,13 +68,15 @@ public class YToast {
      * @param text    内容
      */
     public static void showQueue(final Context context, final String text) {
-        if (toast == null) {
-            toast = Toast.makeText(context, text, Toast.LENGTH_SHORT);
-            toast.show();
-        } else {
-            if (yQueue == null) yQueue = new YQueue();
-            yQueue.run(queueTime, () -> show(context, text));
-        }
+        YThread.runOnUiThread(() -> {
+            if (toast == null) {
+                toast = Toast.makeText(context, text, Toast.LENGTH_SHORT);
+                toast.show();
+            } else {
+                if (yQueue == null) yQueue = new YQueue();
+                yQueue.run(queueTime, () -> show(context, text));
+            }
+        });
     }
 
     public static void showQueue(final String text) {
@@ -85,13 +91,15 @@ public class YToast {
      */
     @SuppressLint("ShowToast")
     public static void showQueueLong(final Context context, final String text) {
-        if (toast == null) {
-            toast = Toast.makeText(context, text, Toast.LENGTH_LONG);
-            toast.show();
-        } else {
-            if (yQueue == null) yQueue = new YQueue();
-            yQueue.run(queueTime, () -> showLong(context, text));
-        }
+        YThread.runOnUiThread(() -> {
+            if (toast == null) {
+                toast = Toast.makeText(context, text, Toast.LENGTH_LONG);
+                toast.show();
+            } else {
+                if (yQueue == null) yQueue = new YQueue();
+                yQueue.run(queueTime, () -> showLong(context, text));
+            }
+        });
     }
 
     public static void showQueueLong(final String text) {

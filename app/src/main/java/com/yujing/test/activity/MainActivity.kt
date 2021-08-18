@@ -13,10 +13,7 @@ import com.yujing.test.activity.bluetooth.BleClientActivity
 import com.yujing.test.activity.bluetooth.BleServerActivity
 import com.yujing.test.base.KBaseActivity
 import com.yujing.test.databinding.ActivityAllTestBinding
-import com.yujing.utils.YGps
-import com.yujing.utils.YLog
-import com.yujing.utils.YPermissions
-import com.yujing.utils.YScreenUtil
+import com.yujing.utils.*
 import com.yutils.view.utils.Create
 
 class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
@@ -97,6 +94,20 @@ class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
         }
         Create.button(binding.wll, "BLE_Client") {
             startActivity(BleClientActivity::class.java)
+        }
+
+        Create.button(binding.wll, "1111111") {
+           YRunOnceOfTime.run(8000,"1111111"){
+
+           }
+        }
+        Create.button(binding.wll, "2222222") {
+            YRunOnceOfTime.run(8000,"2222222"){
+
+            }
+        }
+        Create.button(binding.wll, "3333") {
+            YRunOnceOfTime.toString()
         }
     }
 
