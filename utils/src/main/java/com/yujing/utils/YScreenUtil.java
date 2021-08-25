@@ -126,6 +126,10 @@ public class YScreenUtil {
         return context.getResources().getConfiguration().smallestScreenWidthDp;
     }
 
+    public static int getSmallestScreenWidthDp() {
+        return getSmallestScreenWidthDp(YApp.get());
+    }
+
     /**
      * 获取屏幕宽度（物理），单位为px
      *
@@ -136,6 +140,10 @@ public class YScreenUtil {
         return getDisplayMetrics(context).widthPixels;
     }
 
+    public static int getScreenWidth() {
+        return getScreenWidth(YApp.get());
+    }
+
     /**
      * 获取屏幕高度（物理），单位为px
      *
@@ -144,6 +152,10 @@ public class YScreenUtil {
      */
     public static int getScreenHeight(Context context) {
         return getDisplayMetrics(context).heightPixels;
+    }
+
+    public static int getScreenHeight() {
+        return getScreenHeight(YApp.get());
     }
 
     /**
@@ -180,6 +192,10 @@ public class YScreenUtil {
         return getDisplayMetrics(context).densityDpi;
     }
 
+    public static float getDensityDpi() {
+        return getDensityDpi(YApp.get());
+    }
+
     /**
      * 获取系统dp尺寸密度值
      *
@@ -190,6 +206,10 @@ public class YScreenUtil {
         return getDisplayMetrics(context).density;
     }
 
+    public static float getDensity() {
+        return getDensity(YApp.get());
+    }
+
     /**
      * 获取系统字体sp密度值
      *
@@ -198,6 +218,10 @@ public class YScreenUtil {
      */
     public static float getScaledDensity(Context context) {
         return getDisplayMetrics(context).scaledDensity;
+    }
+
+    public static float getScaledDensity() {
+        return getScaledDensity(YApp.get());
     }
 
     /**
@@ -212,17 +236,6 @@ public class YScreenUtil {
     }
 
     /**
-     * px转换为dp值
-     *
-     * @param context 应用程序上下文
-     * @param pxValue px值
-     * @return 转换后的dp值
-     */
-    public static int px2dp(Context context, int pxValue) {
-        return (int) (pxValue / getDensity(context) + 0.5f);
-    }
-
-    /**
      * dip转px
      *
      * @param dpValue 传入dip
@@ -231,6 +244,17 @@ public class YScreenUtil {
     public static int dp2px(float dpValue) {
         final float scale = Resources.getSystem().getDisplayMetrics().density;
         return (int) (dpValue * scale + 0.5f);
+    }
+
+    /**
+     * px转换为dp值
+     *
+     * @param context 应用程序上下文
+     * @param pxValue px值
+     * @return 转换后的dp值
+     */
+    public static int px2dp(Context context, int pxValue) {
+        return (int) (pxValue / getDensity(context) + 0.5f);
     }
 
     /**
@@ -255,6 +279,10 @@ public class YScreenUtil {
         return (int) (spValue * getScaledDensity(context) + 0.5f);
     }
 
+    public static int sp2px(float spValue) {
+        return sp2px(YApp.get(), spValue);
+    }
+
     /**
      * px转换为sp
      *
@@ -264,6 +292,10 @@ public class YScreenUtil {
      */
     public static int px2sp(Context context, int pxValue) {
         return (int) (pxValue / getScaledDensity(context) + 0.5f);
+    }
+
+    public static int px2sp(int pxValue) {
+        return px2sp(YApp.get(), pxValue);
     }
 
     /**
@@ -286,6 +318,10 @@ public class YScreenUtil {
         return statusHeight;
     }
 
+    public static int getStatusHeight() {
+        return getStatusHeight(YApp.get());
+    }
+
     /**
      * 获得导航栏（底部）的高度
      *
@@ -304,6 +340,10 @@ public class YScreenUtil {
             e.printStackTrace();
         }
         return navigationBarHeight;
+    }
+
+    public static int getNavigationHeight() {
+        return getNavigationHeight(YApp.get());
     }
 
     /**
@@ -360,5 +400,9 @@ public class YScreenUtil {
         if (manager != null)
             manager.getDefaultDisplay().getRealMetrics(metrics);//manager.getDefaultDisplay().getMetrics(metrics);
         return metrics;
+    }
+
+    public static DisplayMetrics getDisplayMetrics() {
+        return getDisplayMetrics(YApp.get());
     }
 }

@@ -223,7 +223,7 @@ public class YNoticeDownload {
             } else if (DownloadManager.ACTION_NOTIFICATION_CLICKED.equals(intent.getAction())) {
                 //下载过程中的点击事件
                 if (!activity.isFinishing())
-                    YToast.show(activity, "正在下载，请稍后。");
+                    YToast.show("正在下载，请稍后。");
             }
         }
     }

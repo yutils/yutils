@@ -16,6 +16,7 @@ import androidx.annotation.RequiresApi;
 import com.yujing.contract.YListener1;
 import com.yujing.contract.YListener2;
 import com.yujing.contract.YSuccessFailListener;
+import com.yujing.utils.YApp;
 import com.yujing.utils.YLog;
 
 import java.util.ArrayList;
@@ -38,7 +39,7 @@ import java.util.Set;
 //用法
 List<BluetoothDevice> connected = new ArrayList<>();
 //实例化，读BT
-YBluetooth yBtDevice = YBluetooth.getInstance().init(context, YBluetooth.TYPE_BT);
+YBluetooth yBtDevice = YBluetooth.getInstance().init(YBluetooth.TYPE_BT);
 yBtDevice.open();
 //获取设备
 yBtDevice.search(bluetoothDevice -> {
@@ -82,6 +83,7 @@ public class YBluetooth implements YBluetoothDeviceConnect {
     YBluetoothDeviceConnect btAndBle;
     //区分是BT还是BLE
     private String type = null;
+
     /**
      * 设置成单例模式
      */
@@ -112,6 +114,10 @@ public class YBluetooth implements YBluetoothDeviceConnect {
 
     //搜索监听
     private YListener2<BluetoothDevice, Integer> searchListener;
+
+    public YBluetooth init(String type) {
+        return init(YApp.get(), type);
+    }
 
     //初始化
     public YBluetooth init(Context context, String type) {

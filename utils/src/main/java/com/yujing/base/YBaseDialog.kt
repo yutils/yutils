@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.view.*
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
+import com.yujing.utils.YApp
 import com.yujing.utils.YScreenUtil
 import com.yujing.utils.YToast
 
@@ -204,7 +205,7 @@ abstract class YBaseDialog<B : ViewDataBinding> : Dialog {
 
     open fun show(str: String?) {
         if (str == null || str.isEmpty()) return
-        YToast.show(context, str)
+        YToast.show(str)
     }
 
     /**

@@ -278,6 +278,9 @@ public class YLog {
     public static void saveOpen(Context context) {
         saveOpen(YPath.getFilePath(context, "log"));
     }
+    public static void saveOpen() {
+        saveOpen(YPath.getFilePath(YApp.get(), "log"));
+    }
 
     /**
      * 关闭日志本地保存

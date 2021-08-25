@@ -10,7 +10,7 @@ import android.content.SharedPreferences.Editor;
  * @author 余静 2018年5月15日19:00:17
  */
 @SuppressWarnings("unused")
-public class YSharedPreferencesUtils {
+public class YShared {
     public static final String DEFAULT_FILE = "defaultSharedPreferences";
 
     /**
@@ -35,8 +35,16 @@ public class YSharedPreferencesUtils {
         write(context, fileName, Context.MODE_PRIVATE, key, value);
     }
 
+    public static void write(String fileName, String key, String value) {
+        write(YApp.get(), fileName, Context.MODE_PRIVATE, key, value);
+    }
+
     public static void write(Context context, String key, String value) {
         write(context, DEFAULT_FILE, Context.MODE_PRIVATE, key, value);
+    }
+
+    public static void write(String key, String value) {
+        write(YApp.get(), DEFAULT_FILE, Context.MODE_PRIVATE, key, value);
     }
 
     //----------int--------
@@ -51,8 +59,16 @@ public class YSharedPreferencesUtils {
         writeInt(context, fileName, Context.MODE_PRIVATE, key, value);
     }
 
+    public static void writeInt(String fileName, String key, int value) {
+        writeInt(YApp.get(), fileName, Context.MODE_PRIVATE, key, value);
+    }
+
     public static void writeInt(Context context, String key, int value) {
         writeInt(context, DEFAULT_FILE, Context.MODE_PRIVATE, key, value);
+    }
+
+    public static void writeInt(String key, int value) {
+        writeInt(YApp.get(), DEFAULT_FILE, Context.MODE_PRIVATE, key, value);
     }
 
     //----------Boolean--------
@@ -67,8 +83,16 @@ public class YSharedPreferencesUtils {
         writeBoolean(context, fileName, Context.MODE_PRIVATE, key, value);
     }
 
+    public static void writeBoolean(String fileName, String key, boolean value) {
+        writeBoolean(YApp.get(), fileName, Context.MODE_PRIVATE, key, value);
+    }
+
     public static void writeBoolean(Context context, String key, boolean value) {
         writeBoolean(context, DEFAULT_FILE, Context.MODE_PRIVATE, key, value);
+    }
+
+    public static void writeBoolean(String key, boolean value) {
+        writeBoolean(YApp.get(), DEFAULT_FILE, Context.MODE_PRIVATE, key, value);
     }
 
     //----------delete--------
@@ -83,10 +107,17 @@ public class YSharedPreferencesUtils {
         delete(context, DEFAULT_FILE, Context.MODE_PRIVATE, key);
     }
 
+    public static void delete(String key) {
+        delete(YApp.get(), DEFAULT_FILE, Context.MODE_PRIVATE, key);
+    }
+
     public static void delete(Context context, String fileName, String key) {
         delete(context, fileName, Context.MODE_PRIVATE, key);
     }
 
+    public static void delete(String fileName, String key) {
+        delete(YApp.get(), fileName, Context.MODE_PRIVATE, key);
+    }
 
     /**
      * 从SharedPreferences文件中读取指定Key的value
@@ -106,8 +137,16 @@ public class YSharedPreferencesUtils {
         return get(context, fileName, Context.MODE_PRIVATE, key);// null为默认值
     }
 
+    public static String get(String fileName, String key) {
+        return get(YApp.get(), fileName, Context.MODE_PRIVATE, key);// null为默认值
+    }
+
     public static String get(Context context, String key) {
         return get(context, DEFAULT_FILE, Context.MODE_PRIVATE, key);// null为默认值
+    }
+
+    public static String get(String key) {
+        return get(YApp.get(), DEFAULT_FILE, Context.MODE_PRIVATE, key);// null为默认值
     }
 
     //--------------int------------
@@ -120,8 +159,16 @@ public class YSharedPreferencesUtils {
         return getInt(context, fileName, Context.MODE_PRIVATE, key);// null为默认值
     }
 
+    public static int getInt(String fileName, String key) {
+        return getInt(YApp.get(), fileName, Context.MODE_PRIVATE, key);// null为默认值
+    }
+
     public static int getInt(Context context, String key) {
         return getInt(context, DEFAULT_FILE, Context.MODE_PRIVATE, key);// null为默认值
+    }
+
+    public static int getInt(String key) {
+        return getInt(YApp.get(), DEFAULT_FILE, Context.MODE_PRIVATE, key);// null为默认值
     }
 
     //--------------boolean-----------------
@@ -134,7 +181,15 @@ public class YSharedPreferencesUtils {
         return getBoolean(context, fileName, Context.MODE_PRIVATE, key);// null为默认值
     }
 
+    public static boolean getBoolean(String fileName, String key) {
+        return getBoolean(YApp.get(), fileName, Context.MODE_PRIVATE, key);// null为默认值
+    }
+
     public static boolean getBoolean(Context context, String key) {
         return getBoolean(context, DEFAULT_FILE, Context.MODE_PRIVATE, key);// null为默认值
+    }
+
+    public static boolean getBoolean(String key) {
+        return getBoolean(YApp.get(), DEFAULT_FILE, Context.MODE_PRIVATE, key);// null为默认值
     }
 }

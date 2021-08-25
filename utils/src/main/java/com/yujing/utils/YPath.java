@@ -340,5 +340,4 @@ public class YPath {
     public static String getRoot() {
         return Environment.getRootDirectory().getPath();
     }
-
 }

@@ -133,6 +133,10 @@ public class YGps {
         this.context = context;
     }
 
+    public YGps() {
+        this.context = YApp.get();
+    }
+
     public void openGPSSettings(Activity activity) {
         LocationManager alm = (LocationManager) activity.getSystemService(Context.LOCATION_SERVICE);
         if (alm == null) return;

@@ -163,15 +163,6 @@ public class YUtils {
     /**
      * 当前是否是debug模式
      *
-     * @return 是或否
-     */
-    public static boolean isDebug() {
-        return isDebug(YApp.get());
-    }
-
-    /**
-     * 当前是否是debug模式
-     *
      * @param context context
      * @return 是或否
      */
@@ -183,6 +174,16 @@ public class YUtils {
         }
         return false;
     }
+
+    /**
+     * 当前是否是debug模式
+     *
+     * @return 是或否
+     */
+    public static boolean isDebug() {
+        return isDebug(YApp.get());
+    }
+
 
     /**
      * 获取设备的唯一驱动id
@@ -206,11 +207,10 @@ public class YUtils {
     /**
      * 获取设备的imei
      *
-     * @param context context
      * @return id
      */
-    public static String getImei(Context context) {
-        return getImei(context, 0);
+    public static String getImei() {
+        return getImei(YApp.get(), 0);
     }
 
     /**
@@ -226,7 +226,6 @@ public class YUtils {
             return null;
         TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
         if (tm == null) return null;
-        if (Build.VERSION.SDK_INT >= 29) return getAndroidId(context);
         //如果取0号卡的IMEI
         if (index == 0) {
             if (Build.VERSION.SDK_INT >= 26) {
@@ -236,8 +235,6 @@ public class YUtils {
                 } catch (Exception ignored) {
                 }
                 return imei;
-            } else {
-                return tm.getDeviceId();
             }
         }
         //否则取第N张卡的IMEI
@@ -310,6 +307,10 @@ public class YUtils {
         return getVersionCode(context, context.getPackageName());
     }
 
+    public static int getVersionCode() {
+        return getVersionCode(YApp.get());
+    }
+
     /**
      * 获取当前版本名
      *
@@ -337,6 +338,10 @@ public class YUtils {
         return getVersionName(context, context.getPackageName());
     }
 
+    public static String getVersionName() {
+        return getVersionName(YApp.get());
+    }
+
     /**
      * 对象复制,深度复制,被复制的对象必须序列化或是基本类型
      *
@@ -347,20 +352,6 @@ public class YUtils {
     @SuppressWarnings("unchecked")
     public static <T> T copyObject(T date) {
         if (date == null) return null;
-        if (date instanceof Parcelable) {
-            YLog.i("copyObject", "采用Parcelable序列化");
-            Parcel parcel = null;
-            try {
-                parcel = Parcel.obtain();
-                parcel.writeParcelable((Parcelable) date, 0);
-                parcel.setDataPosition(0);
-                return parcel.readParcelable(date.getClass().getClassLoader());
-            } catch (Exception e) {
-                YLog.e("copyObject", "复制错误", e);
-            } finally {
-                parcel.recycle();
-            }
-        }
         if (date instanceof Serializable) {
             YLog.i("copyObject", "采用Serializable序列化");
             try {
@@ -376,6 +367,21 @@ public class YUtils {
                 YLog.e("copyObject", "复制找不到对象错误", e);
             } catch (Exception e) {
                 YLog.e("copyObject", "复制错误", e);
+            }
+        }
+        if (date instanceof Parcelable) {
+            YLog.i("copyObject", "采用Parcelable序列化");
+            Parcel parcel = null;
+            try {
+                parcel = Parcel.obtain();
+                parcel.writeParcelable((Parcelable) date, 0);
+                parcel.setDataPosition(0);
+                return parcel.readParcelable(date.getClass().getClassLoader());
+            } catch (Exception e) {
+                YLog.e("copyObject", "复制错误", e);
+            } finally {
+                if (parcel != null)
+                    parcel.recycle();
             }
         }
         YLog.i("copyObject", "警告，对象未继承Serializable或Parcelable");
@@ -396,62 +402,6 @@ public class YUtils {
      */
     public static boolean isSDCardEnable() {
         return Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED);
-    }
-
-    /**
-     * 获取SD卡路径
-     *
-     * @return SD卡路径
-     */
-    public static String getSDCardPath() {
-        return isSDCardEnable() ? Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator : "";
-    }
-
-    /**
-     * 获取SD卡路径文件
-     *
-     * @return File
-     */
-    public static File getSDCardFile() {
-        return isSDCardEnable() ? Environment.getExternalStorageDirectory() : null;
-    }
-
-    /**
-     * 获取系统存储路径
-     *
-     * @return String路径
-     */
-    public static String getSDCardRootPath() {
-        return isSDCardEnable() ? Environment.getRootDirectory().getAbsolutePath() + File.separator : "";
-    }
-
-    /**
-     * 获取系统存储路径文件
-     *
-     * @return File
-     */
-    public static File getSDCardRootFile() {
-        return isSDCardEnable() ? Environment.getRootDirectory() : null;
-    }
-
-    /**
-     * 获取应用程序的/data/data目录
-     *
-     * @param context context
-     * @return /data/data目录
-     */
-    public static String getDataFilePath(Context context) {
-        return context.getFilesDir().getAbsolutePath() + File.separator;
-    }
-
-    /**
-     * /data/data/PackageName/cache的路径
-     *
-     * @param context context
-     * @return cache的路径
-     */
-    public static String getDataCachePath(Context context) {
-        return context.getCacheDir().getAbsolutePath() + File.separator;
     }
 
     /**
@@ -518,36 +468,10 @@ public class YUtils {
         return blockSize * blockCount;
     }
 
-    /**
-     * 打电话
-     *
-     * @param activity activity
-     * @param phone    电话号码
-     */
-    public static void makeCall(Activity activity, String phone) {
-        Uri uri = Uri.parse("tel:" + phone);
-        Intent intent = new Intent(Intent.ACTION_DIAL, uri);
-        activity.startActivity(intent);
-    }
-
-    /**
-     * 发短信
-     *
-     * @param activity activity
-     * @param tel      电话号码
-     * @param content  内容
-     */
-    public static void sendSMS(Activity activity, String tel, String content) {
-        if (PhoneNumberUtils.isGlobalPhoneNumber(tel)) {
-            //noinspection SpellCheckingInspection
-            Intent intent = new Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:" + tel));
-            intent.putExtra("sms_body", content);
-            activity.startActivity(intent);
-        }
-    }
 
     /**
      * 后台实现发送短信
+     * 如果要前台打印请参考YGoto.sendSMS()
      *
      * @param context     context
      * @param phoneNumber 手机号
@@ -610,6 +534,10 @@ public class YUtils {
         sendMessage(context, phoneNumber, text, null, null);
     }
 
+    public static void sendMessage(String phoneNumber, String text) {
+        sendMessage(YApp.get(), phoneNumber, text, null, null);
+    }
+
     /**
      * 判断APP版本是否是更新后第一次启动
      *
@@ -631,6 +559,10 @@ public class YUtils {
         return false;
     }
 
+    public static boolean isUpdate() {
+        return isUpdate(YApp.get());
+    }
+
     /**
      * 判断当前是否有网络连接,但是如果该连接的网络无法上网，也会返回true
      * 需要权限android.permission.ACCESS_NETWORK_STATE
@@ -645,6 +577,10 @@ public class YUtils {
         return Objects.requireNonNull(info).getState() == NetworkInfo.State.CONNECTED;
     }
 
+    public static boolean isNetConnected() {
+        return isNetConnected(YApp.get());
+    }
+
     /**
      * 判断WIFI网络是否可用
      *
@@ -653,6 +589,10 @@ public class YUtils {
      */
     public static boolean isWifiConnected(Context context) {
         return getConnectedType(context) == ConnectivityManager.TYPE_WIFI;
+    }
+
+    public static boolean isWifiConnected() {
+        return isWifiConnected(YApp.get());
     }
 
     /**
@@ -665,8 +605,12 @@ public class YUtils {
         return getConnectedType(context) == ConnectivityManager.TYPE_MOBILE;
     }
 
+    public boolean isMobileConnected() {
+        return isNetConnected(YApp.get());
+    }
+
     /**
-     * 获取连接类型
+     * 获取网络连接类型
      *
      * @param context context
      * @return 类型
@@ -804,6 +748,10 @@ public class YUtils {
             clipboard.setPrimaryClip(ClipData.newPlainText(context.getPackageName(), text));
     }
 
+    public static void copyToClipboard(String text) {
+        copyToClipboard(YApp.get(),text);
+    }
+
     /**
      * 获取粘贴板最后一条数据
      */
@@ -817,6 +765,9 @@ public class YUtils {
                 return clipData.getItemAt(0).getText().toString();
         }
         return null;
+    }
+    public static String getClipboardLast() {
+        return getClipboardLast(YApp.get());
     }
 
     /**
@@ -834,6 +785,9 @@ public class YUtils {
                     strings.add(clipData.getItemAt(0).getText().toString());
         }
         return strings;
+    }
+    public static List<String> getClipboardAll() {
+        return getClipboardAll(YApp.get());
     }
 
     /**

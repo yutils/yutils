@@ -75,7 +75,7 @@ abstract class YBaseFragment<B : ViewDataBinding>(var layout: Int?) : YFragment(
      */
     open fun show(str: String?) {
         if (str == null) return
-        YToast.show(YApp.get(), str)
+        YToast.show( str)
     }
 
     /**
@@ -83,7 +83,7 @@ abstract class YBaseFragment<B : ViewDataBinding>(var layout: Int?) : YFragment(
      */
     open fun speak(str: String?) {
         if (str == null) return
-        YTts.getInstance(YApp.get()).speak(str)
+        YTts.play(str)
     }
 
     /**

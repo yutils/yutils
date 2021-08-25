@@ -24,6 +24,7 @@ public class YToast {
      * @param text    内容
      */
     public static void show(Context context, String text) {
+        if (text == null) return;
         YThread.runOnUiThread(() -> {
             if (toast == null) {
                 toast = Toast.makeText(context, text, Toast.LENGTH_SHORT);
@@ -46,6 +47,7 @@ public class YToast {
      * @param text    内容
      */
     public static void showLong(Context context, String text) {
+        if (text == null) return;
         YThread.runOnUiThread(() -> {
             if (toast == null) {
                 toast = Toast.makeText(context, text, Toast.LENGTH_LONG);
@@ -68,6 +70,7 @@ public class YToast {
      * @param text    内容
      */
     public static void showQueue(final Context context, final String text) {
+        if (text == null) return;
         YThread.runOnUiThread(() -> {
             if (toast == null) {
                 toast = Toast.makeText(context, text, Toast.LENGTH_SHORT);
@@ -91,6 +94,7 @@ public class YToast {
      */
     @SuppressLint("ShowToast")
     public static void showQueueLong(final Context context, final String text) {
+        if (text == null) return;
         YThread.runOnUiThread(() -> {
             if (toast == null) {
                 toast = Toast.makeText(context, text, Toast.LENGTH_LONG);

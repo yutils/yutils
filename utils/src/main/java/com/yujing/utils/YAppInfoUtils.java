@@ -40,6 +40,10 @@ public class YAppInfoUtils {
         return tmp;
     }
 
+    public static String getSign(String packageName, String type) {
+        return getSign(YApp.get(), packageName, type);
+    }
+
     /**
      * 返回对应包的签名信息
      *
@@ -55,5 +59,9 @@ public class YAppInfoUtils {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public static Signature[] getSign(String packageName) {
+        return getSign(YApp.get(), packageName);
     }
 }

@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
+import android.telephony.PhoneNumberUtils;
 
 /**
  * 跳转到常用页面
@@ -83,6 +84,34 @@ public class YGoto {
         context.startActivity(intent);
     }
 
+
+    /**
+     * 跳转到打电话
+     *
+     * @param activity activity
+     * @param phone    电话号码
+     */
+    public static void makeCall(Activity activity, String phone) {
+        Uri uri = Uri.parse("tel:" + phone);
+        Intent intent = new Intent(Intent.ACTION_DIAL, uri);
+        activity.startActivity(intent);
+    }
+
+    /**
+     * 跳转到发短信
+     *
+     * @param activity activity
+     * @param tel      电话号码
+     * @param content  内容
+     */
+    public static void sendSMS(Activity activity, String tel, String content) {
+        if (PhoneNumberUtils.isGlobalPhoneNumber(tel)) {
+            //noinspection SpellCheckingInspection
+            Intent intent = new Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:" + tel));
+            intent.putExtra("sms_body", content);
+            activity.startActivity(intent);
+        }
+    }
 
     /**
      * 跳转到悬浮窗设置

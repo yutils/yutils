@@ -155,7 +155,7 @@ public class YInstallApk {
             }
             context.startActivity(intent);
         } catch (Exception e) {
-            YToast.show(context, "安装失败，请手动安装");
+            YToast.show("安装失败，请手动安装");
         }
     }
 }

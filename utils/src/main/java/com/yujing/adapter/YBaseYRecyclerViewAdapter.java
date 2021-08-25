@@ -47,8 +47,7 @@ public class MAdapter extends YBaseYRecyclerViewAdapter {
 //kotlin
 import androidx.databinding.DataBindingUtil
 import com.yujing.adapter.YBaseYRecyclerViewAdapter
-class MyAccountAdapter(context: Context?, list: List<*>?) :
-    YBaseYRecyclerViewAdapter<Any?>(context, list) {
+class MyAccountAdapter<T>(context: Context, list: List<T>) : YBaseYRecyclerViewAdapter<T>(context, list) {
     override fun setLayout(): Int {
         return R.layout.activity_my_account_item
     }

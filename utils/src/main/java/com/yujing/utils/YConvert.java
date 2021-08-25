@@ -255,6 +255,10 @@ public class YConvert {
         return YUri.getPath(context, uri);
     }
 
+    public static String uri2FilePath(Uri uri) {
+        return uri2FilePath(YApp.get(), uri);
+    }
+
     /**
      * uri2FilePath
      *
@@ -266,6 +270,10 @@ public class YConvert {
         return YUri.getPathForN(context, uri);
     }
 
+    public static String uri2FilePathForN(Uri uri) {
+        return uri2FilePathForN(YApp.get(), uri);
+    }
+
     /**
      * file转Uri
      *
@@ -275,6 +283,10 @@ public class YConvert {
      */
     public static Uri file2Uri(Context context, File file) {
         return YUri.getUri(context, file);
+    }
+
+    public static Uri file2Uri(File file) {
+        return file2Uri(YApp.get(), file);
     }
 
     /**
@@ -297,6 +309,10 @@ public class YConvert {
      */
     public synchronized static Bitmap uri2Bitmap(Context context, Uri uri) {
         return YUri.getBitmap(context, uri);
+    }
+
+    public synchronized static Bitmap uri2Bitmap(Uri uri) {
+        return uri2Bitmap(YApp.get(), uri);
     }
 
     /**
@@ -325,10 +341,13 @@ public class YConvert {
      * @param Resources Resources
      * @return Bitmap
      */
-    public synchronized static Bitmap resources2Bitmap(Context context,
-                                                       int Resources) {
+    public synchronized static Bitmap resources2Bitmap(Context context, int Resources) {
         android.content.res.Resources res = context.getResources();
         return BitmapFactory.decodeResource(res, Resources);
+    }
+
+    public synchronized static Bitmap resources2Bitmap(int Resources) {
+        return resources2Bitmap(YApp.get(), Resources);
     }
 
     /**
@@ -456,7 +475,7 @@ public class YConvert {
      * @param context context
      * @return Bitmap
      */
-    public static Bitmap nv21ToBitmap(byte[] nv21, int width, int height, Context context) {
+    public static Bitmap nv21ToBitmapFast(byte[] nv21, int width, int height, Context context) {
         RenderScript rs = RenderScript.create(context);
         ScriptIntrinsicYuvToRGB toRgb = ScriptIntrinsicYuvToRGB.create(rs, Element.U8_4(rs));
         Type.Builder yuvType = (new Type.Builder(rs, Element.U8(rs))).setX(nv21.length);
@@ -475,6 +494,10 @@ public class YConvert {
         toRgb.destroy();
         rs.destroy();
         return newBitmap;
+    }
+
+    public static Bitmap nv21ToBitmapFast(byte[] nv21, int width, int height) {
+        return nv21ToBitmapFast(nv21, width, height, YApp.get());
     }
 
     /**

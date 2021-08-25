@@ -102,7 +102,7 @@ abstract class YBaseActivity<B : ViewDataBinding>(var layout: Int?) : YActivity(
      */
     open fun show(str: String?) {
         if (str == null) return
-        YToast.showLong(applicationContext, str)
+        YToast.showLong(str)
     }
 
     /**
@@ -110,7 +110,7 @@ abstract class YBaseActivity<B : ViewDataBinding>(var layout: Int?) : YActivity(
      */
     open fun speak(str: String?) {
         if (str == null) return
-        YTts.getInstance(YApp.get()).speak(str)
+        YTts.play(str)
     }
 
     /**

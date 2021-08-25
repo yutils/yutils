@@ -286,6 +286,10 @@ public class YFileUtil {
         return context.getResources().openRawResource(resource);
     }
 
+    public static InputStream readRaw(@RawRes int resource) {
+        return readRaw(YApp.get(), resource);
+    }
+
     /**
      * 读取Assets下面的文件
      *
@@ -301,6 +305,10 @@ public class YFileUtil {
             YLog.e("readAssets", "异常", e);
         }
         return is;
+    }
+
+    public static InputStream readAssets(String fileName) {
+        return readAssets(YApp.get(), fileName);
     }
 
     /**
@@ -360,5 +368,9 @@ public class YFileUtil {
                 e.printStackTrace();
             }
         }
+    }
+
+    private void CopyAssets(String assetDir, String dir) {
+        CopyAssets(YApp.get(), assetDir, dir);
     }
 }

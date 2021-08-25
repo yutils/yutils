@@ -155,6 +155,7 @@ public class YTts {
      * @param speak 语音播放文字内容
      */
     public void speak(String speak) {
+        if (speak == null) return;
         if (textToSpeech != null) {
             textToSpeech.setSpeechRate(speechRate);//速度
             textToSpeech.setPitch(pitch);// 设置音调，值越大声音越尖（女生），值越小则变成男声,1.0是常规
@@ -185,6 +186,7 @@ public class YTts {
      * @param speak 语音播放文字内容
      */
     public void speakQueue(String speak) {
+        if (speak == null) return;
         if (textToSpeech != null) {
             textToSpeech.setSpeechRate(speechRate);//速度
             textToSpeech.setPitch(pitch);// 设置音调，值越大声音越尖（女生），值越小则变成男声,1.0是常规
