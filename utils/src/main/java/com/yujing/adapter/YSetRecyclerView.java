@@ -6,8 +6,9 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.OrientationHelper;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.yujing.utils.YApp;
 
 /**
  * 快速设置RecyclerView
@@ -16,6 +17,33 @@ import androidx.recyclerview.widget.RecyclerView;
  */
 @SuppressWarnings("unused")
 public class YSetRecyclerView {
+    /**
+     * 默认纵向布局
+     *
+     * @param recyclerView recyclerView
+     */
+    public static void init(RecyclerView recyclerView) {
+        initVertical(recyclerView);
+    }
+
+    /**
+     * 纵向布局
+     *
+     * @param recyclerView recyclerView
+     */
+    public static void initVertical(RecyclerView recyclerView) {
+        init(YApp.get(), recyclerView, RecyclerView.VERTICAL);
+    }
+
+    /**
+     * 横向布局
+     *
+     * @param recyclerView recyclerView
+     */
+    public static void initHorizontal(RecyclerView recyclerView) {
+        init(YApp.get(), recyclerView, RecyclerView.HORIZONTAL);
+    }
+
     /**
      * 默认纵向布局
      *

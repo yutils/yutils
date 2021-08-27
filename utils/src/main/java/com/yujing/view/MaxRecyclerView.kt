@@ -10,9 +10,9 @@ import androidx.recyclerview.widget.RecyclerView
 class MaxRecyclerView : RecyclerView {
     constructor(context: Context?, attrs: AttributeSet?) : super(
         context!!, attrs
-    ) {}
+    )
 
-    constructor(context: Context?) : super(context!!) {}
+    constructor(context: Context?) : super(context!!)
 
     /**
      * 设置不滚动

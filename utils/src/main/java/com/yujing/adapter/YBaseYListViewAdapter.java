@@ -38,6 +38,43 @@ class MyAccountAdapter(context: Context?, list: List<*>?) :
         }
     }
 }
+
+原生用法：
+public class MyListAdapter extends BaseAdapter {
+    private List<Data> list;
+    private LayoutInflater inflater;
+    public  MyListAdapter (List<Data> list, Context context) {
+           this.list = list;
+           this.inflater = LayoutInflater.from(context);
+    }
+
+    @Override
+    public int getCount() {
+        return list == null?0:list.size();
+    }
+
+    @Override
+    public Object getItem(int position) {
+        return list.get(position);
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        //加载布局为一个视图
+        View view = inflater.inflate(R.layout.listview_item,null);
+        Data data = (Data) getItem(position);
+
+        TextView tvName = view.findViewById(R.id.text_name);
+
+        //返回含有数据的view
+        return view;
+    }
+}
  */
 @SuppressWarnings("unused")
 public abstract class YBaseYListViewAdapter<T> extends BaseAdapter {

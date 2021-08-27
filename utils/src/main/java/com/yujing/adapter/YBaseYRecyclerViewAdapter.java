@@ -72,6 +72,38 @@ class MyAccountAdapter<T>(context: Context, list: List<T>) : YBaseYRecyclerViewA
         }
     }
 }
+
+//原生用法
+public class AutoPollAdapter<T> extends RecyclerView.Adapter<AutoPollAdapter.BaseViewHolder> {
+    private final Context mContext;
+    private final List<T> mData;
+
+    public AutoPollAdapter(Context context, List<T> list) {
+        this.mContext = context;
+        this.mData = list;
+    }
+
+    @NonNull
+    @Override
+    public BaseViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        return new BaseViewHolder(LayoutInflater.from(mContext).inflate(R.layout.activity_main_item_top, parent, false));
+    }
+
+    @Override
+    public void onBindViewHolder(BaseViewHolder holder, int position) {
+        T data = mData.get(position);
+        holder.binding.tv.setText("当前第" + position + "项");
+    }
+
+    static class BaseViewHolder extends RecyclerView.ViewHolder {
+        ActivityMainItemTopBinding binding;
+
+        public BaseViewHolder(View itemView) {
+            super(itemView);
+            binding = DataBindingUtil.bind(itemView);
+        }
+    }
+}
  */
 @SuppressWarnings({"unused", "NullableProblems"})
 public abstract class YBaseYRecyclerViewAdapter<T> extends RecyclerView.Adapter<YBaseYRecyclerViewAdapter.BaseViewHolder> {
