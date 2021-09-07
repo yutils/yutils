@@ -8,8 +8,8 @@ import android.os.Bundle
 import android.view.*
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
-import com.yujing.utils.YApp
 import com.yujing.utils.YScreenUtil
+import com.yujing.utils.YThread
 import com.yujing.utils.YToast
 
 /**
@@ -188,18 +188,23 @@ abstract class YBaseDialog<B : ViewDataBinding> : Dialog {
     }
 
     override fun show() {
-        //主要作用是焦点失能和焦点恢复，保证在弹出dialog时不会弹出虚拟按键且事件不会穿透。
-        if (fullscreen && this.window != null) {
-            this.window!!.setFlags(
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-            )
-            this.window!!.decorView.systemUiVisibility =
-                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_FULLSCREEN or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-            super.show()
-            this.window!!.clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE)
+        if (activity.isFinishing) return
+        if (YThread.isMainThread()) {
+            //主要作用是焦点失能和焦点恢复，保证在弹出dialog时不会弹出虚拟按键且事件不会穿透。
+            if (fullscreen && this.window != null) {
+                this.window!!.setFlags(
+                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+                )
+                this.window!!.decorView.systemUiVisibility =
+                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_FULLSCREEN or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                super.show()
+                this.window!!.clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE)
+            } else {
+                super.show()
+            }
         } else {
-            super.show()
+            YThread.runOnUiThread { this.show() }
         }
     }
 

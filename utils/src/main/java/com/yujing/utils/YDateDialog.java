@@ -183,6 +183,7 @@ public class YDateDialog {
         if (windowListener != null)
             windowListener.value(ad.getWindow());
         if (fullScreen == null) fullScreen = defaultFullScreen;
+        if (activity == null || activity.isFinishing()) return;
         if (fullScreen) {
             ad.getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE, WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
             ad.getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);

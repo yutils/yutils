@@ -179,37 +179,54 @@ public class YShow extends Dialog {
         return yDialog;
     }
 
+    @Deprecated
     public synchronized static void showUpdate(Activity activity) {
         showUpdate(activity, null, null, true, null);
     }
 
+    @Deprecated
     public synchronized static void showUpdate(Activity activity, String message) {
         showUpdate(activity, message, null, true, null);
     }
 
+    @Deprecated
     public synchronized static void showUpdate(Activity activity, String message1, String message2) {
         showUpdate(activity, message1, message2, true, null);
     }
 
+    @Deprecated
     public synchronized static void showUpdate(Activity activity, String message, boolean canCancel) {
         showUpdate(activity, message, null, canCancel, null);
     }
 
+    @Deprecated
     public synchronized static void showUpdate(Activity activity, String message1, String message2, boolean canCancel) {
         showUpdate(activity, message1, message2, canCancel, null);
     }
 
-    public synchronized static void showUpdate(Activity activity, String message1, String message2, boolean canCancel, Boolean fullScreen) {
-        show(activity, message1, message2, canCancel, fullScreen);
+    @Deprecated
+    public synchronized static void showUpdate(Activity activity, String message1, String message2, boolean canCancel, Boolean fullScreen) { show(activity, message1, message2, canCancel, fullScreen); }
+
+
+    public synchronized static void show(String message) { show(YActivityUtil.getCurrentActivity(), message, null, true); }
+
+    public synchronized static void show(String message1, String message2) {
+        show(YActivityUtil.getCurrentActivity(), message1, message2, true);
     }
+
+    public synchronized static void show(String message, boolean canCancel) {
+        show(YActivityUtil.getCurrentActivity(), message, null, canCancel);
+    }
+
+    public synchronized static void show(String message1, String message2, boolean canCancel) { show(YActivityUtil.getCurrentActivity(), message1, message2, canCancel, null); }
+
+    public synchronized static void show(String message1, String message2, boolean canCancel, Boolean fullScreen) { show(YActivityUtil.getCurrentActivity(), message1, message2, canCancel, fullScreen); }
 
     public synchronized static void show(Activity activity) {
         show(activity, null, null, true);
     }
 
-    public synchronized static void show(Activity activity, String message) {
-        show(activity, message, null, true);
-    }
+    public synchronized static void show(Activity activity, String message) { show(activity, message, null, true); }
 
     public synchronized static void show(Activity activity, String message1, String message2) {
         show(activity, message1, message2, true);
@@ -222,15 +239,19 @@ public class YShow extends Dialog {
     public synchronized static void show(Activity activity, String message1, String message2, boolean canCancel) {
         show(activity, message1, message2, canCancel, null);
     }
-    
+
     public synchronized static void show(Activity activity, String message1, String message2, boolean canCancel, Boolean fullScreen) {
-        if (isShow()) {
-            setMessage(message1);
-            setMessageOther(message2);
+        if (YThread.isMainThread()) {
+            if (isShow()) {
+                setMessage(message1);
+                setMessageOther(message2);
+            } else {
+                yDialog = new YShow(activity, message1, message2, canCancel);
+                yDialog.setFullScreen(fullScreen);
+                yDialog.show();
+            }
         } else {
-            yDialog = new YShow(activity, message1, message2, canCancel);
-            yDialog.setFullScreen(fullScreen);
-            yDialog.show();
+            YThread.runOnUiThread(() -> show(activity, message1, message2, canCancel, fullScreen));
         }
     }
 
@@ -298,23 +319,26 @@ public class YShow extends Dialog {
 
     @Override
     public void show() {
-        if (activity == null || activity.isFinishing())
-            return;
+        if (activity == null || activity.isFinishing()) return;
         finish();
-        if (fullScreen == null) fullScreen = defaultFullScreen;
-        if (fullScreen) {
-            //主要作用是焦点失能和焦点恢复，保证在弹出dialog时不会弹出虚拟按键且事件不会穿透。
-            if (this.getWindow() != null) {
-                this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
-                        WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
-                this.getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
-                super.show();
-                this.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
-            }else {
+        if (YThread.isMainThread()) {
+            if (fullScreen == null) fullScreen = defaultFullScreen;
+            if (fullScreen) {
+                //主要作用是焦点失能和焦点恢复，保证在弹出dialog时不会弹出虚拟按键且事件不会穿透。
+                if (this.getWindow() != null) {
+                    this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+                            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
+                    this.getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+                    super.show();
+                    this.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
+                } else {
+                    super.show();
+                }
+            } else {
                 super.show();
             }
         } else {
-            super.show();
+            YThread.runOnUiThread(this::show);
         }
     }
 }

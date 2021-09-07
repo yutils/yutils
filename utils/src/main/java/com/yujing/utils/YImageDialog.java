@@ -131,6 +131,24 @@ public class YImageDialog extends Dialog {
         return linearLayout;
     }
 
+    public synchronized static void show(Bitmap bitmap) {
+        show(YActivityUtil.getCurrentActivity(), bitmap, true);
+    }
+
+    public synchronized static void show(int resource) {
+        show(YActivityUtil.getCurrentActivity(), resource, true);
+    }
+
+    public synchronized static void show(Drawable drawable) {
+        show(YActivityUtil.getCurrentActivity(), drawable, true);
+    }
+
+    public synchronized static void show(Bitmap bitmap, boolean cancelable) { show(YActivityUtil.getCurrentActivity(), bitmap, cancelable); }
+
+    public synchronized static void show(int resource, boolean cancelable) { show(YActivityUtil.getCurrentActivity(), resource, cancelable); }
+
+    public synchronized static void show(Drawable drawable, boolean cancelable) { show(YActivityUtil.getCurrentActivity(), drawable, cancelable); }
+
     public synchronized static void show(Activity activity, Bitmap bitmap) {
         show(activity, bitmap, true);
     }
@@ -146,29 +164,40 @@ public class YImageDialog extends Dialog {
     public synchronized static void show(Activity activity, Bitmap bitmap, boolean cancelable) {
         finish();
         if (activity == null || activity.isFinishing() || bitmap == null) return;
-        yDialog = new YImageDialog(activity);
-        yDialog.setBitmap(bitmap);
-        yDialog.setCancelable(cancelable);
-        yDialog.show();
+        if (YThread.isMainThread()) {
+            yDialog = new YImageDialog(activity);
+            yDialog.setBitmap(bitmap);
+            yDialog.setCancelable(cancelable);
+            yDialog.show();
+        } else {
+            YThread.runOnUiThread(() -> show(activity, bitmap, cancelable));
+        }
     }
 
     public synchronized static void show(Activity activity, int resource, boolean cancelable) {
         finish();
         if (activity == null || activity.isFinishing()) return;
-        yDialog = new YImageDialog(activity);
-        yDialog.setResource(resource);
-        yDialog.setCancelable(cancelable);
-        yDialog.show();
+        if (YThread.isMainThread()) {
+            yDialog = new YImageDialog(activity);
+            yDialog.setResource(resource);
+            yDialog.setCancelable(cancelable);
+            yDialog.show();
+        } else {
+            YThread.runOnUiThread(() -> show(activity, resource, cancelable));
+        }
     }
 
     public synchronized static void show(Activity activity, Drawable drawable, boolean cancelable) {
         finish();
         if (activity == null || activity.isFinishing() || drawable == null) return;
-
-        yDialog = new YImageDialog(activity);
-        yDialog.setDrawable(drawable);
-        yDialog.setCancelable(cancelable);
-        yDialog.show();
+        if (YThread.isMainThread()) {
+            yDialog = new YImageDialog(activity);
+            yDialog.setDrawable(drawable);
+            yDialog.setCancelable(cancelable);
+            yDialog.show();
+        } else {
+            YThread.runOnUiThread(() -> show(activity, drawable, cancelable));
+        }
     }
 
     public ImageView getImageView() {
@@ -186,22 +215,25 @@ public class YImageDialog extends Dialog {
 
     @Override
     public void show() {
-        if (activity == null || activity.isFinishing())
-            return;
+        if (activity == null || activity.isFinishing()) return;
         finish();
-        if (fullScreen == null) fullScreen = defaultFullScreen;
-        if (fullScreen) {
-            //主要作用是焦点失能和焦点恢复，保证在弹出dialog时不会弹出虚拟按键且事件不会穿透。
-            if (this.getWindow() != null) {
-                this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE, WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
-                this.getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
-                super.show();
-                this.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
+        if (YThread.isMainThread()) {
+            if (fullScreen == null) fullScreen = defaultFullScreen;
+            if (fullScreen) {
+                //主要作用是焦点失能和焦点恢复，保证在弹出dialog时不会弹出虚拟按键且事件不会穿透。
+                if (this.getWindow() != null) {
+                    this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE, WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
+                    this.getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+                    super.show();
+                    this.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
+                } else {
+                    super.show();
+                }
             } else {
                 super.show();
             }
         } else {
-            super.show();
+            YThread.runOnUiThread(this::show);
         }
     }
 

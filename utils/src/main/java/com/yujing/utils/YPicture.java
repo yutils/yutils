@@ -98,7 +98,7 @@ public class YPicture {
             activity.startActivityForResult(it, REQUEST_CODE_CAMERA);
         } catch (Exception e) {
             YLog.e("gotoCamera错误", e);
-            Toast.makeText(activity, "请开启摄像权限", Toast.LENGTH_SHORT).show();
+            YToast.show("请开启摄像权限");
         }
     }
 

@@ -13,6 +13,7 @@ import com.yujing.test.activity.bluetooth.BleServerActivity
 import com.yujing.test.base.KBaseActivity
 import com.yujing.test.databinding.ActivityAllTestBinding
 import com.yujing.utils.YGps
+import com.yujing.utils.YImageDialog
 import com.yujing.utils.YLog
 import com.yujing.utils.YPermissions
 import com.yutils.view.utils.Create
@@ -95,6 +96,12 @@ class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
         }
         Create.button(binding.wll, "BLE_Client") {
             startActivity(BleClientActivity::class.java)
+        }
+
+        Create.button(binding.wll, "线程中弹窗") {
+            Thread {
+                YImageDialog.show(R.mipmap.logo)
+            }.start()
         }
     }
 

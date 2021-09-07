@@ -87,6 +87,7 @@ public class YUtils {
      */
     public static void init(Application application) {
         YApp.set(application);
+        YActivityUtil.init(application);
     }
 
     /**

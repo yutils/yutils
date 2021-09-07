@@ -34,16 +34,20 @@ binding.webView.loadUrl(url);
 
 @YBus(YWebView.页面发生错误)
 fun error(code :Int) {
+    if(code==404 || code==500) return
+    binding.webView.loadUrl("about:blank")
 }
 
 @YBus(YWebView.页面加载完成)
 fun success() {
+
 }
  */
 @SuppressWarnings("unused")
 public class YWebView {
-    public static final String 页面发生错误="页面发生错误";
-    public static final String 页面加载完成="页面加载完成";
+    public static final String 页面发生错误 = "页面发生错误";
+    public static final String 页面加载完成 = "页面加载完成";
+
     /**
      * 初始化WebView
      *
@@ -118,7 +122,7 @@ public class YWebView {
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
-                YBusUtil.Companion.post(页面加载完成,null);
+                YBusUtil.Companion.post(页面加载完成, null);
             }
 
             //避免404错误，500错误
@@ -130,9 +134,9 @@ public class YWebView {
                 int statusCode = errorResponse.getStatusCode();
                 System.out.println("onReceivedHttpError code = " + statusCode);
                 if (404 == statusCode || 500 == statusCode) {
-                    view.loadUrl("about:blank");
+                    //view.loadUrl("about:blank");
                     //这儿处理错误后的逻辑
-                    YBusUtil.Companion.post(页面发生错误,statusCode);
+                    YBusUtil.Companion.post(页面发生错误, statusCode);
                 }
             }
 
@@ -141,9 +145,9 @@ public class YWebView {
             public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
                 super.onReceivedError(view, errorCode, description, failingUrl);
                 if (errorCode == ERROR_HOST_LOOKUP || errorCode == ERROR_CONNECT || errorCode == ERROR_TIMEOUT) {
-                    view.loadUrl("about:blank");
+                    //view.loadUrl("about:blank");
                     //这儿处理错误后的逻辑
-                    YBusUtil.Companion.post(页面发生错误,errorCode);
+                    YBusUtil.Companion.post(页面发生错误, errorCode);
                 }
             }
 
@@ -154,9 +158,9 @@ public class YWebView {
                 super.onReceivedError(view, request, error);
                 int errorCode = error.getErrorCode();
                 if (errorCode == ERROR_HOST_LOOKUP || errorCode == ERROR_CONNECT || errorCode == ERROR_TIMEOUT) {
-                    view.loadUrl("about:blank");
+                    //view.loadUrl("about:blank");
                     //这儿处理错误后的逻辑
-                    YBusUtil.Companion.post(页面发生错误,errorCode);
+                    YBusUtil.Companion.post(页面发生错误, errorCode);
                 }
             }
         });
@@ -182,7 +186,6 @@ public class YWebView {
 
         //是否允许访问文件，默认允许。注意，这里只是允许或禁止对文件系统的访问，Assets 和 resources 文件使用file:///android_asset和file:///android_res仍是可访问的。
         webSettings.setAllowFileAccess(true);
-
 
         //是否允许运行在一个URL环境（the context of a file scheme URL）中的JavaScript访问来自其他URL环境的内容，为了保证安全，应该不允许。也请注意，这项设置只影响对file schema 资源的JavaScript访问，其他形式的访问，例如来自图片HTML单元的访问不受影响。为了防止相同的域策略（same domain policy）对ICE_CREAM_SANDWICH以及更老机型的侵害，应该显式地设置此值为false。
         webSettings.setAllowFileAccessFromFileURLs(true);
@@ -274,8 +277,8 @@ public class YWebView {
         //WebView是否下载图片资源，默认为true。注意，该方法控制所有图片的下载，包括使用URI嵌入的图片（使用setBlockNetworkImage(boolean) 只控制使用网络URI的图片的下载）。如果该设置项的值由false变为true，WebView展示的内容所引用的所有的图片资源将自动下载。
         webSettings.setLoadsImagesAutomatically(true);
 
-        //WebView是否需要用户的手势进行媒体播放，默认值为true。
-        webSettings.setMediaPlaybackRequiresUserGesture(true);
+        //WebView是否需要用户的手势进行媒体播放，默认值为true。false开启自动播放。
+        webSettings.setMediaPlaybackRequiresUserGesture(false);
 
         //设置最小的字号，默认为8
         webSettings.setMinimumFontSize(8);

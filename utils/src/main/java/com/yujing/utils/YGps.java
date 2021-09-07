@@ -144,7 +144,7 @@ public class YGps {
             YLog.d("GPS", "GPS模块正常");
             return;
         }
-        Toast.makeText(activity, "请手动开启GPS后再试！", Toast.LENGTH_SHORT).show();
+        YToast.show("请手动开启GPS后再试！");
         // Intent(Settings.ACTION_SECURITY_SETTINGS);//进入系统安全设置
         Intent intent = new Intent();
         intent.setAction(Settings.ACTION_LOCATION_SOURCE_SETTINGS);// 进入位置设置
@@ -176,7 +176,7 @@ public class YGps {
                 return;
             locationManagerGPS.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTimeMs, 0, locationListener);
         } catch (Exception e) {
-            Toast.makeText(context, "请给本APP获取位置权限", Toast.LENGTH_SHORT).show();
+            YToast.show("请给本APP获取位置权限");
         }
     }
 
@@ -204,7 +204,7 @@ public class YGps {
                 return;
             locationManagerNET.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, minTimeMs, 0, locationListener);
         } catch (Exception e) {
-            Toast.makeText(context, "请给本APP获取位置权限", Toast.LENGTH_SHORT).show();
+            YToast.show("请给本APP获取位置权限");
         }
     }
 
@@ -232,7 +232,7 @@ public class YGps {
                 return;
             locationManagerNET.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, minTimeMs, 0, locationListener);
         } catch (Exception e) {
-            Toast.makeText(context, "请给本APP获取位置权限", Toast.LENGTH_SHORT).show();
+            YToast.show("请给本APP获取位置权限");
         }
     }
 
