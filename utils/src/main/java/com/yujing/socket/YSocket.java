@@ -378,6 +378,7 @@ public class YSocket {
     public void setNoHeartbeatSendUrgentData(boolean noHeartbeatSendUrgentData) {
         this.noHeartbeatSendUrgentData = noHeartbeatSendUrgentData;
     }
+
     /**
      * 开始，此方法只能调一次，用于启动心跳发送线程和连接线程，当连接线程连接成功后启动读取数据线程，当收到连接断开消息后，关闭读取消息线程。
      */
@@ -425,11 +426,9 @@ public class YSocket {
                     if (noHeartbeatSendUrgentData) socket.sendUrgentData(UrgentData);
                     return;
                 }
-                synchronized (socket) {
-                    OutputStream os = socket.getOutputStream();// 获得输出流
-                    os.write(bytes);
-                    os.flush();
-                }
+                OutputStream os = socket.getOutputStream();// 获得输出流
+                os.write(bytes);
+                os.flush();
                 connect = true;
             } catch (Exception e) {
                 connect = false;
@@ -604,11 +603,9 @@ public class YSocket {
             if (bytes == null || bytes.length == 0) return;
             // 发送消息
             try {
-                synchronized (socket) {
-                    OutputStream os = socket.getOutputStream();// 获得输出流
-                    os.write(bytes);
-                    os.flush();
-                }
+                OutputStream os = socket.getOutputStream();// 获得输出流
+                os.write(bytes);
+                os.flush();
                 if (showSendLog) printLog("发送:" + Arrays.toString(bytes));
                 connect = true;
                 backNotice(stateListener, true);
