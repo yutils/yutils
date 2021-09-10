@@ -10,6 +10,7 @@ import android.media.FaceDetector;
 
 /**
  * 人脸识别类
+ *
  * @author yujing 2021年8月19日10:09:05
  */
 public class YFace {
@@ -20,24 +21,29 @@ public class YFace {
      * @return RectF
      */
     public static RectF findFaceRectF(Bitmap bitmap) {
-        //Bitmap必须是Bitmap.Config.RGB_565格式的bitmap
-        if (!bitmap.getConfig().equals(Bitmap.Config.RGB_565))
-            bitmap = bitmap.copy(Bitmap.Config.RGB_565, true);
-        FaceDetector faceDetector = new FaceDetector(bitmap.getWidth(), bitmap.getHeight(), 1);
-        FaceDetector.Face[] face = new FaceDetector.Face[1];
-        int faces = faceDetector.findFaces(bitmap, face);
+        if (bitmap.isRecycled()) return null;
         RectF r = null;
-        if (faces > 0) {
-            //找到脸了
-            FaceDetector.Face item = face[0];
-            PointF pf = new PointF();
-            item.getMidPoint(pf);
-            r = new RectF();
-            //两眼之间距离item.eyesDistance()
-            r.left = pf.x - item.eyesDistance() * 1.2f;
-            r.right = pf.x + item.eyesDistance() * 1.2f;
-            r.top = pf.y - item.eyesDistance() * 1.2f;
-            r.bottom = pf.y + item.eyesDistance() * 1.2f;
+        try {
+            //Bitmap必须是Bitmap.Config.RGB_565格式的bitmap
+            if (!bitmap.getConfig().equals(Bitmap.Config.RGB_565))
+                bitmap = bitmap.copy(Bitmap.Config.RGB_565, true);
+            FaceDetector faceDetector = new FaceDetector(bitmap.getWidth(), bitmap.getHeight(), 1);
+            FaceDetector.Face[] face = new FaceDetector.Face[1];
+            int faces = faceDetector.findFaces(bitmap, face);
+            if (faces > 0) {
+                //找到脸了
+                FaceDetector.Face item = face[0];
+                PointF pf = new PointF();
+                item.getMidPoint(pf);
+                r = new RectF();
+                //两眼之间距离item.eyesDistance()
+                r.left = pf.x - item.eyesDistance() * 1.2f;
+                r.right = pf.x + item.eyesDistance() * 1.2f;
+                r.top = pf.y - item.eyesDistance() * 1.2f;
+                r.bottom = pf.y + item.eyesDistance() * 1.2f;
+            }
+        } catch (Throwable t) {
+            YLog.e("找bitmap中的人脸时发生异常", t);
         }
         return r;
     }
@@ -90,5 +96,4 @@ public class YFace {
         canvas.drawLine(endX, endY + strokeWidth / 2f, endX, endY - lineLengthY, paint);
         return bitmap;
     }
-
 }

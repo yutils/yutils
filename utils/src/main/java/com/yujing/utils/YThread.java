@@ -3,10 +3,14 @@ package com.yujing.utils;
 import android.os.Handler;
 import android.os.Looper;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 /**
- * 主线程操作
+ * 线程操作
  *
- * @author 余静 2021年1月11日23:16:27
+ * @author 余静 2021年9月10日10:41:32
  */
 public final class YThread {
     private static final Handler HANDLER = new Handler(Looper.getMainLooper());
@@ -49,4 +53,66 @@ public final class YThread {
     public static void remove(final Runnable runnable) {
         HANDLER.removeCallbacks(runnable);
     }
+
+    /**
+     * 统计当前有多少线程
+     *
+     * @return 线程数量
+     */
+    public static int countThread() {
+        return Thread.getAllStackTraces().size();
+    }
+
+    /**
+     * 获取当前全部线程
+     *
+     * @return List<Thread>
+     */
+    public static List<Thread> getAllThread() {
+        List<Thread> list = new ArrayList<>();
+        Map<Thread, StackTraceElement[]> allStackTraces = Thread.getAllStackTraces();
+        for (Map.Entry<Thread, StackTraceElement[]> stackTrace : allStackTraces.entrySet()) {
+            list.add(stackTrace.getKey());
+        }
+        return list;
+    }
+
+    /**
+     * 打印全部线程信息
+     *
+     * @return 线程信息
+     */
+    public static String printAllThread() {
+        StringBuilder sb = new StringBuilder();
+        Map<Thread, StackTraceElement[]> allStackTraces = Thread.getAllStackTraces();
+        for (Map.Entry<Thread, StackTraceElement[]> stackTrace : allStackTraces.entrySet()) {
+            Thread thread = stackTrace.getKey();
+            sb.append("线程：").append(thread.getName()).append(",id=").append(thread.getId()).append(",state=").append(thread.getState()).append("\n");
+        }
+        String str = sb.toString();
+        YLog.i(str);
+        return str;
+    }
+
+    /**
+     * 打印全部线程堆栈信息
+     *
+     * @return 线程信息
+     */
+    public static String printAllThreadStackTraces() {
+        StringBuilder sb = new StringBuilder();
+        Map<Thread, StackTraceElement[]> allStackTraces = Thread.getAllStackTraces();
+        for (Map.Entry<Thread, StackTraceElement[]> stackTrace : allStackTraces.entrySet()) {
+            Thread thread = stackTrace.getKey();
+            sb.append("线程：").append(thread.getName()).append(",id=").append(thread.getId()).append(",state=").append(thread.getState()).append("\n");
+            StackTraceElement[] stack = stackTrace.getValue();
+            for (StackTraceElement stackTraceElement : stack) {
+                sb.append(stackTraceElement.toString()).append("\n");
+            }
+        }
+        String str = sb.toString();
+        YLog.i(str);
+        return str;
+    }
+
 }

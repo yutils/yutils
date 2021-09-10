@@ -64,6 +64,7 @@ public class YReadInputStream {
     //开始读取
     public void start() {
         readThread = new ReadThread();
+        readThread.setName("YReadInputStream");
         readThread.start();
     }
 

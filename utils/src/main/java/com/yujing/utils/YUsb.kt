@@ -275,9 +275,11 @@ class YUsb {
      */
     fun send(bytes: ByteArray) {
         if (!status) return
-        Thread {
+        val thread = Thread {
             sendSynchronization(bytes)
-        }.start()
+        }
+        thread.name = "YUsb—send"
+        thread.start()
     }
 
     /**
@@ -391,6 +393,7 @@ class YUsb {
             }
             if (showLog) YLog.d("退出读取线程")
         }
+        readThread?.name="YUsb-read"
         readThread?.start()
     }
 

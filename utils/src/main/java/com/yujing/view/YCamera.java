@@ -143,6 +143,7 @@ public class YCamera {
             setupCamera(YCamera.this.width, YCamera.this.height);
             configureTransform(YCamera.this.width, YCamera.this.height);
             openCamera();
+            thread.setName("YCamera-屏幕无响应线程");
             thread.start();
         }
 
@@ -287,7 +288,7 @@ public class YCamera {
         mImageReader.setOnImageAvailableListener(reader -> {
             //"拍照获取一张图片"
             Image image = reader.acquireLatestImage();
-            new Thread(() -> {
+            Thread thread=new Thread(() -> {
                 if (captureListener != null && image.getPlanes().length > 0) {
                     ByteBuffer buffer = image.getPlanes()[0].getBuffer();
                     byte[] data = new byte[buffer.remaining()];
@@ -299,7 +300,9 @@ public class YCamera {
                         });
                 }
                 image.close();//一定要关闭
-            }).start();
+            });
+            thread.setName("YCamera-获取bitmap");
+            thread.start();
         }, null);
 
         mSurfaceTexture = textureView.getSurfaceTexture();

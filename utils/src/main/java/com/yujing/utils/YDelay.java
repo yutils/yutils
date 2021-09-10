@@ -32,7 +32,7 @@ public class YDelay {
      */
     @SuppressWarnings({"UnclearExpression"})
     public static void run(final int time, final Runnable runnable) {
-        new Thread(() -> {
+        Thread thread= new Thread(() -> {
             try {
                 if (YClass.isAndroid()) {
                     YThread.runOnUiThreadDelayed(runnable, time);
@@ -42,7 +42,9 @@ public class YDelay {
                 }
             } catch (InterruptedException ignored) {
             }
-        }).start();
+        });
+        thread.setName("延时运行");
+        thread.start();
     }
 
     /**

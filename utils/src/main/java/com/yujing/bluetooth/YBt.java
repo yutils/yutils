@@ -66,7 +66,7 @@ public class YBt implements YBluetoothDeviceConnect {
      */
     @Override
     public void connect(BluetoothDevice device, YSuccessFailListener<BluetoothDevice, String> listener) {
-        new Thread(() -> {
+        Thread thread =new Thread(() -> {
             if (device.getBondState() == BluetoothDevice.BOND_NONE) {
                 //如果这个设备取消了配对，则尝试配对
                 device.createBond();
@@ -95,7 +95,9 @@ public class YBt implements YBluetoothDeviceConnect {
                     e.printStackTrace();
                 }
             }
-        }).start();
+        });
+        thread.setName("YBt-连接线程");
+        thread.start();
     }
 
     /**

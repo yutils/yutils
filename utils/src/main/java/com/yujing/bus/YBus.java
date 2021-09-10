@@ -45,5 +45,5 @@ public @interface YBus {
 
     String[] value() default "";
 
-    boolean mainThread() default true;
+    //boolean mainThread() default true;
 }

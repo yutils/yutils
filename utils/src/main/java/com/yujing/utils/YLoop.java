@@ -101,6 +101,7 @@ public class YLoop {
                     MethodStatus.remove(sign);
                 }
             });
+            thread.setName("YLoop");
             thread.start();
         } catch (Exception e) {
             e.printStackTrace();

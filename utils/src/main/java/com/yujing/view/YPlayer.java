@@ -125,6 +125,7 @@ public class YPlayer {
                 screenStopTime = 0;//最后一次屏幕更新时间0秒
             }
         });
+        thread.setName("YPlayer-屏幕无响应检测");
         thread.start();
     }
 

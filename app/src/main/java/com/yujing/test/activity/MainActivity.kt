@@ -12,10 +12,7 @@ import com.yujing.test.activity.bluetooth.BleClientActivity
 import com.yujing.test.activity.bluetooth.BleServerActivity
 import com.yujing.test.base.KBaseActivity
 import com.yujing.test.databinding.ActivityAllTestBinding
-import com.yujing.utils.YGps
-import com.yujing.utils.YImageDialog
-import com.yujing.utils.YLog
-import com.yujing.utils.YPermissions
+import com.yujing.utils.*
 import com.yutils.view.utils.Create
 
 class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
@@ -101,14 +98,17 @@ class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
         Create.button(binding.wll, "线程中弹窗") {
             Thread {
                 YImageDialog.show(R.mipmap.logo)
-            }.start()
+            }
+        }
+        Create.button(binding.wll, "统计线程") {
+            YBusUtil.post("tag1", ""+YThread.printAllThread())
         }
     }
 
 
-    @YBus("tag1", "tag2", mainThread = false)
-    fun message1(message: Any?) {
-        YLog.i("收到：$message")
+    @YBus("tag1", "tag2")
+    fun message1(tag: String, message: String) {
+        YLog.i("收到：$tag$message")
         textView1.text = textView1.text.toString() + "收到1:$message \n"
     }
 }

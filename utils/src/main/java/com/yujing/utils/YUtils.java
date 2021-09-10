@@ -646,7 +646,7 @@ public class YUtils {
             //读取ping的内容，可以不加
             BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
             BufferedReader er = new BufferedReader(new InputStreamReader(p.getErrorStream()));
-            new Thread(() -> {
+            Thread thread1=new Thread(() -> {
                 try {
                     String content;
                     while ((content = br.readLine()) != null) {
@@ -660,9 +660,11 @@ public class YUtils {
                     } catch (Exception ignored) {
                     }
                 }
-            }).start();
+            });
+            thread1.setName("ping-br");
+            thread1.start();
 
-            new Thread(() -> {
+            Thread thread2= new Thread(() -> {
                 try {
                     String content;
                     while ((content = er.readLine()) != null) {
@@ -676,7 +678,9 @@ public class YUtils {
                     } catch (Exception ignored) {
                     }
                 }
-            }).start();
+            });
+            thread2.setName("ping-er");
+            thread2.start();
             // ping的状态
             int status = p.waitFor();
             if (status == 0) return true;

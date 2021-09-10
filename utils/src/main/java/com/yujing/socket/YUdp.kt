@@ -122,6 +122,7 @@ class YUdp(var ip: String, var port: Int) {
             }
             if (showLog) YLog.d("退出读取线程")
         }
+        readThread?.name = "YUdp-读取线程"
         readThread?.start()
     }
 

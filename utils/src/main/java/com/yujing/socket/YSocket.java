@@ -383,6 +383,7 @@ public class YSocket {
      */
     public void start() {
         heartbeat = new HeartbeatThread();
+        heartbeat.setName("YSocket-心跳线程");
         heartbeat.start();
         connectThread = new ConnectThread();
         connectThread.setConnectListener(success -> {
@@ -395,6 +396,7 @@ public class YSocket {
                 backNotice(connectListeners.get(i), success);
             }
         });
+        heartbeat.setName("YSocket-连接线程");
         connectThread.start();
     }
 
@@ -559,6 +561,7 @@ public class YSocket {
     protected void startReadThread() {
         closeReadThread();
         readThread = new ReadThread();
+        heartbeat.setName("YSocket-读取线程");
         readThread.start();
     }
 
@@ -615,6 +618,7 @@ public class YSocket {
                 printLog("SendThread：" + e.getMessage());
             }
         });
+        heartbeat.setName("YSocket-发送线程");
         thread.start();
     }
 
@@ -642,6 +646,7 @@ public class YSocket {
                         e.printStackTrace();
                     }
                 });
+                heartbeat.setName("YSocket-回调数据");
                 thread.start();
             } catch (Exception e) {
                 printLog("错误：" + e.getMessage());
@@ -669,6 +674,7 @@ public class YSocket {
                     e.printStackTrace();
                 }
             });
+            heartbeat.setName("YSocket-回调状态");
             thread.start();
         }
     }
