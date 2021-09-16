@@ -131,9 +131,9 @@ class YUdp(var ip: String, var port: Int) {
         datagramSocket?.close()
     }
 
-    fun sendSynchronized(data: ByteArray): ByteArray {
+    fun sendSync(data: ByteArray): ByteArray {
         onDestroy()
-        return sendSynchronized(
+        return sendSync(
             data = data,
             ip = ip,
             port = port,
@@ -146,8 +146,15 @@ class YUdp(var ip: String, var port: Int) {
         const val defaultTag = "UdpReceiveDefaultTagTag"
         var showLog = false
 
-        //同步发送,udp返回则返回
-        fun sendSynchronized(
+        /**
+         * 同步发送,udp返回则返回
+         * @param data 发送的数据
+         * @param ip ip
+         * @param port 端口
+         * @param timeout 连续读取指定时间
+         * @param readMaxLength 接收数据数组最大长度
+         */
+        fun sendSync(
             data: ByteArray, ip: String, port: Int,
             timeout: Int = 2000, readMaxLength: Int = 1024
         ): ByteArray {
@@ -176,10 +183,16 @@ class YUdp(var ip: String, var port: Int) {
             return bytes
         }
 
-        //同步发送，连续读取指定时间，读取时间够了之后退出
-        fun sendSynchronizedContinuity(
+        /**
+         * 同步发送，连续读取指定时间，读取时间够了之后退出
+         * @param data 发送的数据
+         * @param ip ip
+         * @param port 端口
+         * @param timeout 超时时间
+         */
+        fun sendSyncTime(
             data: ByteArray, ip: String, port: Int,
-            timeout: Int = 1000, readMaxLength: Int = 1024
+            timeout: Int = 1000
         ): ByteArray {
             //向服务器端发送数据
             // 1.定义服务器的地址、端口号、数据
@@ -197,7 +210,7 @@ class YUdp(var ip: String, var port: Int) {
                 try {
                     // 接收服务器端响应的数据
                     // 1.创建数据报，用于接收服务器端响应的数据
-                    val tempRead = ByteArray(readMaxLength)
+                    val tempRead = ByteArray(1024)
                     val datagramPacketRead = DatagramPacket(tempRead, tempRead.size)
                     // 2.接收服务器响应的数据
                     datagramSocket.soTimeout = timeout

@@ -150,7 +150,7 @@ class YRunOnceOfTime(var time: Long, var tag: String, var lastTime: Long) {
         fun run(time: Long, tag: String, runnable: Runnable?) {
             //如果没有找到对象，就创建并且运行
             if (check(tag)) {
-                runnable?.run()
+                YThread.runOnUiThread(runnable)
                 list.add(YRunOnceOfTime(time, tag, System.currentTimeMillis()))
             }
         }
@@ -162,7 +162,7 @@ class YRunOnceOfTime(var time: Long, var tag: String, var lastTime: Long) {
         fun runUpdate(time: Long, tag: String, runnable: Runnable?) {
             //如果没有找到对象，就创建并且运行
             if (checkUpdate(time, tag)) {
-                runnable?.run()
+                YThread.runOnUiThread(runnable)
                 list.add(YRunOnceOfTime(time, tag, System.currentTimeMillis()))
             }
         }

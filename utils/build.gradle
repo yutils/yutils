@@ -51,8 +51,8 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
     //gson,https://mvnrepository.com/artifact/com.google.code.gson/gson
-    implementation 'com.google.code.gson:gson:2.8.7'
-    implementation 'com.kotlinx:yhttp:1.0.8'
+    implementation 'com.google.code.gson:gson:2.8.8'
+    implementation 'com.kotlinx:yhttp:1.1.0'
 }
 
 

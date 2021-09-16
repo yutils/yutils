@@ -32,8 +32,8 @@ var bl: Boolean
     set(obj) = YSave.create(YPath.get(),".txt").put("test", obj)
 
 java：
-public static String getP() {return YSave.get(YApp.get(), "p", String.class);}
-public static void setP(String purchaseLine) {YSave.put(YApp.get(), "p", purchaseLine);}
+public static String getIP() { return YSave.get(YApp.get(), "ip", String.class);}
+public static void setIP(String value) {YSave.put(YApp.get(), "ip", value);}
 
 //或
 public static boolean getP() { return YSave.getInstance().get("p", boolean.class); }

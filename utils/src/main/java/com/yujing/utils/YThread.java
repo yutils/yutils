@@ -33,6 +33,10 @@ public final class YThread {
      * 主线程中运行
      */
     public static void runOnUiThread(final Runnable runnable) {
+        if (!YClass.isAndroid()) {
+            runnable.run();
+            return;
+        }
         if (Looper.myLooper() == Looper.getMainLooper()) {
             runnable.run();
         } else {
@@ -44,6 +48,17 @@ public final class YThread {
      * 主线程中延时运行
      */
     public static void runOnUiThreadDelayed(final Runnable runnable, long delayMillis) {
+        if (!YClass.isAndroid()) {
+            new Thread(() -> {
+                try {
+                    Thread.sleep(delayMillis);
+                    runnable.run();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }).start();
+            return;
+        }
         HANDLER.postDelayed(runnable, delayMillis);
     }
 
