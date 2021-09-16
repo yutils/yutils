@@ -35,6 +35,18 @@ override fun onDestroy() {
     yUdp?.onDestroy()
     super.onDestroy()
 }
+
+
+同步:
+
+//读取到数据立即返回，数据大于2048之后部分抛弃，1秒后超时
+YUdp.sendSync("192.168.6.3", 8080, data, 2048, 1000)
+
+//读取1秒，能读多少度多少，默认不超过1MB
+YUdp.sendSyncTime("192.168.6.3", 8080, data, 1000)
+
+//1秒内，能读多少度多少，但是不超过16384，超过立即返回
+YUdp.sendSyncLength("192.168.6.3", 8080, data, 16384, 1000)
 */
 class YUdp(var ip: String, var port: Int) {
     //一次最多读取多长的数据
@@ -152,11 +164,15 @@ class YUdp(var ip: String, var port: Int) {
          * @param ip ip
          * @param port 端口
          * @param timeout 连续读取指定时间
-         * @param readMaxLength 接收数据数组最大长度
+         * @param readMaxLength 接收数据数组最大长度,如果长度小于真实数据长度，可能导致数据不完整
          */
+        /*举例：
+        //读取到数据立即返回，数据大于2048之后部分抛弃，1秒后超时
+        YUdp.sendSync("192.168.6.3", 8080, data, 2048, 1000)
+        */
         fun sendSync(
-            data: ByteArray, ip: String, port: Int,
-            timeout: Int = 2000, readMaxLength: Int = 1024
+            ip: String, port: Int, data: ByteArray,
+            readMaxLength: Int = 1024, timeout: Int = 1000
         ): ByteArray {
             //向服务器端发送数据
             // 1.定义服务器的地址、端口号、数据
@@ -190,9 +206,32 @@ class YUdp(var ip: String, var port: Int) {
          * @param port 端口
          * @param timeout 超时时间
          */
+        /*举例：
+        //读取1秒，能读多少度多少，默认不超过1MB
+         YUdp.sendSyncTime("192.168.6.3", 8080, data, 3000)
+        */
         fun sendSyncTime(
-            data: ByteArray, ip: String, port: Int,
+            ip: String, port: Int, data: ByteArray,
             timeout: Int = 1000
+        ): ByteArray {
+            return sendSyncLength(ip, port, data, 1024 * 1024, timeout)
+        }
+
+        /**
+         * 同步发送，timeout时间内，能读多少度多少，但是不超过16384，超过立即返回
+         * @param data 发送的数据
+         * @param ip ip
+         * @param port 端口
+         * @param timeout 超时时间
+         * @param maxLength 至少读取到minLength长度后就立即返回，minLength应该大于groupLength，minLength小于0就不判断长度
+         */
+        /*举例：
+         //读取到16个字节后立即返回，如果3000毫秒没有读取到，也返回。
+         YUdp.sendSyncLength("192.168.6.3", 8080, data, 16, 3000)
+         */
+        fun sendSyncLength(
+            ip: String, port: Int, data: ByteArray,
+            maxLength: Int = 1024, timeout: Int = 1000
         ): ByteArray {
             //向服务器端发送数据
             // 1.定义服务器的地址、端口号、数据
@@ -210,7 +249,7 @@ class YUdp(var ip: String, var port: Int) {
                 try {
                     // 接收服务器端响应的数据
                     // 1.创建数据报，用于接收服务器端响应的数据
-                    val tempRead = ByteArray(1024)
+                    val tempRead = ByteArray(maxLength)
                     val datagramPacketRead = DatagramPacket(tempRead, tempRead.size)
                     // 2.接收服务器响应的数据
                     datagramSocket.soTimeout = timeout
@@ -219,6 +258,8 @@ class YUdp(var ip: String, var port: Int) {
                     val bytes = ByteArray(datagramPacketRead.length)
                     System.arraycopy(tempRead, 0, bytes, 0, datagramPacketRead.length)
                     yBytes.addByte(bytes)
+                    //如果数据够了就退出
+                    if (yBytes.bytes.size >= maxLength) break
                 } catch (ignore: Exception) {
                 }
             }
