@@ -131,33 +131,33 @@ public class YImageDialog extends Dialog {
         return linearLayout;
     }
 
-    public synchronized static void show(Bitmap bitmap) {
+    public static void show(Bitmap bitmap) {
         show(YActivityUtil.getCurrentActivity(), bitmap, true);
     }
 
-    public synchronized static void show(int resource) {
+    public static void show(int resource) {
         show(YActivityUtil.getCurrentActivity(), resource, true);
     }
 
-    public synchronized static void show(Drawable drawable) {
+    public static void show(Drawable drawable) {
         show(YActivityUtil.getCurrentActivity(), drawable, true);
     }
 
-    public synchronized static void show(Bitmap bitmap, boolean cancelable) { show(YActivityUtil.getCurrentActivity(), bitmap, cancelable); }
+    public static void show(Bitmap bitmap, boolean cancelable) { show(YActivityUtil.getCurrentActivity(), bitmap, cancelable); }
 
-    public synchronized static void show(int resource, boolean cancelable) { show(YActivityUtil.getCurrentActivity(), resource, cancelable); }
+    public static void show(int resource, boolean cancelable) { show(YActivityUtil.getCurrentActivity(), resource, cancelable); }
 
-    public synchronized static void show(Drawable drawable, boolean cancelable) { show(YActivityUtil.getCurrentActivity(), drawable, cancelable); }
+    public static void show(Drawable drawable, boolean cancelable) { show(YActivityUtil.getCurrentActivity(), drawable, cancelable); }
 
-    public synchronized static void show(Activity activity, Bitmap bitmap) {
+    public static void show(Activity activity, Bitmap bitmap) {
         show(activity, bitmap, true);
     }
 
-    public synchronized static void show(Activity activity, int resource) {
+    public static void show(Activity activity, int resource) {
         show(activity, resource, true);
     }
 
-    public synchronized static void show(Activity activity, Drawable drawable) {
+    public static void show(Activity activity, Drawable drawable) {
         show(activity, drawable, true);
     }
 

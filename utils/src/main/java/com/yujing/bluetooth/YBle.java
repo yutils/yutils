@@ -192,7 +192,7 @@ public class YBle implements YBluetoothDeviceConnect {
         mBluetoothGatt.readCharacteristic(characteristic);
     }
 
-    public synchronized void send(byte[] data) {
+    public void send(byte[] data) {
         BluetoothGattService service = mBluetoothGatt.getService(write_UUID_service);
         BluetoothGattCharacteristic charaWrite = service.getCharacteristic(write_UUID_chara);
         YLog.i(TAG, "发送数据长度：" + data.length + "字节");

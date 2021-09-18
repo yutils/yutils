@@ -174,69 +174,69 @@ public class YShow extends Dialog {
         return message2;
     }
 
-    public synchronized static YShow create(Activity activity) {
+    public static YShow create(Activity activity) {
         yDialog = new YShow(activity);
         return yDialog;
     }
 
     @Deprecated
-    public synchronized static void showUpdate(Activity activity) {
+    public static void showUpdate(Activity activity) {
         showUpdate(activity, null, null, true, null);
     }
 
     @Deprecated
-    public synchronized static void showUpdate(Activity activity, String message) {
+    public static void showUpdate(Activity activity, String message) {
         showUpdate(activity, message, null, true, null);
     }
 
     @Deprecated
-    public synchronized static void showUpdate(Activity activity, String message1, String message2) {
+    public static void showUpdate(Activity activity, String message1, String message2) {
         showUpdate(activity, message1, message2, true, null);
     }
 
     @Deprecated
-    public synchronized static void showUpdate(Activity activity, String message, boolean canCancel) {
+    public static void showUpdate(Activity activity, String message, boolean canCancel) {
         showUpdate(activity, message, null, canCancel, null);
     }
 
     @Deprecated
-    public synchronized static void showUpdate(Activity activity, String message1, String message2, boolean canCancel) {
+    public static void showUpdate(Activity activity, String message1, String message2, boolean canCancel) {
         showUpdate(activity, message1, message2, canCancel, null);
     }
 
     @Deprecated
-    public synchronized static void showUpdate(Activity activity, String message1, String message2, boolean canCancel, Boolean fullScreen) { show(activity, message1, message2, canCancel, fullScreen); }
+    public static void showUpdate(Activity activity, String message1, String message2, boolean canCancel, Boolean fullScreen) { show(activity, message1, message2, canCancel, fullScreen); }
 
 
-    public synchronized static void show(String message) { show(YActivityUtil.getCurrentActivity(), message, null, true); }
+    public static void show(String message) { show(YActivityUtil.getCurrentActivity(), message, null, true); }
 
-    public synchronized static void show(String message1, String message2) {
+    public static void show(String message1, String message2) {
         show(YActivityUtil.getCurrentActivity(), message1, message2, true);
     }
 
-    public synchronized static void show(String message, boolean canCancel) {
+    public static void show(String message, boolean canCancel) {
         show(YActivityUtil.getCurrentActivity(), message, null, canCancel);
     }
 
-    public synchronized static void show(String message1, String message2, boolean canCancel) { show(YActivityUtil.getCurrentActivity(), message1, message2, canCancel, null); }
+    public static void show(String message1, String message2, boolean canCancel) { show(YActivityUtil.getCurrentActivity(), message1, message2, canCancel, null); }
 
-    public synchronized static void show(String message1, String message2, boolean canCancel, Boolean fullScreen) { show(YActivityUtil.getCurrentActivity(), message1, message2, canCancel, fullScreen); }
+    public static void show(String message1, String message2, boolean canCancel, Boolean fullScreen) { show(YActivityUtil.getCurrentActivity(), message1, message2, canCancel, fullScreen); }
 
-    public synchronized static void show(Activity activity) {
+    public static void show(Activity activity) {
         show(activity, null, null, true);
     }
 
-    public synchronized static void show(Activity activity, String message) { show(activity, message, null, true); }
+    public static void show(Activity activity, String message) { show(activity, message, null, true); }
 
-    public synchronized static void show(Activity activity, String message1, String message2) {
+    public static void show(Activity activity, String message1, String message2) {
         show(activity, message1, message2, true);
     }
 
-    public synchronized static void show(Activity activity, String message, boolean canCancel) {
+    public static void show(Activity activity, String message, boolean canCancel) {
         show(activity, message, null, canCancel);
     }
 
-    public synchronized static void show(Activity activity, String message1, String message2, boolean canCancel) {
+    public static void show(Activity activity, String message1, String message2, boolean canCancel) {
         show(activity, message1, message2, canCancel, null);
     }
 
@@ -256,19 +256,19 @@ public class YShow extends Dialog {
     }
 
     //设置文本
-    public synchronized static void setMessage(String message) {
+    public static void setMessage(String message) {
         if (yDialog != null) yDialog.setMessage1(message);
     }
 
-    public synchronized static void setMessageOther(String message) {
+    public static void setMessageOther(String message) {
         if (yDialog != null) yDialog.setMessage2(message);
     }
 
-    public synchronized static void setColor(@ColorInt int color) {
+    public static void setColor(@ColorInt int color) {
         if (yDialog != null) yDialog.setProgressBarColor(color);
     }
 
-    public synchronized static void setCancel(boolean canCancel) {
+    public static void setCancel(boolean canCancel) {
         if (yDialog != null) yDialog.setCancelable(canCancel);// 是否允许按返回键
     }
 
@@ -294,7 +294,7 @@ public class YShow extends Dialog {
      *
      * @return 是否正在显示
      */
-    public synchronized static boolean isShow() {
+    public static boolean isShow() {
         return yDialog != null && yDialog.isShowing();
     }
 

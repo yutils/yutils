@@ -95,6 +95,7 @@ class YRunOnceOfTime(var time: Long, var tag: String, var lastTime: Long) {
          * tag能否使用
          * 不存在或者过期,就代表tag可以使用，返回true
          */
+        @Synchronized
         fun check(tag: String): Boolean {
             //移除过期对象
             val currentTime = System.currentTimeMillis()
@@ -146,7 +147,6 @@ class YRunOnceOfTime(var time: Long, var tag: String, var lastTime: Long) {
         /**
          * 运行，time内只允许运行一次，多余的事件直接抛弃
          */
-        @Synchronized
         fun run(time: Long, tag: String, runnable: Runnable?) {
             //如果没有找到对象，就创建并且运行
             if (check(tag)) {
@@ -158,7 +158,6 @@ class YRunOnceOfTime(var time: Long, var tag: String, var lastTime: Long) {
         /**
          * 运行，与上一次至少间隔time时间，多余的事件直接抛弃
          */
-        @Synchronized
         fun runUpdate(time: Long, tag: String, runnable: Runnable?) {
             //如果没有找到对象，就创建并且运行
             if (checkUpdate(time, tag)) {

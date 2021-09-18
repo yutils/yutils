@@ -33,35 +33,35 @@ public class YNumber {
     }
 
     //保留小数
-    public synchronized static double round(double value, int scale, int roundingMode) {
+    public static double round(double value, int scale, int roundingMode) {
         BigDecimal bd = new BigDecimal(value);
         bd = bd.setScale(scale, roundingMode);
         return bd.doubleValue();
     }
 
     //加
-    public synchronized static double sum(double d1, double d2) {
+    public static double sum(double d1, double d2) {
         BigDecimal bd1 = new BigDecimal(Double.toString(d1));
         BigDecimal bd2 = new BigDecimal(Double.toString(d2));
         return bd1.add(bd2).doubleValue();
     }
 
     //减
-    public synchronized static double sub(double d1, double d2) {
+    public static double sub(double d1, double d2) {
         BigDecimal bd1 = new BigDecimal(Double.toString(d1));
         BigDecimal bd2 = new BigDecimal(Double.toString(d2));
         return bd1.subtract(bd2).doubleValue();
     }
 
     //乘
-    public synchronized static double multiply(double d1, double d2) {
+    public static double multiply(double d1, double d2) {
         BigDecimal bd1 = new BigDecimal(Double.toString(d1));
         BigDecimal bd2 = new BigDecimal(Double.toString(d2));
         return bd1.multiply(bd2).doubleValue();
     }
 
     //除
-    public synchronized static double divide(double d1, double d2, int scale) {
+    public static double divide(double d1, double d2, int scale) {
         if (d2 == 0) {
             System.err.println("分母是0");
             return 0d;
@@ -72,64 +72,64 @@ public class YNumber {
     }
 
     //四舍五入
-    public synchronized static double rounding(double d, int scale) {
+    public static double rounding(double d, int scale) {
         return new BigDecimal(String.valueOf(d)).setScale(scale, BigDecimal.ROUND_HALF_UP).doubleValue();
     }
 
     //四舍五入
-    public synchronized static float rounding(float f, int scale) {
+    public static float rounding(float f, int scale) {
         return new BigDecimal(String.valueOf(f)).setScale(scale, BigDecimal.ROUND_HALF_UP).floatValue();
     }
 
     //2位小数
-    public synchronized static String D2S(double d) {
+    public static String D2S(double d) {
         return D2S(d, 2);
     }
 
     //2位小数
-    public synchronized static String S2S(String s) {
+    public static String S2S(String s) {
         return S2S(s, 2);
     }
 
     //2位小数
-    public synchronized static double D2D(double d) {
+    public static double D2D(double d) {
         return D2D(d, 2);
     }
 
     //2位小数
-    public synchronized static double S2D(String s) {
+    public static double S2D(String s) {
         return S2D(s, 2);
     }
 
     //scale位小数
-    public synchronized static String D2S(double d, int scale) {
+    public static String D2S(double d, int scale) {
         return showNumber(d, scale);
     }
 
     //scale位小数
-    public synchronized static String S2S(String s, int scale) {
+    public static String S2S(String s, int scale) {
         if (s == null || s.isEmpty() || (isDouble(s) && isInt(s)))
             return "0";
         return D2S(Double.parseDouble(s), scale);
     }
 
     //scale位小数
-    public synchronized static double D2D(double d, int scale) {
+    public static double D2D(double d, int scale) {
         return Double.parseDouble(D2S(d, scale));
     }
 
     //scale位小数
-    public synchronized static double S2D(String s, int scale) {
+    public static double S2D(String s, int scale) {
         return Double.parseDouble(S2S(s,scale));
     }
 
     //不显示科学计数，默认2位小数
-    public synchronized static String showNumber(double d) {
+    public static String showNumber(double d) {
         return showNumber(d, 2);
     }
 
     //不显示科学计数
-    public synchronized static String showNumber(double d, int scale) {
+    public static String showNumber(double d, int scale) {
         StringBuilder mat = new StringBuilder("#");
         if (scale > 0) {
             mat.append(".");
@@ -141,12 +141,12 @@ public class YNumber {
     }
 
     //不显示科学计数，默认2位小数，不够的填充0
-    public synchronized static String fill(double d) {
+    public static String fill(double d) {
         return fill(d, 2);
     }
 
     //不显示科学计数，不够的填充0
-    public synchronized static String fill(double d, int scale) {
+    public static String fill(double d, int scale) {
         StringBuilder mat = new StringBuilder("0");
         if (scale > 0) {
             mat.append(".");

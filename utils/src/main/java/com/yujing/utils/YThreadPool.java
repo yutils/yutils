@@ -25,13 +25,9 @@ public class YThreadPool {
      *
      * @param runnable 要执行的线程
      */
-    public synchronized static void add(Runnable runnable) {
-        if (sTpe.isShutdown()) {
-            sTpe = new ScheduledThreadPoolExecutor(threadNum);
-            synchronized (sTpe) {
-                sTpe.execute(runnable);
-            }
-        } else {
+    public static void add(Runnable runnable) {
+        synchronized (sTpe) {
+            if (sTpe.isShutdown()) sTpe = new ScheduledThreadPoolExecutor(threadNum);
             sTpe.execute(runnable);
         }
     }
@@ -48,7 +44,7 @@ public class YThreadPool {
     /**
      * 关闭释放线程池
      */
-    public synchronized static void shutdown() {
+    public static void shutdown() {
         synchronized (sTpe) {
             if (!sTpe.isShutdown()) sTpe.shutdown();
         }

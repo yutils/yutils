@@ -69,7 +69,7 @@ public class YFace {
      * @param height 图片高度
      * @return Bitmap
      */
-    public synchronized static Bitmap drawFaceInfo(float startX, float startY, float endX, float endY, int width, int height) {
+    public static Bitmap drawFaceInfo(float startX, float startY, float endX, float endY, int width, int height) {
         int strokeWidth = 2;//线宽。单位为像素
         //控制线长短,如果起点X-终点X大于200就是50，否则就是起点到终点的1/4长度
         int lineLengthX = ((endX - startX) > 200) ? 50 : (int) ((endX - startX) * 0.25f);//x轴长度

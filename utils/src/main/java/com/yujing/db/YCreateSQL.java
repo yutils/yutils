@@ -15,13 +15,14 @@ import java.util.Map;
 /**
  * 创建SQL语句，
  * 如YCreateSQL.create（user）; 返回字符串 CREATE TABLE IF NOT EXISTS `User`(`id` TEXT NULL,`account` TEXT）
+ *
  * @author 余静
  */
 public class YCreateSQL {
     // CREATE TABLE IF NOT EXISTS `User`(`id` TEXT NULL,`account` TEXT
     // NULL,`name` TEXT NULL,`phone` TEXT NULL,`nickname` TEXT NULL,`age` TEXT
     // NULL,`sex` TEXT NULL,`password` TEXT NULL,`photourl` TEXT NULL)
-    public synchronized static String create(Class<?> cls) {
+    public static String create(Class<?> cls) {
         // 创建表
         String tempvalue = "";
         Field[] fields = cls.getDeclaredFields();
@@ -44,48 +45,48 @@ public class YCreateSQL {
     }
 
     // INSERT INTO 'User'(id,psd,name,age) VALUES ('1','123456','yu','23')
-    public synchronized static String insert(Object object) {
+    public static String insert(Object object) {
         return "INSERT INTO " + "`" + object.getClass().getSimpleName() + "`" + getKeyValue(object);
     }
 
     // SELECT * FROM 'User'
-    public synchronized static String query(Class<?> cls) {
+    public static String query(Class<?> cls) {
         return "SELECT * FROM `" + cls.getSimpleName() + "`";
     }
 
     // SELECT * FROM 'User' WHERE id='1' AND name='张三'
-    public synchronized static String query(Class<?> cls, Map<String, Object> where) {
+    public static String query(Class<?> cls, Map<String, Object> where) {
         return "SELECT * FROM `" + cls.getSimpleName() + "`" + getWheresValue(where, "=");
     }
 
     // SELECT count(*) FROM 'User'
-    public synchronized static String count(Class<?> cls) {
+    public static String count(Class<?> cls) {
         return "SELECT count(*) FROM `" + cls.getSimpleName() + "`";
     }
 
     // SELECT count(*) FROM 'User' WHERE id='1' AND name='张三'
-    public synchronized static String count(Class<?> cls, Map<String, Object> where) {
+    public static String count(Class<?> cls, Map<String, Object> where) {
         return "SELECT count(*) FROM `" + cls.getSimpleName() + "`" + getWheresValue(where, "=");
     }
 
     // DELETE FROM 'User'
-    public synchronized static String delete(Class<?> cls) {
+    public static String delete(Class<?> cls) {
         return "DELETE FROM `" + cls.getSimpleName() + "`";
     }
 
     // DELETE FROM 'User' WHERE id='1' AND name='张三'
-    public synchronized static String delete(Class<?> cls, Map<String, Object> where) {
+    public static String delete(Class<?> cls, Map<String, Object> where) {
         return "DELETE FROM `" + cls.getSimpleName() + "`" + getWheresValue(where, "=");
     }
 
     // DROP TABLE IF EXISTS 'User'
-    public synchronized static String deleteTable(Class<?> cls) {
+    public static String deleteTable(Class<?> cls) {
         return "DROP TABLE IF EXISTS `" + cls.getSimpleName() + "`";
     }
 
     // UPDATE 'User' SET id='1',psd='123456',name='yu',age='23' WHERE id='1' AND
     // name='张三'
-    public synchronized static String update(Class<?> cls, Object object, Map<String, Object> where) {
+    public static String update(Class<?> cls, Object object, Map<String, Object> where) {
         return "UPDATE `" + cls.getSimpleName() + "`" + getSetValue(object) + getWheresValue(where, "=");
     }
 
@@ -100,18 +101,18 @@ public class YCreateSQL {
     }
 
     // 是复杂类
-    public synchronized static boolean isComplexType(Object obj) {
+    public static boolean isComplexType(Object obj) {
         return !(obj instanceof Boolean) && !(obj instanceof Short) && !(obj instanceof Byte) && !(obj instanceof Integer) && !(obj instanceof Long) && !(obj instanceof Float) && !(obj instanceof Character) && !(obj instanceof Double) && !(obj instanceof String) && isComplexType(obj.getClass());
     }
 
     // 是复杂类
-    public synchronized static boolean isComplexType(Class<?> objectClass) {
+    public static boolean isComplexType(Class<?> objectClass) {
         return objectClass != boolean.class && objectClass != Boolean.class && objectClass != short.class && objectClass != Short.class && objectClass != byte.class && objectClass != Byte.class && objectClass != int.class && objectClass != Integer.class && objectClass != long.class && objectClass != Long.class && objectClass != float.class && objectClass != Float.class && objectClass != char.class && objectClass != Character.class && objectClass != double.class && objectClass != Double.class && objectClass != String.class;
     }
 
     // (`id`,`account`,`name`,`phone`,`nickname`,`age`,`sex`,`password`,`photourl`)
     // VALUES ('11','','余','','雨季','123','13','','')
-    private synchronized static String getKeyValue(Object object) {
+    private static String getKeyValue(Object object) {
         Field[] fields = object.getClass().getDeclaredFields();
         if (fields == null || fields.length == 0) {
             return "";
@@ -148,7 +149,7 @@ public class YCreateSQL {
     }
 
     // WHERE id='1' AND name='张三'
-    private synchronized static String getWheresValue(Map<String, Object> where, String Symbol) {
+    private static String getWheresValue(Map<String, Object> where, String Symbol) {
         if (where == null) return "";
         Gson gson = new Gson();
         String tempwhere = " WHERE ";
@@ -169,7 +170,7 @@ public class YCreateSQL {
     }
 
     // SET id='1',psd='123456',name='yu',age='23'
-    private synchronized static String getSetValue(Object object) {
+    private static String getSetValue(Object object) {
         if (object == null) return "";
         String temp = " SET ";
         Gson gson = new Gson();

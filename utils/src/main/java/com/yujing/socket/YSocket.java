@@ -171,7 +171,7 @@ public class YSocket {
     /**
      * 单例模式，调用此方法前必须先调用getInstance(String ip, int port)
      */
-    public static synchronized YSocket getInstance() {
+    public static YSocket getInstance() {
         if (instance == null) {
             synchronized (YSocket.class) {
                 if (instance == null)

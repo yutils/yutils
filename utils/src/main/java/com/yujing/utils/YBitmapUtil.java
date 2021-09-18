@@ -67,7 +67,7 @@ public class YBitmapUtil {
      * @param Kb    大小kb
      * @return byte[]
      */
-    public synchronized static byte[] compressToBytes(Bitmap image, int Kb) {
+    public static byte[] compressToBytes(Bitmap image, int Kb) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         int options = 100;//质量
         image.compress(Bitmap.CompressFormat.JPEG, options, baos);// 质量压缩方法，这里100表示不压缩，把压缩后的数据存放到baos中
@@ -86,7 +86,7 @@ public class YBitmapUtil {
      * @param bitmap 输入bitmap
      * @return 转换后的bitmap
      */
-    public synchronized static Bitmap bitmap888To565(Bitmap bitmap) {
+    public static Bitmap bitmap888To565(Bitmap bitmap) {
         Bitmap bitmap565 = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.RGB_565);
         Canvas canvas = new Canvas(bitmap565);
         canvas.drawBitmap(bitmap, 0, 0, null);

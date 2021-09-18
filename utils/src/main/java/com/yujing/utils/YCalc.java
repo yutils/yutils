@@ -43,7 +43,7 @@ public class YCalc {
     // ---------------------------------定义符号完毕---------------------------
 
     // 传入字符串表达式如："1-(2*2)+6"
-    public synchronized static String eval(String expression) {
+    public static String eval(String expression) {
         expression = expression.replace(" ", "");// 去掉全部空格
         expression = expression.replace("(-", "(0-");// 去掉全部空格
         if (expression.charAt(0) == SymbolSub) {

@@ -183,7 +183,7 @@ public class YUri {
      * @param mBitmap 保存的文件
      * @return Uri
      */
-    public synchronized static Uri saveBitmap2uri(String path, Bitmap mBitmap) {
+    public static Uri saveBitmap2uri(String path, Bitmap mBitmap) {
         File f = new File(path);
         FileOutputStream fOut = null;
         try {
@@ -214,7 +214,7 @@ public class YUri {
      * @param uri     uri
      * @return Bitmap
      */
-    public synchronized static Bitmap getBitmap(Context context, Uri uri) {
+    public static Bitmap getBitmap(Context context, Uri uri) {
         try {// 读取uri所在的图片
             return MediaStore.Images.Media.getBitmap(context.getContentResolver(), uri);
         } catch (Exception e) {

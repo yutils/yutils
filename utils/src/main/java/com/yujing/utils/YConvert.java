@@ -296,7 +296,7 @@ public class YConvert {
      * @param bitmap 保存的文件
      * @return Uri
      */
-    public synchronized static Uri saveBitmap2uri(String path, Bitmap bitmap) {
+    public static Uri saveBitmap2uri(String path, Bitmap bitmap) {
         return YUri.saveBitmap2uri(path, bitmap);
     }
 
@@ -307,11 +307,11 @@ public class YConvert {
      * @param uri     uri
      * @return Bitmap
      */
-    public synchronized static Bitmap uri2Bitmap(Context context, Uri uri) {
+    public static Bitmap uri2Bitmap(Context context, Uri uri) {
         return YUri.getBitmap(context, uri);
     }
 
-    public synchronized static Bitmap uri2Bitmap(Uri uri) {
+    public static Bitmap uri2Bitmap(Uri uri) {
         return uri2Bitmap(YApp.get(), uri);
     }
 
@@ -321,7 +321,7 @@ public class YConvert {
      * @param path 文件路径
      * @return Bitmap
      */
-    public synchronized static Bitmap path2Bitmap(String path) {
+    public static Bitmap path2Bitmap(String path) {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         //Bitmap bitmap = BitmapFactory.decodeFile(path, options); // 此时返回 bm 为空
@@ -341,12 +341,12 @@ public class YConvert {
      * @param Resources Resources
      * @return Bitmap
      */
-    public synchronized static Bitmap resources2Bitmap(Context context, int Resources) {
+    public static Bitmap resources2Bitmap(Context context, int Resources) {
         android.content.res.Resources res = context.getResources();
         return BitmapFactory.decodeResource(res, Resources);
     }
 
-    public synchronized static Bitmap resources2Bitmap(int Resources) {
+    public static Bitmap resources2Bitmap(int Resources) {
         return resources2Bitmap(YApp.get(), Resources);
     }
 
@@ -356,7 +356,7 @@ public class YConvert {
      * @param bm BM
      * @return byte[]
      */
-    public synchronized static byte[] bitmap2Bytes(Bitmap bm) {
+    public static byte[] bitmap2Bytes(Bitmap bm) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bm.compress(Bitmap.CompressFormat.PNG, 100, baos);
         return baos.toByteArray();
@@ -368,7 +368,7 @@ public class YConvert {
      * @param b byte[]
      * @return Bitmap
      */
-    public synchronized static Bitmap bytes2Bitmap(byte[] b) {
+    public static Bitmap bytes2Bitmap(byte[] b) {
         if (b != null && b.length != 0) {
             return BitmapFactory.decodeByteArray(b, 0, b.length);
         } else {
@@ -382,7 +382,7 @@ public class YConvert {
      * @param string string
      * @return Bitmap
      */
-    public synchronized static Bitmap string2Bitmap(String string) {
+    public static Bitmap string2Bitmap(String string) {
         Bitmap bitmap = null;
         try {
             byte[] bitmapArray;
@@ -401,7 +401,7 @@ public class YConvert {
      * @param bitmap bitmap
      * @return String
      */
-    public synchronized static String bitmap2String(Bitmap bitmap) {
+    public static String bitmap2String(Bitmap bitmap) {
         String string;
         ByteArrayOutputStream bStream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 80, bStream);
@@ -529,7 +529,7 @@ public class YConvert {
      * @param Base64String Base64String
      * @return Object
      */
-    public synchronized static Object base642Object(String Base64String) {
+    public static Object base642Object(String Base64String) {
         if (Base64String == null)
             return null;
         return bytes2Object(Base64.decode(Base64String, Base64.DEFAULT));
@@ -542,7 +542,7 @@ public class YConvert {
      * @param <T>    Serializable
      * @return String
      */
-    public synchronized static <T extends Serializable> String object2Base64(T object) {
+    public static <T extends Serializable> String object2Base64(T object) {
         if (object == null)
             return null;
         return new String(Base64.encode(object2Bytes(object), Base64.DEFAULT));
@@ -554,7 +554,7 @@ public class YConvert {
      * @param bytes bytes
      * @return Object
      */
-    public synchronized static Object bytes2Object(byte[] bytes) {
+    public static Object bytes2Object(byte[] bytes) {
         if (bytes == null)
             return null;
         Object object;
@@ -580,7 +580,7 @@ public class YConvert {
      * @param <T>    Serializable
      * @return byte[]
      */
-    public synchronized static <T extends Serializable> byte[] object2Bytes(T object) {
+    public static <T extends Serializable> byte[] object2Bytes(T object) {
         if (object == null)
             return null;
         ByteArrayOutputStream byteOut = new ByteArrayOutputStream();

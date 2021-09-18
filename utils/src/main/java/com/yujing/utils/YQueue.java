@@ -48,14 +48,8 @@ public class YQueue {
      */
     private void add(Runnable runnable) {
         synchronized (sTEP) {
-            if (sTEP.isShutdown()) {
-                sTEP = new ScheduledThreadPoolExecutor(threadNum);
-                synchronized (sTEP) {
-                    sTEP.execute(runnable);
-                }
-            } else {
-                sTEP.execute(runnable);
-            }
+            if (sTEP.isShutdown()) sTEP = new ScheduledThreadPoolExecutor(threadNum);
+            sTEP.execute(runnable);
         }
     }
 
