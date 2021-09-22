@@ -82,7 +82,7 @@ class YUdp(var ip: String, var port: Int) {
 
     //同步发送
     fun send(data: ByteArray) {
-        Thread {
+        val thread = Thread {
             try {
                 onDestroy()
                 datagramSocket = DatagramSocket()
@@ -96,7 +96,9 @@ class YUdp(var ip: String, var port: Int) {
             } catch (e: Exception) {
                 if (showLog) YLog.e("发送数据时异常", e)
             }
-        }.start()
+        }
+        thread.name = "YUdp-同步发送"
+        thread.start()
     }
 
     //同步发送

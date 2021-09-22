@@ -93,6 +93,7 @@ public class YPlayer {
             public void surfaceDestroyed(SurfaceHolder holder) {
             }
         });
+        thread.setName("YPlayer-屏幕无响应检测");
         thread.start();
     }
 

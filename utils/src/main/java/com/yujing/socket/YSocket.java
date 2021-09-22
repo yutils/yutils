@@ -4,7 +4,6 @@ import static java.lang.System.currentTimeMillis;
 
 import com.yujing.utils.YClass;
 import com.yujing.utils.YLog;
-import com.yujing.utils.YReadInputStream;
 import com.yujing.utils.YThread;
 
 import java.io.IOException;
@@ -397,7 +396,7 @@ public class YSocket {
                 backNotice(connectListeners.get(i), success);
             }
         });
-        heartbeat.setName("YSocket-连接线程");
+        connectThread.setName("YSocket-连接线程");
         connectThread.start();
     }
 
@@ -560,7 +559,7 @@ public class YSocket {
     protected void startReadThread() {
         closeReadThread();
         readThread = new ReadThread();
-        heartbeat.setName("YSocket-读取线程");
+        readThread.setName("YSocket-读取线程");
         readThread.start();
     }
 
@@ -615,7 +614,7 @@ public class YSocket {
                 printLog("SendThread：" + e.getMessage());
             }
         });
-        heartbeat.setName("YSocket-发送线程");
+        thread.setName("YSocket-发送线程");
         thread.start();
     }
 
@@ -643,7 +642,7 @@ public class YSocket {
                         e.printStackTrace();
                     }
                 });
-                heartbeat.setName("YSocket-回调数据");
+                thread.setName("YSocket-回调数据");
                 thread.start();
             } catch (Exception e) {
                 printLog("错误：" + e.getMessage());
@@ -671,7 +670,7 @@ public class YSocket {
                     e.printStackTrace();
                 }
             });
-            heartbeat.setName("YSocket-回调状态");
+            thread.setName("YSocket-回调状态");
             thread.start();
         }
     }

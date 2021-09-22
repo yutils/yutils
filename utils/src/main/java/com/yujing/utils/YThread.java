@@ -49,14 +49,16 @@ public final class YThread {
      */
     public static void runOnUiThreadDelayed(final Runnable runnable, long delayMillis) {
         if (!YClass.isAndroid()) {
-            new Thread(() -> {
+            Thread thread=new Thread(() -> {
                 try {
                     Thread.sleep(delayMillis);
                     runnable.run();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-            }).start();
+            });
+            thread.setName("YThread-主线程中延时运行");
+            thread.start();
             return;
         }
         HANDLER.postDelayed(runnable, delayMillis);

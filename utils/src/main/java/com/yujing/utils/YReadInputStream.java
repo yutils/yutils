@@ -242,7 +242,7 @@ public class YReadInputStream {
      *
      * @param inputStream inputStream
      * @param maxTime     最多读取这么长时间
-     * @param minLength   至少读取长度，即使没有读取到timeOut时间，只要读取长度大于等于minReadLength，直接返回
+     * @param minLength   至少读取长度，即使没有读取到maxTime时间，只要读取长度大于等于minReadLength，直接返回
      * @return YBytes
      * @throws Exception Exception
      */
