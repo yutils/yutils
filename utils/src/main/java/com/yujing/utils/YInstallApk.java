@@ -77,9 +77,6 @@ public class YInstallApk {
             if (haveInstallPermission) {
                 installApk(activity, apkUri);
             } else {
-                Uri packageURI = Uri.parse("package:" + activity.getPackageName());
-                Intent intent = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, packageURI);
-
                 //请求权限之后回调
                 YActivityResultObserver activityResultObserver = new YActivityResultObserver(activity.getActivityResultRegistry(), "YInstallApk", result -> {
                     if (result.getResultCode() == Activity.RESULT_OK)
@@ -87,6 +84,9 @@ public class YInstallApk {
                     return null;
                 });
                 activity.getLifecycle().addObserver(activityResultObserver);
+
+                Uri packageURI = Uri.parse("package:" + activity.getPackageName());
+                Intent intent = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, packageURI);
                 activityResultObserver.launch(intent);
             }
         } else {
