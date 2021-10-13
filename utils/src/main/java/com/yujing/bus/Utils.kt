@@ -42,26 +42,46 @@ internal class Utils {
             try {
                 //如果只有一个接收参数，而且 @YBus(tag) tag值不为空，就直接返回data
                 val yBus = method.getAnnotation(YBus::class.java)
-                //获取参数个数
+                //获取参数列表
                 val parameters = method.parameterTypes
-                //如果这个方法有两个接收参数，直接返回messageType，messageData
-                //if (yBus.mainThread)
-                if (parameters.size == 2)
-                    method.invoke(anyClass, yMessage.type, yMessage.data)
-
-                //如果只有一个接收参数，而且接收的是YMessage<Any>
-                if (parameters.size == 1 && parameters[0] == yMessage::class.java)
-                    method.invoke(anyClass, yMessage)
-
-                for (tag in yBus.value) {
-                    if (tag != yMessage.type) continue
-                    //如果这个方法有一个参数，直接返回messageData。
-                    // 如果这个方法没有参数，直接调用
+                //如果是没有tag，满足情况就调用(@YBus() 默认长度1，默认是"")
+                if (yBus.value.size == 1 && "" == yBus.value[0]) {
                     when (parameters.size) {
+                        //只有1个参数
                         1 ->
-                            method.invoke(anyClass, yMessage.data)
-                        0 ->
-                            YThread.runOnUiThread { method.invoke(anyClass) }
+                            //接收的是YMessage<Any>，直接调用， yMessage
+                            if (parameters[0] == yMessage::class.java)
+                                method.invoke(anyClass, yMessage)
+                            //接收参数正好是发送的内容，直接调用， data
+                            else if (yMessage.data!!::class.java == parameters[0]) {
+                                method.invoke(anyClass, yMessage.data)
+                            }
+                        //有2个参数
+                        2 ->
+                            //如果data==null，直接调用， null
+                            if (yMessage.data == null) {
+                                method.invoke(anyClass, yMessage.type, null)
+                            } else {
+                                //如果data!=null,判断data类型相同后，直接调用， data
+                                if (yMessage.data!!::class.java == parameters[1])
+                                    method.invoke(anyClass, yMessage.type, yMessage.data)
+                            }
+                    }
+                } else {
+                    for (tag in yBus.value) {
+                        if (tag != yMessage.type) continue
+                        //tag，匹配成功
+                        when (parameters.size) {
+                            //如果这个方法没有参数，直接调用
+                            0 ->
+                                YThread.runOnUiThread { method.invoke(anyClass) }
+                            //如果这个方法有1个参数，直接返回 data。
+                            1 ->
+                                method.invoke(anyClass, yMessage.data)
+                            //如果这个方法有2个参数，直接返回 tag 和 data
+                            2 ->
+                                method.invoke(anyClass, yMessage.type, yMessage.data)
+                        }
                     }
                 }
             } catch (e: ClassNotFoundException) {

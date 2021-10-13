@@ -1,7 +1,6 @@
 package com.yujing.utils;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.widget.Toast;
 
@@ -16,7 +15,7 @@ import android.widget.Toast;
 public class YToast {
     private static Toast toast;
     private static YQueue yQueue;
-    private static volatile int queueTime = 500;//队列显示一条toast至少显示这么长时间
+    private static volatile int queueTime = 1000;//队列显示一条toast至少显示这么长时间
 
     /**
      * 多条toast同时过来，只显示最后一条，显示时间为LENGTH_SHORT
@@ -27,17 +26,16 @@ public class YToast {
     public static void show(Context context, String text) {
         if (context == null || text == null) return;
         if (YThread.isMainThread()) {
-            if (toast == null) {
-                toast = Toast.makeText(context, text, Toast.LENGTH_SHORT);
-            } else {
-                toast.setText(text);
-                toast.setDuration(Toast.LENGTH_SHORT);
+            if (toast != null) {
+                toast.cancel();
+                toast = null;
             }
-            if (context instanceof Activity && ((Activity) context).isFinishing()) return;
+            toast = Toast.makeText(context, text, Toast.LENGTH_SHORT);
             toast.show();
         } else {
             YThread.runOnUiThread(() -> show(context, text));
         }
+
     }
 
     public static void show(String text) {
@@ -53,13 +51,11 @@ public class YToast {
     public static void showLong(Context context, String text) {
         if (context == null || text == null) return;
         if (YThread.isMainThread()) {
-            if (toast == null) {
-                toast = Toast.makeText(context, text, Toast.LENGTH_LONG);
-            } else {
-                toast.setText(text);
-                toast.setDuration(Toast.LENGTH_LONG);
+            if (toast != null) {
+                toast.cancel();
+                toast = null;
             }
-            if (context instanceof Activity && ((Activity) context).isFinishing()) return;
+            toast = Toast.makeText(context, text, Toast.LENGTH_LONG);
             toast.show();
         } else {
             YThread.runOnUiThread(() -> showLong(context, text));
@@ -79,14 +75,8 @@ public class YToast {
     public static void showQueue(final Context context, final String text) {
         if (context == null || text == null) return;
         if (YThread.isMainThread()) {
-            if (toast == null) {
-                toast = Toast.makeText(context, text, Toast.LENGTH_SHORT);
-                if (context instanceof Activity && ((Activity) context).isFinishing()) return;
-                toast.show();
-            } else {
-                if (yQueue == null) yQueue = new YQueue();
-                yQueue.run(queueTime, () -> show(context, text));
-            }
+            if (yQueue == null) yQueue = new YQueue();
+            yQueue.run(queueTime, () -> show(context, text));
         } else {
             YThread.runOnUiThread(() -> showQueue(context, text));
         }
@@ -106,14 +96,8 @@ public class YToast {
     public static void showQueueLong(final Context context, final String text) {
         if (context == null || text == null) return;
         if (YThread.isMainThread()) {
-            if (toast == null) {
-                toast = Toast.makeText(context, text, Toast.LENGTH_LONG);
-                if (context instanceof Activity && ((Activity) context).isFinishing()) return;
-                toast.show();
-            } else {
-                if (yQueue == null) yQueue = new YQueue();
-                yQueue.run(queueTime, () -> showLong(context, text));
-            }
+            if (yQueue == null) yQueue = new YQueue();
+            yQueue.run(queueTime, () -> showLong(context, text));
         } else {
             YThread.runOnUiThread(() -> showQueueLong(context, text));
         }

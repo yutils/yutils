@@ -33,6 +33,7 @@ public final class YThread {
      * 主线程中运行
      */
     public static void runOnUiThread(final Runnable runnable) {
+        if (runnable == null) return;
         if (!YClass.isAndroid()) {
             runnable.run();
             return;
@@ -48,8 +49,9 @@ public final class YThread {
      * 主线程中延时运行
      */
     public static void runOnUiThreadDelayed(final Runnable runnable, long delayMillis) {
+        if (runnable == null) return;
         if (!YClass.isAndroid()) {
-            Thread thread=new Thread(() -> {
+            Thread thread = new Thread(() -> {
                 try {
                     Thread.sleep(delayMillis);
                     runnable.run();

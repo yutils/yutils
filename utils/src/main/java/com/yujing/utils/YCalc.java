@@ -11,15 +11,18 @@ import java.util.Stack;
  */
 /*用法
 public static void main(String[] args) {
-    String Str = "-2-3";
-    Replace r = new Replace(Str);
-    r.put("a", 5);
-    r.put("b", "2");
-    r.put("x", 3);
+        String s = "(5*2+(20-10)-10/(2*5))";
+        System.out.println("计算结果：" + YCalc.eval(s));
 
-    System.out.println("替换变量前：" + Str);
-    System.out.println("替换变量后：" + r.toString());
-    System.out.println("计算结果：" + YCalc.eval(r.toString()));
+        String str = "(5*2+(20-10)-10/(a+b))";
+        YCalc.Replace r = new YCalc.Replace(str);
+        r.put("a", 3);
+        r.put("b", 7);
+
+        String js=YCalc.eval(r.toString());
+
+        System.out.println("替换变量前：" + str + "\t替换变量后：" + r.toString());
+        System.out.println("计算结果：" + js);
 }
  */
 @SuppressWarnings("WeakerAccess")

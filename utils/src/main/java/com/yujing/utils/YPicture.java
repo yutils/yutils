@@ -8,7 +8,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.widget.Toast;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -79,7 +78,13 @@ public class YPicture {
      * 打开相机
      *
      * @param activity 页面
+     *                 使用：YTake
+     *                 YTake.take(this) {
+     *                 val bitmap = YConvert.uri2Bitmap(this, it)
+     *                 YImageDialog.show(bitmap)
+     *                 }
      */
+    @Deprecated
     public void gotoCamera(Activity activity) {
         this.activity = activity;
         try {
@@ -91,7 +96,7 @@ public class YPicture {
             String fileName = "CAMERA_" + str + ".jpg";
             YLog.d("gotoCamera路径：", filePath + fileName);
             cameraFile = createImageFile(filePath + fileName);
-            cameraUri = createImageUri(activity, filePath, fileName);
+            cameraUri = createImageUri(activity, new File(filePath, fileName));
             //跳转到照相机拍照
             Intent it = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             it.putExtra(MediaStore.EXTRA_OUTPUT, cameraUri);
@@ -107,7 +112,14 @@ public class YPicture {
      *
      * @param activity activity
      * @param flag     标记
+     *                 <p>
+     *                 使用：YTake
+     *                 YTake.takeAndCorp(this) {
+     *                 val bitmap = YConvert.uri2Bitmap(this, it)
+     *                 YImageDialog.show(bitmap)
+     *                 }
      */
+    @Deprecated
     public void gotoCamera(Activity activity, Object flag) {
         flagCamera = flag;
         gotoCamera(activity);
@@ -118,6 +130,22 @@ public class YPicture {
      *
      * @param activity activity
      */
+    /*
+        替换方案
+
+        //选择图片
+        YTake.chosePicture(this) {
+            val bitmap = YConvert.uri2Bitmap(this, it)
+            YImageDialog.show(bitmap)
+        }
+
+        //选择图片并剪切
+        YTake.chosePictureAndCorp(this) {
+            val bitmap = YConvert.uri2Bitmap(this, it)
+            YImageDialog.show(bitmap)
+        }
+     */
+    @Deprecated
     public void gotoAlbumDefault(Activity activity) {
         this.activity = activity;
         Intent it = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
@@ -130,6 +158,7 @@ public class YPicture {
      * @param activity activity
      * @param flag     标记
      */
+    @Deprecated
     public void gotoAlbumDefault(Activity activity, Object flag) {
         flagAlbum = flag;
         gotoAlbumDefault(activity);
@@ -140,6 +169,24 @@ public class YPicture {
      *
      * @param activity activity
      */
+    /*
+    选择文件,替换方案：
+    var choice: ActivityResultLauncher<Array<String>>? = null
+    activity.lifecycle.addObserver(object : DefaultLifecycleObserver {
+        override fun onCreate(owner: LifecycleOwner) {
+            super.onCreate(owner)
+            //register = activity.activityResultRegistry.register("choice", ActivityResultContracts.OpenDocument()) { it: Uri? ->  }
+            choice = activity.activityResultRegistry.register("choice", ActivityResultContracts.OpenDocument(), onResult)
+        }
+
+        override fun onDestroy(owner: LifecycleOwner) {
+            super.onDestroy(owner)
+            choice?.unregister()
+        }
+    })
+    choice?.launch(arrayOf("image/jpg", "image/jpeg", "image/png", "image/*"))
+     */
+    @Deprecated
     public void gotoAlbum(Activity activity) {
         this.activity = activity;
         Intent intent = new Intent(Intent.ACTION_PICK);
@@ -153,6 +200,7 @@ public class YPicture {
      * @param activity activity
      * @param flag     标记
      */
+    @Deprecated
     public void gotoAlbum(Activity activity, Object flag) {
         flagAlbum = flag;
         gotoAlbum(activity);
@@ -166,6 +214,7 @@ public class YPicture {
      * @param outputX  宽度
      * @param outputY  高度
      */
+    @Deprecated
     public void gotoCrop(Activity activity, Uri uri, int outputX, int outputY) {
         this.activity = activity;
         String str = dateFormat.format(new Date(System.currentTimeMillis()));
@@ -175,7 +224,7 @@ public class YPicture {
         YLog.d("gotoCrop路径：", filePath + fileName);
 
         cropFile = createImageFile(filePath + fileName);
-        cropUri = createImageUri(activity, filePath, fileName);
+        cropUri = createImageUri(activity, new File(filePath, fileName));
 
         Intent intent = new Intent("com.android.camera.action.CROP");
         intent.setDataAndType(uri, "image/*");
@@ -203,6 +252,7 @@ public class YPicture {
      * @param outputY  高度
      * @param flag     标记
      */
+    @Deprecated
     public void gotoCrop(Activity activity, Uri uri, int outputX, int outputY, Object flag) {
         flagCrop = flag;
         gotoCrop(activity, uri, outputX, outputY);
@@ -215,6 +265,7 @@ public class YPicture {
      * @param resultCode  响应code
      * @param data        数据
      */
+    @Deprecated
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == REQUEST_CODE_CAMERA && pictureFromCameraListener != null) {
@@ -236,7 +287,7 @@ public class YPicture {
      * @param uri     图片URI
      * @return String路径
      */
-    public String uri2ImagePath(Context context, Uri uri) {
+    public static String uri2ImagePath(Context context, Uri uri) {
         String mImgPath;
         String[] filePathColumn = {MediaStore.Images.Media.DATA};
         Cursor cursor = context.getContentResolver().query(uri, filePathColumn, null, null, null);
@@ -259,7 +310,7 @@ public class YPicture {
      * @param imageFile 文件
      * @return URI图片
      */
-    public Uri imageFile2Uri(Context context, File imageFile) {
+    public static Uri imageFile2Uri(Context context, File imageFile) {
         String filePath = imageFile.getAbsolutePath();
         Uri uri = null;
         try (Cursor cursor = context.getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, new String[]{"_id"}, "_data=? ", new String[]{filePath}, null)) {
@@ -284,16 +335,14 @@ public class YPicture {
      * @param path 路径
      * @return File文件
      */
-    public File createImageFile(String path) {
+    public static File createImageFile(String path) {
         // 判断是否有SD卡
-        if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
+        if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState()))
             YLog.e("警告", "SD卡不存在！！");
-        }
         File file = new File(path);
         if (!Objects.requireNonNull(file.getParentFile()).exists()) {//如果文件夹不存在就创建
             if (file.getParentFile().mkdirs()) YLog.i("ImageUtil.path2Uri", "创建图片文件夹成功");
             else YLog.e("ImageUtil.path2Uri", "创建图片文件夹失败");
-
         }
         if (file.exists()) {
             if (file.delete()) YLog.i("ImageUtil.path2Uri", "删除源文件成功");
@@ -305,27 +354,36 @@ public class YPicture {
     /**
      * 创建适用于图片的Uri
      *
-     * @param activity activity
-     * @param filePath file要存放的路径
-     * @param fileName file文件名
+     * @param context context
+     * @param file    file文件
      * @return URI图片
      */
-    private Uri createImageUri(Activity activity, String filePath, String fileName) {
+    public static Uri createImageUri(Context context, File file) {
+        if (!file.getParentFile().exists()) file.getParentFile().mkdirs();
+        if (file.exists()) file.delete();
+        YLog.d(file.toString());
+        //文件，如：/storage/emulated/0/Pictures/img/name.jpg
+        //文件名,如：name.jpg
+        String fileName = file.getName();
+        //文件路径，如：img
+        String pathName = file.getParentFile().getName();
+        //相对路径，如：Picture/img
+        String relativePath = file.getParentFile().getPath().substring(YPath.getSDCard().length() + 1);
         Uri uri;
         if (android.os.Build.VERSION.SDK_INT < 24) {
-            uri = Uri.fromFile(new File(filePath + fileName));
+            uri = Uri.fromFile(file);
         } else if (android.os.Build.VERSION.SDK_INT >= 29) {
             ContentValues values = new ContentValues();
             // 需要指定文件信息时，非必须
             values.put(MediaStore.Images.Media.DESCRIPTION, pathName);
             values.put(MediaStore.Images.Media.DISPLAY_NAME, fileName);
             values.put(MediaStore.Images.Media.TITLE, fileName);
-            values.put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/" + pathName);
-            uri = activity.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+            values.put(MediaStore.Images.Media.RELATIVE_PATH, relativePath);
+            uri = context.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
         } else {
             ContentValues contentValues = new ContentValues(1);
-            contentValues.put(MediaStore.Images.Media.DATA, filePath + fileName);
-            uri = activity.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
+            contentValues.put(MediaStore.Images.Media.DATA, file.getPath());
+            uri = context.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
         }
         return uri;
     }

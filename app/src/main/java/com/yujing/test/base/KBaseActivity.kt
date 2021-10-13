@@ -35,7 +35,6 @@ abstract class KBaseActivity<B : ViewDataBinding>(layout: Int?) : YBaseActivity<
     override fun initAfter() {
         YUtils.setFullScreen(this, true)
         YUtils.setImmersive(this, true)
-        //YPermissions.requestAll(this)
     }
 
 

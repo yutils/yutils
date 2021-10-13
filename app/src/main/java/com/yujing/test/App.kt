@@ -26,6 +26,7 @@ class App : Application() {
         super.onCreate()
         instance = this
         YUtils.init(this)
+        YActivityUtil.init(this)
         //保存日志开
         YLog.saveOpen(YPath.getFilePath(this, "log"))
         YLog.setLogSaveListener { type, tag, msg -> return@setLogSaveListener type != YLog.DEBUG }

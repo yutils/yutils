@@ -37,7 +37,7 @@ public class YUri {
     public static Uri getUri(Context context, File file) {
         Uri uri;
         if (Build.VERSION.SDK_INT >= 24) {
-            uri = FileProvider.getUriForFile(context, context.getPackageName(), file);
+            uri = FileProvider.getUriForFile(context, context.getPackageName() + ".fileProvider", file);
         } else {
             uri = Uri.fromFile(file);
         }
@@ -52,6 +52,7 @@ public class YUri {
      * @return 路径
      */
     public static String getPathForN(Context context, Uri uri) {
+        if (uri == null) return null;
         try {
             Cursor returnCursor = context.getContentResolver().query(uri, null, null, null, null);
             int nameIndex = returnCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
@@ -87,6 +88,7 @@ public class YUri {
      * @return 路径
      */
     public static String getPath(final Context context, final Uri uri) {
+        if (uri == null) return null;
         final boolean isKitKat = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT;
         //       final boolean isN = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N;
         //        if (isN) {
@@ -204,7 +206,7 @@ public class YUri {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return Uri.fromFile(f);
+        return getUri(YApp.get(), f);
     }
 
     /**
@@ -215,6 +217,7 @@ public class YUri {
      * @return Bitmap
      */
     public static Bitmap getBitmap(Context context, Uri uri) {
+        if (uri == null) return null;
         try {// 读取uri所在的图片
             return MediaStore.Images.Media.getBitmap(context.getContentResolver(), uri);
         } catch (Exception e) {

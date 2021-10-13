@@ -8,64 +8,51 @@ import android.os.Build;
 import android.provider.Settings;
 import android.text.TextUtils;
 
-import androidx.core.content.FileProvider;
+import androidx.activity.ComponentActivity;
 
 import java.io.File;
 
-import static android.app.Activity.RESULT_OK;
-
 /*
-   安装apk
-   如果是安卓8.0以上先请求打开位置来源
-   权限：<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+安装apk
+如果是安卓8.0以上先请求打开位置来源
+权限：<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
-   1.首先创建res/xml/file_paths.xml
-   内容：
-    <?xml version="1.0" encoding="UTF-8"?>
-    <resources>
-        <paths>
-            <external-path path="" name="download"/>
-        </paths>
-    </resources>
+1.首先创建res/xml/file_paths.xml
+内容：
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+    <paths>
+        <external-path path="" name="download"/>
+    </paths>
+</resources>
 
-   2.再在AndroidManifest.xml  中的application加入
-    <!--安装app-->
-    <provider
-        android:name="androidx.core.content.FileProvider"
-        android:authorities="${applicationId}.provider"
-        android:exported="false"
-        android:grantUriPermissions="true">
-        <meta-data
-            android:name="android.support.FILE_PROVIDER_PATHS"
-            android:resource="@xml/file_paths" />
-    </provider>
+2.再在AndroidManifest.xml  中的application加入
+<!--安装app-->
+<provider
+    android:name="androidx.core.content.FileProvider"
+    android:authorities="${applicationId}.provider"
+    android:exported="false"
+    android:grantUriPermissions="true">
+    <meta-data
+        android:name="android.support.FILE_PROVIDER_PATHS"
+        android:resource="@xml/file_paths" />
+</provider>
 
-   举例:
-   var yInstallApk:YInstallApk?=null
-   private fun install() {
-        yInstallApk= YInstallApk(this)
-        yInstallApk?.install(YPath.getSDCard()+"/app.apk")
-   }
-   override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        yInstallApk?.onActivityResult(requestCode,resultCode,data)
-   }
+举例:
+
+//安装
+YInstallApk().install(YPath.getSDCard() + "/app.apk")
  */
 public class YInstallApk {
-    private Activity activity;
-    private Uri apkUri;
-    private int INSTALL_CODE = 8899;
+    private ComponentActivity activity;
 
-    public YInstallApk(Activity activity) {
-        this.activity = activity;
+    public YInstallApk() {
+        this((ComponentActivity) YActivityUtil.getCurrentActivity());
     }
 
-    public void getPermission() {
-        if (Build.VERSION.SDK_INT >= 26) {
-            Uri packageURI = Uri.parse("package:" + activity.getPackageName());
-            Intent intent = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, packageURI);
-            activity.startActivityForResult(intent, INSTALL_CODE);
-        }
+
+    public YInstallApk(ComponentActivity activity) {
+        this.activity = activity;
     }
 
     public void install(String apkPath) {
@@ -75,7 +62,7 @@ public class YInstallApk {
 
     public void install(File file) {
         if (Build.VERSION.SDK_INT >= 24) {
-            Uri apkUri = FileProvider.getUriForFile(activity, activity.getPackageName() + ".provider", file);
+            Uri apkUri = YUri.getUri(YApp.get(), file);
             install(apkUri);
         } else {
             Uri apkUri = Uri.fromFile(file);
@@ -90,18 +77,20 @@ public class YInstallApk {
             if (haveInstallPermission) {
                 installApk(activity, apkUri);
             } else {
-                this.apkUri = apkUri;
-                getPermission();
+                Uri packageURI = Uri.parse("package:" + activity.getPackageName());
+                Intent intent = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, packageURI);
+
+                //请求权限之后回调
+                YActivityResultObserver activityResultObserver = new YActivityResultObserver(activity.getActivityResultRegistry(), "YInstallApk", result -> {
+                    if (result.getResultCode() == Activity.RESULT_OK)
+                        if (apkUri != null) installApk(activity, apkUri);
+                    return null;
+                });
+                activity.getLifecycle().addObserver(activityResultObserver);
+                activityResultObserver.launch(intent);
             }
         } else {
             installApk(activity, apkUri);
-        }
-    }
-
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == RESULT_OK && requestCode == INSTALL_CODE) {
-            if (apkUri != null)
-                installApk(activity, apkUri);
         }
     }
 
@@ -125,13 +114,13 @@ public class YInstallApk {
      */
     public static void installApk(Context context, File file) {
         //判读版本是否在7.0以上
+        Uri apkUri;
         if (Build.VERSION.SDK_INT >= 24) {
-            Uri apkUri = FileProvider.getUriForFile(context, context.getPackageName() + ".provider", file);
-            installApk(context, apkUri);
+            apkUri = YUri.getUri(YApp.get(), file);
         } else {
-            Uri apkUri = Uri.fromFile(file);
-            installApk(context, apkUri);
+            apkUri = Uri.fromFile(file);
         }
+        installApk(context, apkUri);
     }
 
     /**
