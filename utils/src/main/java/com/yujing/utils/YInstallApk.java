@@ -17,25 +17,26 @@ import java.io.File;
 如果是安卓8.0以上先请求打开位置来源
 权限：<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
-1.首先创建res/xml/file_paths.xml
+1.首先创建res/xml/provider_paths.xml
 内容：
-<?xml version="1.0" encoding="UTF-8"?>
-<resources>
-    <paths>
-        <external-path path="" name="download"/>
-    </paths>
-</resources>
+<?xml version="1.0" encoding="utf-8"?>
+<paths xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- /storage/emulated/0/Download/${applicationId}/.beta/apk-->
+    <external-path name="beta_external_path" path="Download/"/>
+    <!--/storage/emulated/0/Android/data/${applicationId}/files/apk/-->
+    <external-path name="beta_external_files_path" path="Android/data/"/>
+</paths>
 
 2.再在AndroidManifest.xml  中的application加入
 <!--安装app-->
 <provider
     android:name="androidx.core.content.FileProvider"
-    android:authorities="${applicationId}.provider"
+    android:authorities="${applicationId}.fileProvider"
     android:exported="false"
     android:grantUriPermissions="true">
     <meta-data
         android:name="android.support.FILE_PROVIDER_PATHS"
-        android:resource="@xml/file_paths" />
+        android:resource="@xml/provider_paths"/>
 </provider>
 
 举例:
