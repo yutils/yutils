@@ -54,7 +54,7 @@ dependencies {
 
     //关联lib
     implementation project(':utils')
-    implementation 'com.kotlinx:yhttp:1.1.0'
+    implementation 'com.kotlinx:yhttp:1.1.2'
 
     //gson <!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
     implementation 'com.google.code.gson:gson:2.8.8'

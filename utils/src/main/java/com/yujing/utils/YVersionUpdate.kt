@@ -159,7 +159,6 @@ class YVersionUpdate {
      * 自己下载器
      */
     private fun yHttpDownApkFile() {
-
         YShow.show("正在下载")
         YShow.setMessageOther("请稍候...")
         YShow.setCancel(!isForceUpdate)
@@ -182,12 +181,16 @@ class YVersionUpdate {
             }
 
             override fun success(file: File) {
-                YShow.setMessageOther("下载完成")
-                YInstallApk().install(file)
+                YShow.show("下载完成")
+                try {
+                    YInstallApk().install(file)
+                } catch (e: Exception) {
+                    YShow.setMessageOther("安装异常：" + e.message)
+                }
             }
 
             override fun fail(value: String) {
-                YShow.show("下载失败")
+                YShow.show(value)
                 YShow.setMessageOther(null)
                 YShow.setCancel(true)
             }
@@ -206,7 +209,11 @@ class YVersionUpdate {
         yNoticeDownload?.isAPK = true
         yNoticeDownload?.setDownLoadComplete { uri, file ->
             YShow.show("下载完成")
-            YInstallApk().install(file)
+            try {
+                YInstallApk().install(file)
+            } catch (e: Exception) {
+                YShow.setMessageOther("安装异常：" + e.message)
+            }
         }
         yNoticeDownload?.setDownLoadFail {
             YShow.show("下载失败")

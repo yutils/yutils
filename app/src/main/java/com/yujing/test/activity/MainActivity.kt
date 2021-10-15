@@ -22,6 +22,8 @@ class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
     lateinit var textView1: TextView
     lateinit var textView2: TextView
     lateinit var editText1: EditText
+    var yVersionUpdate = YVersionUpdate()
+
     override fun initBefore() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_all_test)
     }
@@ -134,11 +136,7 @@ class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
         Create.button(binding.wll, "YToast") {
             YToast.show("SHOW${i++}")
         }
-
     }
-
-    //成员变量
-    var yVersionUpdate = YVersionUpdate()
 
     //通知栏下载需要调用onDestroy()
     override fun onDestroy() {

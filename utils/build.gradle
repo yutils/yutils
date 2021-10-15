@@ -49,7 +49,7 @@ dependencies {
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
     //gson,https://mvnrepository.com/artifact/com.google.code.gson/gson
     implementation 'com.google.code.gson:gson:2.8.8'
-    implementation 'com.kotlinx:yhttp:1.1.0'
+    implementation 'com.kotlinx:yhttp:1.1.2'
     implementation 'androidx.lifecycle:lifecycle-common-java8:2.3.1'
 }
 

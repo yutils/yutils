@@ -253,8 +253,8 @@ public class YScreenUtil {
      * @param pxValue px值
      * @return 转换后的dp值
      */
-    public static int px2dp(Context context, int pxValue) {
-        return (int) (pxValue / getDensity(context) + 0.5f);
+    public static float px2dp(Context context, int pxValue) {
+        return (pxValue / getDensity(context) + 0.5f);
     }
 
     /**
@@ -263,9 +263,9 @@ public class YScreenUtil {
      * @param pxValue px
      * @return dp
      */
-    public static int px2dp(int pxValue) {
+    public static float px2dp(int pxValue) {
         final float scale = Resources.getSystem().getDisplayMetrics().density;
-        return (int) (pxValue / scale + 0.5f);
+        return (pxValue / scale + 0.5f);
     }
 
     /**
@@ -290,11 +290,11 @@ public class YScreenUtil {
      * @param pxValue px值
      * @return 转换后的sp值
      */
-    public static int px2sp(Context context, int pxValue) {
-        return (int) (pxValue / getScaledDensity(context) + 0.5f);
+    public static float px2sp(Context context, int pxValue) {
+        return (pxValue / getScaledDensity(context) + 0.5f);
     }
 
-    public static int px2sp(int pxValue) {
+    public static float px2sp(int pxValue) {
         return px2sp(YApp.get(), pxValue);
     }
 
