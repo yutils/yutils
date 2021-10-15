@@ -6,11 +6,7 @@ package com.yujing.contract;
  * @param <A> 参数1
  * @param <B> 参数2
  */
-public class YReturn2<A, B> {
-    /**
-     * 第一个返回值
-     **/
-    private final A first;
+public class YReturn2<A, B> extends YReturn1<A> {
 
     /**
      * 第二个返回值
@@ -18,12 +14,8 @@ public class YReturn2<A, B> {
     private final B second;
 
     public YReturn2(A first, B second) {
-        this.first = first;
+        super(first);
         this.second = second;
-    }
-
-    public A getFirst() {
-        return first;
     }
 
     public B getSecond() {
