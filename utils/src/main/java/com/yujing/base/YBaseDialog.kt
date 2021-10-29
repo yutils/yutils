@@ -223,6 +223,7 @@ abstract class YBaseDialog<B : ViewDataBinding> : Dialog {
     }
 
     override fun dismiss() {
+        if (activity.isFinishing) return
         //退出动画
         if (openAnimation) {
             view.startAnimation(yAnimation.getExitAnimation { super.dismiss() })

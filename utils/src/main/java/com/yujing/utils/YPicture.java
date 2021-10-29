@@ -171,12 +171,14 @@ public class YPicture {
      */
     /*
     选择文件,替换方案：
-    var choice: ActivityResultLauncher<Array<String>>? = null
+
     activity.lifecycle.addObserver(object : DefaultLifecycleObserver {
+      var choice: ActivityResultLauncher<Array<String>>? = null
         override fun onCreate(owner: LifecycleOwner) {
             super.onCreate(owner)
             //register = activity.activityResultRegistry.register("choice", ActivityResultContracts.OpenDocument()) { it: Uri? ->  }
             choice = activity.activityResultRegistry.register("choice", ActivityResultContracts.OpenDocument(), onResult)
+            choice?.launch(arrayOf("image/jpg", "image/jpeg", "image/png", "image/*"))
         }
 
         override fun onDestroy(owner: LifecycleOwner) {
@@ -184,7 +186,6 @@ public class YPicture {
             choice?.unregister()
         }
     })
-    choice?.launch(arrayOf("image/jpg", "image/jpeg", "image/png", "image/*"))
      */
     @Deprecated
     public void gotoAlbum(Activity activity) {

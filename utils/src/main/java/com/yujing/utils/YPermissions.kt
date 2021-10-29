@@ -131,10 +131,10 @@ class YPermissions(val activity: ComponentActivity) {
             //旧的方法
             //ActivityCompat.requestPermissions(activity!!, toApplyList.toArray(tmpList), 888)
             array = noPermissions.toArray(arrayOfNulls<String>(noPermissions.size))
-            //注册权限请求
-            var register: ActivityResultLauncher<Array<String>>? = null
             //注册生命周期
             activity.lifecycle.addObserver(object : DefaultLifecycleObserver {
+                //注册权限请求
+                var register: ActivityResultLauncher<Array<String>>? = null
                 override fun onCreate(owner: LifecycleOwner) {
                     super.onCreate(owner)
                     register = activity.activityResultRegistry.register("YPermissions", ActivityResultContracts.RequestMultiplePermissions()) { map ->
@@ -158,6 +158,8 @@ class YPermissions(val activity: ComponentActivity) {
                             array = null
                         }
                     }
+                    //注册
+                    register?.launch(array)
                 }
 
                 override fun onDestroy(owner: LifecycleOwner) {
@@ -165,8 +167,6 @@ class YPermissions(val activity: ComponentActivity) {
                     register?.unregister()
                 }
             })
-            //注册
-            if (register != null) register?.launch(array)
         }
         return this
     }

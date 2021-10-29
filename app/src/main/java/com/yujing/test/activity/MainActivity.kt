@@ -120,7 +120,7 @@ class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
         }
 
         Create.button(binding.wll, "选择图片") {
-            YTake.chosePicture(this) {
+            YTake.chosePictureAndCorp(this) {
                 val bitmap = YConvert.uri2Bitmap(this, it)
                 YImageDialog.show(bitmap)
             }

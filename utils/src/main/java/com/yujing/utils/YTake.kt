@@ -26,7 +26,7 @@ YTake.take(this) {
     YImageDialog.show(bitmap)
 }
 
-//拍照并返回
+//拍照并剪切
 YTake.takeAndCorp(this) {
     val bitmap = YConvert.uri2Bitmap(this, it)
     YImageDialog.show(bitmap)
@@ -63,10 +63,10 @@ takeImage.launch(file)
 
 
 方法三：（相对于 方法二 不用提前注册）
-var cropPicture: ActivityResultLauncher<Crop>?
-var takePicture: ActivityResultLauncher<File>?
-var registerPermission: ActivityResultLauncher<String>? = null
 lifecycle.addObserver(object : DefaultLifecycleObserver {
+    var cropPicture: ActivityResultLauncher<Crop>?
+    var takePicture: ActivityResultLauncher<File>?
+    var registerPermission: ActivityResultLauncher<String>? = null
     override fun onCreate(owner: LifecycleOwner) {
         super.onCreate(owner)
         //剪切返回
@@ -89,10 +89,10 @@ lifecycle.addObserver(object : DefaultLifecycleObserver {
                 takePicture?.launch(file)
             }
         }
+        //调用相机权限
+        registerPermission?.launch(Manifest.permission.CAMERA)
     }
 })
-//调用相机权限
-registerPermission?.launch(Manifest.permission.CAMERA)
  */
 
 class YTake {
@@ -101,9 +101,9 @@ class YTake {
          * 请求权限并拍照，返回URI
          */
         fun take(activity: ComponentActivity, onResult: (Uri?) -> Unit) {
-            var takePicture: ActivityResultLauncher<File>? = null
-            var registerPermission: ActivityResultLauncher<String>? = null
             activity.lifecycle.addObserver(object : DefaultLifecycleObserver {
+                var takePicture: ActivityResultLauncher<File>? = null
+                var registerPermission: ActivityResultLauncher<String>? = null
                 override fun onCreate(owner: LifecycleOwner) {
                     super.onCreate(owner)
                     //拍照返回
@@ -116,6 +116,8 @@ class YTake {
                             takePicture?.launch(file)
                         }
                     }
+                    //调用相机权限
+                    registerPermission?.launch(Manifest.permission.CAMERA)
                 }
 
                 override fun onDestroy(owner: LifecycleOwner) {
@@ -124,18 +126,16 @@ class YTake {
                     registerPermission?.unregister()
                 }
             })
-            //调用相机权限
-            registerPermission?.launch(Manifest.permission.CAMERA)
         }
 
         /**
          * 请求权限并拍照并剪切，返回URI
          */
         fun takeAndCorp(activity: ComponentActivity, onResult: (Uri?) -> Unit) {
-            var cropPicture: ActivityResultLauncher<Crop>? = null
-            var takePicture: ActivityResultLauncher<File>? = null
-            var registerPermission: ActivityResultLauncher<String>? = null
             activity.lifecycle.addObserver(object : DefaultLifecycleObserver {
+                var cropPicture: ActivityResultLauncher<Crop>? = null
+                var takePicture: ActivityResultLauncher<File>? = null
+                var registerPermission: ActivityResultLauncher<String>? = null
                 override fun onCreate(owner: LifecycleOwner) {
                     super.onCreate(owner)
                     //剪切返回
@@ -155,6 +155,8 @@ class YTake {
                             takePicture?.launch(file)
                         }
                     }
+                    //调用相机权限
+                    registerPermission?.launch(Manifest.permission.CAMERA)
                 }
 
                 override fun onDestroy(owner: LifecycleOwner) {
@@ -164,8 +166,6 @@ class YTake {
                     registerPermission?.unregister()
                 }
             })
-            //调用相机权限
-            registerPermission?.launch(Manifest.permission.CAMERA)
         }
 
         /**

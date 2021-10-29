@@ -32,11 +32,13 @@ import static android.content.Context.BLUETOOTH_SERVICE;
  * @author yujing  2021年6月24日14:28:50
  */
 /*
-<!--蓝牙权限，4个 6.0之后蓝牙还需要地理位置权限 -->
-<uses-permission android:name="android.permission.BLUETOOTH" />
-<uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+<!--蓝牙权限，6.0之后蓝牙还需要地理位置权限 -->
 <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+<uses-permission android:name="android.permission.BLUETOOTH" android:maxSdkVersion="30" />
+<uses-permission android:name="android.permission.BLUETOOTH_ADMIN" android:maxSdkVersion="30" />
+<uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
+<uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
+<uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
 
 用法：
 BleClient bleClient;
