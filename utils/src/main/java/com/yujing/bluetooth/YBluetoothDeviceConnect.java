@@ -4,7 +4,7 @@ import android.bluetooth.BluetoothDevice;
 
 import com.yujing.contract.YListener1;
 import com.yujing.contract.YSuccessFailListener;
-
+@Deprecated
 public interface YBluetoothDeviceConnect {
     //设置读取监听
     void setReadListener(YListener1<byte[]> readListener);

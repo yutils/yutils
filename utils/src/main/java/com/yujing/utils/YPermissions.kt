@@ -138,24 +138,26 @@ class YPermissions(val activity: ComponentActivity) {
                 override fun onCreate(owner: LifecycleOwner) {
                     super.onCreate(owner)
                     register = activity.activityResultRegistry.register("YPermissions", ActivityResultContracts.RequestMultiplePermissions()) { map ->
-                        array?.let {
-                            var findFail = false//是否有不成功的权限
-                            for (item in it) {
-                                //再检查一遍
-                                if (map[item]!!) {
-                                    //同意
-                                    successListener?.value(item)
-                                } else {
-                                    findFail = true
-                                    //拒绝
-                                    failListener?.value(item)
+                        map?.let {
+                            array?.let {
+                                var findFail = false//是否有不成功的权限
+                                for (item in it) {
+                                    //再检查一遍，不能这样写：if (map[item]){ } 因为：map[item]可能为null
+                                    if (map[item] == true) {
+                                        //同意
+                                        successListener?.value(item)
+                                    } else {
+                                        findFail = true
+                                        //拒绝
+                                        failListener?.value(item)
+                                    }
                                 }
+                                //如果没有不成功的权限
+                                if (!findFail) {
+                                    allSuccessListener?.value()
+                                }
+                                array = null
                             }
-                            //如果没有不成功的权限
-                            if (!findFail) {
-                                allSuccessListener?.value()
-                            }
-                            array = null
                         }
                     }
                     //注册

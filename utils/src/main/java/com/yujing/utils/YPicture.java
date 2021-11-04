@@ -22,6 +22,8 @@ import java.util.Objects;
  * @version 1.2 兼容安卓10.0
  */
 /*用法:
+该类过时，请使用：YTake
+
 //创建对象
 private val yPicture: YPicture = YPicture()
 //打开相机
@@ -132,7 +134,6 @@ public class YPicture {
      */
     /*
         替换方案
-
         //选择图片
         YTake.chosePicture(this) {
             val bitmap = YConvert.uri2Bitmap(this, it)

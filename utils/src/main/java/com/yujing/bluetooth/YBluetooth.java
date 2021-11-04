@@ -31,11 +31,13 @@ import java.util.Set;
  * @author 余静 2020年7月16日17:44:50
  */
 /*
-<!--蓝牙权限，4个 6.0之后蓝牙还需要地理位置权限 -->
-<uses-permission android:name="android.permission.BLUETOOTH" />
-<uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+<!--蓝牙权限，6.0之后蓝牙还需要地理位置权限 -->
 <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+<uses-permission android:name="android.permission.BLUETOOTH" android:maxSdkVersion="30" />
+<uses-permission android:name="android.permission.BLUETOOTH_ADMIN" android:maxSdkVersion="30" />
+<uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
+<uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
+<uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
 //用法
 List<BluetoothDevice> connected = new ArrayList<>();
 //实例化，读BT
@@ -66,6 +68,7 @@ yBtDevice.connect(bluetoothDevice, new YSuccessFailListener<BluetoothDevice, Str
 yBtDevice.send("发送的内容".getBytes());
 //yBtConnect.onDestroy();
  */
+@Deprecated
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 @SuppressLint("MissingPermission")
 public class YBluetooth implements YBluetoothDeviceConnect {

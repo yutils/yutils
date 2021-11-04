@@ -77,7 +77,8 @@ if (bleClient.isConnecting()) {
     //"连接中"
 }
 */
-//参考 YBluetooth 工程
+//参考 YBle 工程
+@Deprecated
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 @SuppressLint("MissingPermission")
 public class BleClient {
@@ -180,6 +181,9 @@ public class BleClient {
         public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
             super.onCharacteristicRead(gatt, characteristic, status);
             YLog.i(TAG, "onCharacteristicRead()");
+            byte[] data = characteristic.getValue();
+            if (readListener != null)
+                YThread.runOnUiThread(() -> readListener.value(data));
         }
 
         /**

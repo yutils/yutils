@@ -28,12 +28,15 @@ import static android.bluetooth.BluetoothDevice.TRANSPORT_LE;
  * @author 余静 2020年7月16日17:43:04
  */
 /*
-<!--蓝牙权限，4个 6.0之后蓝牙还需要地理位置权限 -->
-<uses-permission android:name="android.permission.BLUETOOTH" />
-<uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+<!--蓝牙权限，6.0之后蓝牙还需要地理位置权限 -->
 <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+<uses-permission android:name="android.permission.BLUETOOTH" android:maxSdkVersion="30" />
+<uses-permission android:name="android.permission.BLUETOOTH_ADMIN" android:maxSdkVersion="30" />
+<uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
+<uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
+<uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
 */
+@Deprecated
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 public class YBle implements YBluetoothDeviceConnect {
     private static final String TAG = "YBle";

@@ -93,6 +93,7 @@ class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
                 Manifest.permission.WRITE_EXTERNAL_STORAGE,
                 Manifest.permission.CAMERA
             )
+            YPermissions.requestAll(this)
         }
 
         Create.button(binding.wll, "BLE_Server") {
