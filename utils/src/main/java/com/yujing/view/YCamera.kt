@@ -540,6 +540,7 @@ class YCamera(var textureView: AutoFitTextureView, var id: String?) {
     }
 
     //开始检查，即使多次调用start，也能保证只有一个readThread线程
+    @Synchronized
     private fun checkStart() {
         checkThread?.interrupt()
         checkThread = Thread {

@@ -102,6 +102,7 @@ class YUdp(var ip: String, var port: Int) {
     }
 
     //同步发送
+    @Synchronized
     private fun read() {
         readThread?.interrupt()
         readThread = Thread {
@@ -160,6 +161,7 @@ class YUdp(var ip: String, var port: Int) {
         const val defaultTag = "UdpReceiveDefaultTagTag"
         var showLog = false
 
+        //★★★★★★★★★★★★★★★★★★★★★★★★★★★★★静态方法·读流操作★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
         /**
          * 同步发送,udp返回则返回
          * @param data 发送的数据
@@ -172,10 +174,8 @@ class YUdp(var ip: String, var port: Int) {
         //读取到数据立即返回，数据大于2048之后部分抛弃，1秒后超时
         YUdp.sendSync("192.168.6.3", 8080, data, 2048, 1000)
         */
-        fun sendSync(
-            ip: String, port: Int, data: ByteArray,
-            readMaxLength: Int = 1024, timeout: Int = 1000
-        ): ByteArray {
+        @Throws(java.net.SocketTimeoutException::class)
+        fun sendSync(ip: String, port: Int, data: ByteArray, readMaxLength: Int = 1024, timeout: Int = 1000): ByteArray {
             //向服务器端发送数据
             // 1.定义服务器的地址、端口号、数据
             val address = InetAddress.getByName(ip)
@@ -231,10 +231,7 @@ class YUdp(var ip: String, var port: Int) {
          //读取到16个字节后立即返回，如果3000毫秒没有读取到，也返回。
          YUdp.sendSyncLength("192.168.6.3", 8080, data, 16, 3000)
          */
-        fun sendSyncLength(
-            ip: String, port: Int, data: ByteArray,
-            maxLength: Int = 1024, timeout: Int = 1000
-        ): ByteArray {
+        fun sendSyncLength(ip: String, port: Int, data: ByteArray, maxLength: Int = 1024, timeout: Int = 1000): ByteArray {
             //向服务器端发送数据
             // 1.定义服务器的地址、端口号、数据
             val address = InetAddress.getByName(ip)

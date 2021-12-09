@@ -369,6 +369,7 @@ class YUsb {
      * @timeOut 超时时间
      * @yListener1 每次回调长度是读取数据的真实长度
      */
+    @Synchronized
     fun startRead(maxLength: Int, timeOut: Int, yListener1: YListener1<ByteArray>) {
         readThread?.interrupt()
         readThread = Thread {
