@@ -26,6 +26,9 @@ fragment3 = Fragment3()
 
 //显示/切换fragment
 yFragmentManager!!.showFragment(fragment1)
+
+//重新加载fragment
+yFragmentManager!!replace(fragment1)
  */
 public class YFragmentManager {
     private Fragment currentFragment;//当前fragment
@@ -98,5 +101,18 @@ public class YFragmentManager {
     public synchronized void showCurrent() {
         if (currentFragment != null && currentFragment.isAdded())
             fragmentManager.beginTransaction().show(currentFragment).commit();
+    }
+
+    /**
+     * 重新加载fragment
+     * 新的fragment替换旧的的Fragment，旧的fragment会触发onDestroy()，新的fragment会触onCreateView。
+     *
+     * @param fragment 新的Fragment
+     */
+    public synchronized void replace(Fragment fragment) {
+        if (fragment == null) return;
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.replace(layout, fragment);
+        transaction.commit();
     }
 }
