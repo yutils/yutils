@@ -39,25 +39,32 @@ import java.util.Locale;
 @SuppressWarnings("unused")
 public class YConvert {
     /**
-     * bytesToHexString
+     * byte数组转hexString
      *
-     * @param bArray bArray
-     * @return String
+     * @param bArray byte数组
+     * @return hexString
      */
     public static String bytesToHexString(byte[] bArray) {
+        return bytesToHexString(bArray, "");
+    }
+
+    /**
+     * byte数组转hexString
+     *
+     * @param bArray   byte数组
+     * @param separate 每位之间用个符号隔开
+     * @return hexString
+     */
+    public static String bytesToHexString(byte[] bArray, String separate) {
         StringBuilder sb = new StringBuilder(bArray.length);
         String sTemp;
         for (byte aBArray : bArray) {
             sTemp = Integer.toHexString(0xFF & aBArray);
             if (sTemp.length() < 2)
                 sb.append(0);
-            sb.append(sTemp.toUpperCase(Locale.US));
+            sb.append(sTemp.toUpperCase(Locale.US) + separate);
         }
         return sb.toString();
-    }
-
-    public static String BTHS(byte[] bArray) {
-        return bytesToHexString(bArray);
     }
 
     /**
@@ -84,10 +91,6 @@ public class YConvert {
             result[i] = (byte) (toByte(aChar[pos]) << 4 | toByte(aChar[pos + 1]));
         }
         return result;
-    }
-
-    public static byte[] HSTB(String hex) {
-        return hexStringToByte(hex);
     }
 
     /**

@@ -75,12 +75,12 @@ class ChoseWindow(var activity: Activity) {
         YBusUtil.init(this)
         //初始化
         pw = YPopupWindow(activity, R.layout.popup_window)
+        pw?.setFullScreen(true)
         //屏幕绝对位置
-        pw?.popupWindow?.show()
+        pw?.show()
 
         //点击空白
-        pw?.binding?.space?.setOnClickListener { dismiss() }
-
+        //pw?.binding?.space?.setOnClickListener { dismiss() }
     }
 
     //退出activity时，一定要关闭popupWindow
@@ -95,8 +95,6 @@ class YPopupWindow<B : ViewDataBinding>(var activity: Activity, var layout: Int)
     //窗口
     var popupWindow: PopupWindow
     var binding: B
-    //是否是全面屏
-    var isFullScreen=false
     init {
         val view: View =
             LayoutInflater.from(activity).inflate(layout, null)
@@ -106,6 +104,14 @@ class YPopupWindow<B : ViewDataBinding>(var activity: Activity, var layout: Int)
         //获取焦点，如果设置true，那么点击空白处可以退出，如果设置fasle,弹出PopupWindow的时候没有焦点，就不会影响沉浸式状态栏的显示了。但是空白不能退，就设置成全屏popupWindow，自己监听空白点击吧。
         popupWindow.isFocusable = false
         popupWindow.isTouchable = true
+        setFullScreen(false)
+        //设置SelectPicPopupWindow弹出窗体动画效果
+        popupWindow.animationStyle = android.R.style.Animation_InputMethod
+        //背景透明
+        popupWindow.setBackgroundDrawable(ColorDrawable(Color.argb(0, 0, 0, 0)))
+    }
+
+    fun setFullScreen(isFullScreen:Boolean) {
         if (isFullScreen) {
             //(YScreenUtil.getScreenWidth(activity) * (2F / 5F)).toInt()
             popupWindow.height = YScreenUtil.getScreenHeight(activity)
@@ -118,11 +124,8 @@ class YPopupWindow<B : ViewDataBinding>(var activity: Activity, var layout: Int)
             popupWindow.softInputMode = WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
             popupWindow.isClippingEnabled = true
         }
-        //设置SelectPicPopupWindow弹出窗体动画效果
-        popupWindow.animationStyle = android.R.style.Animation_InputMethod
-        //背景透明
-        popupWindow.setBackgroundDrawable(ColorDrawable(Color.argb(0, 0, 0, 0)))
     }
+
 
     fun show() {
         popupWindow.showAtLocation(activity.window.decorView, Gravity.BOTTOM, 0, 0)

@@ -340,7 +340,7 @@ public class YPicture {
     public static File createImageFile(String path) {
         // 判断是否有SD卡
         if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState()))
-            YLog.e("警告", "SD卡不存在！！");
+            YLog.d("YPicture", "SD卡不存在！！");
         File file = new File(path);
         if (!Objects.requireNonNull(file.getParentFile()).exists()) {//如果文件夹不存在就创建
             if (file.getParentFile().mkdirs()) YLog.i("ImageUtil.path2Uri", "创建图片文件夹成功");

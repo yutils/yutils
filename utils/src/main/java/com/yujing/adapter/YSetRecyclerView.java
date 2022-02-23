@@ -84,7 +84,7 @@ public class YSetRecyclerView {
     // 自定义横向或纵向布局
     public static void init(Context context, RecyclerView recyclerView, int Orientation, boolean isScrollView) {
         YFullyLinearLayoutManager layoutManager = new YFullyLinearLayoutManager(context);
-        layoutManager.setSmoothScrollbarEnabled(true);
+        layoutManager.setSmoothScrollbarEnabled(isScrollView);
         layoutManager.setOrientation(Orientation);
         recyclerView.setLayoutManager(layoutManager);
     }
@@ -92,7 +92,7 @@ public class YSetRecyclerView {
     // 自定义多行多列布局
     public static void init(Context context, RecyclerView recyclerView, int Orientation, int items, boolean isScrollView) {
         YFullyGridLayoutManager layoutManager = new YFullyGridLayoutManager(context, items);
-        layoutManager.setSmoothScrollbarEnabled(true);
+        layoutManager.setSmoothScrollbarEnabled(isScrollView);
         layoutManager.setOrientation(Orientation);
         recyclerView.setLayoutManager(layoutManager);
     }
