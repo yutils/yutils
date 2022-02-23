@@ -10,7 +10,7 @@ Welcome to my GitHub ! ! !
 ----
 ## 我的项目列表
 ----
-**1.  [YSerialPort](https://github.com/yutils/YSerialPort) **    [https://github.com/yutils/databinding](https://github.com/yutils/databinding)  
+**1.  [YSerialPort](https://github.com/yutils/YSerialPort)**    [https://github.com/yutils/databinding](https://github.com/yutils/databinding)  
 安卓串口通信app，实现读取串口数据，实现重新组包一次性读取完整数据。可连续读取任意长度数据。觉着不错的话可以 Start 一下哟！
 
 ----
@@ -30,19 +30,19 @@ DataBinding 学习 ：1. 单向绑定   2. 双向绑定 3.RecyclerView  注解�
 CH340/CH341的USB转串口安卓免驱应用库。修复bug，简单易用。
 
 ----
-**6. [ycamerax](https://github.com/yutils/ycamerax) **    [https://github.com/yutils/ycamerax](https://github.com/yutils/ycamerax)  
+**6. [ycamerax](https://github.com/yutils/ycamerax)**    [https://github.com/yutils/ycamerax](https://github.com/yutils/ycamerax)  
 CameraX 使用，支持安卓12，一键获取照片，一键视频，逐帧回调bitmap分析，支持双指放大，双击放大，单击手动对焦
 
 ----
-**7. [HikVisionDemo](https://github.com/yutils/HikVisionDemo) **    [https://github.com/yutils/HikVisionDemo](https://github.com/yutils/HikVisionDemo)  
+**7. [HikVisionDemo](https://github.com/yutils/HikVisionDemo)**    [https://github.com/yutils/HikVisionDemo](https://github.com/yutils/HikVisionDemo)  
 海康威视demo   4路同时播放   支持缩放  拍照等
 
 ----
-**8. [AlipayPassDialog](https://github.com/yutils/AlipayPassDialog) **    [https://github.com/yutils/AlipayPassDialog](https://github.com/yutils/AlipayPassDialog)  
+**8. [AlipayPassDialog](https://github.com/yutils/AlipayPassDialog)**    [https://github.com/yutils/AlipayPassDialog](https://github.com/yutils/AlipayPassDialog)  
 Android 支付密码数字键盘， 支持自定义文本、颜色、大小、自定义关闭图标、弹框样式、回调函数处理、数字位置随机、自定义密码位数1-9位、可以自定义样式Dialog、调节字体颜色大小内容。
 
 ----
-**9. [QrCodeLib](https://github.com/yutils/QrCodeLib) **    [https://github.com/yutils/QrCodeLib](https://github.com/yutils/QrCodeLib)  
+**9. [QrCodeLib](https://github.com/yutils/QrCodeLib)**    [https://github.com/yutils/QrCodeLib](https://github.com/yutils/QrCodeLib)  
 安卓二维码扫码demo，一行实现相机扫码，二维码生成，简单易用
 
 ----
