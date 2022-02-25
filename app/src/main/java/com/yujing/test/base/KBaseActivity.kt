@@ -16,14 +16,14 @@ import com.yujing.utils.*
 /*
 用法：
 //kotlin
-class AboutActivity : YBaseActivity<ActivityAboutBinding>(R.layout.activity_about) {
+class AboutActivity : KBaseActivity<ActivityAboutBinding>(R.layout.activity_about) {
     override fun init() {
         binding.include.ivBack.setOnClickListener { finish() }
         binding.include.tvTitle.text = "关于我们"
     }
 }
 //java
-public class OldActivity extends YBaseActivity<Activity1101Binding> {
+public class OldActivity extends KBaseActivity<Activity1101Binding> {
     public OldActivity() {
         super(R.layout.activity_1101);
     }

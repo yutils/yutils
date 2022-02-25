@@ -13,8 +13,24 @@ import java.util.Map;
  */
 @SuppressWarnings({"WeakerAccess"})
 /* 用法举例
-//每秒调用一次run方法，run不能为private，不能有参数
-YLoop.start(this,"run",1000);
+
+public void init() {
+    //循环调用abc方法每1000毫秒，abc不能为private，不能有参数
+    YLoop.start(this,"abc",1000);
+}
+
+//此方法会被调用
+public void abc() {
+    YLog.d("我被调用了");
+}
+
+@Override
+protected void onDestroy() {
+    super.onDestroy();
+    //停止循环调用abc方法
+    YLoop.stop(this,"abc");
+}
+
  */
 public class YLoop {
     // 记录哪些类的哪些方法正在被调用

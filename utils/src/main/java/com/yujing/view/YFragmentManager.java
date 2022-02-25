@@ -27,8 +27,9 @@ fragment3 = Fragment3()
 //显示/切换fragment
 yFragmentManager!!.showFragment(fragment1)
 
-//重新加载fragment
+//重新加载fragment，会触发新fragment的onCreateView,旧fragment的onDestroy
 yFragmentManager!!replace(fragment1)
+
  */
 public class YFragmentManager {
     private Fragment currentFragment;//当前fragment

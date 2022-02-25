@@ -22,14 +22,18 @@ import java.util.Locale;
  * @author 余静 2021年2月8日12:58:06
  */
 /* 用法
-//保存日志开
-YLog.saveOpen(YPath.getFilePath(this, "log"))
-//保存日志监听
-YLog.setLogSaveListener { type, tag, msg -> return@setLogSaveListener type != YLog.DEBUG }
-//删除30天以前日志
-YLog.delDaysAgo(30)
-//日志监听
-YLog.setLogListener { type, tag, msg ->  }
+    YLog.d("你好")
+    YLog.i("tag","你好")
+    //向上偏移一级，输出调用类和行数时，显示上级调用改函数的类和对应行数
+    YLog.i("tag","你好",1)
+    //日志监听
+    YLog.setLogListener { type, tag, msg -> }
+    //保存日志开
+    YLog.saveOpen(YPath.getFilePath(this, "log"))
+    //保存日志监听,不保存DEBUG
+    YLog.setLogSaveListener { type, tag, msg -> return@setLogSaveListener type != YLog.DEBUG }
+    //删除30天以前日志
+    YLog.delDaysAgo(30)
  */
 @SuppressWarnings({"FieldCanBeLocal", "WeakerAccess"})
 public class YLog {

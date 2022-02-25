@@ -2,9 +2,12 @@ package com.yujing.test.activity
 
 import android.widget.EditText
 import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
+import com.yujing.adapter.YSetRecyclerView
 import com.yujing.test.R
 import com.yujing.test.base.KBaseActivity
 import com.yujing.test.databinding.ActivityAllTestBinding
+import com.yujing.utils.*
 import com.yutils.view.utils.Create
 
 class TestActivity : KBaseActivity<ActivityAllTestBinding>(R.layout.activity_all_test) {

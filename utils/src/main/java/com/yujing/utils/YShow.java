@@ -24,6 +24,21 @@ import androidx.annotation.ColorInt;
  *
  * @author 余静 2020年3月20日10:44:41
  */
+/*
+用法：
+
+//弹出 正在加载 转圈圈
+YShow.show("正在加载")
+//弹出 正在加载 转圈圈 下面显示请稍后
+YShow.show("正在加载","请稍后...")
+//弹出 正在加载 转圈圈 下面显示请稍后，并且不允许关闭
+YShow.show("正在加载","请稍后...",false)
+//更新文字
+YShow.getDialog().message1="正在加载"
+YShow.getDialog().message2="加载进度 50%"
+//关闭 对话框
+YShow.finish()
+ */
 @SuppressWarnings({"unused"})
 public class YShow extends Dialog {
     private static volatile boolean defaultFullScreen = false;

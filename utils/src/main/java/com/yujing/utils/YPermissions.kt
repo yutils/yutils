@@ -32,7 +32,6 @@ yPermissions.setSuccessListener {
     YLog.i("失败$it")
 }.setAllSuccessListener {
     YLog.i("全部成功")
-    YPermissions.requestAll(this)
 }.request(
     Manifest.permission.WRITE_EXTERNAL_STORAGE,
     Manifest.permission.CAMERA

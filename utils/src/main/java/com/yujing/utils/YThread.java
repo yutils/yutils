@@ -12,6 +12,19 @@ import java.util.Map;
  *
  * @author 余静 2021年9月10日10:41:32
  */
+/*
+用法:
+//统计当前有多少线程
+YThread.countThread()
+//获取全部线程
+YThread.getAllThread()
+//判断是否是在主线程（UI线程）
+YThread.isMainThread()
+//在主线程中运行
+YThread.runOnUiThread { YLog.i("主线程") }
+//在主线程中运行,延迟2秒后
+YThread.runOnUiThreadDelayed({ YLog.i("主线程") },2000)
+ */
 public final class YThread {
     private static final Handler HANDLER = new Handler(Looper.getMainLooper());
 

@@ -16,12 +16,6 @@ fun speakOnce(str:String){
     }
 }
 
-//1秒内只能运行一次
-if (YRunOnceOfTime.check("tag1")) {
-    YLog.i("运行内容")
-    YRunOnceOfTime.addTag(1000, "tag1")
-}
-
 //1秒内只能运行一次，防抖
 if (YRunOnceOfTime.check(1000,"tag1")) {
     YLog.i("运行内容")

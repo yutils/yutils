@@ -15,11 +15,11 @@ import com.yujing.utils.YTts
  */
 /* 用法举例
 //kotlin
-class AboutActivity : YBaseFragment<ActivityAboutBinding>(R.layout.activity_about) {
+class AboutActivity : KBaseFragment<ActivityAboutBinding>(R.layout.activity_about) {
     override fun init() {}
 }
 //java
-public class OldFragment extends YBaseFragment<Activity1101Binding> {
+public class OldFragment extends KBaseFragment<Activity1101Binding> {
     public OldFragment() {
         super(R.layout.activity_1101);
     }

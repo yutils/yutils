@@ -23,6 +23,13 @@ import java.util.Stack;
 ActivityUtil.init(mContext);
 //或
 registerActivityLifecycleCallbacks(YActivityUtil.getActivityLifecycleCallbacks())
+
+//获取当前activity
+YActivityUtil.getCurrentActivity()
+//获取activity堆栈
+YActivityUtil.getActivityStack()
+//关闭全部activity
+YActivityUtil.closeAllActivity()
 */
 @SuppressWarnings("unused")
 public class YActivityUtil {

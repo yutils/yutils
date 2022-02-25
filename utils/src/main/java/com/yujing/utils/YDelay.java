@@ -9,8 +9,8 @@ package com.yujing.utils;
 //2秒后打印“触发”
 YDelay.run(2000, new Runnable() {
     @Override
-    public void delayedRun() {
-       System.out.println("触发");
+    public void run() {
+        System.out.println("触发");
     }
 });
 

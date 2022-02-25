@@ -13,6 +13,15 @@ import java.util.Locale;
  *
  * @author 余静 2019年12月5日09:21:06
  */
+/*
+用法
+    YTts.play("你好")
+    YTts.playQueue("你好啊")
+    //设置音调
+    YTts.getInstance().pitch=1.0f
+    //设置播放速度
+    YTts.getInstance().speechRate=1.0f
+ */
 public class YTts {
     private static String TAG = "YTts";
     private TextToSpeech textToSpeech; // TTS对象

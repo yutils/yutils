@@ -15,6 +15,18 @@ import com.yujing.utils.YApp;
  *
  * @author 余静 2018年11月30日12:14:30
  */
+/*
+用法：
+
+//设置recyclerView为垂直滚动布局
+YSetRecyclerView.initVertical(binding.recyclerView)
+//设置recyclerView为水平滚动布局
+YSetRecyclerView.initHorizontal(binding.recyclerView)
+//设置多行多列布局，如：垂直滚动，每行3个item
+YSetRecyclerView.init(this,binding.recyclerView,RecyclerView.VERTICAL,3)
+//设置多行多列布局，如：水平滚动，每行4个item
+YSetRecyclerView.init(this,binding.recyclerView,RecyclerView.HORIZONTAL,3)
+ */
 @SuppressWarnings("unused")
 public class YSetRecyclerView {
     /**

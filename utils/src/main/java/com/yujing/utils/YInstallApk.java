@@ -14,7 +14,7 @@ import java.io.File;
 
 /*
 安装apk
-如果是安卓8.0以上先请求打开位置来源
+如果是安卓8.0以上先请求打开未知来源
 权限：<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
 1.首先创建res/xml/provider_paths.xml
