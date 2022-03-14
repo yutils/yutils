@@ -52,18 +52,12 @@ YBaseDialog dialog = new YBaseDialog<DialogInfoBinding>(this, R.layout.dialog_in
 dialog.show();
  */
 abstract class YBaseDialog<B : ViewDataBinding> : Dialog {
-    constructor(
-        activity: Activity, layout: Int,
-        style: Int = android.R.style.Theme_DeviceDefault_Dialog_NoActionBar
-    ) : super(activity, style) {
+    constructor(activity: Activity, layout: Int, style: Int = android.R.style.Theme_DeviceDefault_Dialog_NoActionBar) : super(activity, style) {
         this.activity = activity
         this.layout = layout
     }
 
-    constructor(
-        activity: Activity, view: View,
-        style: Int = android.R.style.Theme_DeviceDefault_Dialog_NoActionBar
-    ) : super(activity, style) {
+    constructor(activity: Activity, view: View, style: Int = android.R.style.Theme_DeviceDefault_Dialog_NoActionBar) : super(activity, style) {
         this.activity = activity
         this.view = view
     }
@@ -89,7 +83,7 @@ abstract class YBaseDialog<B : ViewDataBinding> : Dialog {
     var strokeColor = Color.parseColor("#FFFFFFFF")
 
     //填充颜色
-    var fillColor = Color.parseColor("#A0FFFFFF")
+    var fillColor = Color.parseColor("#FFFFFFFF")
 
     //全屏显示
     var fullscreen = false
@@ -100,8 +94,15 @@ abstract class YBaseDialog<B : ViewDataBinding> : Dialog {
     //打开动画
     var openAnimation = true
 
+    // 边框宽度，乘以屏幕比例
+    var strokeWidth: Float? = null
+
+    // 圆角半径，乘以屏幕比例
+    var roundRadius: Float? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        initBefore()
         //720F
         if (screenWidthDp == null) {
             val sWidth = activity.resources.configuration.smallestScreenWidthDp //屏幕最小宽度
@@ -112,6 +113,12 @@ abstract class YBaseDialog<B : ViewDataBinding> : Dialog {
 
         setContentView(view) // 设置布局view
         binding = DataBindingUtil.bind(view)!!
+
+        //当前屏幕与开发屏幕的比例
+        val scaleScreenWidthDp = activity.resources.configuration.smallestScreenWidthDp / (if (screenWidthDp == null) 720F else screenWidthDp!!)
+        if (strokeWidth == null) strokeWidth = 2 * scaleScreenWidthDp // 2dp 边框宽度，乘以屏幕比例
+        if (roundRadius == null) roundRadius = 20 * scaleScreenWidthDp // 20dp 圆角半径，乘以屏幕比例
+
         val window = window
         window?.let { initWindow(it) }
         super.setCancelable(mCancelable) // 是否允许按返回键
@@ -120,10 +127,11 @@ abstract class YBaseDialog<B : ViewDataBinding> : Dialog {
         if (openAnimation) {
             yAnimation = YBaseDialogAnimation()
             yAnimation.init(this, view)
+            yAnimation.strokeWidth = strokeWidth!!
+            yAnimation.roundRadius = roundRadius!!
             //入场动画
             view.startAnimation(yAnimation.startAnimation)
         }
-        initBefore()
         init()
         initAfter()
     }
@@ -175,14 +183,9 @@ abstract class YBaseDialog<B : ViewDataBinding> : Dialog {
         window.attributes = lp
         //设置window的Background为圆角
         val gradientDrawable = GradientDrawable()
-        //当前屏幕与开发屏幕的比例
-        val scaleScreenWidthDp =
-            activity.resources.configuration.smallestScreenWidthDp / (if (screenWidthDp == null) 720F else screenWidthDp!!)
-        val strokeWidth = 2 * scaleScreenWidthDp // 2dp 边框宽度，乘以屏幕比例
-        val roundRadius = 20 * scaleScreenWidthDp // 20dp 圆角半径，乘以屏幕比例
         gradientDrawable.setColor(fillColor)
-        gradientDrawable.cornerRadius = YScreenUtil.dp2px(context, roundRadius).toFloat()
-        gradientDrawable.setStroke(YScreenUtil.dp2px(context, strokeWidth), strokeColor)
+        gradientDrawable.cornerRadius = YScreenUtil.dp2px(context, roundRadius!!).toFloat()
+        gradientDrawable.setStroke(YScreenUtil.dp2px(context, strokeWidth!!), strokeColor)
         //应用背景颜色
         window.setBackgroundDrawable(gradientDrawable)
     }
@@ -206,11 +209,6 @@ abstract class YBaseDialog<B : ViewDataBinding> : Dialog {
         } else {
             YThread.runOnUiThread { this.show() }
         }
-    }
-
-    open fun show(str: String?) {
-        if (str == null || str.isEmpty()) return
-        YToast.show(str)
     }
 
     /**

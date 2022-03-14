@@ -23,6 +23,8 @@ class YBaseDialogAnimation {
     }
     private var animationX = 0.5f
     private var animationY = 0.5f //动画缩放开始点
+    var strokeWidth = 0f // 边框宽度，乘以屏幕比例
+    var roundRadius = 0f // 圆角半径，乘以屏幕比例
     private var dialog: Dialog? = null
     private var view: View? = null
 
@@ -101,9 +103,7 @@ class YBaseDialogAnimation {
     private fun clearWindowDrawable(window: Window) {
         //设置window的Background为圆角
         val gradientDrawable = GradientDrawable()
-        val strokeWidth = 0f // 2dp 边框宽度，乘以屏幕比例
-        val roundRadius = 0f // 20dp 圆角半径，乘以屏幕比例
-        val strokeColor = Color.parseColor("#000000") //边框颜色
+        val strokeColor = Color.parseColor("#00000000") //边框颜色
         val fillColor = Color.parseColor("#00000000") //内部填充颜色
         gradientDrawable.setColor(fillColor)
         gradientDrawable.cornerRadius = YScreenUtil.dp2px(dialog!!.context, roundRadius).toFloat()

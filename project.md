@@ -1,7 +1,7 @@
 # Yutils #
 
 工具类
-采用java8.0，安卓12.0，API31 ，androidx，gradle7.3。
+采用java8.0，安卓12.0，API31 ，androidx，gradle7.4。
 
 安卓各种工具详见...源码。  
 主要包含：各种基类，蓝牙控制，自定义总线，加密解密，SQLite数据库，Socket保持长连接，UDP通信，图片处理，日期处理，弹出自定义对话框，GSP获取，计时器，通知栏下载，处理队列，延迟操作，防粘连操作，文件处理保存，对象保存，线程池处理，单例toast，APP版本更新，快速拍照、选择相册、截图，webView封装，相机封装，多媒体播放封装，弹窗popupWindow快速实现，各种类型转换，APP启动，重启，shell执行，等...  
@@ -21,11 +21,11 @@
 ## Gradle 引用
 
 
-[子module添加依赖，当前最新版：————> 1.7.9　　　　![最新版](https://img.shields.io/badge/%E6%9C%80%E6%96%B0%E7%89%88-1.7.9-green.svg)](https://search.maven.org/artifact/com.kotlinx/yutils)
+[子module添加依赖，当前最新版：————> 1.8.0　　　　![最新版](https://img.shields.io/badge/%E6%9C%80%E6%96%B0%E7%89%88-1.8.0-green.svg)](https://search.maven.org/artifact/com.kotlinx/yutils)
 ```
 dependencies {
      //更新地址  https://github.com/yutils/yutils 建议过几天访问看下有没有新版本
-     implementation 'com.kotlinx:yutils:1.7.9'
+     implementation 'com.kotlinx:yutils:1.8.0'
 }
 ```
 注：如果引用失败，或者工程未引入mavenCentral，请引入：mavenCentral()
