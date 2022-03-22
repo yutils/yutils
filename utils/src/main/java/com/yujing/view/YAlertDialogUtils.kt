@@ -24,7 +24,7 @@ YAlertDialogUtils().showMessage("测试","确定删除？删除后不可撤销�
     //确定事件
 }
 
-//提示,无按钮
+//提示,无按钮，标题为null时不显示标题
 YAlertDialogUtils().showMessage(null,"确定删除？删除后不可撤销。")
 
 
@@ -67,7 +67,7 @@ class YAlertDialogUtils {
     //全屏
     var fullScreen = true
 
-    //运行关闭
+    //允许关闭
     var cancelable = true
 
     //透明度
@@ -189,7 +189,9 @@ class YAlertDialogUtils {
         return scrollView
     }
 
-    //设置弹窗风格
+    /**
+     * 设置弹窗风格
+     */
     fun setStyle(alertDialog: AlertDialog, title: String?) {
         //没有标题就不显示
         if (title == null) {
@@ -216,7 +218,9 @@ class YAlertDialogUtils {
         alertDialog.window?.setGravity(Gravity.CENTER)
     }
 
-    //设置按钮风格
+    /**
+     * 设置按钮风格
+     */
     fun setButton(alertDialog: AlertDialog, showCancel: Boolean = false) {
         //设置确定按钮
         val okButton = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE)
@@ -251,29 +255,21 @@ class YAlertDialogUtils {
     }
 
     /**
-     * 消息框，确定按钮,取消按钮
+     * 消息框，无按钮
      */
-    fun showMessageCancel(title: String?, message: String?, listener: () -> Unit) {
-        showMessageCancel(title, message, listener) {}
-    }
-
-    /**
-     * 消息框，确定按钮,取消按钮
-     */
-    fun showMessageCancel(title: String?, message: String?, listener: () -> Unit, cancelListener: () -> Unit) {
+    fun showMessage(title: String?, message: String?, time: Int? = 2000) {
         //创建alertDialog
         val alertDialog = AlertDialog.Builder(YActivityUtil.getCurrentActivity())
             .setCustomTitle(if (title != null) createTitleView(title) else null)
             .setView(createContentView(message))
-            .setPositiveButton(okButtonString) { dialog, which ->
-                listener()
-            }.setNegativeButton(cancelButtonString) { dialog, which ->
-                cancelListener()
-            }.setCancelable(cancelable)
+            .setCancelable(cancelable)
             .create()
 
         setStyle(alertDialog, title)
-        setButton(alertDialog, true)
+
+        YDelay.run(time!!) {
+            alertDialog.dismiss()
+        }
     }
 
     /**
@@ -293,26 +289,33 @@ class YAlertDialogUtils {
     }
 
     /**
-     * 消息框，无按钮
+     * 消息框，确定按钮、取消按钮
      */
-    fun showMessage(title: String?, message: String?, time: Int? = 2000) {
+    fun showMessageCancel(title: String?, message: String?, listener: () -> Unit) {
+        showMessageCancel(title, message, listener) {}
+    }
+
+    /**
+     * 消息框，确定按钮、取消按钮、取消按钮监听
+     */
+    fun showMessageCancel(title: String?, message: String?, listener: () -> Unit, cancelListener: () -> Unit) {
         //创建alertDialog
         val alertDialog = AlertDialog.Builder(YActivityUtil.getCurrentActivity())
             .setCustomTitle(if (title != null) createTitleView(title) else null)
             .setView(createContentView(message))
-            .setCancelable(cancelable)
+            .setPositiveButton(okButtonString) { dialog, which ->
+                listener()
+            }.setNegativeButton(cancelButtonString) { dialog, which ->
+                cancelListener()
+            }.setCancelable(cancelable)
             .create()
 
         setStyle(alertDialog, title)
-
-        YDelay.run(time!!) {
-            alertDialog.dismiss()
-        }
+        setButton(alertDialog, true)
     }
 
-
     /**
-     * 单选弹窗
+     * 单选弹窗，确定按钮
      * @param index 单选框默认值：从0开始
      */
     fun showSingleChoice(title: String?, itemName: Array<String>, default: Int = -1, listener: (Int) -> Unit) {
@@ -339,7 +342,7 @@ class YAlertDialogUtils {
 
 
     /**
-     * 列表框
+     * 列表框，无按钮
      */
     fun showList(title: String?, itemName: Array<String>, listener: (Int) -> Unit) {
         //创建alertDialog
@@ -354,12 +357,15 @@ class YAlertDialogUtils {
     }
 
     /**
-     * 消息框，确定按钮,取消按钮
+     * 输入框，确定按钮、取消按钮
      */
     fun showEdit(title: String?, hint: String?, listener: (String) -> Unit) {
         showEdit(title, hint, listener) {}
     }
 
+    /**
+     * 输入框，确定按钮、取消按钮、取消按钮监听
+     */
     fun showEdit(title: String?, hint: String?, listener: (String) -> Unit, cancelListener: () -> Unit) {
         val editText = EditText(YApp.get())
         //创建alertDialog
@@ -393,7 +399,7 @@ class YAlertDialogUtils {
     }
 
     /**
-     * 多选弹窗
+     * 多选弹窗，确定按钮、取消按钮
      */
     fun showMultiChoice(title: String?, itemName: Array<String>, checked: BooleanArray, listener: () -> Unit) {
         //创建alertDialog

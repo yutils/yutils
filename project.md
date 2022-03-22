@@ -229,6 +229,55 @@ java:
 ```
 
 ----
+### 弹窗
+```kotlin
+
+//提示,有确定按钮，有取消按钮
+YAlertDialogUtils().showMessageCancel("测试","确定删除？删除后不可撤销。"){
+    //确定事件
+}
+
+//提示,有确定按钮
+YAlertDialogUtils().showMessage("测试","确定删除？删除后不可撤销。"){
+    //确定事件
+}
+
+//提示,无按钮，标题为null时不显示标题
+YAlertDialogUtils().showMessage(null,"确定删除？删除后不可撤销。")
+
+
+//单选
+YAlertDialogUtils().showSingleChoice("请选择一个", listOf("123","456","789","000").toTypedArray(),1){
+    //YLog.i("选择了：$it")
+}
+
+//多选
+val listName: MutableList<String> = ArrayList()
+listName.add("项目1")
+listName.add("项目2")
+listName.add("项目3")
+val checked = BooleanArray(listName.size) { i -> false } //默认选中项，最终选中项
+YAlertDialogUtils().showMultiChoice("请选择", listName.toTypedArray(), checked) {
+    //筛选选中项
+    val newList: MutableList<String> = ArrayList()
+    for (index in checked.indices) {
+        if (checked[index]) newList.add(listName[index])
+    }
+    //newList
+}
+
+//列表
+YAlertDialogUtils().showList("请选择一个", listOf("123","456","789","000").toTypedArray()){
+    //YLog.i("选择了：$it")
+}
+
+//输入框
+YAlertDialogUtils().showEdit("测试","请输入内容"){
+    //YLog.i("输入了：$it")
+}
+```
+
+----
 ### 拍照
 ```kotlin
     //拍照
