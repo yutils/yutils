@@ -1,20 +1,19 @@
 package com.yujing.test.activity
 
-import android.Manifest
+import android.graphics.Color
 import android.widget.EditText
 import android.widget.TextView
-import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import com.yujing.base.contract.YLifeEvent
 import com.yujing.bus.YBus
 import com.yujing.bus.YBusUtil
-import com.yujing.test.App
 import com.yujing.test.R
 import com.yujing.test.activity.bluetooth.BleClientActivity
 import com.yujing.test.activity.bluetooth.BleServerActivity
 import com.yujing.test.base.KBaseActivity
 import com.yujing.test.databinding.ActivityAllTestBinding
 import com.yujing.utils.*
+import com.yujing.view.YAlertDialogUtils
 import com.yutils.view.utils.Create
 
 
@@ -81,18 +80,17 @@ class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
         }
 
         Create.button(binding.wll, "请求权限") {
-            val yPermissions = YPermissions(this)
-            yPermissions.setSuccessListener {
-                YLog.i("成功$it")
-            }.setFailListener {
-                YLog.i("失败$it")
-            }.setAllSuccessListener {
-                YLog.i("全部成功")
-                YPermissions.requestAll(this)
-            }.request(
-                Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                Manifest.permission.CAMERA
-            )
+//            val yPermissions = YPermissions(this)
+//            yPermissions.setSuccessListener {
+//                YLog.i("成功$it")
+//            }.setFailListener {
+//                YLog.i("失败$it")
+//            }.setAllSuccessListener {
+//                YLog.i("全部成功")
+//            }.request(
+//                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+//                Manifest.permission.CAMERA
+//            )
             YPermissions.requestAll(this)
         }
 
@@ -130,9 +128,30 @@ class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
         Create.button(binding.wll, "更新APP") {
             val url = "https://down.qq.com/qqweb/QQlite/qqlite_5.9.3.3468_Android_537067382.apk"
             yVersionUpdate.useNotificationDownload = false
-            yVersionUpdate.update(999, true, url)
+            val description = "1.更新了xxxxxxx\n2.新增xxxxxxxxxxx\n3.修复xxxxx的bug\n4.版本迭代如果出现异常或者问题，请尽快联系开发者，进行修复和处理。谢谢大家的积极配合。"
+            //yVersionUpdate.dialog.okButtonBackgroundColor= Color.parseColor("#21A9FA")
+            yVersionUpdate.update(634, true, url, "6.3.4", description+description+description)
         }
 
+        Create.button(binding.wll,"弹窗测试"){
+            //多选
+            val listName: MutableList<String> = ArrayList()
+            listName.add("项目1")
+            listName.add("项目2")
+            listName.add("项目3")
+            listName.add("项目4")
+            listName.add("项目5")
+            listName.add("项目6")
+            val checked = BooleanArray(listName.size) { i -> false } //默认选中项，最终选中项
+            YAlertDialogUtils().showMultiChoice("请选择", listName.toTypedArray(), checked) {
+                //筛选选中项
+                val newList: MutableList<String> = ArrayList()
+                for (index in checked.indices) {
+                    if (checked[index]) newList.add(listName[index])
+                }
+                textView1.text = "您选择了：${YJson.toJson(newList)}"
+            }
+        }
         var i = 0
         Create.button(binding.wll, "YToast") {
             YToast.show("SHOW${i++}")

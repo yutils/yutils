@@ -101,29 +101,34 @@ class YTake {
          * 请求权限并拍照，返回URI
          */
         fun take(activity: ComponentActivity, onResult: (Uri?) -> Unit) {
+
             activity.lifecycle.addObserver(object : DefaultLifecycleObserver {
                 var takePicture: ActivityResultLauncher<File>? = null
-                var registerPermission: ActivityResultLauncher<String>? = null
+
                 override fun onCreate(owner: LifecycleOwner) {
                     super.onCreate(owner)
+                    //请求权限
+                    val yPermissions = YPermissions(activity)
+                    yPermissions.setSuccessListener {
+                        YLog.i("权限请求成功$it")
+                    }.setFailListener {
+                        YLog.i("权限请求失败$it")
+                        YToast.show("权限请求失败")
+                    }.setAllSuccessListener {
+                        YLog.i("权限请求全部成功")
+                        val file = File(YPath.getPICTURES() + "/img/${Date().time}.jpg")
+                        takePicture?.launch(file)
+                    }.request(
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        Manifest.permission.CAMERA
+                    )
                     //拍照返回
                     takePicture = activity.activityResultRegistry.register("key1", YTakePicture(activity), onResult)
-                    //相机权限返回
-                    registerPermission = activity.activityResultRegistry.register("CAMERA", ActivityResultContracts.RequestPermission()) { it: Boolean ->
-                        //同意权限
-                        if (it) {
-                            val file = File(YPath.getPICTURES() + "/img/${Date().time}.jpg")
-                            takePicture?.launch(file)
-                        }
-                    }
-                    //调用相机权限
-                    registerPermission?.launch(Manifest.permission.CAMERA)
                 }
 
                 override fun onDestroy(owner: LifecycleOwner) {
                     super.onDestroy(owner)
                     takePicture?.unregister()
-                    registerPermission?.unregister()
                 }
             })
         }

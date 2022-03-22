@@ -1,6 +1,7 @@
 package com.yujing.utils
 
-import android.app.AlertDialog
+import android.view.Gravity
+import com.yujing.view.YAlertDialogUtils
 import com.yutils.http.YHttp
 import com.yutils.http.contract.YHttpDownloadFileListener
 import kotlinx.coroutines.CoroutineScope
@@ -78,6 +79,13 @@ class YVersionUpdate {
     //通知栏下载
     private var yNoticeDownload: YNoticeDownload? = null
 
+    //弹窗
+    //yVersionUpdate.dialog.okButtonBackgroundColor= Color.parseColor("#21A9FA")
+    //yVersionUpdate.dialog.okButtonTextColor= Color.parseColor("#FFFFFF")
+    //yVersionUpdate.dialog.cancelButtonBackgroundColor= Color.parseColor("#21A9FA")
+    //yVersionUpdate.dialog.cancelButtonTextColor= Color.parseColor("#FFFFFF")
+    val dialog = YAlertDialogUtils()
+
     /**
      * 立即检查一次更新
      */
@@ -122,51 +130,66 @@ class YVersionUpdate {
      */
     private fun noNeedUpdate() {
         val sb = """
-            #本地版本号:${YUtils.getVersionCode()}（版本名:${YUtils.getVersionName()}）
-            #最新版本号:$serverCode${if (serverName.isNotEmpty()) "（版本名:$serverName）" else ""}${if (versionDescription.isNotEmpty()) "\n更新说明：$versionDescription" else ""}
+            #本地版本:${YUtils.getVersionCode()}　(${YUtils.getVersionName()})
+            #最新版本:$serverCode${if (serverName.isNotEmpty()) "（$serverName）" else ""}${if (versionDescription.isNotEmpty()) "\n更新说明：\n$versionDescription" else "\n"}
             #已是最新版,无需更新!
             """.trimMargin("#")
-        val activity = YActivityUtil.getCurrentActivity()
-        val dialog = AlertDialog.Builder(activity).setTitle("软件更新").setMessage(sb) // 设置内容
-            .setPositiveButton("确定", null).create() // 创建
-        // 显示对话框
-        if (activity.isDestroyed || activity.isFinishing)
-            return
-        dialog.show()
+
+//        val dialog = AlertDialog.Builder(activity).setTitle("软件更新").setMessage(sb) // 设置内容
+//            .setPositiveButton("确定", null).create() // 创建
+//        dialog.show()
+
+        dialog.contentTextViewGravity = Gravity.START
+        dialog.okButtonString = "确定"
+        dialog.showMessage("软件更新", sb) {}
     }
 
     /**
      * 需要更新时候弹窗
      */
     private fun needUpdate() {
-        val activity = YActivityUtil.getCurrentActivity()
         val sb = """
-            #本地版本号:${YUtils.getVersionCode()}　(版本名:${YUtils.getVersionName()})
-            #最新版本号:$serverCode${if (serverName.isNotEmpty()) "（版本名:$serverName）" else ""}${if (versionDescription.isNotEmpty()) "\n更新说明：$versionDescription" else ""}
+            #本地版本:${YUtils.getVersionCode()}  (${YUtils.getVersionName()})
+            #最新版本:$serverCode${if (serverName.isNotEmpty()) "($serverName)" else ""}${if (versionDescription.isNotEmpty()) "\n更新说明：\n$versionDescription" else "\n"}
             #发现新版本，是否更新?
             """.trimMargin("#")
-        val dialog =
-            AlertDialog.Builder(activity).setTitle("软件更新").setCancelable(!isForceUpdate)
-                .setMessage(sb)
-                .setPositiveButton("更新（${YUtils.getVersionCode()}-->$serverCode）") { _, _ ->
-                    when {
-                        useNotificationDownload -> notifyDownApkFile()
-                        useOkHttp -> okHttpDownApkFile()
-                        else -> yHttpDownApkFile()
-                    }
-                }.setNegativeButton(
-                    if (isForceUpdate) "退出APP" else "暂不更新"
-                ) { dialog, _ ->
-                    // 判断强制更新
-                    if (isForceUpdate) {
-                        dialog.dismiss()
-                        activity.finish()
-                        exitProcess(0)
-                    } else dialog.dismiss()
-                }.create() // 创建
-        // 显示对话框
-        if (activity.isDestroyed || activity.isFinishing) return
-        dialog.show()
+
+//        val dialog =
+//            AlertDialog.Builder(activity).setTitle("软件更新").setCancelable(!isForceUpdate)
+//                .setMessage(sb)
+//                .setPositiveButton("更新（${YUtils.getVersionCode()}-->$serverCode）") { _, _ ->
+//                    when {
+//                        useNotificationDownload -> notifyDownApkFile()
+//                        useOkHttp -> okHttpDownApkFile()
+//                        else -> yHttpDownApkFile()
+//                    }
+//                }.setNegativeButton(if (isForceUpdate) "退出APP" else "暂不更新") { dialog, _ ->
+//                    // 判断强制更新
+//                    if (isForceUpdate) {
+//                        dialog.dismiss()
+//                        YActivityUtil.getCurrentActivity().finish()
+//                        exitProcess(0)
+//                    } else dialog.dismiss()
+//                }.create() // 创建
+//        dialog.show()
+
+
+        dialog.contentTextViewGravity = Gravity.START
+        dialog.okButtonString = "更新(${YUtils.getVersionCode()}→$serverCode)"
+        dialog.cancelButtonString = if (isForceUpdate) "退出APP" else "暂不更新"
+        dialog.showMessageCancel("软件更新", sb, {
+            when {
+                useNotificationDownload -> notifyDownApkFile()
+                useOkHttp -> okHttpDownApkFile()
+                else -> yHttpDownApkFile()
+            }
+        }, {
+            // 判断强制更新
+            if (isForceUpdate) {
+                YActivityUtil.getCurrentActivity().finish()
+                exitProcess(0)
+            }
+        })
     }
 
     /**

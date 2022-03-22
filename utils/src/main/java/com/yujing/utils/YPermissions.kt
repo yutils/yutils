@@ -71,7 +71,7 @@ class YPermissions(val activity: ComponentActivity) {
         /**
          * 获取权限
          */
-        fun requestAll(activity: AppCompatActivity) {
+        fun requestAll(activity: ComponentActivity) {
             YPermissions(activity).request(*getManifestPermissions(activity)!!)
         }
     }
