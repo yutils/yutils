@@ -143,11 +143,17 @@ public class YImageDialog extends Dialog {
         show(YActivityUtil.getCurrentActivity(), drawable, true);
     }
 
-    public static void show(Bitmap bitmap, boolean cancelable) { show(YActivityUtil.getCurrentActivity(), bitmap, cancelable); }
+    public static void show(Bitmap bitmap, boolean cancelable) {
+        show(YActivityUtil.getCurrentActivity(), bitmap, cancelable);
+    }
 
-    public static void show(int resource, boolean cancelable) { show(YActivityUtil.getCurrentActivity(), resource, cancelable); }
+    public static void show(int resource, boolean cancelable) {
+        show(YActivityUtil.getCurrentActivity(), resource, cancelable);
+    }
 
-    public static void show(Drawable drawable, boolean cancelable) { show(YActivityUtil.getCurrentActivity(), drawable, cancelable); }
+    public static void show(Drawable drawable, boolean cancelable) {
+        show(YActivityUtil.getCurrentActivity(), drawable, cancelable);
+    }
 
     public static void show(Activity activity, Bitmap bitmap) {
         show(activity, bitmap, true);
@@ -164,40 +170,34 @@ public class YImageDialog extends Dialog {
     public synchronized static void show(Activity activity, Bitmap bitmap, boolean cancelable) {
         finish();
         if (activity == null || activity.isFinishing() || bitmap == null) return;
-        if (YThread.isMainThread()) {
+        YThread.runOnUiThread(() -> {
             yDialog = new YImageDialog(activity);
             yDialog.setBitmap(bitmap);
             yDialog.setCancelable(cancelable);
             yDialog.show();
-        } else {
-            YThread.runOnUiThread(() -> show(activity, bitmap, cancelable));
-        }
+        });
     }
 
     public synchronized static void show(Activity activity, int resource, boolean cancelable) {
         finish();
         if (activity == null || activity.isFinishing()) return;
-        if (YThread.isMainThread()) {
+        YThread.runOnUiThread(() -> {
             yDialog = new YImageDialog(activity);
             yDialog.setResource(resource);
             yDialog.setCancelable(cancelable);
             yDialog.show();
-        } else {
-            YThread.runOnUiThread(() -> show(activity, resource, cancelable));
-        }
+        });
     }
 
     public synchronized static void show(Activity activity, Drawable drawable, boolean cancelable) {
         finish();
         if (activity == null || activity.isFinishing() || drawable == null) return;
-        if (YThread.isMainThread()) {
+        YThread.runOnUiThread(() -> {
             yDialog = new YImageDialog(activity);
             yDialog.setDrawable(drawable);
             yDialog.setCancelable(cancelable);
             yDialog.show();
-        } else {
-            YThread.runOnUiThread(() -> show(activity, drawable, cancelable));
-        }
+        });
     }
 
     public ImageView getImageView() {
@@ -217,7 +217,7 @@ public class YImageDialog extends Dialog {
     public void show() {
         if (activity == null || activity.isFinishing()) return;
         finish();
-        if (YThread.isMainThread()) {
+        YThread.runOnUiThread(() -> {
             if (fullScreen == null) fullScreen = defaultFullScreen;
             if (fullScreen) {
                 //主要作用是焦点失能和焦点恢复，保证在弹出dialog时不会弹出虚拟按键且事件不会穿透。
@@ -232,9 +232,7 @@ public class YImageDialog extends Dialog {
             } else {
                 super.show();
             }
-        } else {
-            YThread.runOnUiThread(this::show);
-        }
+        });
     }
 
     public boolean isCancel() {

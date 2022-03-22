@@ -10,10 +10,10 @@ android {
     buildToolsVersion "31.0.0"
     defaultConfig {
         applicationId "com.yujing.test"
-        minSdkVersion 19
+        minSdkVersion 21
         targetSdkVersion 31
-        versionCode 80
-        versionName "1.8.0"
+        versionCode 81
+        versionName "1.8.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 

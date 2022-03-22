@@ -25,17 +25,14 @@ public class YToast {
      */
     public static void show(Context context, String text) {
         if (context == null || text == null) return;
-        if (YThread.isMainThread()) {
+        YThread.runOnUiThread(() -> {
             if (toast != null) {
                 toast.cancel();
                 toast = null;
             }
             toast = Toast.makeText(context, text, Toast.LENGTH_SHORT);
             toast.show();
-        } else {
-            YThread.runOnUiThread(() -> show(context, text));
-        }
-
+        });
     }
 
     public static void show(String text) {
@@ -50,16 +47,14 @@ public class YToast {
      */
     public static void showLong(Context context, String text) {
         if (context == null || text == null) return;
-        if (YThread.isMainThread()) {
+        YThread.runOnUiThread(() -> {
             if (toast != null) {
                 toast.cancel();
                 toast = null;
             }
             toast = Toast.makeText(context, text, Toast.LENGTH_LONG);
             toast.show();
-        } else {
-            YThread.runOnUiThread(() -> showLong(context, text));
-        }
+        });
     }
 
     public static void showLong(String text) {
@@ -74,12 +69,10 @@ public class YToast {
      */
     public static void showQueue(final Context context, final String text) {
         if (context == null || text == null) return;
-        if (YThread.isMainThread()) {
+        YThread.runOnUiThread(() -> {
             if (yQueue == null) yQueue = new YQueue();
             yQueue.run(queueTime, () -> show(context, text));
-        } else {
-            YThread.runOnUiThread(() -> showQueue(context, text));
-        }
+        });
     }
 
     public static void showQueue(final String text) {
@@ -95,12 +88,10 @@ public class YToast {
     @SuppressLint("ShowToast")
     public static void showQueueLong(final Context context, final String text) {
         if (context == null || text == null) return;
-        if (YThread.isMainThread()) {
+        YThread.runOnUiThread(() -> {
             if (yQueue == null) yQueue = new YQueue();
             yQueue.run(queueTime, () -> showLong(context, text));
-        } else {
-            YThread.runOnUiThread(() -> showQueueLong(context, text));
-        }
+        });
     }
 
     public static void showQueueLong(final String text) {

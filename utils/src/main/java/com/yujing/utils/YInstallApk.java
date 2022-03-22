@@ -72,27 +72,29 @@ public class YInstallApk {
     }
 
     public void install(Uri apkUri) {
-        if (Build.VERSION.SDK_INT >= 26) {
-            //先判断是否有安装未知来源应用的权限
-            boolean haveInstallPermission = activity.getPackageManager().canRequestPackageInstalls();
-            if (haveInstallPermission) {
-                installApk(activity, apkUri);
-            } else {
-                //请求权限之后回调
-                YActivityResultObserver activityResultObserver = new YActivityResultObserver(activity.getActivityResultRegistry(), "YInstallApk", result -> {
-                    if (result.getResultCode() == Activity.RESULT_OK)
-                        if (apkUri != null) installApk(activity, apkUri);
-                    return null;
-                });
-                activity.getLifecycle().addObserver(activityResultObserver);
+        YThread.runOnUiThread(() -> {
+            if (Build.VERSION.SDK_INT >= 26) {
+                //先判断是否有安装未知来源应用的权限
+                boolean haveInstallPermission = activity.getPackageManager().canRequestPackageInstalls();
+                if (haveInstallPermission) {
+                    installApk(activity, apkUri);
+                } else {
+                    //请求权限之后回调
+                    YActivityResultObserver activityResultObserver = new YActivityResultObserver(activity.getActivityResultRegistry(), "YInstallApk", result -> {
+                        if (result.getResultCode() == Activity.RESULT_OK)
+                            if (apkUri != null) installApk(activity, apkUri);
+                        return null;
+                    });
+                    activity.getLifecycle().addObserver(activityResultObserver);
 
-                Uri packageURI = Uri.parse("package:" + activity.getPackageName());
-                Intent intent = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, packageURI);
-                activityResultObserver.launch(intent);
+                    Uri packageURI = Uri.parse("package:" + activity.getPackageName());
+                    Intent intent = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, packageURI);
+                    activityResultObserver.launch(intent);
+                }
+            } else {
+                installApk(activity, apkUri);
             }
-        } else {
-            installApk(activity, apkUri);
-        }
+        });
     }
 
     /**
@@ -131,21 +133,23 @@ public class YInstallApk {
      * @param apkUri  app的uri
      */
     public static void installApk(Context context, Uri apkUri) {
-        try {
-            Intent intent = new Intent(Intent.ACTION_VIEW);
-            //判读版本是否在7.0以上
-            if (Build.VERSION.SDK_INT >= 24) {
-                // 添加这一句表示对目标应用临时授权该Uri所代表的文件
-                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.setDataAndType(apkUri, "application/vnd.android.package-archive");
-            } else {
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.setDataAndType(apkUri, "application/vnd.android.package-archive");
+        YThread.runOnUiThread(() -> {
+            try {
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                //判读版本是否在7.0以上
+                if (Build.VERSION.SDK_INT >= 24) {
+                    // 添加这一句表示对目标应用临时授权该Uri所代表的文件
+                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    intent.setDataAndType(apkUri, "application/vnd.android.package-archive");
+                } else {
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    intent.setDataAndType(apkUri, "application/vnd.android.package-archive");
+                }
+                context.startActivity(intent);
+            } catch (Exception e) {
+                YToast.show("安装失败，请手动安装");
             }
-            context.startActivity(intent);
-        } catch (Exception e) {
-            YToast.show("安装失败，请手动安装");
-        }
+        });
     }
 }

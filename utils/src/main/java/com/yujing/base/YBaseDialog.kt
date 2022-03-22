@@ -10,7 +10,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import com.yujing.utils.YScreenUtil
 import com.yujing.utils.YThread
-import com.yujing.utils.YToast
+import java.lang.Deprecated
 
 /**
  * 自定义dialog快速创建基类
@@ -51,6 +51,7 @@ YBaseDialog dialog = new YBaseDialog<DialogInfoBinding>(this, R.layout.dialog_in
 };
 dialog.show();
  */
+@Deprecated
 abstract class YBaseDialog<B : ViewDataBinding> : Dialog {
     constructor(activity: Activity, layout: Int, style: Int = android.R.style.Theme_DeviceDefault_Dialog_NoActionBar) : super(activity, style) {
         this.activity = activity
@@ -92,7 +93,7 @@ abstract class YBaseDialog<B : ViewDataBinding> : Dialog {
     var disableInput = false
 
     //打开动画
-    var openAnimation = true
+    var openAnimation = false
 
     // 边框宽度，乘以屏幕比例
     var strokeWidth: Float? = null

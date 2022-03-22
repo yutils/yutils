@@ -13,14 +13,17 @@ import android.view.animation.ScaleAnimation
 import com.yujing.contract.YListener
 import com.yujing.utils.YLog
 import com.yujing.utils.YScreenUtil
+import java.lang.Deprecated
 
 /**
  * YBaseDialog的启动关闭动画
  */
+@Deprecated
 class YBaseDialogAnimation {
     companion object {
         private const val TAG = "YAnimation"
     }
+
     private var animationX = 0.5f
     private var animationY = 0.5f //动画缩放开始点
     var strokeWidth = 0f // 边框宽度，乘以屏幕比例

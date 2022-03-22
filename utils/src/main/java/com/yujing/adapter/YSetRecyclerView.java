@@ -34,8 +34,8 @@ public class YSetRecyclerView {
      *
      * @param recyclerView recyclerView
      */
-    public static void init(RecyclerView recyclerView) {
-        initVertical(recyclerView);
+    public static LinearLayoutManager init(RecyclerView recyclerView) {
+        return initVertical(recyclerView);
     }
 
     /**
@@ -43,8 +43,8 @@ public class YSetRecyclerView {
      *
      * @param recyclerView recyclerView
      */
-    public static void initVertical(RecyclerView recyclerView) {
-        init(YApp.get(), recyclerView, RecyclerView.VERTICAL);
+    public static LinearLayoutManager initVertical(RecyclerView recyclerView) {
+        return init(YApp.get(), recyclerView, RecyclerView.VERTICAL);
     }
 
     /**
@@ -52,8 +52,8 @@ public class YSetRecyclerView {
      *
      * @param recyclerView recyclerView
      */
-    public static void initHorizontal(RecyclerView recyclerView) {
-        init(YApp.get(), recyclerView, RecyclerView.HORIZONTAL);
+    public static LinearLayoutManager initHorizontal(RecyclerView recyclerView) {
+        return init(YApp.get(), recyclerView, RecyclerView.HORIZONTAL);
     }
 
     /**
@@ -62,8 +62,8 @@ public class YSetRecyclerView {
      * @param context      context
      * @param recyclerView recyclerView
      */
-    public static void init(Context context, RecyclerView recyclerView) {
-        init(context, recyclerView, RecyclerView.VERTICAL);
+    public static LinearLayoutManager init(Context context, RecyclerView recyclerView) {
+        return init(context, recyclerView, RecyclerView.VERTICAL);
     }
 
     /**
@@ -73,40 +73,44 @@ public class YSetRecyclerView {
      * @param recyclerView recyclerView
      * @param Orientation  Orientation，如：OrientationHelper.VERTICAL
      */
-    public static void init(Context context, RecyclerView recyclerView, int Orientation) {
+    public static LinearLayoutManager init(Context context, RecyclerView recyclerView, int Orientation) {
         LinearLayoutManager layoutManager = new LinearLayoutManager(context);
         layoutManager.setSmoothScrollbarEnabled(true);
         layoutManager.setOrientation(Orientation);
         recyclerView.setLayoutManager(layoutManager);
+        return layoutManager;
     }
 
     // 自定义多行多列布局
-    public static void init(Context context, RecyclerView recyclerView, int Orientation, int items) {
+    public static GridLayoutManager init(Context context, RecyclerView recyclerView, int Orientation, int items) {
         GridLayoutManager layoutManager = new GridLayoutManager(context, items);
         layoutManager.setSmoothScrollbarEnabled(true);
         layoutManager.setOrientation(Orientation);
         recyclerView.setLayoutManager(layoutManager);
+        return layoutManager;
     }
 
     // 默认纵向布局
-    public static void init(Context context, RecyclerView recyclerView, boolean isScrollView) {
-        init(context, recyclerView, RecyclerView.VERTICAL, isScrollView);
+    public static YFullyLinearLayoutManager init(Context context, RecyclerView recyclerView, boolean isScrollView) {
+        return init(context, recyclerView, RecyclerView.VERTICAL, isScrollView);
     }
 
     // 自定义横向或纵向布局
-    public static void init(Context context, RecyclerView recyclerView, int Orientation, boolean isScrollView) {
+    public static YFullyLinearLayoutManager init(Context context, RecyclerView recyclerView, int Orientation, boolean isScrollView) {
         YFullyLinearLayoutManager layoutManager = new YFullyLinearLayoutManager(context);
         layoutManager.setSmoothScrollbarEnabled(isScrollView);
         layoutManager.setOrientation(Orientation);
         recyclerView.setLayoutManager(layoutManager);
+        return layoutManager;
     }
 
     // 自定义多行多列布局
-    public static void init(Context context, RecyclerView recyclerView, int Orientation, int items, boolean isScrollView) {
+    public static YFullyGridLayoutManager init(Context context, RecyclerView recyclerView, int Orientation, int items, boolean isScrollView) {
         YFullyGridLayoutManager layoutManager = new YFullyGridLayoutManager(context, items);
         layoutManager.setSmoothScrollbarEnabled(isScrollView);
         layoutManager.setOrientation(Orientation);
         recyclerView.setLayoutManager(layoutManager);
+        return layoutManager;
     }
 
     public static void setOther(RecyclerView recyclerView) {

@@ -147,19 +147,19 @@ public class YShow extends Dialog {
 
     public YShow setMessage1(String message) {
         this.message1 = message;
-        if (textView1 != null) {
+        YThread.runOnUiThread(() -> {
             textView1.setText(this.message1);
             textView1.setVisibility(message1 == null || message1.isEmpty() ? View.GONE : View.VISIBLE);// 没有值就隐藏textView
-        }
+        });
         return this;
     }
 
     public YShow setMessage2(String message) {
         this.message2 = message;
-        if (textView2 != null) {
+        YThread.runOnUiThread(() -> {
             textView2.setText(this.message2);
             textView2.setVisibility(message2 == null || message2.isEmpty() ? View.GONE : View.VISIBLE);
-        }
+        });
         return this;
     }
 
@@ -176,7 +176,9 @@ public class YShow extends Dialog {
     public YShow setProgressBarColor(@ColorInt int color) {
         if (mProgressBar != null) {
             PorterDuffColorFilter colorFilter = new PorterDuffColorFilter(color, PorterDuff.Mode.MULTIPLY);
-            mProgressBar.getIndeterminateDrawable().setColorFilter(colorFilter);
+            YThread.runOnUiThread(() -> {
+                mProgressBar.getIndeterminateDrawable().setColorFilter(colorFilter);
+            });
         }
         return this;
     }
@@ -220,10 +222,14 @@ public class YShow extends Dialog {
     }
 
     @Deprecated
-    public static void showUpdate(Activity activity, String message1, String message2, boolean canCancel, Boolean fullScreen) { show(activity, message1, message2, canCancel, fullScreen); }
+    public static void showUpdate(Activity activity, String message1, String message2, boolean canCancel, Boolean fullScreen) {
+        show(activity, message1, message2, canCancel, fullScreen);
+    }
 
 
-    public static void show(String message) { show(YActivityUtil.getCurrentActivity(), message, null, true); }
+    public static void show(String message) {
+        show(YActivityUtil.getCurrentActivity(), message, null, true);
+    }
 
     public static void show(String message1, String message2) {
         show(YActivityUtil.getCurrentActivity(), message1, message2, true);
@@ -233,15 +239,21 @@ public class YShow extends Dialog {
         show(YActivityUtil.getCurrentActivity(), message, null, canCancel);
     }
 
-    public static void show(String message1, String message2, boolean canCancel) { show(YActivityUtil.getCurrentActivity(), message1, message2, canCancel, null); }
+    public static void show(String message1, String message2, boolean canCancel) {
+        show(YActivityUtil.getCurrentActivity(), message1, message2, canCancel, null);
+    }
 
-    public static void show(String message1, String message2, boolean canCancel, Boolean fullScreen) { show(YActivityUtil.getCurrentActivity(), message1, message2, canCancel, fullScreen); }
+    public static void show(String message1, String message2, boolean canCancel, Boolean fullScreen) {
+        show(YActivityUtil.getCurrentActivity(), message1, message2, canCancel, fullScreen);
+    }
 
     public static void show(Activity activity) {
         show(activity, null, null, true);
     }
 
-    public static void show(Activity activity, String message) { show(activity, message, null, true); }
+    public static void show(Activity activity, String message) {
+        show(activity, message, null, true);
+    }
 
     public static void show(Activity activity, String message1, String message2) {
         show(activity, message1, message2, true);
@@ -256,7 +268,7 @@ public class YShow extends Dialog {
     }
 
     public synchronized static void show(Activity activity, String message1, String message2, boolean canCancel, Boolean fullScreen) {
-        if (YThread.isMainThread()) {
+        YThread.runOnUiThread(() -> {
             if (isShow()) {
                 setMessage(message1);
                 setMessageOther(message2);
@@ -265,9 +277,7 @@ public class YShow extends Dialog {
                 yDialog.setFullScreen(fullScreen);
                 yDialog.show();
             }
-        } else {
-            YThread.runOnUiThread(() -> show(activity, message1, message2, canCancel, fullScreen));
-        }
+        });
     }
 
     //设置文本
@@ -336,7 +346,7 @@ public class YShow extends Dialog {
     public void show() {
         if (activity == null || activity.isFinishing()) return;
         finish();
-        if (YThread.isMainThread()) {
+        YThread.runOnUiThread(() -> {
             if (fullScreen == null) fullScreen = defaultFullScreen;
             if (fullScreen) {
                 //主要作用是焦点失能和焦点恢复，保证在弹出dialog时不会弹出虚拟按键且事件不会穿透。
@@ -352,8 +362,6 @@ public class YShow extends Dialog {
             } else {
                 super.show();
             }
-        } else {
-            YThread.runOnUiThread(this::show);
-        }
+        });
     }
 }

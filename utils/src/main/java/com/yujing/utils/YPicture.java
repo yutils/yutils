@@ -51,6 +51,7 @@ override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) 
 }
  */
 @SuppressWarnings("unused")
+@Deprecated
 public class YPicture {
     private Activity activity;
 

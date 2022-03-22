@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.ImageFormat;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
@@ -17,7 +16,6 @@ import android.renderscript.RenderScript;
 import android.renderscript.ScriptIntrinsicYuvToRGB;
 import android.renderscript.Type;
 import android.util.Base64;
-import android.view.View;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -596,25 +594,6 @@ public class YConvert {
             return null;
         }
         return byteOut.toByteArray();
-    }
-
-    /**
-     * View转bitmap
-     *
-     * @param v View
-     * @return Bitmap
-     */
-    public static Bitmap view2Bitmap(View v) {
-        Bitmap b = Bitmap.createBitmap(v.getWidth(), v.getHeight(), Bitmap.Config.ARGB_8888);
-        Canvas c = new Canvas(b);
-        v.layout(v.getLeft(), v.getTop(), v.getRight(), v.getBottom());
-        Drawable bgDrawable = v.getBackground();
-        if (bgDrawable != null)
-            bgDrawable.draw(c);
-        else
-            c.drawColor(Color.WHITE);
-        v.draw(c);
-        return b;
     }
 
     /**

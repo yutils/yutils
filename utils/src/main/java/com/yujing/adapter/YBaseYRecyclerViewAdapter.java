@@ -73,7 +73,7 @@ class MyAccountAdapter<T>(context: Context, list: List<T>) : YBaseYRecyclerViewA
     }
 }
 
-//原生用法
+//原生用法 java
 public class AutoPollAdapter<T> extends RecyclerView.Adapter<AutoPollAdapter.BaseViewHolder> {
     private final Context mContext;
     private final List<T> mData;
@@ -102,6 +102,29 @@ public class AutoPollAdapter<T> extends RecyclerView.Adapter<AutoPollAdapter.Bas
             super(itemView);
             binding = DataBindingUtil.bind(itemView);
         }
+    }
+}
+
+//DataBinding用法 kotlin
+class CarAdapter<T>(var data: List<T>?) : RecyclerView.Adapter<CarAdapter.MyViewHolder>() {
+    //ViewHolder
+    class MyViewHolder(var binding: ActivityListItemBinding) : RecyclerView.ViewHolder(binding.root) {}
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
+        return MyViewHolder(DataBindingUtil.inflate(LayoutInflater.from(parent.context), R.layout.activity_list_item, parent, false))
+    }
+
+    override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
+        val item = data?.get(position) as Car
+        holder.binding.car = item
+        holder.binding.iv.setOnClickListener { YToast.show("点击：" + item.name) }
+
+        //必须要有这行，防止闪烁
+        holder.binding.executePendingBindings()
+    }
+
+    override fun getItemCount(): Int {
+        return data?.size ?: 0
     }
 }
  */

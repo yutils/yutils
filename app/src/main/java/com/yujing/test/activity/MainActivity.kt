@@ -128,7 +128,7 @@ class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
         }
 
         Create.button(binding.wll, "更新APP") {
-            val url = "https://down.qq.com/qqweb/QQ_1/android_apk/AndroidQQ_8.4.5.4745_537065283.apk"
+            val url = "https://down.qq.com/qqweb/QQlite/qqlite_5.9.3.3468_Android_537067382.apk"
             yVersionUpdate.useNotificationDownload = false
             yVersionUpdate.update(999, true, url)
         }
