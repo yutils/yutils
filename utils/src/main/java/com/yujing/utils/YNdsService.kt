@@ -13,7 +13,7 @@ import java.net.ServerSocket
 /*
 用法：
 //注册网络服务
-NSDService.registerService() {
+NSDService.registerService("_ipfs-discovery._udp") {
     //if (it) "注册成功" else "注册失败"
 }
 
@@ -29,7 +29,7 @@ object YNdsService {
     /**
      * 注册网络服务
      */
-    fun registerService(serviceType: String = "_ipfs-discovery._udp", listener: YListener1<Boolean>? = null) {
+    fun registerService(serviceType: String = "_nsdchat._tcp", listener: YListener1<Boolean>? = null) {
         if (nsRegListener != null) return YLog.e("已经注册过了")
         var port = 9999
         try {

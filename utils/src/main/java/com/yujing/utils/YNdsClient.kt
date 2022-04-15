@@ -33,7 +33,7 @@ NSDClient.auto(timeOut = 5000) { success, nsdServiceInfo ->
 
 //发现网络服务
 private var nsdServiceInfo: NsdServiceInfo? = null
-NSDClient.discoverService { success, value ->
+NSDClient.discoverService("_ipfs-discovery._udp") { success, value ->
     if (success) {  nsdServiceInfo = value  }
 }
 
@@ -62,12 +62,12 @@ object YNdsClient {
     /**
      * 发现网络服务的监听器
      */
-    var nsDicListener: NsdManager.DiscoveryListener? = null
+    private var nsDicListener: NsdManager.DiscoveryListener? = null
 
     /**
      * 发现网络服务
      */
-    fun discoverService(serviceType: String = "_ipfs-discovery._udp", listener: YListener2<Boolean, NsdServiceInfo?>? = null) {
+    fun discoverService(serviceType: String = "_nsdchat._tcp", listener: YListener2<Boolean, NsdServiceInfo?>? = null) {
         if (nsDicListener != null) return YLog.e("正在发现服务")
         nsDicListener = object : NsdManager.DiscoveryListener {
             override fun onStopDiscoveryFailed(serviceType: String, errorCode: Int) {
@@ -104,7 +104,7 @@ object YNdsClient {
     /**
      * 发现网络服务,并给定超时时间，最后返回改时间内的所有结果
      */
-    fun discoverService(serviceType: String = "_ipfs-discovery._udp", timeOut: Int? = null, listenerList: YListener1<MutableList<NsdServiceInfo>>? = null) {
+    fun discoverService(serviceType: String = "_nsdchat._tcp", timeOut: Int? = null, listenerList: YListener1<MutableList<NsdServiceInfo>>? = null) {
         if (nsDicListener != null) return YLog.e("正在发现服务")
 
         val list = mutableListOf<NsdServiceInfo>()
