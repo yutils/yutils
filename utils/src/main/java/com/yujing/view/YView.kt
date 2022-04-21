@@ -22,12 +22,12 @@ var oldViewSize: MutableList<MutableMap<String, Any>> = mutableListOf()
 
 @YBus("页面缩小")
 fun scale() {
-    oldViewSize = viewScale(binding.root, 0.6f)
+    oldViewSize = YView.viewScale(binding.root, 0.6f)
 }
 
 @YBus("页面还原")
 fun reduction() {
-    viewReduction(binding.root, oldViewSize)
+    YView.viewReduction(binding.root, oldViewSize)
 }
 
  */
