@@ -76,7 +76,7 @@ object YView {
      * @param ignores 忽略的view
      * @param allViewSize 全部view的大小
      */
-    private fun viewScale(
+    fun viewScale(
         view: View, scale: Float, needWidth: Boolean = true, needHeight: Boolean = true,
         needViewGroup: Boolean = false, ignores: Array<View> = arrayOf(),
         allViewSize: MutableList<MutableMap<String, Any>> = mutableListOf()
@@ -145,7 +145,7 @@ object YView {
     /**
      * 还原view缩放，通过allSize中记录的原始大小
      */
-    private fun viewReduction(view: View, allViewSize: MutableList<MutableMap<String, Any>>?) {
+    fun viewReduction(view: View, allViewSize: MutableList<MutableMap<String, Any>>?) {
         if (allViewSize == null) return
         if (allViewSize.isEmpty()) return
         val id = view.javaClass.name + "@" + Integer.toHexString(view.hashCode())
