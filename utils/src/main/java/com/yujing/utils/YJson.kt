@@ -1,11 +1,9 @@
 package com.yujing.utils
 
-import android.annotation.SuppressLint
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonParser
 import java.lang.reflect.Type
-import java.util.*
 
 
 /**
@@ -106,7 +104,7 @@ object YJson {
      * 获取一个格式化日期的 gson对象
      */
     fun getGsonDate(dateFormat: String?): Gson {
-        return  GsonBuilder().setDateFormat(dateFormat).create()
+        return GsonBuilder().setDateFormat(dateFormat).create()
     }
 
     /**
@@ -129,6 +127,14 @@ object YJson {
     fun toJson(obj: Any?, dateFormat: String? = null): String {
         val gson = if (dateFormat == null) gson else getGsonDate(dateFormat)
         return gson.toJson(obj)
+    }
+
+    /**
+     * 将对象转换成json格式,并且格式化(并自定义日期格式)
+     */
+    fun toJsonFormat(obj: Any?, dateFormat: String? = null): String? {
+        val gson = if (dateFormat == null) gson else getGsonDate(dateFormat)
+        return format(gson.toJson(obj))
     }
 
     /**
