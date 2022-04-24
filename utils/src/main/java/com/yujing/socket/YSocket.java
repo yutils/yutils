@@ -586,36 +586,41 @@ public class YSocket {
     }
 
     /**
-     * 发送消息byte[]
+     * 发送消息byte[]，异步
      *
      * @param bytes         消息byte[]
      * @param stateListener 成功与否监听
      */
     public void send(final byte[] bytes, final StateListener stateListener) {
-        Thread thread = new Thread(() -> {
-            // socket==null直接返回失败
-            if (socket == null) {
-                backNotice(stateListener, false);
-                return;
-            }
-            // 判断消息为空直接丢弃
-            if (bytes == null || bytes.length == 0) return;
-            // 发送消息
-            try {
-                OutputStream os = socket.getOutputStream();// 获得输出流
-                os.write(bytes);
-                os.flush();
-                if (showSendLog) printLog("发送:" + Arrays.toString(bytes));
-                connect = true;
-                backNotice(stateListener, true);
-            } catch (Exception e) {
-                connect = false;
-                backNotice(stateListener, false);
-                printLog("SendThread：" + e.getMessage());
-            }
-        });
+        Thread thread = new Thread(() -> backNotice(stateListener, sendSync(bytes)));
         thread.setName("YSocket-发送线程");
         thread.start();
+    }
+
+    /**
+     * 发送消息byte[],同步
+     *
+     * @param bytes 消息byte[]
+     * @return 是否发送成功
+     */
+    public boolean sendSync(final byte[] bytes) {
+        // socket==null直接返回失败
+        if (socket == null) return false;
+        // 判断消息为空直接丢弃
+        if (bytes == null || bytes.length == 0) return false;
+        // 发送消息
+        try {
+            OutputStream os = socket.getOutputStream();// 获得输出流
+            os.write(bytes);
+            os.flush();
+            if (showSendLog) printLog("发送:" + Arrays.toString(bytes));
+            connect = true;
+            return true;
+        } catch (Exception e) {
+            connect = false;
+            printLog("send：" + e.getMessage());
+            return false;
+        }
     }
 
     /**

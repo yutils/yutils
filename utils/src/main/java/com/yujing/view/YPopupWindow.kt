@@ -89,14 +89,9 @@ class ChoseWindow(var activity: Activity) {
  */
 
 /*
-全屏弹窗完整原生用法
-
-activity_main_popupwindow.xml
-
+//------------------------------------------------------全屏弹窗完整原生用法------------------------------------------------------
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
-
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
     <FrameLayout
         android:id="@+id/space"
         android:layout_width="match_parent"
@@ -105,135 +100,38 @@ activity_main_popupwindow.xml
 
         <!--这个view的位置由代码动态调整-->
         <LinearLayout
-            android:id="@+id/ll_list"
-            android:layout_width="@dimen/dp150"
-            android:layout_height="wrap_content"
-            android:background="@drawable/popup_window_shape"
+            android:id="@+id/ll_root"
+            android:layout_width="@dimen/dp500"
+            android:layout_height="@dimen/dp363"
+            android:background="@drawable/ic_farmer_info"
             android:orientation="vertical"
-            android:padding="1px"
-            tools:background="#229966">
+            android:padding="1px">
 
-            <LinearLayout
-                android:id="@+id/ll_binding"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="1px"
-                android:background="@drawable/popup_window_selector"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:layout_width="@dimen/dp25"
-                    android:layout_height="@dimen/dp25"
-                    android:layout_marginStart="@dimen/dp10"
-                    android:layout_marginTop="@dimen/dp10"
-                    android:layout_marginBottom="@dimen/dp10"
-                    android:src="@drawable/ic_popup_window_binding" />
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:text="绑定卸货位"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/sp16" />
-
-            </LinearLayout>
-
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/dp2"
-                android:background="@drawable/dotted_line"
-                android:layerType="software" />
-
-            <!-- ######################################### -->
-            <LinearLayout
-                android:id="@+id/ll_ip"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="1px"
-                android:background="@drawable/popup_window_selector"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:layout_width="@dimen/dp25"
-                    android:layout_height="@dimen/dp25"
-                    android:layout_marginStart="@dimen/dp10"
-                    android:layout_marginTop="@dimen/dp10"
-                    android:layout_marginBottom="@dimen/dp10"
-                    android:src="@drawable/ic_popup_window_setting" />
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:text="设置服务IP"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/sp16" />
-            </LinearLayout>
-
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/dp2"
-                android:background="@drawable/dotted_line"
-                android:layerType="software" />
-
-            <!-- ######################################### -->
-            <LinearLayout
-                android:id="@+id/ll_exit"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="1px"
-                android:background="@drawable/popup_window_selector"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:layout_width="@dimen/dp25"
-                    android:layout_height="@dimen/dp25"
-                    android:layout_marginStart="@dimen/dp10"
-                    android:layout_marginTop="@dimen/dp10"
-                    android:layout_marginBottom="@dimen/dp10"
-                    android:src="@drawable/ic_popup_window_exit" />
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:text="退出系统"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/sp16" />
-            </LinearLayout>
         </LinearLayout>
     </FrameLayout>
 </layout>
 
 
-SettingPopupWindow.kt
-
-
+import android.app.Activity
 import android.graphics.Color
-import android.graphics.Point
 import android.graphics.drawable.ColorDrawable
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
 import android.widget.PopupWindow
-import androidx.databinding.DataBindingUtil
 import com.yujing.bus.YBusUtil
 import com.yujing.utils.YScreenUtil
 import com.yujing.view.YView
 
 @Suppress("SameParameterValue", "MemberVisibilityCanBePrivate")
-class SettingPopupWindow(var activity: Activity) {
+class PopupWindowFarmerInfo(var activity: Activity) {
     //窗口
     var popupWindow: PopupWindow
-    var binding: ActivityMainPopupwindowBinding
+    var binding: PopupwindowFarmerInfoBinding
 
     init {
-        val view: View = LayoutInflater.from(activity).inflate(R.layout.activity_main_popupwindow, null)
+        val view: View = LayoutInflater.from(activity).inflate(R.layout.popupwindow_farmer_info, null)
         binding = DataBindingUtil.bind(view)!!
 
         popupWindow = PopupWindow()
@@ -242,10 +140,8 @@ class SettingPopupWindow(var activity: Activity) {
         //获取焦点，如果设置true，那么点击空白处可以退出，如果设置fasle,弹出PopupWindow的时候没有焦点，就不会影响沉浸式状态栏的显示了。但是空白不能退，就设置成全屏popupWindow，自己监听空白点击吧。
         popupWindow.isFocusable = false
         popupWindow.isTouchable = true
-
         //背景透明
         popupWindow.setBackgroundDrawable(ColorDrawable(Color.argb(0, 0, 0, 0)))
-
         //设置是否全屏
         setFullScreen(true)
 
@@ -253,38 +149,18 @@ class SettingPopupWindow(var activity: Activity) {
         //popupWindow.animationStyle = android.R.style.Animation_InputMethod
     }
 
-    fun show() {
+    fun show(view: View) {
         YBusUtil.init(this)
         //显示窗口，显示在view下面或者上面
         popupWindow.showAtLocation(activity.window.decorView, Gravity.BOTTOM, 0, 0)
 
         //偏移位置
-        val point = YView.getViewLocationOnScreen(activity.binding.ivSetting)
-        point.x -= YScreenUtil.dp2px(50F)
-        point.y += YScreenUtil.dp2px(50F)
-        binding.llList.x = point.x.toFloat()
-        binding.llList.y = point.y.toFloat()
+        val point = YView.getViewLocationOnScreen(view)
+        binding.llRoot.x = (point.x + view.width / 2).toFloat()
+        binding.llRoot.y = (point.y + view.height).toFloat()
 
         //点击空白
         binding.space.setOnClickListener { dismiss() }
-
-        //绑定卸货位
-        binding.llBinding.setOnClickListener {
-            dismiss()
-            //YBusUtil.post("菜单_绑定卸货位")
-        }
-
-        //点击设置IP
-        binding.llIp.setOnClickListener {
-            dismiss()
-            //YBusUtil.post("菜单_设置IP")
-        }
-
-        //点击退出
-        binding.llExit.setOnClickListener {
-            dismiss()
-            activity.finish()
-        }
     }
 
     private fun setFullScreen(isFullScreen: Boolean) {

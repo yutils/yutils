@@ -23,6 +23,11 @@ class YAsync private constructor() {
     var isSyncExecute = true
 
     /**
+     * 是否允许相同tag，如果不许相同tag，则抛出异常
+     */
+    var isAllowSameTag = true
+
+    /**
      * 队列
      */
     private var tagList: MutableList<Command> = ArrayList()
@@ -41,13 +46,10 @@ class YAsync private constructor() {
     /**
      * 执行完毕，释放tag，通知解锁
      */
-    fun finish(tag: String, result: Any?) {
-        for (i in tagList.indices) {
-            if (tagList[i].tag == tag) {
-                tagList[i].finish(result)
-                tagList.removeAt(i)
-                break
-            }
+    fun finish(tag: String, result: Any? = null) {
+        //删除tag
+        tagList.removeAll {
+            return@removeAll if (it.tag == tag) it.finish(result) else false
         }
     }
 
@@ -66,9 +68,7 @@ class YAsync private constructor() {
     @Throws(Exception::class)
     fun <T> submit(tag: String, timeOut: Long? = null, runnable: Runnable? = null): T? {
         //判断是否有tag,有则抛出异常
-        for (i in tagList.indices) {
-            if (tagList[i].tag == tag) throw IllegalAccessException("TAG已经存在")
-        }
+        if (!isAllowSameTag && tagList.any { it.tag == tag }) throw Exception("tag:$tag 已存在")
         //创建command，并加入队列
         val command = Command(tag, timeOut, runnable)
         tagList.add(command)
@@ -138,12 +138,13 @@ class YAsync private constructor() {
         /**
          * 执行完毕，解除超时，解锁
          */
-        fun finish(result: Any?) {
+        fun finish(result: Any?): Boolean {
             this.result = result
             //终止倒计时
             timeOutThread?.interrupt()
             //解锁
             synchronized(lock) { lock.notifyAll() }
+            return true
         }
     }
 }

@@ -16,18 +16,20 @@ import android.widget.TextView
  * View的一些基本操作
  */
 /*
-view 缩放用法
-
+view 缩放用法:
+//记录缩放比例
 var oldViewSize: MutableList<MutableMap<String, Any>> = mutableListOf()
-
 @YBus("页面缩小")
 fun scale() {
     oldViewSize = YView.viewScale(binding.root, 0.6f)
+    //如果有view没生效，刷新view
+    YView.refreshAllView(binding.root)
 }
-
 @YBus("页面还原")
 fun reduction() {
     YView.viewReduction(binding.root, oldViewSize)
+    //如果有view没生效，刷新view
+    YView.refreshAllView(binding.root)
 }
 
  */
@@ -78,7 +80,7 @@ object YView {
      */
     fun viewScale(
         view: View, scale: Float, needWidth: Boolean = true, needHeight: Boolean = true,
-        needViewGroup: Boolean = false, ignores: Array<View> = arrayOf(),
+        needViewGroup: Boolean = false, ignores: MutableList<View> = mutableListOf(),
         allViewSize: MutableList<MutableMap<String, Any>> = mutableListOf()
     ): MutableList<MutableMap<String, Any>> {
         for (i in ignores.indices) if (view == ignores[i]) return allViewSize
@@ -207,6 +209,17 @@ object YView {
                     view.layoutParams.height = height
                 }
             }
+        }
+    }
+
+    /**
+     * 刷新全部view
+     */
+    fun refreshAllView(root: View) {
+        if (root is ViewGroup) {
+            for (i in 0 until root.childCount) refreshAllView(root.getChildAt(i))
+        } else {
+            root.requestLayout()
         }
     }
 }
