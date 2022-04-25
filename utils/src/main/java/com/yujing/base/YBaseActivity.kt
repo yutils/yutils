@@ -6,10 +6,9 @@ import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import com.yujing.base.activity.YActivity
 import com.yujing.bus.YBusUtil
-import com.yujing.utils.YApp
+import com.yujing.utils.TTS
 import com.yujing.utils.YShow
 import com.yujing.utils.YToast
-import com.yujing.utils.YTts
 import java.lang.Deprecated
 
 /**
@@ -110,15 +109,14 @@ abstract class YBaseActivity<B : ViewDataBinding>(var layout: Int?) : YActivity(
      */
     open fun speak(str: String?) {
         if (str == null) return
-        YTts.play(str)
+        TTS.speak(str)
     }
 
     /**
      * 显示toast并播放语音
      */
     open fun showSpeak(str: String?) {
-        show(str)
-        speak(str)
+        YToast.showSpeak(str)
     }
 
     override fun onStop() {

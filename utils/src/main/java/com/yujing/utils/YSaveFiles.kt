@@ -12,14 +12,14 @@ import java.io.File
 YUtils.init(this)
 
 //ip
-var IP: String
-    get() = get("服务器IP", "192.168.1.170")
-    set(value) = set("服务器IP", value)
+var IP: String?
+    get() =  YSaveFiles.get("服务器IP", "192.168.1.170")
+    set(value) =  YSaveFiles.set("服务器IP", value)
 
 //端口
-var PORT: String
-    get() = get("服务器端口", "10136")
-    set(value) = set("服务器端口", value)
+var PORT: String?
+    get() =  YSaveFiles.get("服务器端口", "10136")
+    set(value) =  YSaveFiles.set("服务器端口", value)
 
 //删除
 YSaveFiles.remove("服务器IP")

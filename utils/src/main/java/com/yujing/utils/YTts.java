@@ -6,12 +6,16 @@ import android.speech.tts.TextToSpeech;
 
 import com.yujing.contract.YListener1;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 /**
  * TTS语音合成
  *
  * @author 余静 2019年12月5日09:21:06
+ * <p>
+ * 过时类  用TTS类代替
  */
 /*
 用法
@@ -22,60 +26,70 @@ import java.util.Locale;
     //设置播放速度
     YTts.getInstance().speechRate=1.0f
  */
+@Deprecated
 public class YTts {
     private static String TAG = "YTts";
+    public static boolean SHOW_LOG = true;//是否显示log
     private TextToSpeech textToSpeech; // TTS对象
     private float speechRate = 1.0f;//速度
     private float pitch = 1.0f;//音调
-    private boolean initSuccess = false;//初始化状态
+    private int initState = -1;//初始化状态,-1未初始化，0完成，1语言包丢失，2语音不支持
+    private FilterListener filter;//过滤器
+    private List<String> history = new ArrayList<>();//历史记录，倒序，最多1000条
     //----------------------------------------------静态----------------------------------------------
     private static volatile YTts yTts;//单例
 
-    public static YTts getInstance(Context context, YListener1<Boolean> listener) {
+    public static YTts getInstance() {
         if (yTts == null || yTts.textToSpeech == null) {
             synchronized (YTts.class) {
-                if (yTts == null || yTts.textToSpeech == null) yTts = new YTts(context, listener);
+                if (yTts == null || yTts.textToSpeech == null) yTts = new YTts(YApp.get());
             }
         }
         return yTts;
     }
 
-    public static YTts getInstance(Context context) {
-        return getInstance(context, null);
+    public static YTts play(String speak) {
+        return getInstance().speak(speak);
     }
 
-    public static YTts getInstance() {
-        return getInstance(YApp.get(), null);
+    public static YTts playQueue(String speak) {
+        return getInstance().speakQueue(speak);
     }
 
-    public static void play(String speak) {
-        getInstance(YApp.get(), null).speak(speak);
-    }
-
-    public static void playQueue(String speak) {
-        getInstance(YApp.get(), null).speakQueue(speak);
+    /**
+     * 关闭，释放资源
+     */
+    public static void destroy() {
+        if (yTts != null) yTts.onDestroy();
     }
     //----------------------------------------------静态----------------------------------------------
 
+    Context context;
+
     public YTts(final Context context) {
-        this(context, null);
+        this.context = context;
     }
 
-    public YTts(final Context context, YListener1<Boolean> initListener) {
+    private synchronized void init(YListener1<Boolean> initListener) {
+        if (initState == 0 || context == null || textToSpeech != null) return;
         textToSpeech = new TextToSpeech(context, status -> {
             if (status == TextToSpeech.SUCCESS) {
                 int result = textToSpeech.setLanguage(Locale.CHINA);
                 if (result == TextToSpeech.LANG_MISSING_DATA) {
-                    YLog.e(TAG, "语言包丢失");
-                    initSuccess = false;
+                    YLog.e(TAG, "TTS初始化失败，语言包丢失");
+                    initState = 1;
                 } else if (result == TextToSpeech.LANG_NOT_SUPPORTED) {
-                    YLog.e(TAG, "语音不支持");
-                    initSuccess = false;
+                    YLog.e(TAG, "TTS初始化失败，语音不支持");
+                    initState = 2;
                 } else {
-                    initSuccess = true;
+                    YLog.i(TAG, "TTS初始化成功");
+                    initState = 0;
                 }
+            } else {
+                YLog.e(TAG, "TTS初始化失败:" + status);
+                initState = 3;
             }
-            if (initListener != null) initListener.value(initSuccess);
+            if (initListener != null) initListener.value(initState == 0);
         });
     }
 
@@ -84,8 +98,8 @@ public class YTts {
      *
      * @return 是否初始化成功
      */
-    public boolean isInitSuccess() {
-        return initSuccess;
+    public boolean getInitState() {
+        return initState == 0;
     }
 
     /**
@@ -111,8 +125,9 @@ public class YTts {
      *
      * @param speechRate 速度
      */
-    public void setSpeechRate(float speechRate) {
+    public YTts setSpeechRate(float speechRate) {
         this.speechRate = speechRate;
+        return this;
     }
 
     /**
@@ -129,8 +144,9 @@ public class YTts {
      *
      * @param pitch 音调
      */
-    public void setPitch(float pitch) {
+    public YTts setPitch(float pitch) {
         this.pitch = pitch;
+        return this;
     }
 
 
@@ -152,10 +168,23 @@ public class YTts {
      * @param speechRate 速度
      * @param pitch      音调
      */
-    public void speak(String speak, float speechRate, float pitch) {
+    public YTts speak(String speak, float speechRate, float pitch) {
         setSpeechRate(speechRate);
         setPitch(pitch);
         speak(speak);
+        return this;
+    }
+
+    /**
+     * 语音播放 并显示Toast
+     *
+     * @param speak 语音播放文字内容
+     * @return YTts
+     */
+    public YTts speakToast(String speak) {
+        speak(speak);
+        YToast.show(speak);
+        return this;
     }
 
     /**
@@ -163,17 +192,40 @@ public class YTts {
      *
      * @param speak 语音播放文字内容
      */
-    public void speak(String speak) {
-        if (speak == null) return;
-        if (textToSpeech != null) {
-            textToSpeech.setSpeechRate(speechRate);//速度
-            textToSpeech.setPitch(pitch);// 设置音调，值越大声音越尖（女生），值越小则变成男声,1.0是常规
-            if (Build.VERSION.SDK_INT >= 21) {
-                textToSpeech.speak(speak, TextToSpeech.QUEUE_FLUSH, null, null);
-            } else {
-                textToSpeech.speak(speak, TextToSpeech.QUEUE_FLUSH, null);
-            }
+    public YTts speak(String speak) {
+        if (initState == -1) {
+            String finalSpeak = speak;
+            if (context == null) context = YApp.get();
+            init(aBoolean -> {
+                if (aBoolean) speak(finalSpeak);
+            });
+            return this;
         }
+        if (initState != 0 || speak == null || textToSpeech == null) return this;
+        if (filter != null) speak = filter.filter(speak);
+        textToSpeech.setSpeechRate(speechRate);//速度
+        textToSpeech.setPitch(pitch);// 设置音调，值越大声音越尖（女生），值越小则变成男声,1.0是常规
+        if (Build.VERSION.SDK_INT >= 21) {
+            textToSpeech.speak(speak, TextToSpeech.QUEUE_FLUSH, null, null);
+        } else {
+            textToSpeech.speak(speak, TextToSpeech.QUEUE_FLUSH, null);
+        }
+        if (SHOW_LOG) YLog.i("TTS: " + speak);
+        history.add(0, speak);
+        if (history.size() > 1000) history.remove(history.size() - 1);
+        return this;
+    }
+
+    /**
+     * 语音播放 并显示Toast
+     *
+     * @param speak 语音播放文字内容
+     * @return YTts
+     */
+    public YTts speakQueueToast(String speak) {
+        speakQueue(speak);
+        YToast.show(speak);
+        return this;
     }
 
     /**
@@ -183,10 +235,11 @@ public class YTts {
      * @param speechRate 速度
      * @param pitch      音调
      */
-    public void speakQueue(String speak, float speechRate, float pitch) {
+    public YTts speakQueue(String speak, float speechRate, float pitch) {
         setSpeechRate(speechRate);
         setPitch(pitch);
         speakQueue(speak);
+        return this;
     }
 
     /**
@@ -194,35 +247,77 @@ public class YTts {
      *
      * @param speak 语音播放文字内容
      */
-    public void speakQueue(String speak) {
-        if (speak == null) return;
-        if (textToSpeech != null) {
-            textToSpeech.setSpeechRate(speechRate);//速度
-            textToSpeech.setPitch(pitch);// 设置音调，值越大声音越尖（女生），值越小则变成男声,1.0是常规
-            if (Build.VERSION.SDK_INT >= 21) {
-                textToSpeech.speak(speak, TextToSpeech.QUEUE_ADD, null, null);
-            } else {
-                textToSpeech.speak(speak, TextToSpeech.QUEUE_ADD, null);
-            }
+    public YTts speakQueue(String speak) {
+        if (initState == -1) {
+            String finalSpeak = speak;
+            if (context == null) context = YApp.get();
+            init(aBoolean -> {
+                if (aBoolean) speakQueue(finalSpeak);
+            });
+            return this;
         }
+        if (initState != 0 || speak == null || textToSpeech == null) return this;
+        if (filter != null) speak = filter.filter(speak);
+        textToSpeech.setSpeechRate(speechRate);//速度
+        textToSpeech.setPitch(pitch);// 设置音调，值越大声音越尖（女生），值越小则变成男声,1.0是常规
+        if (Build.VERSION.SDK_INT >= 21) {
+            textToSpeech.speak(speak, TextToSpeech.QUEUE_ADD, null, null);
+        } else {
+            textToSpeech.speak(speak, TextToSpeech.QUEUE_ADD, null);
+        }
+        if (SHOW_LOG) YLog.i("TTS: " + speak);
+        history.add(0, speak);
+        if (history.size() > 1000) history.remove(history.size() - 1);
+        return this;
     }
 
-
     /**
-     * 停止
+     * 停止,TTS都被打断，包含队列
      */
     public void onStop() {
-        if (textToSpeech != null && textToSpeech.isSpeaking())
-            textToSpeech.stop(); // 不管是否正在朗读TTS都被打断
+        if (textToSpeech != null && textToSpeech.isSpeaking()) textToSpeech.stop();
     }
 
     /**
      * 关闭，释放资源
      */
     public void onDestroy() {
-        if (textToSpeech != null) {
-            textToSpeech.shutdown(); // 关闭，释放资源
-            textToSpeech = null;
-        }
+        if (textToSpeech != null) textToSpeech.shutdown(); // 关闭，释放资源
+        textToSpeech = null;
+        initState = -1;
+    }
+
+    public FilterListener getFilter() {
+        return filter;
+    }
+
+    /**
+     * 语音过滤
+     *
+     * @param filter 过滤监听
+     */
+    public YTts setFilter(FilterListener filter) {
+        this.filter = filter;
+        return this;
+    }
+
+    /**
+     * 获取语音播放历史
+     */
+    public List<String> getHistory() {
+        return history;
+    }
+
+    /**
+     * 语音播放过滤
+     */
+    public interface FilterListener {
+        /**
+         * 过滤
+         *
+         * @param content 内容
+         * @return 过滤后的内容
+         */
+        String filter(String content);
     }
 }

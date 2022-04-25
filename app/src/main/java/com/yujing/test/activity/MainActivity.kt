@@ -1,6 +1,5 @@
 package com.yujing.test.activity
 
-import android.graphics.Color
 import android.widget.EditText
 import android.widget.TextView
 import androidx.databinding.DataBindingUtil
@@ -34,12 +33,16 @@ class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
         textView2 = Create.textView(binding.ll)
         //生命周期监听
         setEventListener { event, obj ->
-            if (event == YLifeEvent.onDestroy) {
-                YLog.d("关闭了")
-            } else if (event == YLifeEvent.onStart) {
-                YLog.d("onStart")
-            } else if (event == YLifeEvent.onCreate) {
-                YLog.d("onCreate")
+            when (event) {
+                YLifeEvent.onDestroy -> {
+                    YLog.d("MainActivity，onDestroy")
+                }
+                YLifeEvent.onStart -> {
+                    YLog.d("MainActivity，onStart")
+                }
+                YLifeEvent.onCreate -> {
+                    YLog.d("MainActivity，onCreate")
+                }
             }
         }
 
@@ -130,10 +133,10 @@ class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
             yVersionUpdate.useNotificationDownload = false
             val description = "1.更新了xxxxxxx\n2.新增xxxxxxxxxxx\n3.修复xxxxx的bug\n4.版本迭代如果出现异常或者问题，请尽快联系开发者，进行修复和处理。谢谢大家的积极配合。"
             //yVersionUpdate.dialog.okButtonBackgroundColor= Color.parseColor("#21A9FA")
-            yVersionUpdate.update(634, true, url, "6.3.4", description+description+description)
+            yVersionUpdate.update(634, true, url, "6.3.4", description + description + description)
         }
 
-        Create.button(binding.wll,"弹窗测试"){
+        Create.button(binding.wll, "弹窗测试") {
             //多选
             val listName: MutableList<String> = ArrayList()
             listName.add("项目1")
@@ -152,9 +155,11 @@ class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
                 textView1.text = "您选择了：${YJson.toJson(newList)}"
             }
         }
-        var i = 0
-        Create.button(binding.wll, "YToast") {
-            YToast.show("SHOW${i++}")
+
+        TTS.filter = { it.replace("不正确", "不在范围内") }
+        //语音过滤测试
+        Create.button(binding.wll, "TTS过滤") {
+            TTS.speakToast("电子秤皮重不正确")
         }
     }
 

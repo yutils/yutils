@@ -4,8 +4,7 @@ package com.yujing.test.base
 
 import androidx.databinding.ViewDataBinding
 import com.yujing.base.YBaseFragment
-import com.yujing.utils.YApp
-import com.yujing.utils.YTts
+import com.yujing.utils.TTS
 
 /**
  * 基础aFragment
@@ -31,10 +30,10 @@ public class OldFragment extends KBaseFragment<Activity1101Binding> {
  */
 abstract class KBaseFragment<B : ViewDataBinding>(layout: Int?) : YBaseFragment<B>(layout) {
     override fun speak(s: String?) {
-        YTts.play(s)
+        TTS.speak(s)
     }
 
     fun speakQueue(s: String) {
-        YTts.playQueue(s)
+        TTS.speakQueue(s)
     }
 }

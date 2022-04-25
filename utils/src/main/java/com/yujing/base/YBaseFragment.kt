@@ -1,7 +1,6 @@
 package com.yujing.base
 
 import android.content.Intent
-import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,9 +9,8 @@ import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import com.yujing.base.fragment.YFragment
 import com.yujing.bus.YBusUtil
-import com.yujing.utils.YApp
+import com.yujing.utils.TTS
 import com.yujing.utils.YToast
-import com.yujing.utils.YTts
 
 /**
  * 基础aFragment
@@ -75,7 +73,7 @@ abstract class YBaseFragment<B : ViewDataBinding>(var layout: Int?) : YFragment(
      */
     open fun show(str: String?) {
         if (str == null) return
-        YToast.show( str)
+        YToast.show(str)
     }
 
     /**
@@ -83,7 +81,7 @@ abstract class YBaseFragment<B : ViewDataBinding>(var layout: Int?) : YFragment(
      */
     open fun speak(str: String?) {
         if (str == null) return
-        YTts.play(str)
+        TTS.speak(str)
     }
 
     /**
