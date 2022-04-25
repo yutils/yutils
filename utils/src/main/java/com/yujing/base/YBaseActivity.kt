@@ -100,15 +100,13 @@ abstract class YBaseActivity<B : ViewDataBinding>(var layout: Int?) : YActivity(
      * 显示toast
      */
     open fun show(str: String?) {
-        if (str == null) return
-        YToast.showLong(str)
+        YToast.showLong(str,1)
     }
 
     /**
      * 播放语音
      */
     open fun speak(str: String?) {
-        if (str == null) return
         TTS.speak(str)
     }
 
@@ -116,7 +114,7 @@ abstract class YBaseActivity<B : ViewDataBinding>(var layout: Int?) : YActivity(
      * 显示toast并播放语音
      */
     open fun showSpeak(str: String?) {
-        YToast.showSpeak(str)
+        YToast.showSpeak(str,1)
     }
 
     override fun onStop() {

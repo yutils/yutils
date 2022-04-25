@@ -3,6 +3,7 @@ package com.yujing.utils
 import android.content.Context
 import android.os.Build
 import android.speech.tts.TextToSpeech
+import android.util.Log
 import java.util.*
 
 /**
@@ -24,7 +25,8 @@ object TTS {
     private const val TAG = "TTS"
 
     @Volatile
-    private var initState: Int = -1 //初始化状态,-1未初始化，0完成，1语言包丢失，2语音不支持
+    var initState: Int = -1 //初始化状态,-1未初始化，0完成，1语言包丢失，2语音不支持
+        private set
     var textToSpeech: TextToSpeech? = null
         private set
     var speechRate = 1.0f //速度
@@ -46,20 +48,20 @@ object TTS {
                 val result = textToSpeech!!.setLanguage(Locale.CHINA)
                 initState = when (result) {
                     TextToSpeech.LANG_MISSING_DATA -> {
-                        YLog.e(TAG, "TTS初始化失败，语言包丢失")
+                        Log.e(TAG, "TTS初始化失败，语言包丢失")
                         1
                     }
                     TextToSpeech.LANG_NOT_SUPPORTED -> {
-                        YLog.e(TAG, "TTS初始化失败，语音不支持")
+                        Log.e(TAG, "TTS初始化失败，语音不支持")
                         2
                     }
                     else -> {
-                        YLog.i(TAG, "TTS初始化成功")
+                        Log.i(TAG, "TTS初始化成功")
                         0
                     }
                 }
             } else {
-                YLog.e(TAG, "TTS初始化失败:$status")
+                Log.e(TAG, "TTS初始化失败:$status")
                 initState = 3
             }
             initListener?.invoke(initState == 0)
@@ -71,7 +73,7 @@ object TTS {
      */
     fun speakToast(str: String?) {
         speak(str)
-        YToast.show(str)
+        YToast.show(str, 1)
     }
 
     /**
@@ -92,7 +94,7 @@ object TTS {
         } else {
             textToSpeech?.speak(speak, TextToSpeech.QUEUE_FLUSH, null)
         }
-        if (SHOW_LOG) YLog.i("TTS: $speak")
+        if (SHOW_LOG) Log.i(TAG, " \nTTS: $speak")
         history.add(0, speak)
         if (history.size > 1000) history.removeAt(history.size - 1)
     }
@@ -102,7 +104,7 @@ object TTS {
      */
     fun speakQueueToast(str: String?) {
         speakQueue(str)
-        YToast.show(str)
+        YToast.show(str, 1)
     }
 
     /**
@@ -121,7 +123,7 @@ object TTS {
         } else {
             textToSpeech?.speak(speak, TextToSpeech.QUEUE_ADD, null)
         }
-        if (SHOW_LOG) YLog.i("TTS: $speak")
+        if (SHOW_LOG) Log.i(TAG, " \nTTS: $speak")
         history.add(0, speak)
         if (history.size > 1000) history.removeAt(history.size - 1)
     }

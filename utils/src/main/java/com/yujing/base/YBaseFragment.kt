@@ -72,15 +72,13 @@ abstract class YBaseFragment<B : ViewDataBinding>(var layout: Int?) : YFragment(
      * 显示toast
      */
     open fun show(str: String?) {
-        if (str == null) return
-        YToast.show(str)
+        YToast.show(str,1)
     }
 
     /**
      * 播放语音
      */
     open fun speak(str: String?) {
-        if (str == null) return
         TTS.speak(str)
     }
 
@@ -88,8 +86,7 @@ abstract class YBaseFragment<B : ViewDataBinding>(var layout: Int?) : YFragment(
      * 显示toast并播放语音
      */
     open fun showSpeak(str: String?) {
-        show(str)
-        speak(str)
+        YToast.showSpeak(str,1)
     }
 
     open fun startActivity(classActivity: Class<*>?) {

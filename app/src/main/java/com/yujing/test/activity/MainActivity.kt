@@ -159,7 +159,7 @@ class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
         TTS.filter = { it.replace("不正确", "不在范围内") }
         //语音过滤测试
         Create.button(binding.wll, "TTS过滤") {
-            TTS.speakToast("电子秤皮重不正确")
+            YTts.getInstance().speakToast("电子秤皮重不正确")
         }
     }
 

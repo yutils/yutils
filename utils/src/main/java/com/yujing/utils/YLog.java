@@ -282,6 +282,7 @@ public class YLog {
     public static void saveOpen(Context context) {
         saveOpen(YPath.getFilePath(context, "log"));
     }
+
     public static void saveOpen() {
         saveOpen(YPath.getFilePath(YApp.get(), "log"));
     }
@@ -378,7 +379,7 @@ public class YLog {
                 if (ERROR.equals(type)) {
                     System.err.println("TAG:" + TAG + "\tvalue:" + value + ((tr == null) ? "" : ("\tThrowable:" + tr.getMessage())));
                 } else {
-                    System.err.println("TAG:" + TAG + "\tvalue:" + value + ((tr == null) ? "" : ("\tThrowable:" + tr.getMessage())));
+                    System.out.println("TAG:" + TAG + "\tvalue:" + value + ((tr == null) ? "" : ("\tThrowable:" + tr.getMessage())));
                 }
             }
             i++;

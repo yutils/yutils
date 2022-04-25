@@ -3,6 +3,7 @@ package com.yujing.utils;
 import android.content.Context;
 import android.os.Build;
 import android.speech.tts.TextToSpeech;
+import android.util.Log;
 
 import com.yujing.contract.YListener1;
 
@@ -76,17 +77,17 @@ public class YTts {
             if (status == TextToSpeech.SUCCESS) {
                 int result = textToSpeech.setLanguage(Locale.CHINA);
                 if (result == TextToSpeech.LANG_MISSING_DATA) {
-                    YLog.e(TAG, "TTS初始化失败，语言包丢失");
+                    Log.e(TAG, "TTS初始化失败，语言包丢失");
                     initState = 1;
                 } else if (result == TextToSpeech.LANG_NOT_SUPPORTED) {
-                    YLog.e(TAG, "TTS初始化失败，语音不支持");
+                    Log.e(TAG, "TTS初始化失败，语音不支持");
                     initState = 2;
                 } else {
-                    YLog.i(TAG, "TTS初始化成功");
+                    Log.i(TAG, "TTS初始化成功");
                     initState = 0;
                 }
             } else {
-                YLog.e(TAG, "TTS初始化失败:" + status);
+                Log.e(TAG, "TTS初始化失败:" + status);
                 initState = 3;
             }
             if (initListener != null) initListener.value(initState == 0);
@@ -183,7 +184,7 @@ public class YTts {
      */
     public YTts speakToast(String speak) {
         speak(speak);
-        YToast.show(speak);
+        YToast.show(speak, 1);
         return this;
     }
 
@@ -210,7 +211,7 @@ public class YTts {
         } else {
             textToSpeech.speak(speak, TextToSpeech.QUEUE_FLUSH, null);
         }
-        if (SHOW_LOG) YLog.i("TTS: " + speak);
+        if (SHOW_LOG) Log.i(TAG, " \nTTS: " + speak);
         history.add(0, speak);
         if (history.size() > 1000) history.remove(history.size() - 1);
         return this;
@@ -224,7 +225,7 @@ public class YTts {
      */
     public YTts speakQueueToast(String speak) {
         speakQueue(speak);
-        YToast.show(speak);
+        YToast.show(speak, 1);
         return this;
     }
 
@@ -265,7 +266,7 @@ public class YTts {
         } else {
             textToSpeech.speak(speak, TextToSpeech.QUEUE_ADD, null);
         }
-        if (SHOW_LOG) YLog.i("TTS: " + speak);
+        if (SHOW_LOG) Log.i(TAG, " \nTTS: " + speak);
         history.add(0, speak);
         if (history.size() > 1000) history.remove(history.size() - 1);
         return this;

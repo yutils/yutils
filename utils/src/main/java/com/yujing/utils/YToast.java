@@ -31,14 +31,27 @@ public class YToast {
         show(YApp.get(), text);
     }
 
+    public static void show(String text, int topClass) {
+        show(YApp.get(), text, topClass);
+    }
+
     /**
      * 显示toast 并播放语音
      *
      * @param text 语音内容
      */
     public static void showSpeak(String text) {
-        show(YApp.get(), text);
+        show(YApp.get(), text, 0);
         TTS.INSTANCE.speak(text);
+    }
+
+    public static void showSpeak(String text, int topClass) {
+        show(YApp.get(), text, topClass);
+        TTS.INSTANCE.speak(text);
+    }
+
+    public static void show(Context context, String text) {
+        show(context, text, 0);
     }
 
     /**
@@ -47,8 +60,9 @@ public class YToast {
      * @param context context
      * @param text    内容
      */
-    public static void show(Context context, String text) {
+    public static void show(Context context, String text, int topClass) {
         if (context == null || text == null) return;
+        if (SHOW_LOG) YLog.i("Toast: " + text, YStackTrace.getTopClassLine(1 + topClass));
         YThread.runOnUiThread(() -> {
             if (toast != null) {
                 toast.cancel();
@@ -56,7 +70,6 @@ public class YToast {
             }
             toast = Toast.makeText(context, text, Toast.LENGTH_SHORT);
             toast.show();
-            if (SHOW_LOG) YLog.i("Toast: " + text);
             history.add(0, text);
             if (history.size() > 1000) history.remove(history.size() - 1);
         });
@@ -71,6 +84,10 @@ public class YToast {
         showLong(YApp.get(), text);
     }
 
+    public static void showLong(String text, int topClass) {
+        showLong(YApp.get(), text, topClass);
+    }
+
     /**
      * 显示toast 并播放语音
      *
@@ -81,14 +98,24 @@ public class YToast {
         TTS.INSTANCE.speak(text);
     }
 
+    public static void showLongSpeak(String text, int topClass) {
+        show(YApp.get(), text, topClass);
+        TTS.INSTANCE.speak(text);
+    }
+
+    public static void showLong(Context context, String text) {
+        showLong(context, text, 0);
+    }
+
     /**
      * 多条toast同时过来，只显示最后一条，显示时间为LENGTH_LONG
      *
      * @param context context
      * @param text    内容
      */
-    public static void showLong(Context context, String text) {
+    public static void showLong(Context context, String text, int topClass) {
         if (context == null || text == null) return;
+        if (SHOW_LOG) YLog.i("Toast: " + text, YStackTrace.getTopClassLine(1 + topClass));
         YThread.runOnUiThread(() -> {
             if (toast != null) {
                 toast.cancel();
@@ -96,10 +123,13 @@ public class YToast {
             }
             toast = Toast.makeText(context, text, Toast.LENGTH_LONG);
             toast.show();
-            if (SHOW_LOG) YLog.i("Toast: " + text);
             history.add(0, text);
             if (history.size() > 1000) history.remove(history.size() - 1);
         });
+    }
+
+    public static void showQueue(final String text) {
+        showQueue(YApp.get(), text);
     }
 
     /**
@@ -116,8 +146,8 @@ public class YToast {
         });
     }
 
-    public static void showQueue(final String text) {
-        showQueue(YApp.get(), text);
+    public static void showQueueLong(final String text) {
+        showQueueLong(YApp.get(), text);
     }
 
     /**
@@ -135,9 +165,6 @@ public class YToast {
         });
     }
 
-    public static void showQueueLong(final String text) {
-        showQueueLong(YApp.get(), text);
-    }
 
     /**
      * 获取队列显示时间

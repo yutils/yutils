@@ -99,7 +99,7 @@ public class YStackTrace {
      * @param targetElement 堆栈跟踪
      * @return java类和行数
      */
-    private static String getJavaFileName(final StackTraceElement targetElement) {
+    public static String getJavaFileName(final StackTraceElement targetElement) {
         String fileName = targetElement.getFileName();
         if (fileName != null) return fileName;
         String className = targetElement.getClassName();
@@ -108,5 +108,36 @@ public class YStackTrace {
         int index = className.indexOf('$');
         if (index != -1) className = className.substring(0, index);
         return className + ".java";
+    }
+
+    /**
+     * 获取堆栈中上一层对象的行数
+     *
+     * @param lineDeviation 偏移行，1就是向上级方法偏移一个类
+     * @return 上一层对象的行数
+     */
+    /*
+     //如：获取上一级调取本方法的类
+     var s=YStackTrace.getLine(YStackTrace.getTopClassLine(1))
+     */
+    public static int getTopClassLine(int lineDeviation) {
+        if (lineDeviation < 1) lineDeviation = 0;
+        final StackTraceElement[] stackTrace = new Throwable().getStackTrace();
+        String className = stackTrace[1].getClassName();
+        int line = 0;
+        int change = 0;
+        //因为第一个是自己（i=0），所以从第二个开始
+        for (int i = 1; i < stackTrace.length; i++) {
+            StackTraceElement targetElement = stackTrace[i];
+            if (!targetElement.getClassName().contains(className)) {
+                change++;
+                if (change == lineDeviation) {
+                    line = i - 1;
+                    break;
+                }
+                className = targetElement.getClassName();
+            }
+        }
+        return line;
     }
 }
