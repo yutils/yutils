@@ -41,6 +41,7 @@ object TTS {
      * @param initListener 初始化监听
      */
     @Synchronized
+    @JvmStatic
     fun init(context: Context?, initListener: ((Boolean) -> Unit?)? = null) {
         if (context == null || initState == 0 || textToSpeech != null) return
         textToSpeech = TextToSpeech(context) { status: Int ->
@@ -71,6 +72,7 @@ object TTS {
     /**
      * 播放语音并显示Toast
      */
+    @JvmStatic
     fun speakToast(str: String?) {
         speak(str)
         YToast.show(str, 1)
@@ -81,6 +83,7 @@ object TTS {
      *
      * @param str 语音播放文字内容
      */
+    @JvmStatic
     fun speak(str: String?) {
         if (initState == -1) return init(YApp.get()) {
             if (it) speak(str)
@@ -102,6 +105,7 @@ object TTS {
     /**
      * 播放语音并显示Toast
      */
+    @JvmStatic
     fun speakQueueToast(str: String?) {
         speakQueue(str)
         YToast.show(str, 1)
@@ -112,6 +116,7 @@ object TTS {
      *
      * @param speak 语音播放文字内容
      */
+    @JvmStatic
     fun speakQueue(str: String?) {
         if (initState == -1) return init(YApp.get()) { if (it) speakQueue(str) }
         if (initState != 0 || str == null || textToSpeech == null) return
@@ -131,6 +136,7 @@ object TTS {
     /**
      * 停止,TTS都被打断，包含队列
      */
+    @JvmStatic
     fun onStop() {
         textToSpeech?.let { if (it.isSpeaking) it.stop() }
     }
@@ -138,6 +144,7 @@ object TTS {
     /**
      * 关闭，释放资源
      */
+    @JvmStatic
     fun destroy() {
         textToSpeech?.shutdown() // 关闭，释放资源
         textToSpeech = null

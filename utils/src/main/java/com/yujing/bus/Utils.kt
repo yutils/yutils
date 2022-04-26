@@ -15,23 +15,27 @@ internal class Utils {
          * 找出anyClass中全部包含YBus注解的方法
          */
         @Synchronized
-        fun findMethod(anyClass: Any, yMessage: YMessage<Any>) {
-            //一层一层直到找到Object::class.java为止
-            var mClass = anyClass.javaClass
-            while (mClass != Object::class.java && mClass != Any::class.java) {
+        fun execute(anyClass: Any, yMessage: YMessage<Any>) {
+            //一层一层直到找到Object::class.java 或者 Any::class.java 为止
+            var mClass: Class<*>? = anyClass.javaClass
+            while (mClass != null && mClass != Object::class.java && mClass != Any::class.java) {
                 //获取遍历该类所有方法
                 val methods = mClass.declaredMethods
                 for (method in methods) {
                     method.isAccessible = true //允许调用私有方法
                     // 判断这个methods上是否有这个注解,有就调用
                     if (method.isAnnotationPresent(YBus::class.java)) {
-                        if (YThread.isMainThread())
-                            runMethod(anyClass, method, yMessage)
-                        else
-                            YThread.runOnUiThread { runMethod(anyClass, method, yMessage) }
+                        val yBus = method.getAnnotation(YBus::class.java) ?: return
+                        //CURRENT：直接执行，NEW：新建线程执行，MAIN：是主线程直接执行，不是就先回到主线程再执行，IO：是主线程就创建线程，不是就直接执行
+                        when (yBus.threadMode) {
+                            ThreadMode.CURRENT -> runMethod(anyClass, method, yMessage)
+                            ThreadMode.NEW -> Thread { runMethod(anyClass, method, yMessage) }.start()
+                            ThreadMode.MAIN -> if (YThread.isMainThread()) runMethod(anyClass, method, yMessage) else YThread.runOnUiThread { runMethod(anyClass, method, yMessage) }
+                            ThreadMode.IO -> if (YThread.isMainThread()) Thread { runMethod(anyClass, method, yMessage) }.start() else runMethod(anyClass, method, yMessage)
+                        }
                     }
                 }
-                mClass = mClass.superclass!!
+                mClass = mClass.superclass
             }
         }
 
@@ -41,7 +45,7 @@ internal class Utils {
         private fun runMethod(anyClass: Any, method: Method, yMessage: YMessage<Any>) {
             try {
                 //如果只有一个接收参数，而且 @YBus(tag) tag值不为空，就直接返回data
-                val yBus = method.getAnnotation(YBus::class.java)
+                val yBus = method.getAnnotation(YBus::class.java) ?: return
                 //获取参数列表
                 val parameters = method.parameterTypes
                 //如果是没有tag，满足情况就调用(@YBus() 默认长度1，默认是"")
@@ -74,7 +78,7 @@ internal class Utils {
                         when (parameters.size) {
                             //如果这个方法没有参数，直接调用
                             0 ->
-                                YThread.runOnUiThread { method.invoke(anyClass) }
+                                method.invoke(anyClass)
                             //如果这个方法有1个参数，直接返回 data。
                             1 ->
                                 method.invoke(anyClass, yMessage.data)

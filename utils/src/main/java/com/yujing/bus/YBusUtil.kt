@@ -40,16 +40,27 @@ YBusUtil.onDestroy(this)
 class YBusUtil {
     companion object {
         //类列表
+        @JvmStatic
         var listObject: MutableList<Any> = ArrayList()
 
         //延迟事件
+        @JvmStatic
         var anySticky: YMessage<Any>? = null
 
         /**
-         * 必须调用，注册类
+         * 必须调用，注册类，同register
          */
+        @JvmStatic
         fun init(anyClass: Any) {
-            anySticky?.let { Utils.findMethod(anyClass, it) }
+            register(anyClass)
+        }
+
+        /**
+         * 注册类，用完后必须unregister
+         */
+        @JvmStatic
+        fun register(anyClass: Any) {
+            anySticky?.let { Utils.execute(anyClass, it) }
             listObject.add(anyClass)
         }
 
@@ -57,21 +68,24 @@ class YBusUtil {
          * 接收事件，并且调用已经注册类中包含@YBus注解的类
          */
         @Synchronized
+        @JvmStatic
         private fun subscribe(yMessage: YMessage<Any>) {
             try {
                 //不能用for (i in list)循环，因为list长度不固定，循环途中增加或删除元素，会导致并发修改异常
                 //list.forEach循环，增加元素会导致并发修改异常,删除不会
                 //不能用for (i in list.indices)循环，因为list长度不固定，循环途中增删除元素，会导致并发修改异常或数组越界，增加不会
                 //不能用for (i in 0..list.size-1)，同上
+                //不能用for (i in list.size-1..0)，倒着循环删1个没问题，但是可能会同时移除多个
                 //不能用var i=0 while (i <list.size)，因为删除元素会导致错乱。比如，a，b，c，d，执行到b的时候，删除b，会发现，没有执行的是c
                 //不能使用迭代器，因为不知道删除的元素位置，不一定是当前迭代的元素
 
                 //所以，复制出临时listTemp
-                val listTemp: MutableList<Any> = ArrayList()
+                val temp: MutableList<Any> = ArrayList()
                 var i = 0
-                while (i < listObject.size) listTemp.add(listObject[i++])
-                i = 0
-                while (i < listTemp.size) Utils.findMethod(listTemp[i++], yMessage)
+                while (i < listObject.size) temp.add(listObject[i++])
+                //执行
+                var j = 0
+                while (j < temp.size) Utils.execute(temp[j++], yMessage)
             } catch (e: Exception) {
                 YLog.e("总线发生异常", e)
             }
@@ -80,6 +94,7 @@ class YBusUtil {
         /**
          * 发送事件
          */
+        @JvmStatic
         fun post(tag: String, value: Any?) {
             subscribe(YMessage(tag, value))
         }
@@ -87,14 +102,15 @@ class YBusUtil {
         /**
          * 发送事件
          */
+        @JvmStatic
         fun post(tag: String) {
             subscribe(YMessage(tag, null))
         }
 
-
         /**
          * 发送粘性事件
          */
+        @JvmStatic
         fun postSticky(tag: String, value: Any?) {
             anySticky = YMessage(tag, value)
             subscribe(YMessage(tag, value))
@@ -103,6 +119,7 @@ class YBusUtil {
         /**
          * 发送粘性事件
          */
+        @JvmStatic
         fun postSticky(tag: String) {
             anySticky = YMessage(tag, null)
             subscribe(YMessage(tag, null))
@@ -111,6 +128,7 @@ class YBusUtil {
         /**
          * 删除粘性事件
          */
+        @JvmStatic
         fun removeSticky() {
             anySticky = null
         }
@@ -118,6 +136,7 @@ class YBusUtil {
         /**
          * 移除全部bus
          */
+        @JvmStatic
         fun destroyAll() {
             listObject.clear()
         }
@@ -125,7 +144,16 @@ class YBusUtil {
         /**
          * 目标类退出时候必须调用
          */
+        @JvmStatic
         fun onDestroy(any: Any) {
+            unregister(any)
+        }
+
+        /**
+         * 移除目标类
+         */
+        @JvmStatic
+        fun unregister(any: Any) {
             listObject.remove(any)
         }
     }

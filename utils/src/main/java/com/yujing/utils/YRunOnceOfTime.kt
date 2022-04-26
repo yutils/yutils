@@ -141,7 +141,7 @@ class YRunOnceOfTime(var time: Long, var tag: String, var lastTime: Long) {
         /**
          * 运行，time内只允许运行一次，多余的事件直接抛弃
          */
-        fun run(time: Long, tag: String, runnable: Runnable?) {
+        fun run(time: Long, tag: String, runnable: Runnable) {
             //如果没有找到对象，就创建并且运行
             if (check(tag)) {
                 YThread.runOnUiThread(runnable)
@@ -152,7 +152,7 @@ class YRunOnceOfTime(var time: Long, var tag: String, var lastTime: Long) {
         /**
          * 运行，与上一次至少间隔time时间，多余的事件直接抛弃
          */
-        fun runUpdate(time: Long, tag: String, runnable: Runnable?) {
+        fun runUpdate(time: Long, tag: String, runnable: Runnable) {
             //如果没有找到对象，就创建并且运行
             if (checkUpdate(time, tag)) {
                 YThread.runOnUiThread(runnable)

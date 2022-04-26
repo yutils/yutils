@@ -4,6 +4,7 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.databinding.DataBindingUtil
 import com.yujing.base.contract.YLifeEvent
+import com.yujing.bus.ThreadMode
 import com.yujing.bus.YBus
 import com.yujing.bus.YBusUtil
 import com.yujing.test.R
@@ -66,21 +67,6 @@ class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
         //--------------------------------------------------------------------------------
         Create.space(binding.wll)//换行
         editText1 = Create.editText(binding.wll, "123456789")
-        Create.button(binding.wll, "Ybus发送消息1") {
-            YBusUtil.post("tag1", editText1.text.toString())
-        }
-
-        Create.button(binding.wll, "GPS") {
-            //创建
-            val yGps = YGps(this)
-            //.每秒获取一次基站位置
-            yGps.getLocationNET { location ->
-                //location位置
-                val latitude = location.latitude//纬度
-                val longitude = location.longitude//经度
-                textView1.text = "基站：latitude=${latitude}longitude$longitude"
-            }
-        }
 
         Create.button(binding.wll, "请求权限") {
 //            val yPermissions = YPermissions(this)
@@ -103,15 +89,6 @@ class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
 
         Create.button(binding.wll, "BLE_Client") {
             startActivity(BleClientActivity::class.java)
-        }
-
-        Create.button(binding.wll, "线程中弹窗") {
-            Thread {
-                YImageDialog.show(R.mipmap.logo)
-            }
-        }
-        Create.button(binding.wll, "统计线程") {
-            YBusUtil.post("tag1", "" + YThread.printAllThread())
         }
 
         Create.button(binding.wll, "拍照") {
@@ -159,8 +136,14 @@ class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
         TTS.filter = { it.replace("不正确", "不在范围内") }
         //语音过滤测试
         Create.button(binding.wll, "TTS过滤") {
-            YTts.getInstance().speakToast("电子秤皮重不正确")
+            TTS.speak("电子秤皮重不正确")
         }
+
+        Create.button(binding.wll, "Ybus发送消息1") {
+//            Thread{YBusUtil.post("tag1", editText1.text.toString())}.start()
+            YBusUtil.post("tag1", editText1.text.toString())
+        }
+
     }
 
     //通知栏下载需要调用onDestroy()
@@ -169,7 +152,7 @@ class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
         yVersionUpdate.onDestroy()
     }
 
-    @YBus("tag1", "tag2")
+    @YBus("tag1", "tag2", threadMode = ThreadMode.MAIN)
     fun message1(tag: String, message: String) {
         YLog.i("收到：$tag$message")
         textView1.text = textView1.text.toString() + "收到1:$message \n"

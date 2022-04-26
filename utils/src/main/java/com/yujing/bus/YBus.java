@@ -45,5 +45,6 @@ public @interface YBus {
 
     String[] value() default "";
 
-    //boolean mainThread() default true;
+    //默认Ui线程
+    ThreadMode threadMode() default ThreadMode.MAIN;
 }

@@ -31,6 +31,7 @@ object YSaveFiles {
      * @param fileName  文件名
      * @param default 默认值
      */
+    @JvmStatic
     fun get(fileName: String, default: String? = null): String? {
         val file = File(YPath.getFilePath(YApp.get()) + "/" + fileName + ".txt")
         if (!file.exists()) {
@@ -45,6 +46,7 @@ object YSaveFiles {
      * @param fileName  文件名
      * @param value 值
      */
+    @JvmStatic
     fun set(fileName: String, value: String?) {
         if (value == null) {
             remove(fileName)
@@ -58,6 +60,7 @@ object YSaveFiles {
      * 删除文件
      * @param fileName  文件名
      */
+    @JvmStatic
     fun remove(fileName: String): Boolean {
         val file = File(YPath.getFilePath(YApp.get()) + "/" + fileName + ".txt")
         return if (file.exists())
@@ -70,6 +73,7 @@ object YSaveFiles {
      * @param fileName  文件名
      * @param default 默认值
      */
+    @JvmStatic
     fun getBytes(fileName: String, default: ByteArray? = null): ByteArray? {
         val file = File(YPath.getFilePath(YApp.get()) + "/" + fileName + ".bytes")
         if (!file.exists()) {
@@ -84,6 +88,7 @@ object YSaveFiles {
      * @param fileName  文件名
      * @param value 值
      */
+    @JvmStatic
     fun setBytes(fileName: String, value: ByteArray?) {
         if (value == null) {
             remove(fileName)
@@ -97,6 +102,7 @@ object YSaveFiles {
      * 删除文件
      * @param fileName  文件名
      */
+    @JvmStatic
     fun removeBytes(fileName: String): Boolean {
         val file = File(YPath.getFilePath(YApp.get()) + "/" + fileName + ".bytes")
         return if (file.exists())
