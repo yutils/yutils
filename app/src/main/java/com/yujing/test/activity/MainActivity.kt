@@ -140,10 +140,8 @@ class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
         }
 
         Create.button(binding.wll, "Ybus发送消息1") {
-//            Thread{YBusUtil.post("tag1", editText1.text.toString())}.start()
-            YBusUtil.post("tag1", editText1.text.toString())
+            Thread{YBusUtil.post("tag1", editText1.text.toString())}.start()
         }
-
     }
 
     //通知栏下载需要调用onDestroy()
@@ -153,8 +151,8 @@ class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
     }
 
     @YBus("tag1", "tag2", threadMode = ThreadMode.MAIN)
-    fun message1(tag: String, message: String) {
-        YLog.i("收到：$tag$message")
+    fun message1(message: String?) {
+        YLog.i("收到：tag$message")
         textView1.text = textView1.text.toString() + "收到1:$message \n"
     }
 }

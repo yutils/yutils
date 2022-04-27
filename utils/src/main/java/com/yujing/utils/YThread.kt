@@ -283,10 +283,27 @@ object YThread {
     }
 
     /**
+     * 主线程中运行,协程
+     */
+    @JvmStatic
+    fun ui(block: suspend CoroutineScope.() -> Unit) {
+        CoroutineScope(Dispatchers.Main).launch { withContext(Dispatchers.Main, block) }
+    }
+
+
+    /**
      * 子线程中运行,协程
      */
     @JvmStatic
     fun io(runnable: Runnable) {
         CoroutineScope(Dispatchers.IO).launch { withContext(Dispatchers.IO) { runnable.run() } }
+    }
+
+    /**
+     * 子线程中运行,协程，睡眠不要用Thread.sleep()，应该用delay()
+     */
+    @JvmStatic
+    fun io(block: suspend CoroutineScope.() -> Unit) {
+        CoroutineScope(Dispatchers.IO).launch { withContext(Dispatchers.IO,block)}
     }
 }

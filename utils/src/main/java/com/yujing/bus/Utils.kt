@@ -54,20 +54,19 @@ internal class Utils {
                         //只有1个参数
                         1 ->
                             //接收的是YMessage<Any>，直接调用， yMessage
-                            if (parameters[0] == yMessage::class.java)
+                            if (parameters[0].isAssignableFrom(yMessage::class.java))
                                 method.invoke(anyClass, yMessage)
-                            //接收参数正好是发送的内容，直接调用， data
-                            else if (yMessage.data!!::class.java == parameters[0]) {
+                            //判断data是否是parameters[0]的子类，是就调用
+                            else if (yMessage.data != null && parameters[0].isAssignableFrom(yMessage.data!!::class.java))
                                 method.invoke(anyClass, yMessage.data)
-                            }
                         //有2个参数
                         2 ->
                             //如果data==null，直接调用， null
                             if (yMessage.data == null) {
                                 method.invoke(anyClass, yMessage.type, null)
                             } else {
-                                //如果data!=null,判断data类型相同后，直接调用， data
-                                if (yMessage.data!!::class.java == parameters[1])
+                                //判断data是否是parameters[1]的子类，是就调用
+                                if (parameters[1].isAssignableFrom(yMessage.data!!::class.java))
                                     method.invoke(anyClass, yMessage.type, yMessage.data)
                             }
                     }
@@ -77,14 +76,11 @@ internal class Utils {
                         //tag，匹配成功
                         when (parameters.size) {
                             //如果这个方法没有参数，直接调用
-                            0 ->
-                                method.invoke(anyClass)
+                            0 -> method.invoke(anyClass)
                             //如果这个方法有1个参数，直接返回 data。
-                            1 ->
-                                method.invoke(anyClass, yMessage.data)
+                            1 -> method.invoke(anyClass, yMessage.data)
                             //如果这个方法有2个参数，直接返回 tag 和 data
-                            2 ->
-                                method.invoke(anyClass, yMessage.type, yMessage.data)
+                            2 -> method.invoke(anyClass, yMessage.type, yMessage.data)
                         }
                     }
                 }
