@@ -37,6 +37,7 @@ object YView {
     /**
      * 获取在整个屏幕内的绝对坐标，含statusBar
      */
+    @JvmStatic
     fun getViewLocationOnScreen(view: View): Point {
         val location = IntArray(2)
         view.getLocationOnScreen(location)
@@ -46,6 +47,7 @@ object YView {
     /**
      * 获取在当前窗口内的绝对坐标，含toolBar
      */
+    @JvmStatic
     fun getViewLocationInWindow(view: View): Point {
         val location = IntArray(2)
         view.getLocationInWindow(location)
@@ -58,6 +60,7 @@ object YView {
      * @param v View
      * @return Bitmap
      */
+    @JvmStatic
     fun toBitmap(v: View): Bitmap? {
         val b = Bitmap.createBitmap(v.width, v.height, Bitmap.Config.ARGB_8888)
         val c = Canvas(b)
@@ -78,6 +81,7 @@ object YView {
      * @param ignores 忽略的view
      * @param allViewSize 全部view的大小
      */
+    @JvmStatic
     fun viewScale(
         view: View, scale: Float, needWidth: Boolean = true, needHeight: Boolean = true,
         needViewGroup: Boolean = false, ignores: MutableList<View> = mutableListOf(),
@@ -147,6 +151,7 @@ object YView {
     /**
      * 还原view缩放，通过allSize中记录的原始大小
      */
+    @JvmStatic
     fun viewReduction(view: View, allViewSize: MutableList<MutableMap<String, Any>>?) {
         if (allViewSize == null) return
         if (allViewSize.isEmpty()) return
@@ -215,6 +220,7 @@ object YView {
     /**
      * 刷新全部view
      */
+    @JvmStatic
     fun refreshAllView(root: View) {
         if (root is ViewGroup) {
             for (i in 0 until root.childCount) refreshAllView(root.getChildAt(i))

@@ -123,14 +123,14 @@ class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
             listName.add("项目5")
             listName.add("项目6")
             val checked = BooleanArray(listName.size) { i -> false } //默认选中项，最终选中项
-            YAlertDialogUtils().showMultiChoice("请选择", listName.toTypedArray(), checked) {
+            YAlertDialogUtils().showMultiChoice("请选择", listName.toTypedArray(), checked, {
                 //筛选选中项
                 val newList: MutableList<String> = ArrayList()
                 for (index in checked.indices) {
                     if (checked[index]) newList.add(listName[index])
                 }
                 textView1.text = "您选择了：${YJson.toJson(newList)}"
-            }
+            })
         }
 
         TTS.filter = { it.replace("不正确", "不在范围内") }
@@ -140,7 +140,28 @@ class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
         }
 
         Create.button(binding.wll, "Ybus发送消息1") {
-            Thread{YBusUtil.post("tag1", editText1.text.toString())}.start()
+            Thread { YBusUtil.post("tag1", editText1.text.toString()) }.start()
+        }
+
+
+        Create.button(binding.wll, "弹窗测试") {
+            val yDialog = YAlertDialogUtils()
+            yDialog.titleTextSize = 20F
+            yDialog.contentTextSize = 18F
+            yDialog.buttonTextSize = 18F
+            yDialog.width = (YScreenUtil.getScreenWidth() * 0.45).toInt()
+            yDialog.contentPaddingTop = YScreenUtil.dp2px(40f)
+            yDialog.contentPaddingBottom = YScreenUtil.dp2px(40f)
+            yDialog.okButtonString = "确定"
+            yDialog.cancelButtonString = "取消"
+            val content= """
+            |您正在执行一项操作
+            |
+            |执行后将无法修改，是否继续？
+            """.trimMargin()
+            yDialog.showMessageCancel("这是标题",content) {
+              //确定事件
+           }
         }
     }
 

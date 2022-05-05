@@ -67,6 +67,7 @@ object YNdsClient {
     /**
      * 发现网络服务
      */
+    @JvmStatic
     fun discoverService(serviceType: String = "_nsdchat._tcp", listener: YListener2<Boolean, NsdServiceInfo?>? = null) {
         if (nsDicListener != null) return YLog.e("正在发现服务")
         nsDicListener = object : NsdManager.DiscoveryListener {
@@ -104,6 +105,7 @@ object YNdsClient {
     /**
      * 发现网络服务,并给定超时时间，最后返回改时间内的所有结果
      */
+    @JvmStatic
     fun discoverService(serviceType: String = "_nsdchat._tcp", timeOut: Int? = null, listenerList: YListener1<MutableList<NsdServiceInfo>>? = null) {
         if (nsDicListener != null) return YLog.e("正在发现服务")
 
@@ -165,6 +167,7 @@ object YNdsClient {
     /**
      * 连接网络服务
      */
+    @JvmStatic
     fun resolveService(serviceInfo: NsdServiceInfo, listener: YListener2<Boolean, NsdServiceInfo?>? = null) {
         val nsResolveListener = object : NsdManager.ResolveListener {
             override fun onServiceResolved(nsdServiceInfo: NsdServiceInfo) {
@@ -190,6 +193,7 @@ object YNdsClient {
     /**
      * 关闭网络发现
      */
+    @JvmStatic
     fun stopServiceDiscovery() {
         if (nsDicListener == null) return YLog.i("请先发现网络服务")
         try {
@@ -205,6 +209,7 @@ object YNdsClient {
     /**
      * 自动发现并连接网络服务，可以设置超时时间
      */
+    @JvmStatic
     fun auto(serviceType: String = "_ipfs-discovery._udp", timeOut: Int? = null, listener: (Boolean, NsdServiceInfo?) -> Unit) {
         var isConnect = false
         val startTime = System.currentTimeMillis()

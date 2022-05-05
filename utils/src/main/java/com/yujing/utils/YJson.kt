@@ -103,6 +103,7 @@ object YJson {
     /**
      * 获取一个格式化日期的 gson对象
      */
+    @JvmStatic
     fun getGsonDate(dateFormat: String?): Gson {
         return GsonBuilder().setDateFormat(dateFormat).create()
     }
@@ -110,6 +111,7 @@ object YJson {
     /**
      * 获取一个格式化json的gson对象
      */
+    @JvmStatic
     fun getGsonFormat(): Gson {
         return GsonBuilder().setPrettyPrinting().create()
     }
@@ -117,6 +119,7 @@ object YJson {
     /**
      * 将对象转换成JsonObject格式
      */
+    @JvmStatic
     fun toJsonObject(jsonStr: String?): Any {
         return JsonParser.parseString(jsonStr).asJsonObject
     }
@@ -124,6 +127,7 @@ object YJson {
     /**
      * 将对象转换成json格式(并自定义日期格式)
      */
+    @JvmStatic
     fun toJson(obj: Any?, dateFormat: String? = null): String {
         val gson = if (dateFormat == null) gson else getGsonDate(dateFormat)
         return gson.toJson(obj)
@@ -132,6 +136,7 @@ object YJson {
     /**
      * 将对象转换成json格式,并且格式化(并自定义日期格式)
      */
+    @JvmStatic
     fun toJsonFormat(obj: Any?, dateFormat: String? = null): String? {
         val gson = if (dateFormat == null) gson else getGsonDate(dateFormat)
         return format(gson.toJson(obj))
@@ -140,6 +145,7 @@ object YJson {
     /**
      * 将json转换成bean对象(并自定义日期格式)
      */
+    @JvmStatic
     fun <T> toBean(jsonStr: String, cl: Class<T>?, dateFormat: String? = null): T {
         val gson = if (dateFormat == null) gson else getGsonDate(dateFormat)
         return gson.fromJson(jsonStr, cl)
@@ -148,6 +154,7 @@ object YJson {
     /**
      * 将json转换成List
      */
+    @JvmStatic
     fun <T> toList(json: String?, cls: Class<T>?, dateFormat: String? = null): List<T> {
         val gson = if (dateFormat == null) gson else getGsonDate(dateFormat)
         val list: MutableList<T> = ArrayList()
@@ -161,6 +168,7 @@ object YJson {
     /**
      * 将json格式转换成list对象，并指定类型
      */
+    @JvmStatic
     fun <T> toList(jsonStr: String?, type: Type?, dateFormat: String? = null): List<T> {
         val gson = if (dateFormat == null) gson else getGsonDate(dateFormat)
         return gson.fromJson(jsonStr, type)
@@ -169,6 +177,7 @@ object YJson {
     /**
      * 转成map
      */
+    @JvmStatic
     fun <T> toMap(json: String?, cls: Class<T>?, dateFormat: String? = null): Map<String, T> {
         val gson = if (dateFormat == null) gson else getGsonDate(dateFormat)
         val map: MutableMap<String, T> = HashMap()
@@ -182,6 +191,7 @@ object YJson {
     /**
      * 转成map
      */
+    @JvmStatic
     fun <K, T> toMap(json: String?, kCls: Class<K>?, cls: Class<T>?, dateFormat: String? = null): Map<K, T> {
         val gson = if (dateFormat == null) gson else getGsonDate(dateFormat)
         val map: MutableMap<K, T> = HashMap()
@@ -195,6 +205,7 @@ object YJson {
     /**
      * 将json转换成List<Map></Map><String></String>, T>>
      */
+    @JvmStatic
     fun <T> toListMap(json: String?, cls: Class<T>?, dateFormat: String? = null): List<Map<String, T>> {
         val list: MutableList<Map<String, T>> = ArrayList()
         val array = JsonParser.parseString(json).asJsonArray
@@ -207,6 +218,7 @@ object YJson {
     /**
      * 将json转换成List<Map></Map><String></String>, T>>
      */
+    @JvmStatic
     fun <K, T> toListMap(json: String?, kCls: Class<K>?, cls: Class<T>?, dateFormat: String? = null): List<Map<K, T>> {
         val list: MutableList<Map<K, T>> = ArrayList()
         val array = JsonParser.parseString(json).asJsonArray
@@ -222,6 +234,7 @@ object YJson {
      * @param str 目标字符串
      * @return 被格式化的字符串
      */
+    @JvmStatic
     fun format(str: String?): String? {
         return try {
             val element = JsonParser.parseString(str)

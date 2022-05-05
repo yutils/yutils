@@ -159,6 +159,7 @@ class YUdp(var ip: String, var port: Int) {
 
     companion object {
         const val defaultTag = "UdpReceiveDefaultTagTag"
+        @JvmStatic
         var showLog = false
 
         //★★★★★★★★★★★★★★★★★★★★★★★★★★★★★静态方法·读流操作★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
@@ -174,6 +175,7 @@ class YUdp(var ip: String, var port: Int) {
         //读取到数据立即返回，数据大于2048之后部分抛弃，1秒后超时
         YUdp.sendSync("192.168.6.3", 8080, data, 2048, 1000)
         */
+        @JvmStatic
         @Throws(java.net.SocketTimeoutException::class)
         fun sendSync(ip: String, port: Int, data: ByteArray, readMaxLength: Int = 1024, timeout: Int = 1000): ByteArray {
             //向服务器端发送数据
@@ -212,6 +214,7 @@ class YUdp(var ip: String, var port: Int) {
         //读取1秒，能读多少度多少，默认不超过1MB
          YUdp.sendSyncTime("192.168.6.3", 8080, data, 3000)
         */
+        @JvmStatic
         fun sendSyncTime(
             ip: String, port: Int, data: ByteArray,
             timeout: Int = 1000
@@ -231,6 +234,7 @@ class YUdp(var ip: String, var port: Int) {
          //读取到16个字节后立即返回，如果3000毫秒没有读取到，也返回。
          YUdp.sendSyncLength("192.168.6.3", 8080, data, 16, 3000)
          */
+        @JvmStatic
         fun sendSyncLength(ip: String, port: Int, data: ByteArray, maxLength: Int = 1024, timeout: Int = 1000): ByteArray {
             //向服务器端发送数据
             // 1.定义服务器的地址、端口号、数据

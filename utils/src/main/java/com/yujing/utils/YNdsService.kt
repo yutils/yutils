@@ -2,6 +2,8 @@ package com.yujing.utils
 
 import android.net.nsd.NsdManager
 import android.net.nsd.NsdServiceInfo
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.yujing.contract.YListener1
 import java.net.ServerSocket
@@ -29,6 +31,8 @@ object YNdsService {
     /**
      * 注册网络服务
      */
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+    @JvmStatic
     fun registerService(serviceType: String = "_nsdchat._tcp", listener: YListener1<Boolean>? = null) {
         if (nsRegListener != null) return YLog.e("已经注册过了")
         var port = 9999
@@ -79,6 +83,7 @@ object YNdsService {
     /**
      * 注销网络服务
      */
+    @JvmStatic
     fun unregisterService() {
         if (nsRegListener == null) return YLog.i("请先注册网络服务")
         try {

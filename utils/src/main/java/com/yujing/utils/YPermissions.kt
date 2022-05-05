@@ -45,6 +45,7 @@ class YPermissions(val activity: ComponentActivity) {
         /**
          * 获取Manifest中的全部权限
          */
+        @JvmStatic
         fun getManifestPermissions(context: Context): Array<String>? {
             var packageInfo: PackageInfo? = null
             try {
@@ -61,6 +62,7 @@ class YPermissions(val activity: ComponentActivity) {
          * @param permissions 权限。如：Manifest.permission.CAMERA
          * @return 是否有
          */
+        @JvmStatic
         fun hasPermissions(context: Context?, vararg permissions: String?): Boolean {
             if (Build.VERSION.SDK_INT < 23) return true
             for (perm in permissions) {
@@ -74,11 +76,10 @@ class YPermissions(val activity: ComponentActivity) {
         /**
          * 获取权限
          */
+        @JvmStatic
         fun requestAll(activity: ComponentActivity) {
             YPermissions(activity).request(*getManifestPermissions(activity)!!)
         }
-
-
     }
 
     //请求成功权限

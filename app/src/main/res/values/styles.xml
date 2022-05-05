@@ -1,6 +1,5 @@
 <resources>
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="colorPrimary">#41B9FA</item>
         <item name="colorPrimaryDark">#41B9FA</item>
         <item name="colorAccent">#41B9FA</item>

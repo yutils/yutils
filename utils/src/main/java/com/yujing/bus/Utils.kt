@@ -85,28 +85,25 @@ internal class Utils {
                     }
                 }
             } catch (e: ClassNotFoundException) {
-                YLog.e("YBus", "类没有找到", e)
+                YLog.e("YBus", "类没有找到，类名：${anyClass.javaClass.name}，方法名：${method.name}，消息：${yMessage}", e)
             } catch (e: SecurityException) {
-                YLog.e("YBus", "安全例外异常，检查权限", e)
+                YLog.e("YBus", "安全例外异常，检查权限，类名：${anyClass.javaClass.name}，方法名：${method.name}，消息：${yMessage}", e)
             } catch (e: IllegalAccessException) {
-                YLog.e("YBus", "调用方法权限不足", e)
+                YLog.e("YBus", "调用方法权限不足，类名：${anyClass.javaClass.name}，方法名：${method.name}，消息：${yMessage}", e)
             } catch (e: IllegalArgumentException) {
-                YLog.e("YBus", "接口接收参数个数不匹配", e)
+                YLog.e("YBus", "接口接收参数个数不匹配，类名：${anyClass.javaClass.name}，方法名：${method.name}，消息：${yMessage}", e)
             } catch (e: InvocationTargetException) {
                 // 获取目标异常
                 val t = e.targetException
                 if (t.message != null && t.message!!.contains("checkNotNullParameter")) {
-                    YLog.e(
-                        "YBus",
-                        "调用的目标方法异常，发送数据有null，然接收参数却不能为null，可以设置接收参数后面加?，tag=${yMessage.type}", t
-                    )
+                    YLog.e("YBus", "调用的目标方法异常，发送数据有null，然接收参数却不能为null，可以设置接收参数后面加?，类名：${anyClass.javaClass.name}，方法名：${method.name}，消息：${yMessage}", t)
                 } else {
-                    YLog.e("YBus", "调用目标异常，如下", t)
+                    YLog.e("YBus", "调用目标异常，类名：${anyClass.javaClass.name}，方法名：${method.name}，消息：${yMessage}", t)
                 }
             } catch (e: ArithmeticException) {
-                YLog.e("YBus", "算术运算异常", e)
+                YLog.e("YBus", "算术运算异常，类名：${anyClass.javaClass.name}，方法名：${method.name}，消息：${yMessage}", e)
             } catch (e: Throwable) {
-                YLog.e("YBus", "未知异常", e)
+                YLog.e("YBus", "未知异常，类名：${anyClass.javaClass.name}，方法名：${method.name}，消息：${yMessage}", e)
             }
         }
     }

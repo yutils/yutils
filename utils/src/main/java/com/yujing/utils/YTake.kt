@@ -100,6 +100,7 @@ class YTake {
         /**
          * 请求权限并拍照，返回URI
          */
+        @JvmStatic
         fun take(activity: ComponentActivity, onResult: (Uri?) -> Unit) {
 
             activity.lifecycle.addObserver(object : DefaultLifecycleObserver {
@@ -136,6 +137,7 @@ class YTake {
         /**
          * 请求权限并拍照并剪切，返回URI
          */
+        @JvmStatic
         fun takeAndCorp(activity: ComponentActivity, onResult: (Uri?) -> Unit) {
             activity.lifecycle.addObserver(object : DefaultLifecycleObserver {
                 var cropPicture: ActivityResultLauncher<Crop>? = null
@@ -176,6 +178,7 @@ class YTake {
         /**
          * 选择照片
          */
+        @JvmStatic
         fun chosePicture(activity: ComponentActivity, onResult: YListener1<Uri?>) {
             val activityResultObserver = YActivityResultObserver(activity.activityResultRegistry, "chosePicture") {
                 if (it!!.resultCode == Activity.RESULT_OK) {
@@ -191,6 +194,7 @@ class YTake {
         /**
          * 选择照片和剪切
          */
+        @JvmStatic
         fun chosePictureAndCorp(activity: ComponentActivity, onResult: (Uri?) -> Unit) {
             var cropPicture: ActivityResultLauncher<Crop>? = null
             //剪切

@@ -1,6 +1,9 @@
 package com.yujing.view
 
+import android.content.res.ColorStateList
 import android.graphics.Color
+import android.os.Build
+import android.text.TextWatcher
 import android.view.Gravity
 import android.view.View
 import android.view.Window
@@ -13,6 +16,23 @@ import java.util.*
 @Suppress("MemberVisibilityCanBePrivate", "unused")
 /*
 用法举例：
+val yDialog = YAlertDialogUtils()
+yDialog.titleTextSize = 20F
+yDialog.contentTextSize = 18F
+yDialog.buttonTextSize = 18F
+yDialog.width = (YScreenUtil.getScreenWidth() * 0.45).toInt()
+yDialog.contentPaddingTop = YScreenUtil.dp2px(40f)
+yDialog.contentPaddingBottom = YScreenUtil.dp2px(40f)
+yDialog.okButtonString = "确定"
+yDialog.cancelButtonString = "取消"
+val content= """
+|您正在执行一项操作
+|
+|执行后将无法修改，是否继续？
+""".trimMargin()
+yDialog.showMessageCancel("这是标题",content) {
+  //确定事件
+}
 
 //提示,有确定按钮，有取消按钮
 YAlertDialogUtils().showMessageCancel("测试","确定删除？删除后不可撤销。"){
@@ -118,9 +138,9 @@ class YAlertDialogUtils {
 
     //正文间距
     var contentPaddingLeft = YScreenUtil.dp2px(10f)
-    var contentPaddingTop = YScreenUtil.dp2px(20f)
+    var contentPaddingTop = YScreenUtil.dp2px(30f)
     var contentPaddingRight = YScreenUtil.dp2px(10f)
-    var contentPaddingBottom = YScreenUtil.dp2px(20f)
+    var contentPaddingBottom = YScreenUtil.dp2px(30f)
 
     //隔断线
     var titleImageViewColor = Color.parseColor("#5051A691")
@@ -192,11 +212,9 @@ class YAlertDialogUtils {
     /**
      * 设置弹窗风格
      */
-    fun setStyle(alertDialog: AlertDialog, title: String?) {
+    fun setStyleAndShow(alertDialog: AlertDialog, title: String?) {
         //没有标题就不显示
-        if (title == null) {
-            alertDialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-        }
+        if (title == null) alertDialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         //是否全屏
         if (fullScreen) {
             alertDialog.window?.setFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE, WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE)
@@ -231,7 +249,16 @@ class YAlertDialogUtils {
         if (showCancel) okLayoutParams.marginStart = YScreenUtil.dp2px(5F)
         okLayoutParams.gravity = Gravity.CENTER
         okButton.layoutParams = okLayoutParams
-        okButton.setBackgroundColor(okButtonBackgroundColor)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            //相当于  color^0x60000000
+            val colorStateList = ColorStateList(
+                arrayOf(intArrayOf(android.R.attr.state_pressed), intArrayOf()),
+                intArrayOf((okButtonBackgroundColor.xor(Color.parseColor("#60000000"))), okButtonBackgroundColor)
+            )
+            okButton.backgroundTintList = colorStateList
+        } else {
+            okButton.setBackgroundColor(okButtonBackgroundColor)
+        }
         okButton.setTextColor(okButtonTextColor)
         okButton.textSize = buttonTextSize
 
@@ -244,7 +271,16 @@ class YAlertDialogUtils {
         if (showCancel) cancelLayoutParams.marginEnd = YScreenUtil.dp2px(5F)
         cancelLayoutParams.gravity = Gravity.CENTER
         cancelButton.layoutParams = cancelLayoutParams
-        cancelButton.setBackgroundColor(cancelButtonBackgroundColor)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            //相当于  color^0x60000000
+            val colorStateList = ColorStateList(
+                arrayOf(intArrayOf(android.R.attr.state_pressed), intArrayOf()),
+                intArrayOf((cancelButtonBackgroundColor.xor(Color.parseColor("#60000000"))), cancelButtonBackgroundColor)
+            )
+            cancelButton.backgroundTintList = colorStateList
+        } else {
+            cancelButton.setBackgroundColor(cancelButtonBackgroundColor)
+        }
         cancelButton.setTextColor(cancelButtonTextColor)
         cancelButton.textSize = buttonTextSize
         //只显示需要按钮
@@ -257,7 +293,7 @@ class YAlertDialogUtils {
     /**
      * 消息框，无按钮
      */
-    fun showMessage(title: String?, message: String?, time: Int? = 2000) {
+    fun showMessage(title: String?, message: String?, time: Int? = 2000): AlertDialog {
         //创建alertDialog
         val alertDialog = AlertDialog.Builder(YActivityUtil.getCurrentActivity())
             .setCustomTitle(if (title != null) createTitleView(title) else null)
@@ -265,60 +301,56 @@ class YAlertDialogUtils {
             .setCancelable(cancelable)
             .create()
 
-        setStyle(alertDialog, title)
+        setStyleAndShow(alertDialog, title)
 
         YDelay.run(time!!) {
             alertDialog.dismiss()
         }
+        return alertDialog
     }
 
     /**
      * 消息框，确定按钮
      */
-    fun showMessage(title: String?, message: String?, listener: () -> Unit) {
+    fun showMessage(title: String?, message: String?, listener: (() -> Unit)? = null): AlertDialog {
         //创建alertDialog
         val alertDialog = AlertDialog.Builder(YActivityUtil.getCurrentActivity())
             .setCustomTitle(if (title != null) createTitleView(title) else null)
             .setView(createContentView(message))
             .setPositiveButton(okButtonString) { dialog, which ->
-                listener()
+                listener?.invoke()
             }.setCancelable(cancelable)
             .create()
-        setStyle(alertDialog, title)
+        setStyleAndShow(alertDialog, title)
         setButton(alertDialog, false)
+        return alertDialog
     }
 
     /**
      * 消息框，确定按钮、取消按钮
      */
-    fun showMessageCancel(title: String?, message: String?, listener: () -> Unit) {
-        showMessageCancel(title, message, listener) {}
-    }
-
-    /**
-     * 消息框，确定按钮、取消按钮、取消按钮监听
-     */
-    fun showMessageCancel(title: String?, message: String?, listener: () -> Unit, cancelListener: () -> Unit) {
+    fun showMessageCancel(title: String?, message: String?, listener: (() -> Unit)? = null, cancelListener: (() -> Unit)? = null): AlertDialog {
         //创建alertDialog
         val alertDialog = AlertDialog.Builder(YActivityUtil.getCurrentActivity())
             .setCustomTitle(if (title != null) createTitleView(title) else null)
             .setView(createContentView(message))
             .setPositiveButton(okButtonString) { dialog, which ->
-                listener()
+                listener?.invoke()
             }.setNegativeButton(cancelButtonString) { dialog, which ->
-                cancelListener()
+                cancelListener?.invoke()
             }.setCancelable(cancelable)
             .create()
 
-        setStyle(alertDialog, title)
+        setStyleAndShow(alertDialog, title)
         setButton(alertDialog, true)
+        return alertDialog
     }
 
     /**
      * 单选弹窗，确定按钮
      * @param index 单选框默认值：从0开始
      */
-    fun showSingleChoice(title: String?, itemName: Array<String>, default: Int = -1, listener: (Int) -> Unit) {
+    fun showSingleChoice(title: String?, itemName: Array<String?>, default: Int = -1, listener: (Int) -> Unit): AlertDialog {
         //-1 是未选择
         val finalWhich = intArrayOf(-1)
         //创建alertDialog
@@ -336,15 +368,16 @@ class YAlertDialogUtils {
             }.setCancelable(cancelable)
             .create()
 
-        setStyle(alertDialog, title)
+        setStyleAndShow(alertDialog, title)
         setButton(alertDialog, false)
+        return alertDialog
     }
 
 
     /**
      * 列表框，无按钮
      */
-    fun showList(title: String?, itemName: Array<String>, listener: (Int) -> Unit) {
+    fun showList(title: String?, itemName: Array<String?>, listener: (Int) -> Unit): AlertDialog {
         //创建alertDialog
         val alertDialog = AlertDialog.Builder(YActivityUtil.getCurrentActivity())
             .setCustomTitle(if (title != null) createTitleView(title) else null)
@@ -353,20 +386,14 @@ class YAlertDialogUtils {
             }.setCancelable(cancelable)
             .create()
 
-        setStyle(alertDialog, title)
+        setStyleAndShow(alertDialog, title)
+        return alertDialog
     }
 
     /**
      * 输入框，确定按钮、取消按钮
      */
-    fun showEdit(title: String?, hint: String?, listener: (String) -> Unit) {
-        showEdit(title, hint, listener) {}
-    }
-
-    /**
-     * 输入框，确定按钮、取消按钮、取消按钮监听
-     */
-    fun showEdit(title: String?, hint: String?, listener: (String) -> Unit, cancelListener: () -> Unit) {
+    fun showEdit(title: String?, hint: String?, listener: (String) -> Unit, cancelListener: (() -> Unit)? = null, textWatcher: TextWatcher? = null): AlertDialog {
         val editText = EditText(YApp.get())
         //创建alertDialog
         val alertDialog = AlertDialog.Builder(YActivityUtil.getCurrentActivity())
@@ -383,6 +410,7 @@ class YAlertDialogUtils {
                     editText.textSize = contentTextSize
                     editText.setTextColor(Color.BLACK)
                     editText.setBackgroundColor(Color.parseColor("#EEEEEE"))
+                    editText.addTextChangedListener(textWatcher)
                     linearLayout.addView(editText)
                     linearLayout
                 }
@@ -390,18 +418,19 @@ class YAlertDialogUtils {
             .setPositiveButton(okButtonString) { dialog, which ->
                 listener(editText.text.toString())
             }.setNegativeButton(cancelButtonString) { dialog, which ->
-                cancelListener()
+                cancelListener?.invoke()
             }.setCancelable(cancelable)
             .create()
 
-        setStyle(alertDialog, title)
+        setStyleAndShow(alertDialog, title)
         setButton(alertDialog, true)
+        return alertDialog
     }
 
     /**
      * 多选弹窗，确定按钮、取消按钮
      */
-    fun showMultiChoice(title: String?, itemName: Array<String>, checked: BooleanArray, listener: () -> Unit) {
+    fun showMultiChoice(title: String?, itemName: Array<String?>, checked: BooleanArray, listener: () -> Unit, cancelListener: (() -> Unit)? = null): AlertDialog {
         //创建alertDialog
         val alertDialog = AlertDialog.Builder(YActivityUtil.getCurrentActivity())
             .setCustomTitle(if (title != null) createTitleView(title) else null)
@@ -409,10 +438,12 @@ class YAlertDialogUtils {
             }.setPositiveButton(okButtonString) { dialog, which ->
                 listener()
             }.setNegativeButton(cancelButtonString) { dialog, which ->
+                cancelListener?.invoke()
             }.setCancelable(cancelable)
             .create()
 
-        setStyle(alertDialog, title)
+        setStyleAndShow(alertDialog, title)
         setButton(alertDialog, true)
+        return alertDialog
     }
 }
