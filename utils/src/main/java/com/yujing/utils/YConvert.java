@@ -343,8 +343,7 @@ public class YConvert {
      * @return Bitmap
      */
     public static Bitmap resources2Bitmap(Context context, int Resources) {
-        android.content.res.Resources res = context.getResources();
-        return BitmapFactory.decodeResource(res, Resources);
+        return BitmapFactory.decodeResource(context.getResources(), Resources);
     }
 
     public static Bitmap resources2Bitmap(int Resources) {
@@ -388,8 +387,7 @@ public class YConvert {
         try {
             byte[] bitmapArray;
             bitmapArray = Base64.decode(string, Base64.DEFAULT);
-            bitmap = BitmapFactory.decodeByteArray(bitmapArray, 0,
-                    bitmapArray.length);
+            bitmap = BitmapFactory.decodeByteArray(bitmapArray, 0, bitmapArray.length);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -409,7 +407,6 @@ public class YConvert {
         byte[] bytes = bStream.toByteArray();
         string = Base64.encodeToString(bytes, Base64.DEFAULT);
         return string;
-
     }
 
     /**
@@ -428,7 +425,6 @@ public class YConvert {
         drawable.setBounds(0, 0, width, height);
         drawable.draw(canvas);
         return bitmap;
-
     }
 
     /**
@@ -531,8 +527,7 @@ public class YConvert {
      * @return Object
      */
     public static Object base642Object(String Base64String) {
-        if (Base64String == null)
-            return null;
+        if (Base64String == null) return null;
         return bytes2Object(Base64.decode(Base64String, Base64.DEFAULT));
     }
 
@@ -544,8 +539,7 @@ public class YConvert {
      * @return String
      */
     public static <T extends Serializable> String object2Base64(T object) {
-        if (object == null)
-            return null;
+        if (object == null) return null;
         return new String(Base64.encode(object2Bytes(object), Base64.DEFAULT));
     }
 
@@ -556,8 +550,7 @@ public class YConvert {
      * @return Object
      */
     public static Object bytes2Object(byte[] bytes) {
-        if (bytes == null)
-            return null;
+        if (bytes == null) return null;
         Object object;
         ByteArrayInputStream byteIn = new ByteArrayInputStream(bytes);
         ObjectInputStream in;
@@ -731,6 +724,6 @@ public class YConvert {
             temp.append(bcd1 > 9 ? error : bcd1);
             temp.append(bcd2 > 9 ? error : bcd2);
         }
-        return temp.toString().substring(0, 1).equalsIgnoreCase("0") ? temp.toString().substring(1) : temp.toString();
+        return temp.substring(0, 1).equalsIgnoreCase("0") ? temp.substring(1) : temp.toString();
     }
 }

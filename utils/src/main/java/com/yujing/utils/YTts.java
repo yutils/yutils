@@ -211,7 +211,7 @@ public class YTts {
         } else {
             textToSpeech.speak(speak, TextToSpeech.QUEUE_FLUSH, null);
         }
-        if (SHOW_LOG) Log.i(TAG, " \nTTS: " + speak);
+        if (SHOW_LOG) YLog.i(TAG, " \nTTS: " + speak, YStackTrace.getTopClassLine(1));
         history.add(0, speak);
         if (history.size() > 1000) history.remove(history.size() - 1);
         return this;

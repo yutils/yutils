@@ -36,9 +36,4 @@ abstract class KBaseActivity<B : ViewDataBinding>(layout: Int?) : YBaseActivity<
         YUtils.setFullScreen(this, true)
         YUtils.setImmersive(this, true)
     }
-
-
-    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-        return super.onKeyDown(keyCode, event)
-    }
 }

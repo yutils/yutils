@@ -139,6 +139,11 @@ class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
             TTS.speak("电子秤皮重不正确")
         }
 
+        //语音过滤测试
+        Create.button(binding.wll, "TTS过滤") {
+            TTS.speakToast("电子秤皮重不正确")
+        }
+
         Create.button(binding.wll, "Ybus发送消息1") {
             Thread { YBusUtil.post("tag1", editText1.text.toString()) }.start()
         }

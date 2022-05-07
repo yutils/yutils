@@ -26,7 +26,7 @@ public class YApp {
 
     public static Application get() {
         if (app == null)
-            YLog.e("YApp.application == null\n请在Application中加入：\n YApp.set(application); \t 或 YUtils.init(application);");
+            YLog.e("YApp.application == null\n请在Application中加入：\n YApp.set(application); \t 或 YUtils.init(application);", YStackTrace.getTopClassLine(1));
         return app;
     }
 }

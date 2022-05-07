@@ -29,11 +29,5 @@ public class OldFragment extends KBaseFragment<Activity1101Binding> {
 }
  */
 abstract class KBaseFragment<B : ViewDataBinding>(layout: Int?) : YBaseFragment<B>(layout) {
-    override fun speak(s: String?) {
-        TTS.speak(s)
-    }
 
-    fun speakQueue(s: String) {
-        TTS.speakQueue(s)
-    }
 }

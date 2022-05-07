@@ -42,12 +42,12 @@ public class YToast {
      */
     public static void showSpeak(String text) {
         show(YApp.get(), text, 0);
-        TTS.INSTANCE.speak(text);
+        TTS.speak(text);
     }
 
     public static void showSpeak(String text, int topClass) {
         show(YApp.get(), text, topClass);
-        TTS.INSTANCE.speak(text);
+        TTS.speak(text);
     }
 
     public static void show(Context context, String text) {
@@ -95,12 +95,12 @@ public class YToast {
      */
     public static void showLongSpeak(String text) {
         show(YApp.get(), text);
-        TTS.INSTANCE.speak(text);
+        TTS.speak(text);
     }
 
     public static void showLongSpeak(String text, int topClass) {
         show(YApp.get(), text, topClass);
-        TTS.INSTANCE.speak(text);
+        TTS.speak(text);
     }
 
     public static void showLong(Context context, String text) {

@@ -6,10 +6,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import com.yujing.base.activity.YActivity
 import com.yujing.bus.YBusUtil
-import com.yujing.utils.TTS
 import com.yujing.utils.YShow
-import com.yujing.utils.YToast
-import java.lang.Deprecated
 
 /**
  * 基础activity
@@ -75,46 +72,6 @@ abstract class YBaseActivity<B : ViewDataBinding>(var layout: Int?) : YActivity(
         isActive = false
         val intent = Intent(this, classActivity!!)
         startActivity(intent)
-    }
-
-    /**
-     * 跳转
-     */
-    @Deprecated
-    open fun startActivity(classActivity: Class<*>?, resultCode: Int) {
-        isActive = false
-        startActivityForResult(classActivity, resultCode)
-    }
-
-    /**
-     * 跳转
-     */
-    @Deprecated
-    open fun startActivityForResult(classActivity: Class<*>?, resultCode: Int) {
-        isActive = false
-        val intent = Intent(this, classActivity!!)
-        startActivityForResult(intent, resultCode)
-    }
-
-    /**
-     * 显示toast
-     */
-    open fun show(str: String?) {
-        YToast.showLong(str,1)
-    }
-
-    /**
-     * 播放语音
-     */
-    open fun speak(str: String?) {
-        TTS.speak(str)
-    }
-
-    /**
-     * 显示toast并播放语音
-     */
-    open fun showSpeak(str: String?) {
-        YToast.showSpeak(str,1)
     }
 
     override fun onStop() {

@@ -25,7 +25,7 @@ fragment3 = Fragment3()
 
 
 //显示/切换fragment
-yFragmentManager!!.showFragment(fragment1)
+yFragmentManager!!.show(fragment1)
 
 //重新加载fragment，会触发新fragment的onCreateView,旧fragment的onDestroy
 yFragmentManager!!replace(fragment1)
@@ -63,19 +63,28 @@ public class YFragmentManager {
      *
      * @param targetFragment fragment
      */
-    public synchronized void showFragment(Fragment targetFragment) {
-        FragmentTransaction transaction = fragmentManager
-                .beginTransaction();
+    public synchronized void show(Fragment targetFragment) {
+        if (targetFragment == null) return;
+        FragmentTransaction ft = fragmentManager.beginTransaction();
+        //如果没有添加过,就先添加，添加会自动显示
         if (!targetFragment.isAdded()) {
-            if (currentFragment != null) transaction.hide(currentFragment);
-            transaction.add(layout, targetFragment).commit();
+            ft.hide(currentFragment);
+            ft.add(layout, targetFragment).commit();
         } else {
-            //如果存在currentFragment,而且不是自己就先隐藏currentFragment
-            if (currentFragment != null && !currentFragment.equals(targetFragment))
-                transaction.hide(currentFragment);
-            transaction.show(targetFragment).commit();
+            //如果已经添加过，就直接显示
+            //如果存在currentFragment不是targetFragment，先隐藏currentFragment
+            if (!targetFragment.equals(currentFragment))
+                ft.hide(currentFragment);
+            ft.show(targetFragment).commit();
         }
         currentFragment = targetFragment;//记录当前fragment
+    }
+
+    /**
+     * 显示当前fragment
+     */
+    public synchronized void show() {
+        show(currentFragment);
     }
 
     /**
@@ -83,7 +92,8 @@ public class YFragmentManager {
      *
      * @param targetFragment fragment
      */
-    public synchronized void hideFragment(Fragment targetFragment) {
+    public synchronized void hide(Fragment targetFragment) {
+        if (targetFragment == null) return;
         if (targetFragment.isAdded())
             fragmentManager.beginTransaction().hide(targetFragment).commit();
     }
@@ -91,17 +101,65 @@ public class YFragmentManager {
     /**
      * 隐藏当前fragment
      */
+    public synchronized void hide() {
+        hide(currentFragment);
+    }
+
+    /**
+     * 移除fragment
+     *
+     * @param fragment fragment
+     */
+    public synchronized void remove(Fragment fragment) {
+        if (fragment == null) return;
+        fragmentManager.beginTransaction().remove(fragment);
+        if (fragment.equals(currentFragment)) {
+            currentFragment = null;
+        }
+    }
+
+    /**
+     * 显示fragment
+     *
+     * @param targetFragment fragment
+     */
+    @Deprecated
+    public synchronized void showFragment(Fragment targetFragment) {
+        show(targetFragment);
+    }
+
+    /**
+     * 隐藏fragment
+     *
+     * @param targetFragment fragment
+     */
+    @Deprecated
+    public synchronized void hideFragment(Fragment targetFragment) {
+        hide(targetFragment);
+    }
+
+    /**
+     * 隐藏当前fragment
+     */
+    @Deprecated
     public synchronized void hideCurrent() {
-        if (currentFragment != null && currentFragment.isAdded())
-            fragmentManager.beginTransaction().hide(currentFragment).commit();
+        hide();
     }
 
     /**
      * 显示当前fragment
      */
+    @Deprecated
     public synchronized void showCurrent() {
-        if (currentFragment != null && currentFragment.isAdded())
-            fragmentManager.beginTransaction().show(currentFragment).commit();
+        show();
+    }
+
+    public FragmentManager getFragmentManager() {
+        return fragmentManager;
+    }
+
+    public Fragment getCurrentFragment() {
+        return currentFragment;
     }
 
     /**
@@ -115,5 +173,10 @@ public class YFragmentManager {
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.replace(layout, fragment);
         transaction.commit();
+        currentFragment = fragment;
+    }
+
+    public synchronized void replace() {
+        replace(currentFragment);
     }
 }

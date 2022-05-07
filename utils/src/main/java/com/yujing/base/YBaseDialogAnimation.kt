@@ -13,6 +13,7 @@ import android.view.animation.ScaleAnimation
 import com.yujing.contract.YListener
 import com.yujing.utils.YLog
 import com.yujing.utils.YScreenUtil
+import com.yujing.utils.YStackTrace
 import java.lang.Deprecated
 
 /**
@@ -50,7 +51,7 @@ class YBaseDialogAnimation {
     val startAnimation: Animation
         get() {
             if (view == null) {
-                YLog.e(TAG, "请先初始化：init(Dialog dialog, View view)")
+                YLog.e(TAG, "请先初始化：init(Dialog dialog, View view)", YStackTrace.getTopClassLine(1))
             }
             //缩放动画
             val scaleAnimation = ScaleAnimation( //起始X，结束X，起始Y，结束Y
@@ -72,7 +73,7 @@ class YBaseDialogAnimation {
     //出场动画
     fun getExitAnimation(endListener: YListener?): Animation? {
         if (view == null) {
-            YLog.e(TAG, "请先初始化：init(Dialog dialog, View view)")
+            YLog.e(TAG, "请先初始化：init(Dialog dialog, View view)", YStackTrace.getTopClassLine(1))
             return null
         }
         val window = dialog!!.window

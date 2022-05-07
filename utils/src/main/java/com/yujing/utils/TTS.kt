@@ -35,6 +35,9 @@ object TTS {
     var SHOW_LOG = true //是否显示log
     var history = mutableListOf<String>()//历史记录，倒序，最多1000条
 
+    //是否是第一次播放语音
+    private var isFirst = true
+
     /**
      * 初始化
      * @param context 上下文
@@ -85,9 +88,7 @@ object TTS {
      */
     @JvmStatic
     fun speak(str: String?) {
-        if (initState == -1) return init(YApp.get()) {
-            if (it) speak(str)
-        }
+        if (initState == -1) return init(YApp.get()) { if (it) speak(str) }
         if (initState != 0 || str == null || textToSpeech == null) return
         val speak = filter?.invoke(str) ?: str
         textToSpeech?.setSpeechRate(speechRate) //速度
@@ -97,7 +98,8 @@ object TTS {
         } else {
             textToSpeech?.speak(speak, TextToSpeech.QUEUE_FLUSH, null)
         }
-        if (SHOW_LOG) Log.i(TAG, " \nTTS: $speak")
+        if (SHOW_LOG) YLog.i(TAG, "TTS: $speak", if (isFirst) 0 else YStackTrace.getTopClassLine(1))
+        isFirst = false //是否是第一次播放语音，因为第一次播放语音时，日志获取不到调用类，因为上面有个递归，递归又在初始化回调里面，所以第一次播放不偏移行
         history.add(0, speak)
         if (history.size > 1000) history.removeAt(history.size - 1)
     }
@@ -128,7 +130,8 @@ object TTS {
         } else {
             textToSpeech?.speak(speak, TextToSpeech.QUEUE_ADD, null)
         }
-        if (SHOW_LOG) Log.i(TAG, " \nTTS: $speak")
+        if (SHOW_LOG) YLog.i(TAG, "TTS: $speak", if (isFirst) 0 else YStackTrace.getTopClassLine(1))
+        isFirst = false //是否是第一次播放语音，因为第一次播放语音时，日志获取不到调用类，因为上面有个递归，递归又在初始化回调里面，所以第一次播放不偏移行
         history.add(0, speak)
         if (history.size > 1000) history.removeAt(history.size - 1)
     }

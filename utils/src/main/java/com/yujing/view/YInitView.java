@@ -19,7 +19,6 @@ import java.lang.annotation.Target;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Objects;
 
 /**
  * 初始化View，找控件
@@ -101,10 +100,7 @@ public class YInitView {
                             // 获取目标异常
                             Throwable t = e.getTargetException();
                             if (t.getMessage() != null && t.getMessage().contains("checkNotNullParameter")) {
-                                YLog.e(
-                                        "YInitView",
-                                        "调用的目标方法异常，发送数据有null，然接收参数却不能为null，可以设置接收参数后面加?", t
-                                );
+                                YLog.e("YInitView", "调用的目标方法异常，发送数据有null，然接收参数却不能为null，可以设置接收参数后面加?", t);
                             } else {
                                 YLog.e("YInitView", "调用目标异常，如下", t);
                             }
@@ -222,10 +218,7 @@ public class YInitView {
                             // 获取目标异常
                             Throwable t = e.getTargetException();
                             if (t.getMessage() != null && t.getMessage().contains("checkNotNullParameter")) {
-                                YLog.e(
-                                        "YInitView",
-                                        "调用的目标方法异常，发送数据有null，然接收参数却不能为null，可以设置接收参数后面加?", t
-                                );
+                                YLog.e("YInitView", "调用的目标方法异常，发送数据有null，然接收参数却不能为null，可以设置接收参数后面加?", t);
                             } else {
                                 YLog.e("YInitView", "调用目标异常，如下", t);
                             }
@@ -266,7 +259,7 @@ public class YInitView {
                 field.set(object, view);
                 view.setOnClickListener(arg0 -> {
                     if (object instanceof Fragment) {
-                        Objects.requireNonNull(((Fragment) object).getActivity()).finish();
+                        ((Fragment) object).requireActivity().finish();
                     } else if (object instanceof Activity) {
                         ((Activity) object).finish();
                     }
@@ -288,7 +281,7 @@ public class YInitView {
                     if (object instanceof Fragment) {
                         Intent intent = new Intent(((Fragment) object).getActivity(), startActivity.activity());
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        Objects.requireNonNull(((Fragment) object).getActivity()).startActivity(intent);
+                        ((Fragment) object).requireActivity().startActivity(intent);
                     } else if (object instanceof Activity) {
                         Intent intent = new Intent(((Activity) object), startActivity.activity());
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

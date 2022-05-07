@@ -9,8 +9,6 @@ import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import com.yujing.base.fragment.YFragment
 import com.yujing.bus.YBusUtil
-import com.yujing.utils.TTS
-import com.yujing.utils.YToast
 
 /**
  * 基础aFragment
@@ -68,41 +66,10 @@ abstract class YBaseFragment<B : ViewDataBinding>(var layout: Int?) : YFragment(
     open fun initBefore() {}
     open fun initAfter() {}
 
-    /**
-     * 显示toast
-     */
-    open fun show(str: String?) {
-        YToast.show(str,1)
-    }
-
-    /**
-     * 播放语音
-     */
-    open fun speak(str: String?) {
-        TTS.speak(str)
-    }
-
-    /**
-     * 显示toast并播放语音
-     */
-    open fun showSpeak(str: String?) {
-        YToast.showSpeak(str,1)
-    }
-
     open fun startActivity(classActivity: Class<*>?) {
         val intent = Intent()
         intent.setClass(requireActivity(), classActivity!!)
         startActivity(intent)
-    }
-
-    open fun startActivity(classActivity: Class<*>?, resultCode: Int) {
-        startActivityForResult(classActivity, resultCode)
-    }
-
-    open fun startActivityForResult(classActivity: Class<*>?, resultCode: Int) {
-        val intent = Intent()
-        intent.setClass(requireActivity(), classActivity!!)
-        startActivityForResult(intent, resultCode)
     }
 
     override fun onHiddenChanged(hidden: Boolean) {

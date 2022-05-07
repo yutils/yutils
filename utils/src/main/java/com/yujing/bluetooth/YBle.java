@@ -1,5 +1,6 @@
 package com.yujing.bluetooth;
 
+import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
@@ -38,6 +39,7 @@ import static android.bluetooth.BluetoothDevice.TRANSPORT_LE;
 */
 @Deprecated
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+@SuppressLint("MissingPermission")
 public class YBle implements YBluetoothDeviceConnect {
     private static final String TAG = "YBle";
     private BluetoothGatt mBluetoothGatt;

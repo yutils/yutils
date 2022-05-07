@@ -84,10 +84,7 @@ public class YLoop {
                                     } catch (InvocationTargetException e) {
                                         Throwable t = e.getTargetException(); // 获取目标异常
                                         if (t.getMessage() != null && t.getMessage().contains("checkNotNullParameter")) {
-                                            YLog.e(
-                                                    "YLoop",
-                                                    "调用的目标方法异常，发送数据有null，然接收参数却不能为null，可以设置接收参数后面加?", t
-                                            );
+                                            YLog.e("YLoop", "调用的目标方法异常，发送数据有null，然接收参数却不能为null，可以设置接收参数后面加?", t);
                                         } else {
                                             YLog.e("YLoop", "调用目标异常，如下", t);
                                         }
@@ -102,10 +99,7 @@ public class YLoop {
                         } catch (InvocationTargetException e) {
                             Throwable t = e.getTargetException(); // 获取目标异常
                             if (t.getMessage() != null && t.getMessage().contains("checkNotNullParameter")) {
-                                YLog.e(
-                                        "YLoop",
-                                        "调用的目标方法异常，发送数据有null，然接收参数却不能为null，可以设置接收参数后面加?", t
-                                );
+                                YLog.e("YLoop", "调用的目标方法异常，发送数据有null，然接收参数却不能为null，可以设置接收参数后面加?", t);
                             } else {
                                 YLog.e("YLoop", "调用目标异常，如下", t);
                             }
