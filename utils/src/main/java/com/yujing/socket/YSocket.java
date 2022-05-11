@@ -137,7 +137,7 @@ public class YSocket {
     protected ReadThread readThread;// 读取线程
     protected ConnectThread connectThread;// 连接线程
     protected HeartbeatThread heartbeat;// 心跳线程
-    protected byte[] hearBytes = new byte[0];// 心跳包
+    protected byte[] hearBytes = new byte[0];// 心跳包内容，如果设置了heartbeatContent，则使用heartbeatContent，否则使用默认的心跳包内容
     //发送1个字节的紧急数据，默认情况下，服务器端没有开启紧急数据处理，不影响正常通信
     protected int UrgentData = 0xFF;
     //没有设置心跳包时,发送紧急数据
@@ -153,6 +153,7 @@ public class YSocket {
     protected boolean showSendLog = false; // 显示发送日志
     protected InputStreamReadListener inputStreamReadListener;//读取InputStream接口
     protected CreateSocketInterceptor createSocketInterceptor;//创建Socket
+    protected HeartbeatContent heartbeatContent;//心跳包发送内容监听
 
     /**
      * 构造函数
@@ -308,6 +309,7 @@ public class YSocket {
 
     /**
      * 设置心跳数据
+     * 如果设置了heartbeatContent，则使用heartbeatContent，否则使用默认的心跳包内容
      */
     public void setHearBytes(byte[] hearBytes) {
         this.hearBytes = hearBytes;
@@ -379,6 +381,16 @@ public class YSocket {
     }
 
     /**
+     * 心跳内容，发送此接口的返回内容
+     * 如果设置了heartbeatContent，则使用heartbeatContent，否则使用默认的心跳包（hearBytes）内容
+     *
+     * @param heartbeatContent 心跳内容
+     */
+    public void setHeartbeatContent(HeartbeatContent heartbeatContent) {
+        this.heartbeatContent = heartbeatContent;
+    }
+
+    /**
      * 开始，此方法只能调一次，用于启动心跳发送线程和连接线程，当连接线程连接成功后启动读取数据线程，当收到连接断开消息后，关闭读取消息线程。
      */
     public void start() {
@@ -412,7 +424,12 @@ public class YSocket {
                 } catch (InterruptedException e) {
                     interrupt();
                 }
-                send(hearBytes);
+                if (heartbeatContent == null) {
+                    send(hearBytes);
+                } else {
+                    byte[] bytes = heartbeatContent.get();
+                    send((bytes == null) ? hearBytes : bytes);
+                }
             }
             printLog("退出心跳线程");
         }
@@ -715,6 +732,13 @@ public class YSocket {
      */
     public void setCreateSocketInterceptor(CreateSocketInterceptor createSocketInterceptor) {
         this.createSocketInterceptor = createSocketInterceptor;
+    }
+
+    /**
+     * 心跳内容，发送此接口的返回内容
+     */
+    public interface HeartbeatContent {
+        byte[] get();
     }
 
     /**

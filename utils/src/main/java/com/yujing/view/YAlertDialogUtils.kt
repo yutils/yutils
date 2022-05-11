@@ -59,14 +59,14 @@ listName.add("项目1")
 listName.add("项目2")
 listName.add("项目3")
 val checked = BooleanArray(listName.size) { i -> false } //默认选中项，最终选中项
-YAlertDialogUtils().showMultiChoice("请选择", listName.toTypedArray(), checked) {
+YAlertDialogUtils().showMultiChoice("请选择", listName.toTypedArray(), checked, {
     //筛选选中项
     val newList: MutableList<String> = ArrayList()
     for (index in checked.indices) {
         if (checked[index]) newList.add(listName[index])
     }
     //newList
-}
+},null)
 
 //列表
 YAlertDialogUtils().showList("请选择一个", listOf("123","456","789","000").toTypedArray()){
