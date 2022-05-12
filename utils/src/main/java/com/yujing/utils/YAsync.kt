@@ -14,7 +14,11 @@ import java.util.concurrent.TimeoutException
 val value = YAsync.getInstance().submit<String>("abc", 3000) {
     //执行的方法
 }
-//结果：value
+//结果：value=“YY”
+
+//另外一个线程执行完后，通知解锁
+YAsync.getInstance().finish("abc", "YY")
+
  */
 class YAsync private constructor() {
     /**
