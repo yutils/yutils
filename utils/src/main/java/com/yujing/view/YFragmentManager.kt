@@ -191,7 +191,8 @@ class YFragmentManager {
      */
     @Synchronized
     fun replaceIgnoreCurrent(fragment: Fragment?) {
-        if (fragment == null || currentFragment == null || fragment.javaClass.name == currentFragment!!.javaClass.name) return
+        if (fragment == null) return
+        if (fragment.javaClass.name == currentFragment?.javaClass?.name) return
         val transaction = fragmentManager.beginTransaction()
         transaction.replace(layout, fragment)
         transaction.commit()
