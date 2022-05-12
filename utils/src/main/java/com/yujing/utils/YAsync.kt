@@ -44,6 +44,21 @@ class YAsync private constructor() {
     }
 
     /**
+     * 如果没有这个tag，就等待
+     */
+    @Throws(Exception::class)
+    fun ifNotHaveTagWait(tag: String, timeout: Long? = null) {
+        var isHave = false
+        for (command in tagList) {
+            if (command.tag == tag) {
+                isHave = true
+                break
+            }
+        }
+        if (!isHave) submit<Any?>("wait_${tag}", timeout)
+    }
+
+    /**
      * 执行完毕，释放tag，通知解锁
      */
     fun finish(tag: String, result: Any? = null) {
@@ -67,6 +82,7 @@ class YAsync private constructor() {
     @Suppress("UNCHECKED_CAST")
     @Throws(Exception::class)
     fun <T> submit(tag: String, timeOut: Long? = null, runnable: Runnable? = null): T? {
+        finish("wait_${tag}")
         //判断是否有tag,有则抛出异常
         if (!isAllowSameTag && tagList.any { it.tag == tag }) throw Exception("tag:$tag 已存在")
         //创建command，并加入队列

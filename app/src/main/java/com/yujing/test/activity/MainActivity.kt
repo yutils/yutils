@@ -148,7 +148,6 @@ class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
             Thread { YBusUtil.post("tag1", editText1.text.toString()) }.start()
         }
 
-
         Create.button(binding.wll, "弹窗测试") {
             val yDialog = YAlertDialogUtils()
             yDialog.titleTextSize = 20F
@@ -159,14 +158,14 @@ class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
             yDialog.contentPaddingBottom = YScreenUtil.dp2px(40f)
             yDialog.okButtonString = "确定"
             yDialog.cancelButtonString = "取消"
-            val content= """
+            val content = """
             |您正在执行一项操作
             |
             |执行后将无法修改，是否继续？
             """.trimMargin()
-            yDialog.showMessageCancel("这是标题",content) {
-              //确定事件
-           }
+            yDialog.showMessageCancel("这是标题", content) {
+                //确定事件
+            }
         }
     }
 
