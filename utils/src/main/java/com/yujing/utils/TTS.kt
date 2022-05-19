@@ -113,6 +113,54 @@ object TTS {
         YToast.show(str, 1)
     }
 
+
+    //循环线程
+    private var loopThread: Thread? = null
+
+    /**
+     * 循环播放语音，直到下一条，或者loopClose()
+     */
+    @Synchronized
+    @JvmStatic
+    fun loopSpeak(str: String?, intervalTime: Long) {
+        loop(intervalTime) { speak(str) }
+    }
+
+    /**
+     * 循环播放语音，直到下一条，或者loopClose()
+     */
+    @Synchronized
+    @JvmStatic
+    fun loopSpeakQueue(str: String?, intervalTime: Long) {
+        loop(intervalTime) { speakQueue(str) }
+    }
+
+    @Synchronized
+    @JvmStatic
+    fun loop(intervalTime: Long, listener: () -> Unit) {
+        loopThread?.interrupt()
+        loopThread = Thread {
+            while (!Thread.interrupted()) {
+                try {
+                    listener.invoke()
+                    Thread.sleep(intervalTime)
+                } catch (e: InterruptedException) {
+                    Thread.currentThread().interrupt()
+                    break
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    continue
+                }
+            }
+        }
+        loopThread?.start()
+    }
+
+    @JvmStatic
+    fun loopClose() {
+        loopThread?.interrupt()
+    }
+
     /**
      * 语音队列播放
      *

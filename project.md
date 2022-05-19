@@ -19,23 +19,12 @@
 
 ## Gradle 引用
 
-[子module添加依赖，当前最新版：————> 1.9.4　　　　![最新版](https://img.shields.io/badge/%E6%9C%80%E6%96%B0%E7%89%88-1.9.4-green.svg)](https://search.maven.org/artifact/com.kotlinx/yutils)
+[子module添加依赖，当前最新版：————> 1.9.5　　　　![最新版](https://img.shields.io/badge/%E6%9C%80%E6%96%B0%E7%89%88-1.9.5-green.svg)](https://search.maven.org/artifact/com.kotlinx/yutils)
 
 ```
 dependencies {
      //更新地址  https://github.com/yutils/yutils 建议过几天访问看下有没有新版本
-     implementation 'com.kotlinx:yutils:1.9.4'
-}
-```
-
-注：如果引用失败，或者工程未引入mavenCentral，请引入：mavenCentral()
-
-```
-allprojects {
-    repositories {
-        mavenCentral()
-        //阿里云等...
-    }
+     implementation 'com.kotlinx:yutils:1.9.5'
 }
 ```
 
