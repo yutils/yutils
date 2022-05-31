@@ -23,5 +23,6 @@ public class Test extends Activity {
         super.onDestroy();
         //停止循环调用abc方法
         YLoop.stop(this,"abc");
+
     }
 }

@@ -390,6 +390,7 @@ public class YSocket {
         this.heartbeatContent = heartbeatContent;
     }
 
+
     /**
      * 开始，此方法只能调一次，用于启动心跳发送线程和连接线程，当连接线程连接成功后启动读取数据线程，当收到连接断开消息后，关闭读取消息线程。
      */
@@ -440,6 +441,7 @@ public class YSocket {
                 if (bytes == null || bytes.length == 0) {
                     //如果开启了,没有设置心跳包时发送紧急数据
                     if (noHeartbeatSendUrgentData) socket.sendUrgentData(UrgentData);
+                    connect = true;
                     return;
                 }
                 OutputStream os = socket.getOutputStream();// 获得输出流
@@ -592,7 +594,7 @@ public class YSocket {
      * 打印日志
      */
     protected void printLog(String str) {
-        if (showLog) YLog.d(str);
+        if (showLog) YLog.d(str,1);
     }
 
     /**

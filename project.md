@@ -19,13 +19,25 @@
 
 ## Gradle 引用
 
-[子module添加依赖，当前最新版：————> 1.9.5　　　　![最新版](https://img.shields.io/badge/%E6%9C%80%E6%96%B0%E7%89%88-1.9.5-green.svg)](https://search.maven.org/artifact/com.kotlinx/yutils)
+[子module添加依赖，当前最新版：————> 1.9.6　　　　![最新版](https://img.shields.io/badge/%E6%9C%80%E6%96%B0%E7%89%88-1.9.6-green.svg)](https://search.maven.org/artifact/com.kotlinx/yutils)
 
 ```
 dependencies {
      //更新地址  https://github.com/yutils/yutils 建议过几天访问看下有没有新版本
-     implementation 'com.kotlinx:yutils:1.9.5'
+     implementation 'com.kotlinx:yutils:1.9.6'
 }
+```
+
+注：如果引用失败，看下面方案
+```
+allprojects {
+    repositories {
+        //google()
+        //mavenCentral()
+        
+        //如果mavenCentral不容易拉取,可以试试直接用maven.org
+        maven { url 'https://repo1.maven.org/maven2' }
+    }
 ```
 
 Github地址：[https://github.com/yutils/yutils](https://github.com/yutils/yutils)

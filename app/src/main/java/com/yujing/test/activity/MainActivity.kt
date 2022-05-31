@@ -7,6 +7,7 @@ import com.yujing.base.contract.YLifeEvent
 import com.yujing.bus.ThreadMode
 import com.yujing.bus.YBus
 import com.yujing.bus.YBusUtil
+import com.yujing.socket.YSocketSync
 import com.yujing.test.R
 import com.yujing.test.activity.bluetooth.BleClientActivity
 import com.yujing.test.activity.bluetooth.BleServerActivity
@@ -167,7 +168,38 @@ class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
                 //确定事件
             }
         }
+
+        Create.space(binding.wll)
+        var ySocketSync: YSocketSync? = null
+
+        Create.button(binding.wll, "连接") {
+            ySocketSync?.exit()
+            ySocketSync = YSocketSync("192.168.1.21", 8888)
+            ySocketSync?.hearBytes = byteArrayOf(0)//心跳
+            ySocketSync?.readTimeOut = 1000 * 5L//读取超时
+            ySocketSync?.showLog = true
+            ySocketSync?.showSendLog = true
+            ySocketSync?.showReceiveLog = true
+            ySocketSync?.clearInputStream = true //发送前清空输入流
+            ySocketSync?.connectListeners?.add {
+                YLog.i("连接状态", "连接${if (it) "成功" else "失败"}")
+            }
+            ySocketSync?.start()
+        }
+
+        Create.button(binding.wll, "发送（同步）") {
+            textView1.text = ""
+            Thread {
+                val data = ySocketSync?.send(YConvert.hexStringToByte("02 52 44 53 01 ea 0d"))
+                YThread.ui { textView1.text = "收到结果：" + YConvert.bytesToHexString(data) }
+            }.start()
+        }
+
+        Create.button(binding.wll, "关闭") {
+            ySocketSync?.exit()
+        }
     }
+
 
     //通知栏下载需要调用onDestroy()
     override fun onDestroy() {

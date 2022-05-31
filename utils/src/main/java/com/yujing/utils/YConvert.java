@@ -54,6 +54,7 @@ public class YConvert {
      * @return hexString
      */
     public static String bytesToHexString(byte[] bArray, String separate) {
+        if (bArray == null) return null;
         StringBuilder sb = new StringBuilder(bArray.length);
         String sTemp;
         for (byte aBArray : bArray) {
