@@ -78,7 +78,7 @@ class App : Application() {
 YLog打印日志，如果数据太长会在logcat分段打印，并且会输出调用日志的类和对应行数
 
 ```kotlin
-    YLog.d("你好")
+YLog.d("你好")
 YLog.i("tag", "你好")
 //向上偏移一级，输出调用类和行数时，显示上级调用改函数的类和对应行数
 YLog.i("tag", "你好", 1)
@@ -102,7 +102,7 @@ YLog.delDaysAgo(30)
 ### YUtils
 
 ```kotlin
-    //是否是Debug
+//是否是Debug
 YUtils.isDebug()
 //获取版本名称
 YUtils.getVersionName()
@@ -237,22 +237,22 @@ yPermissions.setSuccessListener {
 弹出一张图片dialog，可以设置全屏 不必考虑线程问题，会自动回到主线程
 
 ```java
-    YImageDialog.show(activity,bitmap,true)
+YImageDialog.show(activity,bitmap,true)
 
-        //或者
-        YImageDialog yDialog=new YImageDialog(RunPretestActivity.this);
-        yDialog.setBitmap(bitmap);
-        yDialog.setCancelable(true);
-        yDialog.show();
+//或者
+YImageDialog yDialog=new YImageDialog(RunPretestActivity.this);
+yDialog.setBitmap(bitmap);
+yDialog.setCancelable(true);
+yDialog.show();
 
-        //或者
-        YImageDialog yDialog=new YImageDialog(RunPretestActivity.this);
-        yDialog.show();
+//或者
+YImageDialog yDialog=new YImageDialog(RunPretestActivity.this);
+yDialog.show();
 
-        RequestOptions options=new RequestOptions();
-        options.placeholder(R.mipmap.add_img);
-        options.error(R.mipmap.add_img);
-        Glide.with(RunPretestActivity.this).load(getUrl()).apply(options).into(yDialog.getImageView());
+RequestOptions options=new RequestOptions();
+options.placeholder(R.mipmap.add_img);
+options.error(R.mipmap.add_img);
+Glide.with(RunPretestActivity.this).load(getUrl()).apply(options).into(yDialog.getImageView());
 ```
 
 ----
