@@ -198,25 +198,11 @@ class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
         Create.button(binding.wll, "关闭") {
             ySocketSync?.exit()
         }
-
-        var i = 0
-        Create.button(binding.wll, "YTimer") {
-            yTimer.loopUI(1000, 5, 1000 * 10) {
-                textView1.text ="结果:${++i}"
-                yTimer.stop()
-            }
-        }
-        Create.button(binding.wll, "stop") {
-            yTimer.stop()
-        }
     }
-
-    private val yTimer = YTimer()
 
     //通知栏下载需要调用onDestroy()
     override fun onDestroy() {
         super.onDestroy()
-        yTimer.stop()
         yVersionUpdate.onDestroy()
     }
 
