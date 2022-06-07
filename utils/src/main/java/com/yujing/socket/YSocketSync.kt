@@ -147,11 +147,11 @@ class YSocketSync(var ip: String?, var port: Int) {
                         ySocketSync.socket?.keepAlive = true
                         ySocketSync.isConnect = true
                         ySocketSync.printLog("连接成功...")
-                        ySocketSync.backNotice(connectListener, true)
+                        connectListener?.invoke(true)
                     } catch (e: Exception) {
-                        ySocketSync.backNotice(connectListener, false)
+                        connectListener?.invoke(false)
                         ySocketSync.closeSocket()
-                        ySocketSync.printLog("正在重新连接...")
+                        ySocketSync.printLog("连接失败... (${ySocketSync.ip}:${ySocketSync.port})")
                     }
                 }
                 try {
@@ -167,6 +167,7 @@ class YSocketSync(var ip: String?, var port: Int) {
     /**
      * 发送消息，死等结果
      */
+    @Synchronized
     fun send(bytes: ByteArray?, readTimeOut: Long? = null): ByteArray? {
         //发送数据
         if (sendSync(bytes)) {
@@ -184,6 +185,7 @@ class YSocketSync(var ip: String?, var port: Int) {
      * @param bytes 消息byte[]
      * @return 是否发送成功
      */
+    @Synchronized
     fun sendSync(bytes: ByteArray?): Boolean {
         // socket==null直接返回失败
         if (socket == null) return false
@@ -230,7 +232,7 @@ class YSocketSync(var ip: String?, var port: Int) {
      * 回调状态通知，
      * 回调数据，考虑到状态可能在短时间内多次变化回调，本地消息处理有一定时间，为了不卡住读取连接线程，因此这里单独开线程。又因为回调数据处理时可能引发异常，为了引起读取线程崩溃，因此进行异常捕获。
      */
-    fun backNotice(stateListener: ((Boolean) -> Unit)?, status: Boolean) {
+    private fun backNotice(stateListener: ((Boolean) -> Unit)?, status: Boolean) {
         if (stateListener == null) return
         Thread {
             if (YClass.isAndroid()) {

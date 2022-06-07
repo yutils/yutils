@@ -7,6 +7,8 @@ import android.view.ViewGroup;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.yujing.contract.YListener;
+
 import java.util.List;
 import java.util.Objects;
 
@@ -105,24 +107,19 @@ public class AutoPollAdapter<T> extends RecyclerView.Adapter<AutoPollAdapter.Bas
     }
 }
 
-//DataBinding用法 kotlin
-class CarAdapter<T>(var data: List<T>?) : RecyclerView.Adapter<CarAdapter.MyViewHolder>() {
-    //ViewHolder
-    class MyViewHolder(var binding: ActivityListItemBinding) : RecyclerView.ViewHolder(binding.root) {}
-
+//原生用法 kotlin  基于DataBinding
+class MyViewHolder(var binding: ActivityListItemBinding) : RecyclerView.ViewHolder(binding.root) {}
+class CarAdapter<T>(var data: List<T>?) : RecyclerView.Adapter<MyViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         return MyViewHolder(DataBindingUtil.inflate(LayoutInflater.from(parent.context), R.layout.activity_list_item, parent, false))
     }
-
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        val item = data?.get(position) as Car
-        holder.binding.car = item
+        val item = data?.get(position) as Branditem
         holder.binding.iv.setOnClickListener { YToast.show("点击：" + item.name) }
 
         //必须要有这行，防止闪烁
         holder.binding.executePendingBindings()
     }
-
     override fun getItemCount(): Int {
         return data?.size ?: 0
     }
@@ -132,12 +129,16 @@ class CarAdapter<T>(var data: List<T>?) : RecyclerView.Adapter<CarAdapter.MyView
 public abstract class YBaseYRecyclerViewAdapter<T> extends RecyclerView.Adapter<YBaseYRecyclerViewAdapter.BaseViewHolder> {
     private List<T> list;//数据
     private Context context;//context
-    private boolean recyclable = true;// 是否是可回收的，重复利用item
+    private Boolean recyclable = null;// 是否是可回收的，重复利用item
     private OnItemClickListener onItemClickListener = null;//单击监听
     private OnItemLongClickListener onItemLongClickListener = null;//长按监听
     protected RecyclerView recyclerView;//recyclerView
     private boolean isShowEmpty = true;//当没有数据是否显示“emptyRecyclerViewAdapter”
     private YEmptyRecyclerViewAdapter emptyRecyclerViewAdapter;//没有数据时默认显示的Adapter
+    private YListener onTopListener = null; //到顶部监听，到顶部后继续滑动，不会触发
+    private YListener onBottomListener = null; //到底部监听，到底部后继续滑动，不会触发
+    private YListener onScrollToTopListener = null; //滑动到顶部监听，到顶部后继续滑动，会触发
+    private YListener onScrollToBottomListener = null; //滑动到底部监听，到底部后继续滑动，会触发
 
     public YBaseYRecyclerViewAdapter(Context context, List<T> list) {
         super();
@@ -151,6 +152,29 @@ public abstract class YBaseYRecyclerViewAdapter<T> extends RecyclerView.Adapter<
         super.onAttachedToRecyclerView(recyclerView);
         this.recyclerView = recyclerView;
         showItemEmpty();
+        //滑动监听
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                //newState分 0,1,2三个状态,2是滚动状态,0是停止
+                if (newState == 0) {
+                    if (!recyclerView.canScrollVertically(-1))
+                        if (onScrollToTopListener != null) onScrollToTopListener.value();
+                    if (!recyclerView.canScrollVertically(1))
+                        if (onScrollToBottomListener != null) onScrollToBottomListener.value();
+                }
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                if (!recyclerView.canScrollVertically(-1))
+                    if (onTopListener != null) onTopListener.value();
+                if (!recyclerView.canScrollVertically(1))
+                    if (onBottomListener != null) onBottomListener.value();
+            }
+        });
     }
 
     public void showItemEmpty() {
@@ -225,8 +249,7 @@ public abstract class YBaseYRecyclerViewAdapter<T> extends RecyclerView.Adapter<
         View itemView = LayoutInflater.from(getContext()).inflate(setLayout(), viewGroup, false);
         //回调给Holder
         BaseViewHolder holder = setViewHolder(itemView);
-        if (!recyclable)
-            holder.setIsRecyclable(false);
+        if (recyclable != null) holder.setIsRecyclable(recyclable);
         holder.setContext(getContext());
         holder.findView(holder.itemView);
         //设置监听
@@ -265,7 +288,7 @@ public abstract class YBaseYRecyclerViewAdapter<T> extends RecyclerView.Adapter<
         this.onItemClickListener = onItemClickListener;
     }
 
-    public boolean isRecyclable() {
+    public Boolean isRecyclable() {
         return recyclable;
     }
 
@@ -293,8 +316,40 @@ public abstract class YBaseYRecyclerViewAdapter<T> extends RecyclerView.Adapter<
         isShowEmpty = showEmpty;
     }
 
-    public void setRecyclable(boolean recyclable) {
+    public void setRecyclable(Boolean recyclable) {
         this.recyclable = recyclable;
+    }
+
+    public YListener getOnTopListener() {
+        return onTopListener;
+    }
+
+    public void setOnTopListener(YListener onTopListener) {
+        this.onTopListener = onTopListener;
+    }
+
+    public YListener getOnBottomListener() {
+        return onBottomListener;
+    }
+
+    public void setOnBottomListener(YListener onBottomListener) {
+        this.onBottomListener = onBottomListener;
+    }
+
+    public YListener getOnScrollToTopListener() {
+        return onScrollToTopListener;
+    }
+
+    public void setOnScrollToTopListener(YListener onScrollToTopListener) {
+        this.onScrollToTopListener = onScrollToTopListener;
+    }
+
+    public YListener getOnScrollToBottomListener() {
+        return onScrollToBottomListener;
+    }
+
+    public void setOnScrollToBottomListener(YListener onScrollToBottomListener) {
+        this.onScrollToBottomListener = onScrollToBottomListener;
     }
 
     //--------------------interface-------------------------

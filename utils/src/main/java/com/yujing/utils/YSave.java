@@ -88,7 +88,7 @@ public class YSave {
     }
 
     // 写入
-    public void put(String key, Object data) {
+    public void write(String key, Object data) {
         if (data == null) {
             remove(key);
             return;
@@ -97,23 +97,23 @@ public class YSave {
 
         // 然后写盘,byte直接写入
         if (byte[].class.equals(data.getClass())) {
-            YFileUtil.byteToFile(getFile(key), (byte[]) data);
+            YFileUtil.byteToFile(readFile(key), (byte[]) data);
             return;
         }
         // 如果是String，直接写入
         if (String.class.equals(data.getClass())) {
-            YFileUtil.stringToFile(getFile(key), (String) data);
+            YFileUtil.stringToFile(readFile(key), (String) data);
             return;
         }
         // 如果是其他对象String，转换成json写入
         String value = gson.toJson(data);
-        YFileUtil.stringToFile(getFile(key), value);
+        YFileUtil.stringToFile(readFile(key), value);
     }
 
     // 删除
     public void remove(String key) {
         getCache().remove(key);
-        YFileUtil.delFile(getFile(key));
+        YFileUtil.delFile(readFile(key));
     }
 
     // 删除全部
@@ -123,12 +123,12 @@ public class YSave {
     }
 
     // 读取
-    public Object get(String key, java.lang.reflect.Type type) {
-        return get(key, type, null);
+    public Object read(String key, java.lang.reflect.Type type) {
+        return read(key, type, null);
     }
 
     // 读取
-    public Object get(String key, java.lang.reflect.Type type, Object defaultObject) {
+    public Object read(String key, java.lang.reflect.Type type, Object defaultObject) {
         // 如果使用缓存，直接返回
         if (useCache) {
             Object object = getCache().get(key);
@@ -136,10 +136,10 @@ public class YSave {
         }
         // 读盘，如果是byte[]直接返回
         if (type.toString().equals("byte[]")) {
-            return YFileUtil.fileToByte(getFile(key));
+            return YFileUtil.fileToByte(readFile(key));
         }
         // 读盘，如果是null直接返回
-        String value = getString(key);
+        String value = readString(key);
         if (value == null) return defaultObject;
 
         //读盘，如果是String直接返回
@@ -154,13 +154,13 @@ public class YSave {
     }
 
     // 读取
-    public <T> T get(String key, Class<T> classOfT) {
-        return get(key, classOfT, null);
+    public <T> T read(String key, Class<T> classOfT) {
+        return read(key, classOfT, null);
     }
 
     // 读取
     @SuppressWarnings("unchecked")
-    public <T> T get(String key, Class<T> classOfT, Object defaultObject) {
+    public <T> T read(String key, Class<T> classOfT, Object defaultObject) {
         // 如果使用缓存，直接返回
         if (useCache) {
             try {
@@ -189,11 +189,11 @@ public class YSave {
         }
         // 读盘，如果是byte[]直接返回
         if (classOfT.equals(byte[].class)) {
-            return (T) YFileUtil.fileToByte(getFile(key));
+            return (T) YFileUtil.fileToByte(readFile(key));
         }
 
         // 读盘，如果是null直接返回
-        String json = getString(key);
+        String json = readString(key);
         if (json == null) return (T) defaultObject;
 
         //读盘，如果是String直接返回
@@ -210,12 +210,12 @@ public class YSave {
     }
 
     // 读取String
-    public String getString(String key) {
-        return YFileUtil.fileToString(getFile(key));
+    public String readString(String key) {
+        return YFileUtil.fileToString(readFile(key));
     }
 
     // 获取文件
-    public File getFile(String key) {
+    public File readFile(String key) {
         return new File(getPath() + key + (extensionName != null ? extensionName : ".save"));
     }
 
@@ -237,6 +237,7 @@ public class YSave {
     @SuppressLint("StaticFieldLeak")
     private static volatile YSave ySave;//单例
 
+    //单例一个YSave
     public static YSave getInstance() {
         return getInstance(YApp.get());
     }
@@ -250,58 +251,99 @@ public class YSave {
         return ySave;
     }
 
+    // 创建一个YSave
     public static YSave create() {
         return new YSave(YApp.get());
-    }
-
-    public static YSave create(Context context) {
-        return new YSave(context);
     }
 
     public static YSave create(String path) {
         return new YSave(YApp.get(), path);
     }
 
-    public static YSave create(Context context, String path) {
-        return new YSave(context, path);
-    }
-
     public static YSave create(String path, String extensionName) {
         return new YSave(YApp.get(), path, extensionName);
+    }
+    // 创建，带context
+    public static YSave create(Context context) {
+        return new YSave(context);
+    }
+
+    public static YSave create(Context context, String path) {
+        return new YSave(context, path);
     }
 
     public static YSave create(Context context, String path, String extensionName) {
         return new YSave(context, path, extensionName);
     }
 
+
     // 读取
+    public static String get(String key) {
+        return getInstance().readString(key);
+    }
+
+    public static <T> T get(String key, Class<T> classOfT) {
+        return getInstance().read(key, classOfT);
+    }
+
+    public static <T> T get(String key, Class<T> classOfT, Object defaultObject) {
+        return getInstance().read(key, classOfT, defaultObject);
+    }
+
+    public static Object get(String key, java.lang.reflect.Type type) {
+        return getInstance().read(key, type);
+    }
+
+    public static Object get(String key, java.lang.reflect.Type type, Object defaultObject) {
+        return getInstance().read(key, type, defaultObject);
+    }
+
+    public static String getString(String key) {
+        return getInstance().readString(key);
+    }
+
+    // 读取，带context
+    public static String get(Context context, String key) {
+        return getInstance(context).readString(key);
+    }
+
     public static <T> T get(Context context, String key, Class<T> classOfT) {
-        return getInstance(context).get(key, classOfT);
+        return getInstance(context).read(key, classOfT);
     }
 
-    // 读取
     public static <T> T get(Context context, String key, Class<T> classOfT, Object defaultObject) {
-        return getInstance(context).get(key, classOfT, defaultObject);
+        return getInstance(context).read(key, classOfT, defaultObject);
     }
 
-    // 读取
     public static Object get(Context context, String key, java.lang.reflect.Type type) {
-        return getInstance(context).get(key, type);
+        return getInstance(context).read(key, type);
     }
 
-    // 读取
     public static Object get(Context context, String key, java.lang.reflect.Type type, Object defaultObject) {
-        return getInstance(context).get(key, type, defaultObject);
+        return getInstance(context).read(key, type, defaultObject);
     }
 
-    // 读取
     public static String getString(Context context, String key) {
-        return getInstance(context).getString(key);
+        return getInstance(context).readString(key);
     }
+
 
     // 写入
+    public static <T> void put(String key, T data) {
+        getInstance().write(key, data);
+    }
+
+    public static <T> void set(String key, T data) {
+        getInstance().write(key, data);
+    }
+
+    // 写入，带context
     public static <T> void put(Context context, String key, T data) {
-        getInstance(context).put(key, data);
+        getInstance(context).write(key, data);
+    }
+
+    public static <T> void set(Context context, String key, T data) {
+        getInstance(context).write(key, data);
     }
 
     // 删除

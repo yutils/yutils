@@ -30,8 +30,7 @@ protected void onDestroy() {
     //停止循环调用abc方法
     YLoop.stop(this,"abc");
 }
-
- */
+*/
 public class YLoop {
     // 记录哪些类的哪些方法正在被调用
     private static final Map<String, Boolean> MethodStatus = new HashMap<>();

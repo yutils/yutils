@@ -400,11 +400,8 @@ public class YSocket {
         heartbeat.start();
         connectThread = new ConnectThread();
         connectThread.setConnectListener(success -> {
-            if (success) {
-                startReadThread();
-            } else {
-                closeReadThread();
-            }
+            if (success) startReadThread();
+            else closeReadThread();
             for (int i = 0; i < connectListeners.size(); i++) {
                 backNotice(connectListeners.get(i), success);
             }
@@ -476,11 +473,11 @@ public class YSocket {
                         socket.setKeepAlive(true);
                         connect = true;
                         printLog("连接成功...");
-                        backNotice(connectListener, true);
+                        connectListener.isSuccess(true);
                     } catch (Exception e) {
-                        backNotice(connectListener, false);
+                        connectListener.isSuccess(false);
                         closeSocket();
-                        printLog("正在重新连接...");
+                        printLog("连接失败... (" + ip + ":" + port + ")");
                     }
                 }
                 try {
@@ -594,7 +591,7 @@ public class YSocket {
      * 打印日志
      */
     protected void printLog(String str) {
-        if (showLog) YLog.d(str,1);
+        if (showLog) YLog.d(str, 1);
     }
 
     /**

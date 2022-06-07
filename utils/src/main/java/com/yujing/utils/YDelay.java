@@ -32,14 +32,26 @@ public class YDelay {
      */
     @SuppressWarnings({"UnclearExpression"})
     public static void run(final int time, final Runnable runnable) {
-        Thread thread= new Thread(() -> {
+        if (YClass.isAndroid()) {
+            runUI(time, runnable);
+        } else {
+            runIO(time, runnable);
+        }
+    }
+
+    public static void runUI(final int time, final Runnable runnable) {
+        Thread thread = new Thread(() -> {
+            YThread.runOnUiThreadDelayed(runnable, time);
+        });
+        thread.setName("延时运行");
+        thread.start();
+    }
+
+    public static void runIO(final int time, final Runnable runnable) {
+        Thread thread = new Thread(() -> {
             try {
-                if (YClass.isAndroid()) {
-                    YThread.runOnUiThreadDelayed(runnable, time);
-                } else {
-                    Thread.sleep(time);
-                    runnable.run();
-                }
+                Thread.sleep(time);
+                runnable.run();
             } catch (InterruptedException ignored) {
             }
         });
