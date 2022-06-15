@@ -54,11 +54,11 @@ class MyAccountAdapter<T>(context: Context, list: List<T>) : YBaseYRecyclerViewA
         return R.layout.activity_my_account_item
     }
 
-    var select: Int = -1
-    set(select) {
-        field = select
-        notifyDataSetChanged()
-    }
+    var isSelect: Int = -1
+        set(value) {
+            field = value
+            notifyDataSetChanged()
+        }
 
     override fun setViewHolder(itemView: View?): BaseViewHolder {
         return object : BaseViewHolder(itemView) {
@@ -69,7 +69,7 @@ class MyAccountAdapter<T>(context: Context, list: List<T>) : YBaseYRecyclerViewA
             override fun setData(position: Int, obj: Any?, adapterList: MutableList<Any?>?, adapter: YBaseYRecyclerViewAdapter<*>?) {
 
                 //选中行变色
-                binding.ll.setBackgroundColor( if (position == select) Color.parseColor("#3000b2EE") else Color.parseColor("#00000000"))
+                binding.ll.setBackgroundColor( if (position == isSelect) Color.parseColor("#3000b2EE") else Color.parseColor("#00000000"))
             }
         }
     }
@@ -114,7 +114,7 @@ class CarAdapter<T>(var data: List<T>?) : RecyclerView.Adapter<MyViewHolder>() {
         return MyViewHolder(DataBindingUtil.inflate(LayoutInflater.from(parent.context), R.layout.activity_list_item, parent, false))
     }
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        val item = data?.get(position) as Branditem
+        val item = data?.get(position) as User
         holder.binding.iv.setOnClickListener { YToast.show("点击：" + item.name) }
 
         //必须要有这行，防止闪烁

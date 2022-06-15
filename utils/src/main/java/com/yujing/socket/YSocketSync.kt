@@ -146,7 +146,7 @@ class YSocketSync(var ip: String?, var port: Int) {
                         ySocketSync.socket?.connect(socAddress, 1000 * 5)
                         ySocketSync.socket?.keepAlive = true
                         ySocketSync.isConnect = true
-                        ySocketSync.printLog("连接成功...")
+                        ySocketSync.printLog("连接成功... (${ySocketSync.ip}:${ySocketSync.port})")
                         connectListener?.invoke(true)
                     } catch (e: Exception) {
                         connectListener?.invoke(false)

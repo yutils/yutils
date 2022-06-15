@@ -1,16 +1,19 @@
 package com.yujing.view
 
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Point
+import android.annotation.SuppressLint
+import android.graphics.*
+import android.graphics.drawable.Drawable
+import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.StateListDrawable
 import android.util.TypedValue
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.annotation.ColorInt
 
 /**
  * View的一些基本操作
@@ -31,7 +34,6 @@ fun reduction() {
     //如果有view没生效，刷新view
     YView.refreshAllView(binding.root)
 }
-
  */
 object YView {
     /**
@@ -227,5 +229,88 @@ object YView {
         } else {
             root.requestLayout()
         }
+    }
+
+
+    /**
+     * 设置View按下颜色，支持 ImageView ，TextView ，Button
+     */
+    @SuppressLint("ClickableViewAccessibility")
+    fun setPressColor(view: View, @ColorInt colorPress: Int, @ColorInt colorUp: Int) {
+        view.isClickable = true
+        view.setOnTouchListener { v, event ->
+            if (event.action == MotionEvent.ACTION_DOWN) {
+                when (v) {
+                    is ImageView -> v.colorFilter = PorterDuffColorFilter(colorPress, PorterDuff.Mode.SRC_ATOP)
+                    is TextView -> v.setTextColor(colorPress)
+                    is Button -> v.setTextColor(colorPress)
+                }
+            } else if (event.action == MotionEvent.ACTION_UP) {
+                when (v) {
+                    is ImageView -> v.colorFilter = PorterDuffColorFilter(colorUp, PorterDuff.Mode.SRC_ATOP)
+                    is TextView -> v.setTextColor(colorUp)
+                    is Button -> v.setTextColor(colorPress)
+                }
+            }
+            return@setOnTouchListener false
+        }
+    }
+
+    /**
+     * 设置View按下背景颜色
+     */
+    @SuppressLint("ClickableViewAccessibility")
+    fun setPressBackgroundColor(view: View, @ColorInt colorPress: Int, @ColorInt colorUp: Int, @ColorInt colorFocused: Int = Color.TRANSPARENT) {
+        view.isClickable = true
+        val focusedDrawableOk = createGradientDrawable(colorFocused, 0, Color.WHITE, 0F, 0F, 0F, 0F)
+        val pressedDrawableOk = createGradientDrawable(colorPress, 0, Color.WHITE, 0F, 0F, 0F, 0F)
+        val normalDrawableOk = createGradientDrawable(colorUp, 0, Color.WHITE, 0F, 0F, 0F, 0F)
+        view.background = createStateListDrawable(focusedDrawableOk, pressedDrawableOk, normalDrawableOk)
+    }
+
+    /**
+     * 创建状态Drawable
+     *
+     * @param focusedDrawable 选中时Drawable
+     * @param pressedDrawable 按下时Drawable
+     * @param normalDrawable 抬起时Drawable
+     * @return
+     */
+    /* 用法：
+        val focusedDrawable = YView.createGradientDrawable(Color.RED, 0, Color.WHITE, 0F, 0F, 0F, 0F)
+        val pressedDrawable = YView.createGradientDrawable(Color.RED, 0, Color.WHITE, 0F, 0F, 0F, 0F)
+        val normalDrawable = YView.createGradientDrawable(Color.GREEN, 0, Color.WHITE, 0F, 0F, 0F, 0F)
+        binding.btOk.background = YView.createStateListDrawable(focusedDrawable, pressedDrawable, normalDrawable)
+     */
+    @SuppressLint("ClickableViewAccessibility")
+    fun createStateListDrawable(focusedDrawable: Drawable, pressedDrawable: Drawable, normalDrawable: Drawable): StateListDrawable {
+        val stateListDrawable = StateListDrawable()
+        stateListDrawable.addState(intArrayOf(android.R.attr.state_focused), focusedDrawable)
+        stateListDrawable.addState(intArrayOf(android.R.attr.state_pressed), pressedDrawable)
+        stateListDrawable.addState(intArrayOf(-android.R.attr.state_pressed), normalDrawable)
+        return stateListDrawable
+    }
+
+    /**
+     * 创建渐变圆角 Drawable
+     *
+     * @param fillColor 填充颜色
+     * @param width 边框宽度
+     * @param strokeColor 边框颜色
+     * @param topLeftRadius 圆角弧度
+     * @param topRightRadius 圆角弧度
+     * @param bottomRightRadius 圆角弧度
+     * @param bottomLeftRadius 圆角弧度
+     * @return
+     */
+    @SuppressLint("ClickableViewAccessibility")
+    fun createGradientDrawable(fillColor: Int = Color.WHITE, width: Int = 0, strokeColor: Int = Color.WHITE, topLeftRadius: Float = 0F, topRightRadius: Float = 0F, bottomRightRadius: Float = 0F, bottomLeftRadius: Float = 0F): GradientDrawable {
+        val gradientDrawable = GradientDrawable()
+        //gradientDrawable.cornerRadius = radius.toFloat() //圆角
+        gradientDrawable.setColor(fillColor)//填充颜色
+        gradientDrawable.setStroke(width, strokeColor)//边框宽度和颜色
+        //四角圆角
+        gradientDrawable.cornerRadii = floatArrayOf(topLeftRadius, topLeftRadius, topRightRadius, topRightRadius, bottomRightRadius, bottomRightRadius, bottomLeftRadius, bottomLeftRadius)
+        return gradientDrawable
     }
 }

@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
  */
 /*
 用法举例：
-class CarAdapter(var data: MutableList<User>) : BaseDBAdapter<User>(R.layout.user_item, data) {
+class UserAdapter(var data: MutableList<User>) : BaseDBAdapter<User>(R.layout.user_item, data) {
     override fun item(holder: BaseDBHolder, position: Int) {
         val binding = holder.binding as UserItemBinding
         val item = list?.get(position) as User
@@ -23,14 +23,25 @@ class CarAdapter(var data: MutableList<User>) : BaseDBAdapter<User>(R.layout.use
 }
 
 //或者
-val adapter = object : BaseDBAdapter<User>(R.layout.user_item, data) {
+val list :MutableList<String> =ArrayList()
+list.add("A")
+list.add("B")
+list.add("C")
+
+val adapter = object : BaseDBAdapter<String>(R.layout.user_item, list) {
     override fun item(holder: BaseDBHolder, position: Int) {
         val binding = holder.binding as UserItemBinding
-        val item = list?.get(position) as User
-        binding.user = item
-        binding.iv.setOnClickListener { YToast.show("点击图片：" + item.name) }
+        val item = list?.get(position) as String
+        binding.tvName.text = item
+        binding.iv.setOnClickListener { YToast.show("点击图片：" + item) }
     }
 }
+
+//下拉刷新
+adapter.onScrollToTopListener={//刷新}
+//上拉加载
+adapter.onToBottomListener={//加载}
+
 
 原生用法：
 //ViewHolder
@@ -40,8 +51,8 @@ class CarAdapter<T>(var list: List<T>?) : RecyclerView.Adapter<MyViewHolder>() {
         return MyViewHolder(DataBindingUtil.inflate(LayoutInflater.from(parent.context), R.layout.activity_list_item, parent, false))
     }
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        val item = list?.get(position) as Branditem
-        holder.binding.branditem = item
+        val item = list?.get(position) as User
+        holder.binding.data = item
         holder.binding.iv.setOnClickListener { YToast.show("点击：" + item.name) }
         //必须要有这行，防止闪烁
         holder.binding.executePendingBindings()
@@ -51,7 +62,7 @@ class CarAdapter<T>(var list: List<T>?) : RecyclerView.Adapter<MyViewHolder>() {
     }
 }
  */
-abstract class BaseDBAdapter<T>(var layout: Int, var list: MutableList<T>?) : RecyclerView.Adapter<BaseDBHolder>() {
+abstract class BaseDBAdapter<T>(var layout: Int, var list: List<T>?) : RecyclerView.Adapter<BaseDBHolder>() {
     //recyclerView
     var recyclerView: RecyclerView? = null
 
@@ -62,16 +73,22 @@ abstract class BaseDBAdapter<T>(var layout: Int, var list: MutableList<T>?) : Re
     var onItemLongClickListener: ((position: Int) -> Unit?)? = null
 
     //到顶部监听，到顶部后继续滑动，不会触发
-    var onTopListener: (() -> Unit?)? = null
+    var onToTopListener: (() -> Unit?)? = null
 
     //到底部监听，到底部后继续滑动，不会触发
-    var onBottomListener: (() -> Unit?)? = null
+    var onToBottomListener: (() -> Unit?)? = null
 
     //滑动到顶部监听，到顶部后继续滑动，会触发
     var onScrollToTopListener: (() -> Unit?)? = null
 
     //滑动到底部监听，到底部后继续滑动，会触发
     var onScrollToBottomListener: (() -> Unit?)? = null
+
+    var isSelect: Int = -1
+        set(value) {
+            field = value
+            notifyDataSetChanged()
+        }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseDBHolder {
         return BaseDBHolder(DataBindingUtil.inflate(LayoutInflater.from(parent.context), layout, parent, false))
@@ -92,17 +109,19 @@ abstract class BaseDBAdapter<T>(var layout: Int, var list: MutableList<T>?) : Re
         holder.binding.executePendingBindings()
     }
 
-
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
         this.recyclerView = recyclerView
+        //滚动监听
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            //滚动完毕
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
-                if (!recyclerView.canScrollVertically(-1)) onTopListener?.invoke()
-                if (!recyclerView.canScrollVertically(1)) onBottomListener?.invoke()
+                if (!recyclerView.canScrollVertically(-1)) onToTopListener?.invoke()
+                if (!recyclerView.canScrollVertically(1)) onToBottomListener?.invoke()
             }
 
+            //滚动状态改变
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
                 //newState分 0,1,2三个状态,2是滚动状态,0是停止
@@ -113,7 +132,6 @@ abstract class BaseDBAdapter<T>(var layout: Int, var list: MutableList<T>?) : Re
             }
         })
     }
-
 
     override fun getItemCount(): Int {
         return list?.size ?: 0

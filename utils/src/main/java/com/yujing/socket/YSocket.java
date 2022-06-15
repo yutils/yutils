@@ -472,7 +472,7 @@ public class YSocket {
                         socket.connect(socAddress, 1000 * 5);
                         socket.setKeepAlive(true);
                         connect = true;
-                        printLog("连接成功...");
+                        printLog("连接成功... (" + ip + ":" + port + ")");
                         connectListener.isSuccess(true);
                     } catch (Exception e) {
                         connectListener.isSuccess(false);
