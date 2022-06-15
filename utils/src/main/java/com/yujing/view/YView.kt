@@ -233,26 +233,35 @@ object YView {
 
 
     /**
-     * 设置View按下颜色，支持 ImageView ，TextView ，Button
+     * 设置View按下颜色，支持 ImageView ，TextView ，Button , ViewGroup
      */
     @SuppressLint("ClickableViewAccessibility")
     fun setPressColor(view: View, @ColorInt colorPress: Int, @ColorInt colorUp: Int) {
         view.isClickable = true
         view.setOnTouchListener { v, event ->
             if (event.action == MotionEvent.ACTION_DOWN) {
-                when (v) {
-                    is ImageView -> v.colorFilter = PorterDuffColorFilter(colorPress, PorterDuff.Mode.SRC_ATOP)
-                    is TextView -> v.setTextColor(colorPress)
-                    is Button -> v.setTextColor(colorPress)
-                }
+                setColor(v, colorPress)
             } else if (event.action == MotionEvent.ACTION_UP) {
-                when (v) {
-                    is ImageView -> v.colorFilter = PorterDuffColorFilter(colorUp, PorterDuff.Mode.SRC_ATOP)
-                    is TextView -> v.setTextColor(colorUp)
-                    is Button -> v.setTextColor(colorPress)
-                }
+                setColor(v, colorUp)
             }
             return@setOnTouchListener false
+        }
+    }
+
+    /**
+     * 设置View颜色，支持 ImageView ，TextView ，Button , ViewGroup
+     */
+    fun setColor(v: View, @ColorInt color: Int) {
+        when (v) {
+            is ImageView -> v.colorFilter = PorterDuffColorFilter(color, PorterDuff.Mode.SRC_ATOP)
+            is TextView -> v.setTextColor(color)
+            is Button -> v.setTextColor(color)
+            is ViewGroup -> {
+                for (i in 0 until v.childCount) {
+                    val child = v.getChildAt(i)
+                    setColor(child, color)
+                }
+            }
         }
     }
 
