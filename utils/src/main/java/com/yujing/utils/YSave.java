@@ -18,6 +18,11 @@ import java.util.HashMap;
 //参数下载
 kotlin：
 var user: User
+    get() = YSave.get("user", User::class.java)
+    set(obj) = YSave.put( "user", obj)
+
+//或
+var user: User
     get() = YSave.get(YApp.get(), "user", User::class.java)
     set(obj) = YSave.put(YApp.get(), "user", obj)
 
@@ -54,9 +59,7 @@ public class YSave {
     private String path; //保存文件位置
     private String extensionName; //扩展名
 
-    public static boolean isUseCache() {
-        return useCache;
-    }
+    public static boolean isUseCache() {return useCache;}
 
     public static void setUseCache(boolean useCache) {
         YSave.useCache = useCache;

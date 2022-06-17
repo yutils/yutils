@@ -190,21 +190,31 @@ YShow.finish()
 ### 对象储存，比如保存一些参数到本地
 
 ```kotlin
-    //保存用户
+//保存用户
+var user: User
+    get() = YSave.get("user", User::class.java)
+    set(obj) = YSave.put( "user", obj)
+
+//或
 var user: User
     get() = YSave.get(YApp.get(), "user", User::class.java)
     set(obj) = YSave.put(YApp.get(), "user", obj)
 
-//保存服务ip
-var IP: String
-    get() = YSave.get(YApp.get(), "服务器IP", String::class.java, DEFAULT_IP)
-    set(value) = YSave.put(YApp.get(), "服务器IP", value)
+//或
+var bl: Boolean
+    get() = YSave.getInstance().get("b", Boolean::class.java)
+    set(obj) = YSave.getInstance().put("b", obj)
+
+//或
+var bl: Boolean
+    get() = YSave.create(YPath.get(),".txt").get("test", Boolean::class.java)
+    set(obj) = YSave.create(YPath.get(),".txt").put("test", obj)
 ```
 
 java:
 
 ```java
-    public static String getIP(){return YSave.get(YApp.get(),"ip",String.class);}
+public static String getIP(){return YSave.get(YApp.get(),"ip",String.class);}
 public static void setIP(String value){YSave.put(YApp.get(),"ip",value);}
 ```
 
@@ -311,7 +321,7 @@ YAlertDialogUtils().showEdit("测试", "请输入内容") {
 ### 拍照
 
 ```kotlin
-    //拍照
+//拍照
 YTake.take(this) {
     val bitmap = YConvert.uri2Bitmap(this, it)
     YImageDialog.show(bitmap)
@@ -343,7 +353,7 @@ YTake.chosePictureAndCorp(this) {
 APK安装，如果没有请求安装权限，会先跳转到请求安装权限，然后安装
 
 ```kotlin
-    YInstallApk().install(YPath.getSDCard() + "/app.apk")
+YInstallApk().install(YPath.getSDCard() + "/app.apk")
 ```
 
 如果是安卓8.0以上先请求打开未知来源
@@ -370,7 +380,7 @@ APK安装，如果没有请求安装权限，会先跳转到请求安装权限�
 ### 获取当前activity
 
 ```kotlin
-    //获取当前activity
+//获取当前activity
 YActivityUtil.getCurrentActivity()
 //获取activity堆栈
 YActivityUtil.getActivityStack()
@@ -383,7 +393,7 @@ YActivityUtil.closeAllActivity()
 ### YConvert 各种转换
 
 ```kotlin
-    //byte数组转hexString
+//byte数组转hexString
 var hexString = YConvert.bytesToHexString(byteArrayOf(0x01, 0x02))
 //hexString转byte数组
 var byteArray = YConvert.hexStringToByte(hexString)
@@ -411,7 +421,7 @@ YConvert.fileToByte(File("地址"))
 ### YNumber 数学常用转换
 
 ```kotlin
-    //判断是否是Int
+//判断是否是Int
 YNumber.isInt("5")
 //判断是否是Double
 YNumber.isDouble("5")
@@ -440,12 +450,12 @@ var doubleString = YNumber.fill(1.12, 5)
 java
 
 ```java
-    YDelay.run(2000,new Runnable(){
-@Override
-public void run(){
-        System.out.println("触发");
-        }
-        });
+YDelay.run(2000,new Runnable(){
+    @Override
+    public void run(){
+            System.out.println("触发");
+    }
+});
 ```
 
 ----
@@ -455,22 +465,40 @@ public void run(){
 不必考虑线程问题
 
 ```java
-    public void init(){
-        //循环调用abc方法每1000毫秒，abc不能为private，不能有参数
-        YLoop.start(this,"abc",1000);
-        }
+public void init(){
+    //循环调用abc方法每1000毫秒，abc不能为private，不能有参数
+    YLoop.start(this,"abc",1000);
+}
 
 //此方法会被调用
 public void abc(){
-        YLog.d("我被调用了");
-        }
+    YLog.d("我被调用了");
+}
 
 @Override
 protected void onDestroy(){
-        super.onDestroy();
-        //停止循环调用abc方法
-        YLoop.stop(this,"abc");
-        }
+    super.onDestroy();
+    //停止循环调用abc方法
+    YLoop.stop(this,"abc");
+}
+```
+
+或者
+
+```kotlin
+val yTimer = YTimer()
+
+//每秒调用一次
+yTimer.loopIO(1000) {  }
+
+//每秒调用一次，最多调用5次，或者10秒,回调UI线程
+yTimer.loopUI(1000,5,10000) {  }
+
+//退出时关闭
+override fun onDestroy() {
+    super.onDestroy()
+    yTimer.stop()
+}
 ```
 
 ----
@@ -478,7 +506,7 @@ protected void onDestroy(){
 ### Fragment 管理器
 
 ```kotlin
-    private var yFragmentManager: YFragmentManager? = null
+private var yFragmentManager: YFragmentManager? = null
 private var fragment1: Fragment1? = null
 private var fragment2: Fragment2? = null
 private var fragment3: Fragment3? = null
@@ -502,7 +530,7 @@ yFragmentManager!! replace (fragment1)
 ### 设置 RecyclerView 滚动方式
 
 ```kotlin
-    //设置recyclerView为垂直滚动布局
+//设置recyclerView为垂直滚动布局
 YSetRecyclerView.initVertical(binding.recyclerView)
 //设置recyclerView为水平滚动布局
 YSetRecyclerView.initHorizontal(binding.recyclerView)
@@ -545,7 +573,7 @@ class MyAccountAdapter<T>(context: Context, list: List<T>) : YBaseYRecyclerViewA
 ### 弹出一个日期选择器
 
 ```kotlin
-    YDateDialog.setDefaultFullScreen(true);
+YDateDialog.setDefaultFullScreen(true);
 YDateDialog yDateDialog = new YDateDialog(activity);
 yDateDialog.setFormat("yyyy年MM月dd日");// 设置日期格式（如："yyyy年MM月dd日HH:mm"）
 yDateDialog.initTime("2022年2月22日");//设置初始化日期，必须和设置格式相同（如："2016年07月01日15:19"）
@@ -563,7 +591,7 @@ yDateDialog.show((format, calendar, date, yyyy, MM, dd, HH, mm) -> {
 ### 各种检查验证数据是否合法
 
 ```kotlin
-    //判断是否是年龄0-12
+//判断是否是年龄0-12
 YCheck.isAge("50")
 //校验中文
 YCheck.isChinese("你好")
@@ -598,7 +626,7 @@ YCheck.isMobile("13888888888")
 ### YPath 获取各种目录
 
 ```kotlin
-    //常用目录
+//常用目录
 val path = YPath.getFilePath(App.get(), "配置") + "/" + "name.txt"
 val file = File(YPath.getFilePath(App.get()) + "/" + "name.txt")
 YPath.getDCIM()
@@ -618,7 +646,7 @@ YPath.getRoot()
 ### 规定时间内只能运行一次
 
 ```kotlin
-    //这句语音每20秒只能说一次
+//这句语音每20秒只能说一次
 YRunOnceOfTime.run(1000 * 20, str) {
     speak("语音播报：" + str)
 }
@@ -634,7 +662,7 @@ if (YRunOnceOfTime.check(1000, "tag1")) {
 ### 屏幕常用操作
 
 ```kotlin
-    YScreenUtil.dp2px(15.0F)
+YScreenUtil.dp2px(15.0F)
 YScreenUtil.px2dp(15)
 YScreenUtil.sp2px(14.0F)
 YScreenUtil.px2sp(14)
@@ -665,7 +693,7 @@ YScreenUtil.snapShotWithoutStatusBar(this)
 ### SoundPool 快捷使用
 
 ```kotlin
-    //添加资源
+//添加资源
 YSound.getInstance().put(0, R.raw.di)
 //播放资源
 YSound.getInstance().play(0)
@@ -678,7 +706,9 @@ YSound.getInstance().onDestroy()
 ### 线程常用
 
 ```kotlin
-    //统计当前有多少线程
+//任意位置回到UI线程
+YThread.ui{ }
+//统计当前有多少线程
 YThread.countThread()
 //获取全部线程
 YThread.getAllThread()
@@ -695,12 +725,21 @@ YThread.runOnUiThreadDelayed({ YLog.i("主线程") }, 2000)
 ### TTS语音使用
 
 ```kotlin
-    YTts.play("你好")
-YTts.playQueue("你好啊")
-//设置音调
-YTts.getInstance().pitch = 1.0f
-//设置播放速度
-YTts.getInstance().speechRate = 1.0f
+//播放语音
+TTS.speak("你是张三吗？")
+//语音队列
+TTS.speakQueue("是的，你是谁？")
+
+
+//速度
+TTS.speechRate=1.1F
+//音调
+TTS.pitch=1.1F
+//任意位置可以设置过滤器
+TTS.filter={ it.replace("张三", "李四") }
+
+//退出时关闭，释放资源
+TTS.destroy()
 ```
 
 ----
@@ -751,7 +790,7 @@ java
 ### 基础Fragment，简化Fragment，Fragment当参数传递可以获取生命周期
 
 ```kotlin
-    //kotlin
+//kotlin
 class AboutActivity : YBaseFragment<ActivityAboutBinding>(R.layout.activity_about) {
     override fun init() {}
 }

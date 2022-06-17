@@ -13,12 +13,20 @@ import java.util.*
 /*
 用法：
 
-//设置过滤器
-TTS.filter={ it.replace("皮重", "皮众") }
 //播放语音
-TTS.speak("皮重不是在范围内1")
+TTS.speak("你是张三吗？")
+//语音队列
+TTS.speakQueue("是的，你是谁？")
 
-//关闭，释放资源
+
+//速度
+TTS.speechRate=1.1F
+//音调
+TTS.pitch=1.1F
+//任意位置可以设置过滤器
+TTS.filter={ it.replace("张三", "李四") }
+
+//退出时关闭，释放资源
 TTS.destroy()
  */
 object TTS {
