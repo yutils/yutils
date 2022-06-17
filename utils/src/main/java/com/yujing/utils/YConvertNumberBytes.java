@@ -3,12 +3,87 @@ package com.yujing.utils;
 /**
  * Byte转换类，常用类型的转换
  *
- * @author 余静 2019年12月12日11:48:48
- * char、int、float、double和 byte[] 数组之间的转换关系还需继续研究实现。
+ * @author 余静 2022年6月17日15:33:32
  * 大端小端模式，小端模式后缀Min
  */
 @SuppressWarnings("unused")
 public class YConvertNumberBytes {
+    /**
+     * 将byte按二进制位倒序
+     *
+     * @param i byte
+     * @return byte
+     */
+    public static byte reverse(byte i) {
+        // 0000 0001  --> 1000 0000
+        i = (byte) ((i & 0x55) << 1 | (i >>> 1) & 0x55);
+        i = (byte) ((i & 0x33) << 2 | (i >>> 2) & 0x33);
+        i = (byte) ((i & 0x0f) << 4 | (i >>> 4) & 0x0f);
+        return i;
+    }
+
+    /**
+     * 将byte数组中的元素倒序排列
+     *
+     * @param b byte[]
+     * @return byte[]
+     */
+    public static byte[] reverse(byte[] b) {
+        //0102030405FF  -->  FF0504030201
+        byte[] result = new byte[b.length];
+        for (int i = 0; i < b.length; i++) {
+            result[b.length - i - 1] = b[i];
+        }
+        return result;
+    }
+
+    /**
+     * 将int类型的值转换为字节序颠倒过来对应的int值
+     *
+     * @param i int
+     * @return int
+     */
+    public static int reverse(int i) {
+        //5  -->  83886080
+        return YConvertNumberBytes.bytesToIntMin(YConvertNumberBytes.intToBytes(i));
+    }
+
+    /**
+     * 将short类型的值转换为字节序颠倒过来对应的short值
+     *
+     * @param s short
+     * @return short
+     */
+    public static short reverse(short s) {
+        //5  -->  1280
+        return YConvertNumberBytes.bytesToShortMin(YConvertNumberBytes.shortToBytes(s));
+    }
+
+    /**
+     * 将float类型的值转换为字节序颠倒过来对应的float值
+     *
+     * @param f float
+     * @return float
+     */
+    public static float reverse(float f) {
+        return YConvertNumberBytes.bytesToFloat(YConvertNumberBytes.floatToBytes(f));
+    }
+
+    /**
+     * 将byte数组中的元素按二进制位倒序排列
+     *
+     * @param b byte[]
+     * @return byte[]
+     */
+    public static byte[] reverseOfBit(byte[] b) {
+        //0102030405FF  -->  FFA020C04080
+        byte[] result = new byte[b.length];
+        for (int i = 0; i < b.length; i++) {
+            result[b.length - i - 1] = reverse(b[i]);
+        }
+        return result;
+    }
+
     /**
      * long 和 网络字节序的 byte[] 数组之间的转换
      * 大端模式，是指数据的高字节保存在内存的高地址中，左边要乘以指数
@@ -17,6 +92,7 @@ public class YConvertNumberBytes {
      * @return 转换后的byte数组
      */
     public static byte[] longToBytes(long n) {
+        //123456789  -->  00000000075BCD15
         byte[] b = new byte[8];
         b[7] = (byte) (n & 0xff);
         b[6] = (byte) (n >> 8 & 0xff);
@@ -29,10 +105,6 @@ public class YConvertNumberBytes {
         return b;
     }
 
-    public static byte[] LTB(long n) {
-        return longToBytes(n);
-    }
-
     /**
      * long 和 网络字节序的 byte[] 数组之间的转换
      * 大端模式，是指数据的高字节保存在内存的高地址中，左边要乘以指数
@@ -41,13 +113,10 @@ public class YConvertNumberBytes {
      * @return 值
      */
     public static long bytesToLong(byte[] array) {
+        //00000000075BCD15  -->  123456789
         return ((((long) array[0] & 0xff) << 56) | (((long) array[1] & 0xff) << 48) | (((long) array[2] & 0xff) << 40)
                 | (((long) array[3] & 0xff) << 32) | (((long) array[4] & 0xff) << 24) | (((long) array[5] & 0xff) << 16)
                 | (((long) array[6] & 0xff) << 8) | (((long) array[7] & 0xff)));
-    }
-
-    public static long BTL(byte[] array) {
-        return bytesToLong(array);
     }
 
     /**
@@ -59,6 +128,7 @@ public class YConvertNumberBytes {
      * @return 转换后的byte数组
      */
     public static byte[] longToBytesMin(long n) {
+        //123456789  -->  15CD5B0700000000
         byte[] b = new byte[8];
         b[0] = (byte) (n & 0xff);
         b[1] = (byte) (n >> 8 & 0xff);
@@ -71,10 +141,6 @@ public class YConvertNumberBytes {
         return b;
     }
 
-    public static byte[] LTBM(long n) {
-        return longToBytesMin(n);
-    }
-
     /**
      * long 和 网络字节序的 byte[] 数组之间的转换
      * 小端模式，是指数据的高字节保存在内存的低地址中，右边要乘以指数
@@ -84,13 +150,10 @@ public class YConvertNumberBytes {
      * @return 值
      */
     public static long bytesToLongMin(byte[] array) {
+        //15CD5B0700000000  -->  123456789
         return ((((long) array[7] & 0xff) << 56) | (((long) array[6] & 0xff) << 48) | (((long) array[5] & 0xff) << 40)
                 | (((long) array[4] & 0xff) << 32) | (((long) array[3] & 0xff) << 24) | (((long) array[2] & 0xff) << 16)
                 | (((long) array[1] & 0xff) << 8) | (((long) array[0] & 0xff)));
-    }
-
-    public static long BTLM(byte[] array) {
-        return bytesToLongMin(array);
     }
 
     /**
@@ -101,13 +164,10 @@ public class YConvertNumberBytes {
      * @param array  目标数组
      * @param offset 目标数组的offset位置
      */
-    public static void longToBytes(long n, byte[] array, int offset) {
+    public static byte[] longToBytes(long n, byte[] array, int offset) {
         byte[] value = longToBytes(n);
         System.arraycopy(value, 0, array, offset, 8);
-    }
-
-    public static void LTB(long n, byte[] array, int offset) {
-        longToBytes(n, array, offset);
+        return value;
     }
 
     /**
@@ -124,10 +184,6 @@ public class YConvertNumberBytes {
                 | (((long) array[offset + 6] & 0xff) << 8) | (((long) array[offset + 7] & 0xff)));
     }
 
-    public static long BTL(byte[] array, int offset) {
-        return bytesToLong(array, offset);
-    }
-
     /**
      * long 和 网络字节序的 byte[] 数组之间的转换
      * 小端
@@ -136,13 +192,10 @@ public class YConvertNumberBytes {
      * @param array  目标数组
      * @param offset 目标数组的offset位置
      */
-    public static void longToBytesMin(long n, byte[] array, int offset) {
+    public static byte[] longToBytesMin(long n, byte[] array, int offset) {
         byte[] value = longToBytesMin(n);
         System.arraycopy(value, 0, array, offset, 8);
-    }
-
-    public static void LTBM(long n, byte[] array, int offset) {
-        longToBytesMin(n, array, offset);
+        return value;
     }
 
     /**
@@ -160,10 +213,6 @@ public class YConvertNumberBytes {
                 | (((long) array[offset + 1] & 0xff) << 8) | (((long) array[offset] & 0xff)));
     }
 
-    public static long BTLM(byte[] array, int offset) {
-        return bytesToLongMin(array, offset);
-    }
-
     /**
      * int 和 网络字节序的 byte[] 数组之间的转换
      *
@@ -171,16 +220,13 @@ public class YConvertNumberBytes {
      * @return 转换后的byte数组
      */
     public static byte[] intToBytes(int n) {
+        //123  -->  0000007B
         byte[] b = new byte[4];
         b[3] = (byte) (n & 0xff);
         b[2] = (byte) (n >> 8 & 0xff);
         b[1] = (byte) (n >> 16 & 0xff);
         b[0] = (byte) (n >> 24 & 0xff);
         return b;
-    }
-
-    public static byte[] ITB(int n) {
-        return intToBytes(n);
     }
 
     /**
@@ -190,11 +236,8 @@ public class YConvertNumberBytes {
      * @return 值
      */
     public static int bytesToInt(byte[] b) {
+        //0000007B  -->  123
         return b[3] & 0xff | (b[2] & 0xff) << 8 | (b[1] & 0xff) << 16 | (b[0] & 0xff) << 24;
-    }
-
-    public static int BTI(byte[] b) {
-        return bytesToInt(b);
     }
 
     /**
@@ -205,13 +248,10 @@ public class YConvertNumberBytes {
      * @param array  byte数组
      * @param offset int数组的第offset位
      */
-    public static void intToBytesMin(int n, byte[] array, int offset) {
+    public static byte[] intToBytesMin(int n, byte[] array, int offset) {
         byte[] value = intToBytesMin(n);
         System.arraycopy(value, 0, array, offset, 4);
-    }
-
-    public static void ITBM(int n, byte[] array, int offset) {
-        intToBytesMin(n, array, offset);
+        return value;
     }
 
     /**
@@ -227,10 +267,6 @@ public class YConvertNumberBytes {
                 | (b[offset + 3] & 0xff) << 24;
     }
 
-    public static int BTIM(byte[] b, int offset) {
-        return bytesToIntMin(b, offset);
-    }
-
     /**
      * int 和 网络字节序的 byte[] 数组之间的转换
      *
@@ -238,13 +274,10 @@ public class YConvertNumberBytes {
      * @param array  byte数组
      * @param offset int数组的第offset位
      */
-    public static void intToBytes(int n, byte[] array, int offset) {
+    public static byte[] intToBytes(int n, byte[] array, int offset) {
         byte[] value = intToBytes(n);
         System.arraycopy(value, 0, array, offset, 4);
-    }
-
-    public static void ITB(int n, byte[] array, int offset) {
-        intToBytes(n, array, offset);
+        return value;
     }
 
     /**
@@ -259,10 +292,6 @@ public class YConvertNumberBytes {
                 | (b[offset] & 0xff) << 24;
     }
 
-    public static int BTI(byte[] b, int offset) {
-        return bytesToInt(b, offset);
-    }
-
     /**
      * int 和 网络字节序的 byte[] 数组之间的转换
      * 小端模式，是指数据的高字节保存在内存的低地址中，右边要乘以指数
@@ -272,16 +301,13 @@ public class YConvertNumberBytes {
      * @return 转换后的byte数组
      */
     public static byte[] intToBytesMin(int n) {
+        //123  -->  7B000000
         byte[] b = new byte[4];
         b[0] = (byte) (n & 0xff);
         b[1] = (byte) (n >> 8 & 0xff);
         b[2] = (byte) (n >> 16 & 0xff);
         b[3] = (byte) (n >> 24 & 0xff);
         return b;
-    }
-
-    public static byte[] ITBM(int n) {
-        return intToBytesMin(n);
     }
 
     /**
@@ -293,11 +319,8 @@ public class YConvertNumberBytes {
      * @return 值
      */
     public static int bytesToIntMin(byte[] b) {
+        //7B000000  -->  123
         return b[0] & 0xff | (b[1] & 0xff) << 8 | (b[2] & 0xff) << 16 | (b[3] & 0xff) << 24;
-    }
-
-    public static int BTIM(byte[] b) {
-        return bytesToIntMin(b);
     }
 
     /**
@@ -316,10 +339,6 @@ public class YConvertNumberBytes {
         return b;
     }
 
-    public static byte[] IT2B(int n) {
-        return intTo2Bytes(n);
-    }
-
     /**
      * int 和 网络字节序的 byte[] 数组之间的转换
      * 2位byte
@@ -333,10 +352,6 @@ public class YConvertNumberBytes {
         return b[1] & 0xff | (b[0] & 0xff) << 8;
     }
 
-    public static int B2TI(byte[] b) {
-        return bytes2ToInt(b);
-    }
-
     /**
      * int 和 网络字节序的 byte[] 数组之间的转换
      * 2位byte
@@ -347,14 +362,11 @@ public class YConvertNumberBytes {
      * @return 转换后的byte数组
      */
     public static byte[] intTo2BytesMin(int n) {// 只能是0到65535之间的数不能为负数
+        //123  -->  7B00
         byte[] b = new byte[2];
         b[1] = (byte) (n >> 8 & 0xff);
         b[0] = (byte) (n & 0xff);
         return b;
-    }
-
-    public static byte[] IT2BM(int n) {
-        return intTo2BytesMin(n);
     }
 
     /**
@@ -367,13 +379,9 @@ public class YConvertNumberBytes {
      * @return 值
      */
     public static int bytes2ToIntMin(byte[] b) {
+        //7B00  -->  123
         return b[0] & 0xff | (b[1] & 0xff) << 8;
     }
-
-    public static int B2TIM(byte[] b) {
-        return bytes2ToIntMin(b);
-    }
-
 
     /**
      * int 和 网络字节序的 byte[] 数组之间的转换
@@ -384,13 +392,10 @@ public class YConvertNumberBytes {
      * @param array  byte数组
      * @param offset int数组的第offset位
      */
-    public static void intTo2Bytes(int n, byte[] array, int offset) {// 只能是0到65535之间的数不能为负数
+    public static byte[] intTo2Bytes(int n, byte[] array, int offset) {// 只能是0到65535之间的数不能为负数
         byte[] value = intTo2Bytes(n);
         System.arraycopy(value, 0, array, offset, 2);
-    }
-
-    public static void IT2B(int n, byte[] array, int offset) {
-        intTo2Bytes(n, array, offset);
+        return value;
     }
 
     /**
@@ -406,10 +411,6 @@ public class YConvertNumberBytes {
         return b[offset + 1] & 0xff | (b[offset] & 0xff) << 8;
     }
 
-    public static int B2TI(byte[] b, int offset) {
-        return bytes2ToInt(b, offset);
-    }
-
     /**
      * int 和 网络字节序的 byte[] 数组之间的转换
      * 2位byte
@@ -419,13 +420,10 @@ public class YConvertNumberBytes {
      * @param array  byte数组
      * @param offset int数组的第offset位
      */
-    public static void intTo2BytesMin(int n, byte[] array, int offset) {// 只能是0到65535之间的数不能为负数
+    public static byte[] intTo2BytesMin(int n, byte[] array, int offset) {// 只能是0到65535之间的数不能为负数
         byte[] value = intTo2BytesMin(n);
         System.arraycopy(value, 0, array, offset, 2);
-    }
-
-    public static void IT2BM(int n, byte[] array, int offset) {
-        intTo2BytesMin(n, array, offset);
+        return value;
     }
 
     /**
@@ -441,10 +439,6 @@ public class YConvertNumberBytes {
         return b[offset] & 0xff | (b[offset + 1] & 0xff) << 8;
     }
 
-    public static int B2TIM(byte[] b, int offset) {
-        return bytes2ToIntMin(b, offset);
-    }
-
     /**
      * short 和 网络字节序的 byte[] 数组之间的转换
      *
@@ -452,14 +446,11 @@ public class YConvertNumberBytes {
      * @return 转换后的byte数组
      */
     public static byte[] shortToBytes(short n) {
+        //1234  -->  04D2
         byte[] b = new byte[2];
         b[1] = (byte) (n & 0xff);
         b[0] = (byte) ((n >> 8) & 0xff);
         return b;
-    }
-
-    public static byte[] STB(short n) {
-        return shortToBytes(n);
     }
 
     /**
@@ -469,11 +460,35 @@ public class YConvertNumberBytes {
      * @return 值
      */
     public static short bytesToShort(byte[] b) {
+        //04D2  -->  1234
         return (short) (b[1] & 0xff | (b[0] & 0xff) << 8);
     }
 
-    public static short BTS(byte[] b) {
-        return bytesToShort(b);
+    /**
+     * short 和 网络字节序的 byte[] 数组之间的转换
+     * 小端
+     *
+     * @param n short
+     * @return 转换后的byte数组
+     */
+    public static byte[] shortToBytesMin(short n) {
+        //1234  -->  D204
+        byte[] b = new byte[2];
+        b[1] = (byte) ((n >> 8) & 0xff);
+        b[0] = (byte) (n & 0xff);
+        return b;
+    }
+
+    /**
+     * short 和 网络字节序的 byte[] 数组之间的转换
+     * 小端
+     *
+     * @param b short的byte数组
+     * @return 值
+     */
+    public static short bytesToShortMin(byte[] b) {
+        //D204  -->  1234
+        return (short) (b[0] & 0xff | (b[1] & 0xff) << 8);
     }
 
     /**
@@ -483,13 +498,10 @@ public class YConvertNumberBytes {
      * @param array  byte数组
      * @param offset byte数组第offset位开始转换
      */
-    public static void shortToBytes(short n, byte[] array, int offset) {
+    public static byte[] shortToBytes(short n, byte[] array, int offset) {
         byte[] value = shortToBytes(n);
         System.arraycopy(value, 0, array, offset, 2);
-    }
-
-    public static void STB(short n, byte[] array, int offset) {
-        shortToBytes(n, array, offset);
+        return value;
     }
 
     /**
@@ -503,8 +515,28 @@ public class YConvertNumberBytes {
         return (short) (b[offset + 1] & 0xff | (b[offset] & 0xff) << 8);
     }
 
-    public static short BTS(byte[] b, int offset) {
-        return bytesToShort(b, offset);
+    /**
+     * short 和 网络字节序的 byte[] 数组之间的转换
+     *
+     * @param n      short
+     * @param array  byte数组
+     * @param offset byte数组第offset位开始转换
+     */
+    public static byte[] shortToBytesMin(short n, byte[] array, int offset) {
+        byte[] value = shortToBytesMin(n);
+        System.arraycopy(value, 0, array, offset, 2);
+        return value;
+    }
+
+    /**
+     * short 和 网络字节序的 byte[] 数组之间的转换
+     *
+     * @param b      short的byte数组
+     * @param offset byte数组第offset位开始转换
+     * @return 值
+     */
+    public static short bytesToShortMin(byte[] b, int offset) {
+        return (short) (b[offset] & 0xff | (b[offset + 1] & 0xff) << 8);
     }
 
     /**
@@ -514,16 +546,13 @@ public class YConvertNumberBytes {
      * @return bytes
      */
     public static byte[] doubleToBytes(double d) {
+        //123.45  -->  CDCCCCCCCCDC5E40
         long value = Double.doubleToRawLongBits(d);
         byte[] byteRet = new byte[8];
         for (int i = 0; i < 8; i++) {
             byteRet[i] = (byte) ((value >> 8 * i) & 0xff);
         }
         return byteRet;
-    }
-
-    public static byte[] DTB(double d) {
-        return doubleToBytes(d);
     }
 
     /**
@@ -533,6 +562,7 @@ public class YConvertNumberBytes {
      * @return double
      */
     public static double bytesToDouble(byte[] bytes) {
+        //CDCCCCCCCCDC5E40  -->  123.45
         long value = 0;
         for (int i = 0; i < 8; i++) {
             value |= ((long) (bytes[i] & 0xff)) << (8 * i);
@@ -540,8 +570,37 @@ public class YConvertNumberBytes {
         return Double.longBitsToDouble(value);
     }
 
-    public static double BTD(byte[] bytes) {
-        return bytesToDouble(bytes);
+    /**
+     * double2Bytes
+     * 小端
+     *
+     * @param d d
+     * @return bytes
+     */
+    public static byte[] doubleToBytesMin(double d) {
+        //123.45  -->  405EDCCCCCCCCCCD
+        long value = Double.doubleToRawLongBits(d);
+        byte[] byteRet = new byte[8];
+        for (int i = 0; i < 8; i++) {
+            byteRet[7 - i] = (byte) ((value >> 8 * i) & 0xff);
+        }
+        return byteRet;
+    }
+
+    /**
+     * bytes转Double
+     * 小端
+     *
+     * @param bytes bytes
+     * @return double
+     */
+    public static double bytesToDoubleMin(byte[] bytes) {
+        //405EDCCCCCCCCCCD  -->  123.45
+        long value = 0;
+        for (int i = 0; i < 8; i++) {
+            value |= ((long) (bytes[7 - i] & 0xff)) << (8 * i);
+        }
+        return Double.longBitsToDouble(value);
     }
 
     /**
@@ -551,13 +610,10 @@ public class YConvertNumberBytes {
      * @param array  byte数组
      * @param offset int数组的第offset位
      */
-    public static void doubleToBytes(double d, byte[] array, int offset) {
+    public static byte[] doubleToBytes(double d, byte[] array, int offset) {
         byte[] value = doubleToBytes(d);
         System.arraycopy(value, 0, array, offset, 8);
-    }
-
-    public static void DTB(double d, byte[] array, int offset) {
-        doubleToBytes(d, array, offset);
+        return value;
     }
 
     /**
@@ -575,8 +631,34 @@ public class YConvertNumberBytes {
         return Double.longBitsToDouble(value);
     }
 
-    public static double BTD(byte[] bytes, int index) {
-        return bytesToDouble(bytes, index);
+    /**
+     * double 和 网络字节序的 byte[] 数组之间的转换
+     * 小端
+     *
+     * @param d      double
+     * @param array  byte数组
+     * @param offset int数组的第offset位
+     */
+    public static byte[] doubleToBytesMin(double d, byte[] array, int offset) {
+        byte[] value = doubleToBytesMin(d);
+        System.arraycopy(value, 0, array, offset, 8);
+        return value;
+    }
+
+    /**
+     * bytes转Double
+     * 小端
+     *
+     * @param bytes 字节（至少4个字节）
+     * @param index 开始位置
+     * @return float
+     */
+    public static double bytesToDoubleMin(byte[] bytes, int index) {
+        long value = 0;
+        for (int i = 0; i < 8; i++) {
+            value |= ((long) (bytes[7 - i + index] & 0xff)) << (8 * i);
+        }
+        return Double.longBitsToDouble(value);
     }
 
     /**
@@ -586,6 +668,7 @@ public class YConvertNumberBytes {
      * @return bytes
      */
     public static byte[] floatToBytes(float f) {
+        //55.2 -->  CDCC5C42
         // 把float转换为byte[]
         int fBit = Float.floatToIntBits(f);
 
@@ -609,10 +692,6 @@ public class YConvertNumberBytes {
         return dest;
     }
 
-    public static byte[] FTB(float f) {
-        return floatToBytes(f);
-    }
-
     /**
      * 字节转换为浮点
      *
@@ -620,6 +699,7 @@ public class YConvertNumberBytes {
      * @return float
      */
     public static float bytesToFloat(byte[] bytes) {
+        //CDCC5C42  -->  55.2
         int value = 0;
         for (int i = 0; i < 4; i++) {
             value |= ((bytes[i] & 0xff)) << (8 * i);
@@ -627,8 +707,33 @@ public class YConvertNumberBytes {
         return Float.intBitsToFloat(value);
     }
 
-    public static float BTF(byte[] bytes) {
-        return bytesToFloat(bytes);
+    /**
+     * 浮点转换为字节
+     * 小端
+     *
+     * @param f f
+     * @return bytes
+     */
+    public static byte[] floatToBytesMin(float f) {
+        //55.2 -->  425CCCCD
+        byte[] bytes = floatToBytes(f);
+        return reverse(bytes);
+    }
+
+    /**
+     * 字节转换为浮点
+     * 小端
+     *
+     * @param bytes bytes
+     * @return float
+     */
+    public static float bytesToFloatMin(byte[] bytes) {
+        //425CCCCD  -->  55.2
+        int value = 0;
+        for (int i = 0; i < 4; i++) {
+            value |= ((bytes[3 - i] & 0xff)) << (8 * i);
+        }
+        return Float.intBitsToFloat(value);
     }
 
     /**
@@ -638,13 +743,10 @@ public class YConvertNumberBytes {
      * @param array  byte数组
      * @param offset int数组的第offset位
      */
-    public static void floatToBytes(float f, byte[] array, int offset) {
+    public static byte[] floatToBytes(float f, byte[] array, int offset) {
         byte[] value = floatToBytes(f);
         System.arraycopy(value, 0, array, offset, 4);
-    }
-
-    public static void FTB(float f, byte[] array, int offset) {
-        floatToBytes(f, array, offset);
+        return value;
     }
 
     /**
@@ -662,7 +764,33 @@ public class YConvertNumberBytes {
         return Float.intBitsToFloat(value);
     }
 
-    public static float BTF(byte[] bytes, int index) {
-        return bytesToFloat(bytes, index);
+    /**
+     * float 和 网络字节序的 byte[] 数组之间的转换
+     * 小端
+     *
+     * @param f      float
+     * @param array  byte数组
+     * @param offset int数组的第offset位
+     */
+    public static byte[] floatToBytesMin(float f, byte[] array, int offset) {
+        byte[] value = floatToBytesMin(f);
+        System.arraycopy(value, 0, array, offset, 4);
+        return value;
+    }
+
+    /**
+     * 字节转换为浮点
+     * 小端
+     *
+     * @param bytes 字节（至少4个字节）
+     * @param index 开始位置
+     * @return float
+     */
+    public static float bytesToFloatMin(byte[] bytes, int index) {
+        int value = 0;
+        for (int i = 0; i < 4; i++) {
+            value |= ((bytes[3 - i + index] & 0xff)) << (8 * i);
+        }
+        return Float.intBitsToFloat(value);
     }
 }

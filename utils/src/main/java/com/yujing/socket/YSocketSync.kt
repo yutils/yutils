@@ -26,7 +26,6 @@ import java.util.concurrent.TimeoutException
  */
 /*
 使用方法：
-Create.space(binding.wll)
 var ySocketSync: YSocketSync? = null
 
 //连接
