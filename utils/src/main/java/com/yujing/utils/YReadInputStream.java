@@ -278,7 +278,7 @@ public class YReadInputStream {
     }
 
     /**
-     * 读取inputStream数据到YBytes,一直不停组包，至少读取时间：leastTime。但是期间读取长度达到minReadLength，立即返回。
+     * 读取inputStream数据到YBytes,一直不停组包，但是期间读取长度达到minReadLength，立即返回。最多读取maxTime时间
      *
      * @param inputStream inputStream
      * @param maxTime     最多读取这么长时间
