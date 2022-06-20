@@ -240,7 +240,7 @@ public class YBitmapUtil {
                                  @ColorInt final int color,
                                  final float x,
                                  final float y) {
-        return addText(src, content, textSize, color, x, y, false);
+        return addText(src, content, textSize, color, x, y, Paint.Align.LEFT, false);
     }
 
     /**
@@ -252,6 +252,31 @@ public class YBitmapUtil {
      * @param color    颜色
      * @param x        横坐标
      * @param y        纵坐标
+     * @param align    字体对齐方式，如：Paint.Align.CENTER
+     * @return 最终添加文字的图片
+     */
+    public static Bitmap addText(final Bitmap src,
+                                 final String content,
+                                 final int textSize,
+                                 @ColorInt final int color,
+                                 final float x,
+                                 final float y,
+                                 final Paint.Align align) {
+        return addText(src, content, textSize, color, x, y, align, false);
+    }
+
+    /**
+     * 添加文字到图片上（文字水印）
+     * 举例：
+     * Bitmap bitmap = YBitmapUtil.addText(backgroundBitmap, "内容", 50, Color.WHITE, backgroundBitmap.getWidth()/2F, backgroundBitmap.getHeight()/2F,Paint.Align.CENTER, true);
+     *
+     * @param src      原始图片
+     * @param content  文字
+     * @param textSize 大小，像素
+     * @param color    颜色
+     * @param x        横坐标
+     * @param y        纵坐标
+     * @param align    字体对齐方式，如：Paint.Align.CENTER
      * @param recycle  最后是否释放图片
      * @return 最终添加文字的图片
      */
@@ -261,6 +286,7 @@ public class YBitmapUtil {
                                  @ColorInt final int color,
                                  final float x,
                                  final float y,
+                                 final Paint.Align align,
                                  final boolean recycle) {
         if (isEmptyBitmap(src) || content == null) return null;
         Bitmap ret = src.copy(src.getConfig(), true);
@@ -268,6 +294,7 @@ public class YBitmapUtil {
         Canvas canvas = new Canvas(ret);
         paint.setColor(color);
         paint.setTextSize(textSize);
+        paint.setTextAlign(align);
         Rect bounds = new Rect();
         paint.getTextBounds(content, 0, content.length(), bounds);
         canvas.drawText(content, x, y + textSize, paint);
@@ -278,47 +305,116 @@ public class YBitmapUtil {
     /**
      * 添加图片到图片上（图片水印）
      *
-     * @param src       原始图片
-     * @param watermark 水印图片
-     * @param x         横坐标
-     * @param y         纵坐标
-     * @param alpha     透明度【0..255】
+     * @param background 背景图片
+     * @param watermark  水印图片
+     * @param x          横坐标
+     * @param y          纵坐标
+     * @param alpha      透明度【0..255】，255为不透明
      * @return 最终添加图片的图片
      */
-    public static Bitmap addImage(final Bitmap src,
+    public static Bitmap addImage(final Bitmap background,
                                   final Bitmap watermark,
                                   final int x, final int y,
                                   final int alpha) {
-        return addImage(src, watermark, x, y, alpha, false);
+        return addImage(background, watermark, x, y, alpha, false);
     }
 
     /**
      * 添加图片到图片上（图片水印）
+     * 举例：
+     * Bitmap bitmap = YBitmapUtil.addImage(backgroundBitmap, qrBitmap, 176, 481, 255,true);
      *
-     * @param src       原始图片
-     * @param watermark 水印图片
-     * @param x         横坐标
-     * @param y         纵坐标
-     * @param alpha     透明度【0..255】
-     * @param recycle   最后是否释放原图片
+     * @param background 背景图片
+     * @param watermark  水印图片
+     * @param x          横坐标
+     * @param y          纵坐标
+     * @param alpha      透明度【0..255】，255为不透明
+     * @param recycle    最后是否释放原图片
      * @return 最终添加图片的图片
      */
-    public static Bitmap addImage(final Bitmap src,
+    public static Bitmap addImage(final Bitmap background,
                                   final Bitmap watermark,
                                   final int x,
                                   final int y,
                                   final int alpha,
                                   final boolean recycle) {
-        if (isEmptyBitmap(src)) return null;
-        Bitmap ret = src.copy(src.getConfig(), true);
+        if (isEmptyBitmap(background)) return null;
+        Bitmap ret = background.copy(background.getConfig(), true);
         if (!isEmptyBitmap(watermark)) {
             Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-            Canvas canvas = new Canvas(ret);
             paint.setAlpha(alpha);
+            Canvas canvas = new Canvas(ret);
             canvas.drawBitmap(watermark, x, y, paint);
         }
-        if (recycle && !src.isRecycled() && ret != src) src.recycle();
+        if (recycle && !background.isRecycled() && ret != background) background.recycle();
         return ret;
+    }
+
+    /**
+     * 添加图片到图片上（图片水印）
+     * 举例：
+     * Matrix matrix = new Matrix();
+     * matrix.postScale(0.5F, 0.5F); //缩放
+     * matrix.postTranslate(x,y); //平移
+     * Bitmap bitmap = YBitmapUtil.addImage(backgroundBitmap, qrBitmap, matrix, 255,true);
+     *
+     * @param background 背景图片
+     * @param watermark  水印图片
+     * @param matrix     矩阵控制
+     * @param alpha      透明度【0..255】，255为不透明
+     * @param recycle    最后是否释放原图片
+     * @return 最终添加图片的图片
+     */
+    public static Bitmap addImage(final Bitmap background,
+                                  final Bitmap watermark,
+                                  final int alpha,
+                                  final Matrix matrix,
+                                  final boolean recycle) {
+        if (isEmptyBitmap(background)) return null;
+        Bitmap ret = background.copy(background.getConfig(), true);
+        if (!isEmptyBitmap(watermark)) {
+            Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            paint.setAlpha(alpha);
+            Canvas canvas = new Canvas(ret);
+            canvas.drawBitmap(watermark, matrix, paint);
+        }
+        if (recycle && !background.isRecycled() && ret != background) background.recycle();
+        return ret;
+    }
+
+    /**
+     * 向图片中心添加logo图片 (推荐)
+     * 举例：
+     * Bitmap bitmap = YBitmapUtil.addLogo(backgroundBitmap, qrBitmap, 0.5F, 0, 0, 255);
+     *
+     * @param background 背景图片
+     * @param logoBitmap logo图片
+     * @param percent    比例,0.0-1.0F,小于0或大于1，默认0.2
+     * @param deviationX 偏移X
+     * @param deviationY 偏移Y
+     * @param alpha      透明度【0..255】，255为不透明
+     * @return 添加logo的图片
+     */
+    private static Bitmap addImage(Bitmap background, Bitmap logoBitmap, float percent, float deviationX, float deviationY, int alpha) {
+        if (background == null) return null;
+        if (logoBitmap == null) return background;
+
+        int srcWidth = background.getWidth();
+        int srcHeight = background.getHeight();
+        int logoWidth = logoBitmap.getWidth();
+        int logoHeight = logoBitmap.getHeight();
+
+        Bitmap bitmap = Bitmap.createBitmap(srcWidth, srcHeight, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        canvas.drawBitmap(background, 0, 0, null);
+
+        Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        paint.setAlpha(alpha);
+        //传值不合法时使用0.2F
+        if (percent < 0F || percent > 1F) percent = 0.2F;
+        canvas.scale(percent, percent, srcWidth / 2F, srcHeight / 2F);
+        canvas.drawBitmap(logoBitmap, srcWidth / 2F - logoWidth / 2F + deviationX, srcHeight / 2F - logoHeight / 2F + deviationY, paint);
+        return bitmap;
     }
 
     /**
