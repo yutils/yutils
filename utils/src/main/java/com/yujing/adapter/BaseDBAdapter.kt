@@ -12,13 +12,20 @@ import androidx.recyclerview.widget.RecyclerView
  */
 /*
 用法举例：
-class UserAdapter(var data: MutableList<User>) : BaseDBAdapter<User>(R.layout.user_item, data) {
+class UserAdapter(var data: List<User>) : BaseDBAdapter<User>(R.layout.user_item, data) {
     override fun item(holder: BaseDBHolder, position: Int) {
         val binding = holder.binding as UserItemBinding
         val item = list?.get(position) as User
 
         binding.user = item
         binding.iv.setOnClickListener { YToast.show("点击：" + item.name) }
+    }
+}
+
+class UserAdapter<T>(var data: List<T>) : BaseDBAdapter<T>(R.layout.user_item, data) {
+    override fun item(holder: BaseDBHolder, position: Int) {
+        val binding = holder.binding as UserItemBinding
+        val item = list?.get(position) as User
     }
 }
 

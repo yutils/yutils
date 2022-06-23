@@ -202,9 +202,10 @@ public class YTts {
             });
             return this;
         }
-        if (initState != 0 || speak == null || textToSpeech == null) return this;
+        if (initState != 0 || speak == null || speak.isEmpty() || textToSpeech == null) return this;
         if (filter != null) speak = filter.filter(speak);
-        textToSpeech.setSpeechRate(speechRate);//速度
+        if (speak == null || speak.isEmpty()) return this;
+                textToSpeech.setSpeechRate(speechRate);//速度
         textToSpeech.setPitch(pitch);// 设置音调，值越大声音越尖（女生），值越小则变成男声,1.0是常规
         if (Build.VERSION.SDK_INT >= 21) {
             textToSpeech.speak(speak, TextToSpeech.QUEUE_FLUSH, null, null);
@@ -257,8 +258,9 @@ public class YTts {
             });
             return this;
         }
-        if (initState != 0 || speak == null || textToSpeech == null) return this;
+        if (initState != 0 || speak == null || speak.isEmpty()|| textToSpeech == null) return this;
         if (filter != null) speak = filter.filter(speak);
+        if (speak == null || speak.isEmpty()) return this;
         textToSpeech.setSpeechRate(speechRate);//速度
         textToSpeech.setPitch(pitch);// 设置音调，值越大声音越尖（女生），值越小则变成男声,1.0是常规
         if (Build.VERSION.SDK_INT >= 21) {
