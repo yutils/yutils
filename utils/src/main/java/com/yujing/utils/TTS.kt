@@ -98,7 +98,7 @@ object TTS {
     fun speak(str: String?) {
         if (initState == -1) return init(YApp.get()) { if (it) speak(str) }
         if (initState != 0 || str == null || str.isEmpty() || textToSpeech == null) return
-        val speak: String? = filter?.invoke(str)
+        val speak: String? = if (filter != null) filter?.invoke(str) else str
         if (speak == null || speak.isEmpty()) return
         textToSpeech?.setSpeechRate(speechRate) //速度
         textToSpeech?.setPitch(pitch) // 设置音调，值越大声音越尖（女生），值越小则变成男声,1.0是常规
@@ -179,7 +179,7 @@ object TTS {
     fun speakQueue(str: String?) {
         if (initState == -1) return init(YApp.get()) { if (it) speakQueue(str) }
         if (initState != 0 || str == null || str.isEmpty() || textToSpeech == null) return
-        val speak: String? = filter?.invoke(str)
+        val speak: String? = if (filter != null) filter?.invoke(str) else str
         if (speak == null || speak.isEmpty()) return
         textToSpeech?.setSpeechRate(speechRate) //速度
         textToSpeech?.setPitch(pitch) // 设置音调，值越大声音越尖（女生），值越小则变成男声,1.0是常规
