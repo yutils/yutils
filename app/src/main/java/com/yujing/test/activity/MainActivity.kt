@@ -45,6 +45,7 @@ class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
                 YLifeEvent.onCreate -> {
                     YLog.d("MainActivity，onCreate")
                 }
+                else -> {}
             }
         }
 

@@ -19,7 +19,7 @@
 
 ## Gradle 引用
 
-[子module添加依赖，当前最新版：————> 2.0.4　　　　![最新版](https://img.shields.io/badge/%E6%9C%80%E6%96%B0%E7%89%88-2.0.4-green.svg)](https://search.maven.org/artifact/com.kotlinx/yutils)
+[添加依赖，当前最新版：————> 2.0.4　　　　![最新版](https://img.shields.io/badge/%E6%9C%80%E6%96%B0%E7%89%88-2.0.4-green.svg)](https://search.maven.org/artifact/com.kotlinx/yutils)
 
 ```
 dependencies {
@@ -35,7 +35,11 @@ allprojects {
         //google()
         //mavenCentral()
         
-        //如果mavenCentral不容易拉取,可以试试直接用maven.org
+        //阿里云镜像
+        maven { url 'https://maven.aliyun.com/repository/public' }
+        maven { url 'https://maven.aliyun.com/repository/google' }
+
+        //如果还是不容易拉取,可以试试直接用maven.org
         maven { url 'https://repo1.maven.org/maven2' }
     }
 ```
