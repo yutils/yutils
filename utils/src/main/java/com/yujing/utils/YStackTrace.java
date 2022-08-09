@@ -45,7 +45,13 @@ public class YStackTrace {
      */
     public static String getLine(int lineDeviation) {
         final StackTraceElement[] stackTrace = new Throwable().getStackTrace();
-        StackTraceElement targetElement = stackTrace[1 + lineDeviation];
+        StackTraceElement targetElement = null;
+        try {
+            targetElement = stackTrace[1 + lineDeviation];
+        } catch (ArrayIndexOutOfBoundsException e) {
+            YLog.e("YLog", "错误！堆栈跟踪偏移行数组越界。\n" + e.getMessage());
+            return null;
+        }
         final String fileName = getJavaFileName(targetElement);
         return new Formatter()
                 .format("%s, %s.%s(%s:%d)",

@@ -9,7 +9,7 @@ Welcome to my GitHub ! ! !
 ----
 ## 我的项目列表
 ----
-**1.  [YSerialPort](https://github.com/yutils/YSerialPort)**  ---->  [https://github.com/yutils/databinding](https://github.com/yutils/databinding)  
+**1.  [YSerialPort](https://github.com/yutils/YSerialPort)**  ---->  [https://github.com/yutils/YSerialPort](https://github.com/yutils/YSerialPort)  
 安卓串口通信app，实现读取串口数据，实现重新组包一次性读取完整数据。可连续读取任意长度数据。觉着不错的话可以 Start 一下哟！
 
 ----

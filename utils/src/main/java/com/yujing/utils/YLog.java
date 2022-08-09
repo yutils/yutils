@@ -345,11 +345,16 @@ public class YLog {
      */
     private static void println(String TAG, String msg, Throwable tr, String type, int lineDeviation) {
         String codeLine = YStackTrace.getLine(2 + lineDeviation);
+        boolean error = codeLine == null;
+        if (error) {
+            codeLine = YStackTrace.getLine(2);
+            msg = "错误！无法定位到方法行。\n" + msg;
+        }
         if (msg == null) {
             if (YClass.isAndroid())
-                Log.e(TAG, codeLine + " \n" + "日志内容为:null", tr);
+                Log.e(TAG, codeLine + " \n" + "null", tr);
             else
-                System.err.println("TAG:" + TAG + "\tcodeLine:" + codeLine + " \n" + "日志内容为:null" + ((tr == null) ? "" : ("\tThrowable:" + tr.getMessage())));
+                System.err.println("TAG:" + TAG + "\tcodeLine:" + codeLine + " \n" + "null" + ((tr == null) ? "" : ("\tThrowable:" + tr.getMessage())));
             return;
         }
         List<StringBuilder> lines = YString.groupActual(msg, LOG_MAX_LENGTH - codeLine.length() - 10);
