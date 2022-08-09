@@ -1,6 +1,7 @@
 package com.yujing.utils
 
 import android.view.Gravity
+import androidx.appcompat.app.AlertDialog
 import com.yujing.view.YAlertDialogUtils
 import com.yutils.http.YHttp
 import com.yutils.http.contract.YHttpDownloadFileListener
@@ -24,9 +25,17 @@ val url = "https://down.qq.com/qqweb/QQ_1/android_apk/AndroidQQ_8.4.5.4745_53706
 
 //实例化
 var yVersionUpdate = YVersionUpdate()
+//设置按钮背景颜色
+yVersionUpdate.alertDialogListener = {
+    val buttonOk = it.getButton(AlertDialog.BUTTON_POSITIVE)
+    val buttonCancel = it.getButton(AlertDialog.BUTTON_NEGATIVE)
+    YView.setButtonBackgroundTint(buttonOk, Color.parseColor("#6045D0A0"), Color.parseColor("#FF45D0A0"))
+    YView.setButtonBackgroundTint(buttonCancel, Color.parseColor("#6045D0A0"), Color.parseColor("#FF45D0A0"))
+}
 
 //服务器版本号, 是否强制更新, apk下载地址
 yVersionUpdate?.update(999, true, url)
+yVersionUpdate?.update(999, true, "1.0.1","这是更新说明")
 
 //通知栏下载需要调用onDestroy()
 fun onDestroy() {
@@ -86,6 +95,9 @@ class YVersionUpdate {
     //yVersionUpdate.dialog.cancelButtonTextColor= Color.parseColor("#FFFFFF")
     val dialog = YAlertDialogUtils()
 
+    //当前显示的AlertDialog
+    var alertDialogListener: ((AlertDialog) -> Unit)? = null
+
     /**
      * 立即检查一次更新
      */
@@ -138,10 +150,10 @@ class YVersionUpdate {
 //        val dialog = AlertDialog.Builder(activity).setTitle("软件更新").setMessage(sb) // 设置内容
 //            .setPositiveButton("确定", null).create() // 创建
 //        dialog.show()
-
         dialog.contentTextViewGravity = Gravity.START
         dialog.okButtonString = "确定"
-        dialog.showMessage("软件更新", sb) {}
+        val alertDialog = dialog.showMessage("软件更新", sb) {}
+        alertDialogListener?.invoke(alertDialog)
     }
 
     /**
@@ -173,11 +185,11 @@ class YVersionUpdate {
 //                }.create() // 创建
 //        dialog.show()
 
-
         dialog.contentTextViewGravity = Gravity.START
         dialog.okButtonString = "更新(${YUtils.getVersionCode()}→$serverCode)"
         dialog.cancelButtonString = if (isForceUpdate) "退出APP" else "暂不更新"
-        dialog.showMessageCancel("软件更新", sb, {
+        dialog.cancelable = !isForceUpdate
+        val alertDialog = dialog.showMessageCancel("软件更新", sb, {
             when {
                 useNotificationDownload -> notifyDownApkFile()
                 useOkHttp -> okHttpDownApkFile()
@@ -190,6 +202,7 @@ class YVersionUpdate {
                 exitProcess(0)
             }
         })
+        alertDialogListener?.invoke(alertDialog)
     }
 
     /**

@@ -77,6 +77,14 @@ YAlertDialogUtils().showList("请选择一个", listOf("123","456","789","000").
 YAlertDialogUtils().showEdit("测试","请输入内容"){
     //YLog.i("输入了：$it")
 }
+
+
+//显示后再修改按钮颜色
+val it=yDialog.showMessageCancel("这是标题",content) {}
+val buttonOk = it.getButton(AlertDialog.BUTTON_POSITIVE)
+val buttonCancel = it.getButton(AlertDialog.BUTTON_NEGATIVE)
+YView.setButtonBackgroundTint(buttonOk, Color.parseColor("#6045D0A0"), Color.parseColor("#FF45D0A0"))
+YView.setButtonBackgroundTint(buttonCancel, Color.parseColor("#6045D0A0"), Color.parseColor("#FF45D0A0"))
  */
 /**
  * AlertDialog常用弹窗封装
@@ -249,11 +257,12 @@ class YAlertDialogUtils {
         if (showCancel) okLayoutParams.marginStart = YScreenUtil.dp2px(5F)
         okLayoutParams.gravity = Gravity.CENTER
         okButton.layoutParams = okLayoutParams
+        YView.setPressBackgroundColor(okButton, okButtonBackgroundColor.xor(Color.parseColor("#60000000")), okButtonBackgroundColor)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             //相当于  color^0x60000000
             val colorStateList = ColorStateList(
                 arrayOf(intArrayOf(android.R.attr.state_pressed), intArrayOf()),
-                intArrayOf((okButtonBackgroundColor.xor(Color.parseColor("#60000000"))), okButtonBackgroundColor)
+                intArrayOf(okButtonBackgroundColor.xor(Color.parseColor("#60000000")), okButtonBackgroundColor)
             )
             okButton.backgroundTintList = colorStateList
         } else {
@@ -271,11 +280,12 @@ class YAlertDialogUtils {
         if (showCancel) cancelLayoutParams.marginEnd = YScreenUtil.dp2px(5F)
         cancelLayoutParams.gravity = Gravity.CENTER
         cancelButton.layoutParams = cancelLayoutParams
+        YView.setPressBackgroundColor(cancelButton, cancelButtonBackgroundColor.xor(Color.parseColor("#60000000")), cancelButtonBackgroundColor)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             //相当于  color^0x60000000
             val colorStateList = ColorStateList(
                 arrayOf(intArrayOf(android.R.attr.state_pressed), intArrayOf()),
-                intArrayOf((cancelButtonBackgroundColor.xor(Color.parseColor("#60000000"))), cancelButtonBackgroundColor)
+                intArrayOf(cancelButtonBackgroundColor.xor(Color.parseColor("#60000000")), cancelButtonBackgroundColor)
             )
             cancelButton.backgroundTintList = colorStateList
         } else {

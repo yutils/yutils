@@ -1,10 +1,12 @@
 package com.yujing.view
 
 import android.annotation.SuppressLint
+import android.content.res.ColorStateList
 import android.graphics.*
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.StateListDrawable
+import android.os.Build
 import android.util.TypedValue
 import android.view.MotionEvent
 import android.view.View
@@ -14,6 +16,7 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.ColorInt
+import androidx.annotation.RequiresApi
 
 /**
  * View的一些基本操作
@@ -276,6 +279,19 @@ object YView {
         val normalDrawableOk = createGradientDrawable(colorUp, 0, Color.WHITE, 0F, 0F, 0F, 0F)
         view.background = createStateListDrawable(focusedDrawableOk, pressedDrawableOk, normalDrawableOk)
     }
+
+    /**
+     * 设置按钮ButtonBackgroundTint
+     */
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+    fun setButtonBackgroundTint(view: Button, @ColorInt colorPress: Int = Color.parseColor("#51A691").xor(Color.parseColor("#60000000")), @ColorInt colorUp: Int = Color.parseColor("#51A691")) {
+        val colorStateList = ColorStateList(
+            arrayOf(intArrayOf(android.R.attr.state_pressed), intArrayOf()),
+            intArrayOf(colorPress, colorUp)
+        )
+        view.backgroundTintList = colorStateList
+    }
+
 
     /**
      * 创建状态Drawable

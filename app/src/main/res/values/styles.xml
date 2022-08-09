@@ -4,4 +4,10 @@
         <item name="colorPrimaryDark">#41B9FA</item>
         <item name="colorAccent">#41B9FA</item>
     </style>
+
+<!--    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">-->
+<!--        <item name="colorPrimary">#41B9FA</item>-->
+<!--        <item name="colorPrimaryDark">#41B9FA</item>-->
+<!--        <item name="colorAccent">#41B9FA</item>-->
+<!--    </style>-->
 </resources>

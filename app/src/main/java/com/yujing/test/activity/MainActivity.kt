@@ -1,7 +1,9 @@
 package com.yujing.test.activity
 
+import android.graphics.Color
 import android.widget.EditText
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
 import com.yujing.base.contract.YLifeEvent
 import com.yujing.bus.ThreadMode
@@ -15,6 +17,7 @@ import com.yujing.test.base.KBaseActivity
 import com.yujing.test.databinding.ActivityAllTestBinding
 import com.yujing.utils.*
 import com.yujing.view.YAlertDialogUtils
+import com.yujing.view.YView
 import com.yutils.view.utils.Create
 
 
@@ -112,6 +115,12 @@ class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
             yVersionUpdate.useNotificationDownload = false
             val description = "1.更新了xxxxxxx\n2.新增xxxxxxxxxxx\n3.修复xxxxx的bug\n4.版本迭代如果出现异常或者问题，请尽快联系开发者，进行修复和处理。谢谢大家的积极配合。"
             //yVersionUpdate.dialog.okButtonBackgroundColor= Color.parseColor("#21A9FA")
+            yVersionUpdate.alertDialogListener = {
+                val buttonOk = it.getButton(AlertDialog.BUTTON_POSITIVE)
+                val buttonCancel = it.getButton(AlertDialog.BUTTON_NEGATIVE)
+                YView.setButtonBackgroundTint(buttonOk, Color.parseColor("#6045D0A0"), Color.parseColor("#FF45D0A0"))
+                YView.setButtonBackgroundTint(buttonCancel, Color.parseColor("#6045D0A0"), Color.parseColor("#FF45D0A0"))
+            }
             yVersionUpdate.update(634, true, url, "6.3.4", description + description + description)
         }
 
