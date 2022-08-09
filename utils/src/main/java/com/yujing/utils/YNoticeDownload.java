@@ -126,6 +126,7 @@ public class YNoticeDownload {
 
     private boolean finish = false;
 
+    @SuppressLint("Range")
     private void getProgress() {
         DownloadManager.Query query = new DownloadManager.Query().setFilterById(id);
         Cursor cursor = mDownloadManager.query(query);
@@ -188,6 +189,7 @@ public class YNoticeDownload {
     /**
      * 广播接收器，接受ACTION_DOWNLOAD_COMPLETE和ACTION_NOTIFICATION_CLICKED
      */
+    @SuppressLint("Range")
     class DownloadReceiver extends BroadcastReceiver {
         @SuppressWarnings("StatementWithEmptyBody")
         @Override

@@ -7,10 +7,15 @@ import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.Build;
 import android.util.DisplayMetrics;
+import android.view.Display;
+import android.view.KeyCharacterMap;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.Window;
 import android.view.WindowManager;
 
@@ -318,6 +323,11 @@ public class YScreenUtil {
         return statusHeight;
     }
 
+    /**
+     * 获得状态栏（顶部）的高度
+     *
+     * @return 高度
+     */
     public static int getStatusHeight() {
         return getStatusHeight(YApp.get());
     }
@@ -342,8 +352,33 @@ public class YScreenUtil {
         return navigationBarHeight;
     }
 
+    /**
+     * 获得导航栏（底部）的高度
+     *
+     * @return 高度
+     */
     public static int getNavigationHeight() {
         return getNavigationHeight(YApp.get());
+    }
+
+    /**
+     * 判断导航栏(底部)是否显示
+     *
+     * @return 是否显示
+     */
+    public boolean isNavigationBarShow(Activity activity) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            Display display = activity.getWindowManager().getDefaultDisplay();
+            Point size = new Point();
+            Point realSize = new Point();
+            display.getSize(size);
+            display.getRealSize(realSize);
+            return realSize.y != size.y;
+        } else {
+            boolean menu = ViewConfiguration.get(activity).hasPermanentMenuKey();
+            boolean back = KeyCharacterMap.deviceHasKey(KeyEvent.KEYCODE_BACK);
+            return !menu && !back;
+        }
     }
 
     /**
@@ -379,7 +414,6 @@ public class YScreenUtil {
         Rect frame = new Rect();
         activity.getWindow().getDecorView().getWindowVisibleDisplayFrame(frame);
         int statusHeight = frame.top;
-
         int width = getScreenWidth(activity);
         int height = getScreenHeight(activity);
         Bitmap bitmap;
@@ -402,6 +436,11 @@ public class YScreenUtil {
         return metrics;
     }
 
+    /**
+     * 获取DisplayMetrics对象
+     *
+     * @return DisplayMetrics
+     */
     public static DisplayMetrics getDisplayMetrics() {
         return getDisplayMetrics(YApp.get());
     }
