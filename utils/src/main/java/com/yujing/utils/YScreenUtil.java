@@ -366,7 +366,7 @@ public class YScreenUtil {
      *
      * @return 是否显示
      */
-    public boolean isNavigationBarShow(Activity activity) {
+    public static boolean isNavigationBarShow(Activity activity) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
             Display display = activity.getWindowManager().getDefaultDisplay();
             Point size = new Point();

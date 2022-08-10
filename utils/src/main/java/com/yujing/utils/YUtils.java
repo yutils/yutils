@@ -18,14 +18,12 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.os.StatFs;
 import android.provider.Settings;
-import android.telephony.PhoneNumberUtils;
 import android.telephony.SmsManager;
 import android.telephony.TelephonyManager;
 import android.text.Spannable;
@@ -546,22 +544,51 @@ public class YUtils {
      * @return 是否是第一次启动
      */
     public static boolean isUpdate(Context context) {
-        int versionCode = getVersionCode(context);
-        String versionName = getVersionName(context);
-        SharedPreferences shared = context.getSharedPreferences("AppVersion", 0);
-        if (versionCode != shared.getInt("versionCode", -1) || !versionName.equals(shared.getString("versionName", ""))) {
-            // 如果版本号有变化
-            SharedPreferences.Editor share = context.getSharedPreferences("AppVersion", 0).edit();
-            share.putString("versionName", versionName);// 写入数据
-            share.putInt("versionCode", versionCode);
-            share.apply();
-            return true;
-        }
-        return false;
+        return isUpdate(context, null);
     }
 
     public static boolean isUpdate() {
         return isUpdate(YApp.get());
+    }
+
+    /**
+     * 更新接口
+     */
+    public static interface UpdateListener {
+        void update(int oldCode, String oldName, int newCode, String newName);
+    }
+
+    /**
+     * 判断更新并回调
+     *
+     * @param listener 回调新旧版本号
+     * @return 是否是第一次启动
+     */
+    /*
+      YUtils.isUpdate(this) { oldCode, oldName, newCode, newName ->
+          YLog.i("$oldCode  $oldName  $newCode  $newName  ")
+      }
+      5  1.0.5  5  1.0.5
+     */
+    public static boolean isUpdate(Context context, UpdateListener listener) {
+        SharedPreferences shared = context.getSharedPreferences("AppVersion", 0);
+        int oldCode = shared.getInt("versionCode", -1);
+        String oldName = shared.getString("versionName", "");
+
+        int newCode = getVersionCode(context);
+        String newName = getVersionName(context);
+
+        if (listener != null) listener.update(oldCode, oldName, newCode, newName);
+
+        if (newCode != oldCode || !newName.equals(oldName)) {
+            // 如果版本号有变化
+            SharedPreferences.Editor share = context.getSharedPreferences("AppVersion", 0).edit();
+            share.putString("versionName", newName);// 写入数据
+            share.putInt("versionCode", newCode);
+            share.apply();
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -646,7 +673,7 @@ public class YUtils {
             //读取ping的内容，可以不加
             BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
             BufferedReader er = new BufferedReader(new InputStreamReader(p.getErrorStream()));
-            Thread thread1=new Thread(() -> {
+            Thread thread1 = new Thread(() -> {
                 try {
                     String content;
                     while ((content = br.readLine()) != null) {
@@ -664,7 +691,7 @@ public class YUtils {
             thread1.setName("ping-br");
             thread1.start();
 
-            Thread thread2= new Thread(() -> {
+            Thread thread2 = new Thread(() -> {
                 try {
                     String content;
                     while ((content = er.readLine()) != null) {
@@ -754,7 +781,7 @@ public class YUtils {
     }
 
     public static void copyToClipboard(String text) {
-        copyToClipboard(YApp.get(),text);
+        copyToClipboard(YApp.get(), text);
     }
 
     /**
@@ -771,6 +798,7 @@ public class YUtils {
         }
         return null;
     }
+
     public static String getClipboardLast() {
         return getClipboardLast(YApp.get());
     }
@@ -791,6 +819,7 @@ public class YUtils {
         }
         return strings;
     }
+
     public static List<String> getClipboardAll() {
         return getClipboardAll(YApp.get());
     }

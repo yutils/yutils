@@ -179,17 +179,27 @@ class YFragmentManager {
     /**
      * 重新加载fragment
      * 新的fragment替换旧的的Fragment，旧的fragment会触发onDestroy()，新的fragment会触onCreateView。
-     * 如果有回退栈，将清空回退栈
      * @param fragment 新的Fragment
      */
     @Synchronized
     fun replace(fragment: Fragment?) {
         if (fragment == null) return
-        backAll()
         val transaction = fragmentManager.beginTransaction()
         transaction.replace(layout, fragment)
         transaction.commit()
         currentFragment = fragment
+    }
+
+    /**
+     * 重新加载fragment
+     * 新的fragment替换旧的的Fragment，旧的fragment会触发onDestroy()，新的fragment会触onCreateView。
+     * 如果有回退栈，将清空回退栈
+     * @param fragment 新的Fragment
+     */
+    @Synchronized
+    fun replaceAndBackAll(fragment: Fragment?) {
+        backAll()
+        replace(fragment)
     }
 
     @Synchronized

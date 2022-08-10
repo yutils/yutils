@@ -93,7 +93,7 @@ class YVersionUpdate {
     //yVersionUpdate.dialog.okButtonTextColor= Color.parseColor("#FFFFFF")
     //yVersionUpdate.dialog.cancelButtonBackgroundColor= Color.parseColor("#21A9FA")
     //yVersionUpdate.dialog.cancelButtonTextColor= Color.parseColor("#FFFFFF")
-    val dialog = YAlertDialogUtils()
+    var dialog = YAlertDialogUtils()
 
     //当前显示的AlertDialog
     var alertDialogListener: ((AlertDialog) -> Unit)? = null
