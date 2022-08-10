@@ -194,6 +194,7 @@ class YFragmentManager {
      * 重新加载fragment
      * 新的fragment替换旧的的Fragment，旧的fragment会触发onDestroy()，新的fragment会触onCreateView。
      * 如果有回退栈，将清空回退栈
+     * fragment嵌套时候不能使用
      * @param fragment 新的Fragment
      */
     @Synchronized
@@ -276,7 +277,6 @@ class YFragmentManager {
         if (fragment == null) return
         if (fragment.javaClass.name == currentFragment?.javaClass?.name) return
         val transaction = fragmentManager.beginTransaction()
-        transaction.addToBackStack(null)
         transaction.replace(layout, fragment)
         transaction.commit()
         currentFragment = fragment
