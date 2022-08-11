@@ -10,40 +10,29 @@ import com.yujing.utils.YLog
 /**
  * fragment管理器
  *
- * @author 余静 2022年8月5日12:11:46
+ * @author 余静 2022年8月11日15:58:24
  */
 /*用法
-private var yFragmentManager: YFragmentManager? = null
-private var fragment1: Fragment1? = null
-private var fragment2: Fragment2? = null
-private var fragment3: Fragment3? = null
-
 //实例化fragment
-yFragmentManager = YFragmentManager(R.id.fl_main, this)
-fragment1 = Fragment1()
-fragment2 = Fragment2()
-fragment3 = Fragment3()
-
+Global.fmHome = YFragmentManager(R.id.fl, activity)
 
 //显示/切换fragment
-yFragmentManager!!.show(fragment1)
-
+Global.fmHome.show(fragment1)
 //重新加载fragment，会触发新fragment的onCreateView,旧fragment的onDestroy
-yFragmentManager!!.replace(fragment1)
+Global.fmHome.replace(fragment1)
 
 //前进
-yFragmentManager!!.goto(Fragment1())
+Global.fmHome.goto(Fragment1())
+//前进
+Global.fmHome.goto(Fragment2())
 //后退
-yFragmentManager!!.back()
+Global.fmHome.back()
 //后退到指定级
-yFragmentManager!!.back(Fragment1::class.java.name)
+Global.fmHome.back(Fragment1::class.java.name)
 //后退全部
-yFragmentManager!!.backAll()
+Global.fmHome.backAll()
  */
 class YFragmentManager {
-    //当前fragment
-    var currentFragment: Fragment? = null
-
     //布局
     var layout: Int
 
@@ -73,25 +62,44 @@ class YFragmentManager {
     }
 
     /**
-     * 显示fragment
-     *
-     * @param targetFragment fragment
+     * 获取最顶层fragment
+     */
+    fun getTopFragment(): Fragment? {
+        if (fragmentManager.fragments.size == 0) return null
+        return fragmentManager.fragments[fragmentManager.fragments.size - 1]
+    }
+
+    /**
+     * 显示/切换 fragment
+     * fragment嵌套的时候使用，避免show(fragment)方法隐藏父fragment
+     * @param targetFragment 要显示的fragment
+     * @param hideFragment 要隐藏的fragment
      */
     @Synchronized
-    fun show(targetFragment: Fragment?) {
+    fun show(targetFragment: Fragment?, hideFragment: Fragment?) {
         if (targetFragment == null) return
         val ft = fragmentManager.beginTransaction()
         //如果没有添加过,就先添加，添加会自动显示
         if (!targetFragment.isAdded) {
-            currentFragment?.let { ft.hide(it) }
+            hideFragment?.let { ft.hide(it) }
             ft.add(layout, targetFragment).commit()
         } else {
             //如果已经添加过，就直接显示
-            //如果存在currentFragment不是targetFragment，先隐藏currentFragment
-            if (targetFragment != currentFragment) currentFragment?.let { ft.hide(it) }
+            //如果存在topFragment不是targetFragment，先隐藏topFragment
+            if (targetFragment != hideFragment) hideFragment?.let { ft.hide(it) }
+            ft.hide(hideFragment!!)
             ft.show(targetFragment).commit()
         }
-        currentFragment = targetFragment //记录当前fragment
+    }
+
+    /**
+     * 显示/切换 fragment
+     *
+     * @param targetFragment 要显示的fragment
+     */
+    @Synchronized
+    fun show(targetFragment: Fragment?) {
+        show(targetFragment, getTopFragment())
     }
 
     /**
@@ -99,7 +107,7 @@ class YFragmentManager {
      */
     @Synchronized
     fun show() {
-        show(currentFragment)
+        show(getTopFragment())
     }
 
     /**
@@ -118,7 +126,7 @@ class YFragmentManager {
      */
     @Synchronized
     fun hide() {
-        hide(currentFragment)
+        hide(getTopFragment())
     }
 
     /**
@@ -133,7 +141,6 @@ class YFragmentManager {
             .remove(fragment)
             .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)
             .commit()
-        if (fragment == currentFragment) currentFragment = null
     }
 
     /**
@@ -187,7 +194,14 @@ class YFragmentManager {
         val transaction = fragmentManager.beginTransaction()
         transaction.replace(layout, fragment)
         transaction.commit()
-        currentFragment = fragment
+    }
+
+    /**
+     * 重新加载当前页面
+     */
+    @Synchronized
+    fun replace() {
+        replace(getTopFragment())
     }
 
     /**
@@ -203,11 +217,6 @@ class YFragmentManager {
         replace(fragment)
     }
 
-    @Synchronized
-    fun replace() {
-        replace(currentFragment)
-    }
-
     /**
      * 打开一个新的fragmentManager，当前fragment不会被销毁，可以回退
      */
@@ -215,12 +224,11 @@ class YFragmentManager {
     fun goto(fragment: Fragment?) {
         if (fragment == null) return
         val transaction = fragmentManager.beginTransaction()
-        currentFragment?.let {
+        getTopFragment()?.let {
             transaction.addToBackStack(it::class.java.name)
         }
         transaction.replace(layout, fragment)
         transaction.commit()
-        currentFragment = fragment
     }
 
     /**
@@ -228,29 +236,44 @@ class YFragmentManager {
      */
     @Synchronized
     fun back(): Boolean {
+        printBackStack()
+        val num = fragmentManager.backStackEntryCount
+        if (num == 0) return false
+        fragmentManager.popBackStack()
+        return num > 0
+    }
+
+    /**
+     * 打印全部fragment
+     */
+    fun printFragments(): String {
+        val num = fragmentManager.fragments.size
+        var s = "Fragment数量：$num，分别是："
+        for (f in fragmentManager.fragments) s += "\n" + f.javaClass.name
+        YLog.d("Fragment", s)
+        return s
+    }
+
+    /**
+     * 打印全部fragment回退栈
+     */
+    fun printBackStack(): String {
         val num = fragmentManager.backStackEntryCount
         var s = "Fragment可回退栈数量：$num，分别是："
         for (i in 0 until num) s += "\n" + fragmentManager.getBackStackEntryAt(i).name
         YLog.d("Fragment", s)
-        if (num == 0) return false
-        hide(currentFragment)
-        remove(currentFragment)
-        fragmentManager.popBackStack()
-        return num > 0
+        return s
     }
+
 
     /**
      * 回退到指定级
      */
     @Synchronized
     fun back(name: String): Boolean {
+        printBackStack()
         val num = fragmentManager.backStackEntryCount
-        var s = "Fragment可回退栈数量：$num，分别是："
-        for (i in 0 until num) s += "\n" + fragmentManager.getBackStackEntryAt(i).name
-        YLog.d("Fragment", s)
         if (num == 0) return false
-        hide(currentFragment)
-        remove(currentFragment)
         fragmentManager.popBackStack(name, FragmentManager.POP_BACK_STACK_INCLUSIVE)
         return num > 0
     }
@@ -260,6 +283,7 @@ class YFragmentManager {
      */
     @Synchronized
     fun backAll(): Boolean {
+        printBackStack()
         YLog.d("Fragment", "退出全部栈")
         val num = fragmentManager.backStackEntryCount
         for (i in 0 until num) fragmentManager.popBackStack()
@@ -267,7 +291,7 @@ class YFragmentManager {
     }
 
     /**
-     * 重新加载fragment,如果currentFragment和fragment一样，不做任何操作
+     * 重新加载fragment,如果topFragment和fragment一样，不做任何操作
      * 新的fragment替换旧的的Fragment，旧的fragment会触发onDestroy()，新的fragment会触onCreateView。
      *
      * @param fragment 新的Fragment
@@ -275,10 +299,9 @@ class YFragmentManager {
     @Synchronized
     fun replaceIgnoreCurrent(fragment: Fragment?) {
         if (fragment == null) return
-        if (fragment.javaClass.name == currentFragment?.javaClass?.name) return
+        if (fragment.javaClass.name == getTopFragment()?.javaClass?.name) return
         val transaction = fragmentManager.beginTransaction()
         transaction.replace(layout, fragment)
         transaction.commit()
-        currentFragment = fragment
     }
 }
