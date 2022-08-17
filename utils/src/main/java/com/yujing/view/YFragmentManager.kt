@@ -62,11 +62,20 @@ class YFragmentManager {
     }
 
     /**
-     * 获取最顶层fragment
+     * 获取最顶层fragment，当前layout的最顶层
      */
     fun getTopFragment(): Fragment? {
-        if (fragmentManager.fragments.size == 0) return null
-        return fragmentManager.fragments[fragmentManager.fragments.size - 1]
+        return getTopFragment(this.layout)
+    }
+
+    /**
+     * 获取最顶层fragment，id是layout，一个layout里面多个fragment，他们的id一样
+     */
+    fun getTopFragment(id: Int): Fragment? {
+        for (f in fragmentManager.fragments) {
+            if (id == f.id) return f
+        }
+        return null
     }
 
     /**
@@ -249,7 +258,7 @@ class YFragmentManager {
     fun printFragments(): String {
         val num = fragmentManager.fragments.size
         var s = "Fragment数量：$num，分别是："
-        for (f in fragmentManager.fragments) s += "\n" + f.javaClass.name
+        for (f in fragmentManager.fragments) s += "\n" + f.javaClass.name + "  fragment.id=" + f.id + "  layout=" + layout
         YLog.d("Fragment", s)
         return s
     }
@@ -300,6 +309,22 @@ class YFragmentManager {
     fun replaceIgnoreCurrent(fragment: Fragment?) {
         if (fragment == null) return
         if (fragment.javaClass.name == getTopFragment()?.javaClass?.name) return
+        val transaction = fragmentManager.beginTransaction()
+        transaction.replace(layout, fragment)
+        transaction.commit()
+    }
+
+    /**
+     * 重新加载fragment,如果已经存在该fragment，不做任何操作
+     * 新的fragment替换旧的的Fragment，旧的fragment会触发onDestroy()，新的fragment会触onCreateView。
+     *
+     * @param fragment 新的Fragment
+     */
+    @Synchronized
+    fun replaceIgnoreExistence(fragment: Fragment?) {
+        if (fragment == null) return
+        for (exist in fragmentManager.fragments)
+            if (fragment.javaClass.name == exist.javaClass.name) return
         val transaction = fragmentManager.beginTransaction()
         transaction.replace(layout, fragment)
         transaction.commit()

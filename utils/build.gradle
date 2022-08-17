@@ -45,6 +45,6 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-common-java8:2.4.1'
     implementation 'com.kotlinx:yhttp:1.1.4'
     //okhttp，https://search.maven.org/search?q=g:com.squareup.okhttp3%20AND%20a:okhttp
-    implementation 'com.squareup.okhttp3:okhttp:4.9.3'
+    implementation 'com.squareup.okhttp3:okhttp:4.10.0'
 }
 apply from: "${getRootDir().absolutePath}/gradles/publish-maven.gradle"
