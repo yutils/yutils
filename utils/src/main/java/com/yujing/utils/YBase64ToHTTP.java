@@ -59,6 +59,7 @@ public class YBase64ToHTTP {
                 sb.append("==");
                 break;
             }
+            if (i >= len) break;
             b2 = data[i++] & 0xff;
             if (i == len) {
                 sb.append(ENCODE[b1 >>> 2]);
@@ -67,6 +68,7 @@ public class YBase64ToHTTP {
                 sb.append("=");
                 break;
             }
+            if (i >= len) break;
             b3 = data[i++] & 0xff;
             sb.append(ENCODE[b1 >>> 2]);
             sb.append(ENCODE[((b1 & 0x03) << 4) | ((b2 & 0xf0) >>> 4)]);
@@ -100,6 +102,7 @@ public class YBase64ToHTTP {
             if (b1 == -1)
                 break;
             /* b2 */
+            if (i >= len) break;
             do {
                 b2 = DECODE[data[i++]];
             } while (i < len && b2 == -1);
@@ -107,6 +110,7 @@ public class YBase64ToHTTP {
                 break;
             sb.append((char) ((b1 << 2) | ((b2 & 0x30) >>> 4)));
             /* b3 */
+            if (i >= len) break;
             do {
                 b3 = data[i++];
                 if (b3 == 61)
@@ -117,6 +121,7 @@ public class YBase64ToHTTP {
                 break;
             sb.append((char) (((b2 & 0x0f) << 4) | ((b3 & 0x3c) >>> 2)));
             /* b4 */
+            if (i >= len) break;
             do {
                 b4 = data[i++];
                 if (b4 == 61)
