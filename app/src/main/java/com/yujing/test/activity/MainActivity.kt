@@ -3,8 +3,10 @@ package com.yujing.test.activity
 import android.graphics.Color
 import android.widget.EditText
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
+import com.google.gson.Gson
 import com.yujing.base.contract.YLifeEvent
 import com.yujing.bus.ThreadMode
 import com.yujing.bus.YBus
@@ -103,7 +105,7 @@ class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
             }
         }
 
-        Create.button(binding.wll, "选择图片") {
+        Create.button(binding.wll, "选择图片并剪切") {
             YTake.chosePictureAndCorp(this) {
                 val bitmap = YConvert.uri2Bitmap(this, it)
                 YImageDialog.show(bitmap)
@@ -207,6 +209,31 @@ class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
 
         Create.button(binding.wll, "关闭") {
             ySocketSync?.exit()
+        }
+
+        Create.button(binding.wll, "读写配置文件") {
+            val path = YPath.get() + "/config.txt"
+            YPropertiesUtils.rootExplain = "这是一个配置文件"
+            //提前设置key要匹配的注释内容
+            YPropertiesUtils.explainMap["key1"] = "第一个普通的key"
+            YPropertiesUtils.explainMap["中文key2"] = "中文key"
+            YPropertiesUtils.explainMap["ip"] = "一个ip地址"
+            YPropertiesUtils.explainMap["json"] = "这是一个对象"
+            val map: HashMap<String, String> = HashMap()
+            map["key1"] = "yujing"
+            map["中文key2"] = "张三丰"
+            map["ip"] = "192.168.1.1"
+            // 创建或修改
+            YPropertiesUtils.set(path, map)
+            YPropertiesUtils.set(path, "中文key2", "张无忌")
+            YPropertiesUtils.set(path, "json", Gson().toJson(map))
+            // 取值
+            println(YPropertiesUtils.get(path, "中文key2"))
+            // 取值全部
+            println(Gson().toJson(YPropertiesUtils.getAll(path)))
+
+            //读
+            YToast.show(Gson().toJson(YPropertiesUtils.getAll(path)))
         }
     }
 

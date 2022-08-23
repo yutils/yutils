@@ -1,6 +1,9 @@
 package com.yujing.utils;
 
 import android.content.Context;
+import android.os.Build;
+
+import androidx.annotation.RequiresApi;
 
 import java.io.File;
 import java.io.Serializable;
@@ -12,6 +15,7 @@ import java.util.HashMap;
  * @author 余静 2018年5月15日19:00:17
  * 已被YSave代替
  */
+@RequiresApi(api = Build.VERSION_CODES.N)
 @SuppressWarnings("unused")
 @Deprecated
 public class YObjectStorage {
@@ -171,7 +175,7 @@ public class YObjectStorage {
         // 然后写盘
         try {
             String value = YConvert.object2Base64(object);
-            YPropertiesUtils.setValue(path, key, value);
+            YPropertiesUtils.set(path, key, value);
         } catch (Exception e) {
             YLog.e("ObjectStorage", "存盘错误" + e.getMessage());
         }
@@ -180,7 +184,7 @@ public class YObjectStorage {
     // 删除
     public void remove(String key) {
         getCache().remove(key);
-        YPropertiesUtils.removeValue(path, key);
+        YPropertiesUtils.remove(path, key);
     }
 
     // 删除全部
@@ -204,14 +208,14 @@ public class YObjectStorage {
             }
         }
         // 读盘
-        String value = YPropertiesUtils.getValue(path, key);
+        String value = YPropertiesUtils.get(path, key);
         if (value == null) {
             return defaultObject;
         }
         // 转成对象
         object = YConvert.base642Object(value);
         if (object == null) {
-            YPropertiesUtils.removeValue(path, key);
+            YPropertiesUtils.remove(path, key);
             return defaultObject;
         }
         getCache().put(key, object);// 保存到内存中

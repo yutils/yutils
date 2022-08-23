@@ -61,7 +61,7 @@ public class YBitmapUtil {
     }
 
     /**
-     * 图片压缩返回byte[]
+     * 图片压缩返回byte[]，不一定绝对小于对应大小
      *
      * @param image Bitmap image
      * @param Kb    大小kb
@@ -69,14 +69,17 @@ public class YBitmapUtil {
      */
     public static byte[] compressToBytes(Bitmap image, int Kb) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        int options = 100;//质量
-        image.compress(Bitmap.CompressFormat.JPEG, options, baos);// 质量压缩方法，这里100表示不压缩，把压缩后的数据存放到baos中
-        while (options >= 10 && baos.toByteArray().length > 1024 * Kb) { // 循环判断如果压缩后图片是否大于Kb,大于继续压缩
-            baos.reset();// 重置baos即清空baos
-            options -= 10;// 每次都减少10
-            image.compress(Bitmap.CompressFormat.JPEG, options, baos);// 这里压缩options%，把压缩后的数据存放到baos中
+        image.compress(Bitmap.CompressFormat.PNG, 100, baos);// 质量压缩方法，这里100表示不压缩，把压缩后的数据存放到baos中
+        YLog.d("图片压缩", "图片原始大小:" + baos.toByteArray().length / 1024d + "KB");
+        if (baos.toByteArray().length < 1024 * Kb) return baos.toByteArray();
+        //开始质量减少一点点，体积会减少很多，后面减少影响不大。质量低于10，就可能压缩成黑白照片。
+        int[] qualityList = new int[]{100, 95, 88, 80, 70, 58, 44, 28, 10};
+        for (int i = 0; i < qualityList.length && baos.toByteArray().length > 1024 * Kb; i++) {
+            int quality = qualityList[i];
+            baos.reset();
+            image.compress(Bitmap.CompressFormat.JPEG, quality, baos);
+            YLog.d("图片压缩", "图片压缩后大小:" + baos.toByteArray().length / 1024d + "KB  质量:" + quality);
         }
-        YLog.d("图片压缩后大小", baos.toByteArray().length / 1024d + "KB  options:" + options);
         return baos.toByteArray();
     }
 

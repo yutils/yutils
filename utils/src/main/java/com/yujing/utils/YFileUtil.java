@@ -167,9 +167,7 @@ public class YFileUtil {
         if (file.isFile()) {
             return file.delete();
         } else if (file.isDirectory()) {
-            if (Objects.requireNonNull(file.listFiles()).length == 0) {
-                return file.delete();
-            } else {
+            if (Objects.requireNonNull(file.listFiles()).length != 0) {
                 int zFiles = Objects.requireNonNull(file.listFiles()).length;
                 File[] delFile2 = file.listFiles();
                 for (int i = 0; i < zFiles; i++) {
@@ -178,8 +176,8 @@ public class YFileUtil {
                     }
                     delFile2[i].delete();
                 }
-                return file.delete();
             }
+            return file.delete();
         } else {
             return false;
         }
@@ -311,15 +309,25 @@ public class YFileUtil {
         return readAssets(YApp.get(), fileName);
     }
 
+    public static byte[] readAssetsToBytes(String fileName) {
+        try {
+            return YConvert.inputStream2Bytes(readAssets(YApp.get(), fileName));
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     /**
      * 复制Assets文件夹到指定文件夹，如果assetDir为"",那么复制整个assets文件夹
      * 递归复制，如果文件名称不包含"."视为文件夹
+     * assets 文件夹在 main 文件夹下面
      *
-     * @param context  context
-     * @param assetDir assetDir
-     * @param dir      指定文件夹
+     * @param context     context
+     * @param assetDir    assetDir
+     * @param dir         指定文件夹
+     * @param ignoreExist 忽略已存在的文件
      */
-    private void CopyAssets(Context context, String assetDir, String dir) {
+    public static void CopyAssets(Context context, String assetDir, String dir, boolean ignoreExist) {
         String[] files;
         try {
             // 获得Assets一共有几多文件
@@ -339,18 +347,23 @@ public class YFileUtil {
             try {
                 // 获得每个文件的名字
                 String fileName = files[i];
-                // 根据路径判断是文件夹还是文件
+                // 根据路径判断是文件夹还是文件（通过有扩展名来判断）
                 if (!fileName.contains(".")) {
                     if (0 == assetDir.length()) {
-                        CopyAssets(context, fileName, dir + fileName + "/");
+                        CopyAssets(context, fileName, dir + fileName + "/", ignoreExist);
                     } else {
-                        CopyAssets(context, assetDir + "/" + fileName, dir + "/" + fileName + "/");
+                        CopyAssets(context, assetDir + "/" + fileName, dir + "/" + fileName + "/", ignoreExist);
                     }
                     continue;
                 }
                 File outFile = new File(mWorkingPath, fileName);
-                if (outFile.exists())
-                    outFile.delete();
+                if (outFile.exists()) {
+                    if (ignoreExist) {
+                        continue;
+                    } else {
+                        outFile.delete();
+                    }
+                }
                 InputStream in;
                 if (0 != assetDir.length())
                     in = context.getAssets().open(assetDir + "/" + fileName);
@@ -370,7 +383,75 @@ public class YFileUtil {
         }
     }
 
-    private void CopyAssets(String assetDir, String dir) {
-        CopyAssets(YApp.get(), assetDir, dir);
+    public static void CopyAssets(String assetDir, String dir) {
+        CopyAssets(YApp.get(), assetDir, dir, false);
+    }
+
+
+    public static void CopyAssetsAllToPath() {
+        CopyAssets(YApp.get(), "", YPath.get() + "/assets", false);
+    }
+
+    public static void CopyAssetsAllToPathIgnoreExist() {
+        CopyAssets(YApp.get(), "", YPath.get() + "/assets", true);
+    }
+
+    /**
+     * 复制一个Asset文件到指定目录
+     * assets 文件夹在 main 文件夹下面
+     *
+     * @param context       context
+     * @param assetFileName assetFileName
+     * @param srcFileName   srcFileName
+     */
+    public static File copyAssetFile(Context context, String assetFileName, String srcFileName) {
+        File srcFile = new File(srcFileName);
+        // 如果文件路径不存在
+        if (!srcFile.getParentFile().exists()) {
+            // 创建文件夹
+            if (!srcFile.getParentFile().mkdirs()) {
+                // 文件夹创建不成功时调用
+            }
+        }
+        try {
+            if (srcFile.exists())
+                srcFile.delete();
+            InputStream in = context.getAssets().open(assetFileName);
+            OutputStream out = new FileOutputStream(srcFile);
+            byte[] buf = new byte[1024];
+            int len;
+            while ((len = in.read(buf)) > 0) {
+                out.write(buf, 0, len);
+            }
+            in.close();
+            out.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return srcFile;
+    }
+
+    /**
+     * 复制 assetFile到path
+     *
+     * @param assetFileName
+     * @param fileName
+     * @return
+     */
+    public static File copyAssetsFileToPath(String assetFileName, String fileName) {
+        return copyAssetFile(YApp.get(), assetFileName, YPath.get() + "/assets/" + fileName);
+    }
+
+    /**
+     * 复制 assetFile到path 如果存在，直接返回
+     *
+     * @param assetFileName
+     * @param fileName
+     * @return
+     */
+    public static File copyAssetsFileToPathIgnoreExist(String assetFileName, String fileName) {
+        File srcFile = new File(YPath.get() + "/assets/" + fileName);
+        if (srcFile.exists()) return srcFile;
+        return copyAssetFile(YApp.get(), assetFileName, YPath.get() + "/assets/" + fileName);
     }
 }

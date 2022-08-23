@@ -102,34 +102,29 @@ class YTake {
          */
         @JvmStatic
         fun take(activity: ComponentActivity, onResult: (Uri?) -> Unit) {
-
             activity.lifecycle.addObserver(object : DefaultLifecycleObserver {
                 var takePicture: ActivityResultLauncher<File>? = null
-
+                var registerPermission: ActivityResultLauncher<String>? = null
                 override fun onCreate(owner: LifecycleOwner) {
                     super.onCreate(owner)
-                    //请求权限
-                    val yPermissions = YPermissions(activity)
-                    yPermissions.setSuccessListener {
-                        YLog.i("权限请求成功$it")
-                    }.setFailListener {
-                        YLog.i("权限请求失败$it")
-                        YToast.show("权限请求失败")
-                    }.setAllSuccessListener {
-                        YLog.i("权限请求全部成功")
-                        val file = File(YPath.getPICTURES() + "/img/${Date().time}.jpg")
-                        takePicture?.launch(file)
-                    }.request(
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                        Manifest.permission.CAMERA
-                    )
                     //拍照返回
                     takePicture = activity.activityResultRegistry.register("key1", YTakePicture(activity), onResult)
+                    //相机权限返回
+                    registerPermission = activity.activityResultRegistry.register("CAMERA", ActivityResultContracts.RequestPermission()) { it: Boolean ->
+                        //同意权限
+                        if (it) {
+                            val file = File(YPath.getPICTURES() + "/img/${Date().time}.jpg")
+                            takePicture?.launch(file)
+                        }
+                    }
+                    //调用相机权限
+                    registerPermission?.launch(Manifest.permission.CAMERA)
                 }
 
                 override fun onDestroy(owner: LifecycleOwner) {
                     super.onDestroy(owner)
                     takePicture?.unregister()
+                    registerPermission?.unregister()
                 }
             })
         }
@@ -149,7 +144,7 @@ class YTake {
                     //cropPicture = activity.activityResultRegistry.register("key2", YCropPicture(activity)) { it: Uri? -> }
                     cropPicture = activity.activityResultRegistry.register("key2", YCropPicture(activity), onResult)
                     //拍照返回
-                    takePicture = activity.activityResultRegistry.register("key1", YTakePicture(activity)) { it: Uri? ->
+                    takePicture = activity.activityResultRegistry.register("key1", YTakePicture(activity)) {
                         if (it == null) return@register
                         val file = File(YPath.getPICTURES() + "/corp/${Date().time}.jpg")
                         cropPicture?.launch(Crop(it, file, 400, 400))
@@ -227,9 +222,9 @@ class YTake {
 /**
  * 拍照，传入File，拍照成功返回Uri
  */
-class YTakePicture(val context: Context) : ActivityResultContract<File, Uri>() {
+class YTakePicture(val context: Context) : ActivityResultContract<File, Uri?>() {
     var uri: Uri? = null
-    override fun createIntent(context: Context, input: File?): Intent {
+    override fun createIntent(context: Context, input: File): Intent {
         uri = YPicture.createImageUri(context, input)
         return Intent(MediaStore.ACTION_IMAGE_CAPTURE).putExtra(MediaStore.EXTRA_OUTPUT, uri)
     }
@@ -248,7 +243,7 @@ class Crop(val cropUri: Uri, val outFile: File, val outputX: Int = 0, val output
 /**
  * 照片剪切，传入Crop，拍照成功返回Uri
  */
-class YCropPicture(val context: Context) : ActivityResultContract<Crop, Uri>() {
+class YCropPicture(val context: Context) : ActivityResultContract<Crop, Uri?>() {
     var uri: Uri? = null
     override fun createIntent(context: Context, input: Crop): Intent {
         uri = YPicture.createImageUri(context, input.outFile)
@@ -269,6 +264,7 @@ class YCropPicture(val context: Context) : ActivityResultContract<Crop, Uri>() {
         return intent
     }
 
+    //强行弹出null，后续需要判断。
     override fun parseResult(resultCode: Int, intent: Intent?): Uri? {
         if (resultCode != Activity.RESULT_OK) return null
         return uri
