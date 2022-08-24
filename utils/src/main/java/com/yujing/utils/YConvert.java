@@ -387,7 +387,7 @@ public class YConvert {
         Bitmap bitmap = null;
         try {
             byte[] bitmapArray;
-            bitmapArray = Base64.decode(string, Base64.DEFAULT);
+            bitmapArray = Base64.decode(string, Base64.NO_WRAP);
             bitmap = BitmapFactory.decodeByteArray(bitmapArray, 0, bitmapArray.length);
         } catch (Exception e) {
             e.printStackTrace();
@@ -406,7 +406,7 @@ public class YConvert {
         ByteArrayOutputStream bStream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 80, bStream);
         byte[] bytes = bStream.toByteArray();
-        string = Base64.encodeToString(bytes, Base64.DEFAULT);
+        string = Base64.encodeToString(bytes, Base64.NO_WRAP);
         return string;
     }
 
@@ -529,7 +529,7 @@ public class YConvert {
      */
     public static Object base642Object(String Base64String) {
         if (Base64String == null) return null;
-        return bytes2Object(Base64.decode(Base64String, Base64.DEFAULT));
+        return bytes2Object(Base64.decode(Base64String, Base64.NO_WRAP));
     }
 
     /**
@@ -541,7 +541,7 @@ public class YConvert {
      */
     public static <T extends Serializable> String object2Base64(T object) {
         if (object == null) return null;
-        return new String(Base64.encode(object2Bytes(object), Base64.DEFAULT));
+        return new String(Base64.encode(object2Bytes(object), Base64.NO_WRAP));
     }
 
     /**

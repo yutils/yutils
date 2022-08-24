@@ -3,7 +3,6 @@ package com.yujing.test.activity
 import android.graphics.Color
 import android.widget.EditText
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
 import com.google.gson.Gson
