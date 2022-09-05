@@ -53,7 +53,7 @@ object TTS {
      */
     @Synchronized
     @JvmStatic
-    fun init(context: Context?, initListener: ((Boolean) -> Unit?)? = null) {
+    fun init(context: Context?, initListener: ((Boolean) -> Unit)? = null) {
         if (context == null || initState == 0 || textToSpeech != null) return
         textToSpeech = TextToSpeech(context) { status: Int ->
             if (status == TextToSpeech.SUCCESS) {

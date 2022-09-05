@@ -8,9 +8,11 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
@@ -302,6 +304,8 @@ public class YPropertiesUtils extends Properties {
     }
 
     //-----------------------------------重写开始  直到末尾-----------------------------------
+    //日期格式
+    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
 
     /**
      * 重载
@@ -319,7 +323,7 @@ public class YPropertiesUtils extends Properties {
         if (comments != null) {
             writeComments(bw, comments);
         }
-        bw.write("#" + new Date().toString());
+        bw.write("#最后一次修改时间：" + formatter.format(new Date()));
         bw.newLine();
         synchronized (this) {
             for (Map.Entry<Object, Object> e : entrySet()) {

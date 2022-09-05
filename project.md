@@ -19,12 +19,12 @@
 
 ## Gradle 引用
 
-[添加依赖，当前最新版：————> 2.1.1　　　　![最新版](https://img.shields.io/badge/%E6%9C%80%E6%96%B0%E7%89%88-2.1.1-green.svg)](https://search.maven.org/artifact/com.kotlinx/yutils)
+[添加依赖，当前最新版：————> 2.1.2　　　　![最新版](https://img.shields.io/badge/%E6%9C%80%E6%96%B0%E7%89%88-2.1.2-green.svg)](https://search.maven.org/artifact/com.kotlinx/yutils)
 
 ```
 dependencies {
      //更新地址  https://github.com/yutils/yutils 建议过几天访问看下有没有新版本
-     implementation 'com.kotlinx:yutils:2.1.1'
+     implementation 'com.kotlinx:yutils:2.1.2'
 }
 ```
 

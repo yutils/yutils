@@ -50,6 +50,21 @@ public class YToast {
         TTS.speak(text);
     }
 
+    /**
+     * 显示toast 并播放语音
+     *
+     * @param text 语音内容
+     */
+    public static void showSpeakQueue(String text) {
+        show(YApp.get(), text, 0);
+        TTS.speakQueue(text);
+    }
+
+    public static void showSpeakQueue(String text, int topClass) {
+        show(YApp.get(), text, topClass);
+        TTS.speakQueue(text);
+    }
+
     public static void show(Context context, String text) {
         show(context, text, 0);
     }

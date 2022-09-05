@@ -72,10 +72,12 @@ class YFragmentManager {
      * 获取最顶层fragment，id是layout，一个layout里面多个fragment，他们的id一样
      */
     fun getTopFragment(id: Int): Fragment? {
+        var fragment: Fragment? = null
+        //如果多个fragment的id一样，最后一个为最顶层fragment
         for (f in fragmentManager.fragments) {
-            if (id == f.id) return f
+            if (id == f.id) fragment = f
         }
-        return null
+        return fragment
     }
 
     /**
@@ -88,16 +90,27 @@ class YFragmentManager {
     fun show(targetFragment: Fragment?, hideFragment: Fragment?) {
         if (targetFragment == null) return
         val ft = fragmentManager.beginTransaction()
-        //如果没有添加过,就先添加，添加会自动显示
-        if (!targetFragment.isAdded) {
-            hideFragment?.let { ft.hide(it) }
-            ft.add(layout, targetFragment).commit()
+        if (hideFragment != null) {
+            //如果没有添加过,就先添加，添加会自动显示
+            if (!targetFragment.isAdded) {
+                ft.hide(hideFragment)
+                ft.add(layout, targetFragment).commit()
+            } else {
+                //如果已经添加过，就直接显示
+                if (targetFragment != hideFragment) ft.hide(hideFragment)
+                ft.show(targetFragment).commit()
+            }
         } else {
-            //如果已经添加过，就直接显示
-            //如果存在topFragment不是targetFragment，先隐藏topFragment
-            if (targetFragment != hideFragment) hideFragment?.let { ft.hide(it) }
-            ft.hide(hideFragment!!)
-            ft.show(targetFragment).commit()
+            //如果没有添加过,就先添加，添加会自动显示
+            if (!targetFragment.isAdded) {
+                //获取所有当前layout的fragment，全部隐藏掉
+                for (f in fragmentManager.fragments) if (layout == f.id) ft.hide(f)
+                ft.add(layout, targetFragment).commit()
+            } else {
+                //获取所有当前layout的fragment，全部隐藏掉，自己除外
+                for (f in fragmentManager.fragments) if (layout == f.id && targetFragment != f) ft.hide(f)
+                ft.show(targetFragment).commit()
+            }
         }
     }
 
@@ -108,7 +121,7 @@ class YFragmentManager {
      */
     @Synchronized
     fun show(targetFragment: Fragment?) {
-        show(targetFragment, getTopFragment())
+        show(targetFragment, null)
     }
 
     /**

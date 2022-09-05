@@ -74,22 +74,22 @@ abstract class BaseDBAdapter<T>(var layout: Int, var list: List<T>?) : RecyclerV
     var recyclerView: RecyclerView? = null
 
     //单击
-    var onItemClickListener: ((position: Int) -> Unit?)? = null
+    var onItemClickListener: ((position: Int) -> Unit)? = null
 
     //长按
-    var onItemLongClickListener: ((position: Int) -> Unit?)? = null
+    var onItemLongClickListener: ((position: Int) -> Unit)? = null
 
     //到顶部监听，到顶部后继续滑动，不会触发
-    var onToTopListener: (() -> Unit?)? = null
+    var onToTopListener: (() -> Unit)? = null
 
     //到底部监听，到底部后继续滑动，不会触发
-    var onToBottomListener: (() -> Unit?)? = null
+    var onToBottomListener: (() -> Unit)? = null
 
-    //滑动到顶部监听，到顶部后继续滑动，会触发
-    var onScrollToTopListener: (() -> Unit?)? = null
+    //滑动到顶部监听，到顶部后继续滑动，会触发 （下拉刷新）
+    var onScrollToTopListener: (() -> Unit)? = null
 
-    //滑动到底部监听，到底部后继续滑动，会触发
-    var onScrollToBottomListener: (() -> Unit?)? = null
+    //滑动到底部监听，到底部后继续滑动，会触发 （上拉加载）
+    var onScrollToBottomListener: (() -> Unit)? = null
 
     var isSelect: Int = -1
         set(value) {

@@ -22,7 +22,7 @@ public String address;
 @SerializedName(value = "emailAddress", alternate = {"email", "email_address"})
 public String emailAddress;
 
-@Expose //过滤字段序列化和反序列化都都生效
+@Expose //过滤字段序列化和反序列化都生效
 @Expose(deserialize = true,serialize = true) //序列化和反序列化都都生效，等价于上一条
 @Expose(deserialize = true,serialize = false) //反序列化时生效
 @Expose(deserialize = false,serialize = true) //序列化时生效

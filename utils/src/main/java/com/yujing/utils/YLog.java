@@ -39,6 +39,8 @@ import java.util.Locale;
 public class YLog {
     public static SimpleDateFormat formatDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
     public static SimpleDateFormat formatTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.getDefault());
+    //保存日志时时间差=服务器时间-当前本地时间  时间换算显示=当前本地时间+系统时间差
+    private static long timeDifference = 0L;
     //是否保存日志
     private static boolean isSave = false;
     //保存日志目录
@@ -249,13 +251,13 @@ public class YLog {
 
     //如 save("路径",“v”,“错误”,“网络异常”);
     public static void save(String path, String type, String tag, String msg) {
-        String saveString = formatTime.format(new Date()) + "\t" + type + "\t" + (TAG.equals(tag) ? "log" : tag) + ":" + msg + "\n";
+        String saveString = formatTime.format(new Date(System.currentTimeMillis() + timeDifference)) + "\t" + type + "\t" + (TAG.equals(tag) ? "log" : tag) + ":" + msg + "\n";
         YFileUtil.addStringToFile(new File(path), saveString);
     }
 
     public static void save(String type, String tag, String msg) {
         if (saveLogDir == null) return;
-        String filePath = saveLogDir + "/" + formatDate.format(new Date()) + ".log";
+        String filePath = saveLogDir + "/" + formatDate.format(new Date(System.currentTimeMillis() + timeDifference)) + ".log";
         if (logSaveListener != null) {
             if (logSaveListener.value(type, tag, msg)) save(filePath, type, tag, msg);
         } else save(filePath, type, tag, msg);
@@ -288,6 +290,22 @@ public class YLog {
     }
 
     /**
+     * 时间差
+     * @return 时间差
+     */
+    public static long getTimeDifference() {
+        return timeDifference;
+    }
+
+    /**
+     * 设置时间差，应该设置：标准时间-本机时间=差值
+     * @param timeDifference 时间差
+     */
+    public static void setTimeDifference(long timeDifference) {
+        YLog.timeDifference = timeDifference;
+    }
+
+    /**
      * 关闭日志本地保存
      */
     public static void saveClose() {
@@ -307,7 +325,7 @@ public class YLog {
             String date = item.getName().substring(0, index);
             try {
                 long timeOld = formatDate.parse(date).getTime();
-                long timeLimit = new Date().getTime() - 1000L * 60 * 60 * 24 * daysAgo;
+                long timeLimit = new Date(System.currentTimeMillis() + timeDifference).getTime() - 1000L * 60 * 60 * 24 * daysAgo;
                 if (timeOld < timeLimit) {
                     YLog.i("清理日志", item.getPath());
                     del(date);
