@@ -1,13 +1,13 @@
 package com.yujing.utils;
 
-import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * 队列运行，等待指定时间后运行下一个。
  *
  * @author 余静 2019年2月15日17:23:15
  */
-@SuppressWarnings({"WeakerAccess"})
 /* 用法举例
 val yQueue=YQueue()
 //每秒最多赋值一次你好
@@ -16,11 +16,8 @@ yQueue.run(1000) { text.text ="你好2" }
 yQueue.run(1000) { text.text ="你好3" }
  */
 public class YQueue {
-    /**
-     * 线程队列同时最多运行个数
-     */
-    private static volatile int threadNum = 1;
-    private ScheduledThreadPoolExecutor sTEP = new ScheduledThreadPoolExecutor(threadNum);
+    //单线程化线程池
+    private ExecutorService pool = Executors.newSingleThreadExecutor();
 
     /**
      * 运行
@@ -36,6 +33,8 @@ public class YQueue {
                 else runnable.run();
                 Thread.sleep(time);
             } catch (InterruptedException ignored) {
+            } finally {
+                shutdown();
             }
         });
         add(thread);
@@ -47,9 +46,15 @@ public class YQueue {
      * @param runnable 线程
      */
     private void add(Runnable runnable) {
-        synchronized (sTEP) {
-            if (sTEP.isShutdown()) sTEP = new ScheduledThreadPoolExecutor(threadNum);
-            sTEP.execute(runnable);
+        synchronized (pool) {
+            if (pool.isShutdown()) {
+                pool = Executors.newSingleThreadExecutor();
+                synchronized (pool) {
+                    pool.execute(runnable);
+                }
+            } else {
+                pool.execute(runnable);
+            }
         }
     }
 
@@ -57,15 +62,15 @@ public class YQueue {
      * 停止当前队列中全部请求
      */
     public void stopAll() {
-        if (sTEP != null) sTEP.getQueue().clear();
+        if (pool != null) pool.shutdownNow().clear();
     }
 
     /**
      * 关闭释放线程池,线程池有线程在运行时，运行完才会关闭
      */
     public void shutdown() {
-        synchronized (sTEP) {
-            if (!sTEP.isShutdown()) sTEP.shutdown();
+        synchronized (pool) {
+            if (!pool.isShutdown()) pool.shutdown();
         }
     }
 

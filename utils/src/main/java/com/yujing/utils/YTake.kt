@@ -247,21 +247,21 @@ class YCropPicture(val context: Context) : ActivityResultContract<Crop, Uri?>() 
     var uri: Uri? = null
     override fun createIntent(context: Context, input: Crop): Intent {
         uri = YPicture.createImageUri(context, input.outFile)
-        val intent = Intent("com.android.camera.action.CROP")
-        intent.setDataAndType(input.cropUri, "image/*")
-        intent.putExtra("crop", "true")
-        // 宽高和比例都不设置时,裁剪框比例和大小都可以随意调整
-        if (input.outputX > 0 && input.outputY > 0) {
-            // aspectX aspectY 是裁剪框宽高的比例
-            intent.putExtra("aspectX", input.outputX)
-            intent.putExtra("aspectY", input.outputY)
-            // outputX outputY 是裁剪后生成图片的宽高
-            intent.putExtra("outputX", input.outputX)
-            intent.putExtra("outputY", input.outputY)
+        return Intent("com.android.camera.action.CROP").apply {
+            setDataAndType(input.cropUri, "image/*")
+            putExtra("crop", "true")
+            // 宽高和比例都不设置时,裁剪框比例和大小都可以随意调整
+            if (input.outputX > 0 && input.outputY > 0) {
+                // aspectX aspectY 是裁剪框宽高的比例
+                putExtra("aspectX", input.outputX)
+                putExtra("aspectY", input.outputY)
+                // outputX outputY 是裁剪后生成图片的宽高
+                putExtra("outputX", input.outputX)
+                putExtra("outputY", input.outputY)
+            }
+            putExtra(MediaStore.EXTRA_OUTPUT, uri)
+            putExtra("return-data", false)
         }
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, uri)
-        intent.putExtra("return-data", false)
-        return intent
     }
 
     //强行弹出null，后续需要判断。

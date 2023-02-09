@@ -194,7 +194,7 @@ public class YWebView {
         webSettings.setAllowUniversalAccessFromFileURLs(true);
 
         //应用缓存API是否可用，默认值false, 结合setAppCachePath(String)使用。
-        webSettings.setAppCacheEnabled(false);
+        //webSettings.setAppCacheEnabled(false);
 
         //设置应用缓存文件的路径。为了让应用缓存API可用，此方法必须传入一个应用可写的路径。该方法只会执行一次，重复调用会被忽略。
         //webSettings. setAppCachePath("");

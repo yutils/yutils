@@ -35,7 +35,7 @@ class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
     override fun init() {
         binding.wll.removeAllViews()
         binding.ll.removeAllViews()
-        textView1 = Create.textView(binding.ll)
+        textView1 = Create.textView(binding.ll).apply { text = "本APP只是YUtils，分功能测试页面，临时页面" }.apply { textSize = 18F }
         textView2 = Create.textView(binding.ll)
         //生命周期监听
         setEventListener { event, obj ->
@@ -72,8 +72,6 @@ class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
 
         //--------------------------------------------------------------------------------
         Create.space(binding.wll)//换行
-        editText1 = Create.editText(binding.wll, "123456789")
-
         Create.button(binding.wll, "请求权限") {
 //            val yPermissions = YPermissions(this)
 //            yPermissions.setSuccessListener {
@@ -125,26 +123,6 @@ class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
             yVersionUpdate.update(634, true, url, "6.3.4", description + description + description)
         }
 
-        Create.button(binding.wll, "弹窗测试") {
-            //多选
-            val listName: MutableList<String> = ArrayList()
-            listName.add("项目1")
-            listName.add("项目2")
-            listName.add("项目3")
-            listName.add("项目4")
-            listName.add("项目5")
-            listName.add("项目6")
-            val checked = BooleanArray(listName.size) { i -> false } //默认选中项，最终选中项
-            YAlertDialogUtils().showMultiChoice("请选择", listName.toTypedArray(), checked, {
-                //筛选选中项
-                val newList: MutableList<String> = ArrayList()
-                for (index in checked.indices) {
-                    if (checked[index]) newList.add(listName[index])
-                }
-                textView1.text = "您选择了：${YJson.toJson(newList)}"
-            })
-        }
-
         TTS.filter = { it.replace("不正确", "不在范围内") }
         //语音过滤测试
         Create.button(binding.wll, "TTS过滤") {
@@ -155,28 +133,53 @@ class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
         Create.button(binding.wll, "TTS过滤") {
             TTS.speakToast("电子秤皮重不正确")
         }
-
+        //--------------------------------------------------------------------------------
+        Create.space(binding.wll)//换行
+        editText1 = Create.editText(binding.wll, "消息内容->哈哈哈")
         Create.button(binding.wll, "Ybus发送消息1") {
             Thread { YBusUtil.post("tag1", editText1.text.toString()) }.start()
         }
 
-        Create.button(binding.wll, "弹窗测试") {
-            val yDialog = YAlertDialogUtils()
-            yDialog.titleTextSize = 20F
-            yDialog.contentTextSize = 18F
-            yDialog.buttonTextSize = 18F
-            yDialog.width = (YScreenUtil.getScreenWidth() * 0.45).toInt()
-            yDialog.contentPaddingTop = YScreenUtil.dp2px(40f)
-            yDialog.contentPaddingBottom = YScreenUtil.dp2px(40f)
-            yDialog.okButtonString = "确定"
-            yDialog.cancelButtonString = "取消"
-            val content = """
-            |您正在执行一项操作
-            |
-            |执行后将无法修改，是否继续？
-            """.trimMargin()
-            yDialog.showMessageCancel("这是标题", content) {
-                //确定事件
+        Create.button(binding.wll, "弹窗测试1") {
+            //多选
+            val listName: MutableList<String> = ArrayList<String>().apply {
+                add("项目1")
+                add("项目2")
+                add("项目3")
+                add("项目4")
+                add("项目5")
+                add("项目6")
+            }
+            val checked = BooleanArray(listName.size) { i -> false } //默认选中项，最终选中项
+            YAlertDialogUtils().showMultiChoice("请选择", listName.toTypedArray(), checked) {
+                //筛选选中项
+                val newList: MutableList<String> = ArrayList()
+                for (index in checked.indices) {
+                    if (checked[index]) newList.add(listName[index])
+                }
+                textView1.text = "您选择了：${YJson.toJson(newList)}"
+            }
+        }
+
+        Create.button(binding.wll, "弹窗测试2") {
+          YAlertDialogUtils().apply {
+                titleTextSize = 20F
+                contentTextSize = 18F
+                buttonTextSize = 18F
+                width = (YScreenUtil.getScreenWidth() * 0.45).toInt()
+                contentPaddingTop = YScreenUtil.dp2px(40f)
+                contentPaddingBottom = YScreenUtil.dp2px(40f)
+                okButtonString = "确定"
+                cancelButtonString = "取消"
+                val content = """
+                |您正在执行一项操作
+                |
+                |执行后将无法修改，是否继续？
+                """.trimMargin()
+                //显示消息，包含取消按键
+                showMessageCancel("这是标题", content) {
+                    //确定事件
+                }
             }
         }
 
@@ -233,6 +236,13 @@ class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
 
             //读
             YToast.show(Gson().toJson(YPropertiesUtils.getAll(path)))
+        }
+
+        Create.button(binding.wll, "测试") {
+            //输入框
+            YAlertDialogUtils().showEdit("请输入", "数据") {
+                YShow.show(it, true)
+            }
         }
     }
 

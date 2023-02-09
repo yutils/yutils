@@ -10,6 +10,7 @@ pluginManagement {
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
+//        maven { url 'http://maven.kotlinx.com:8081/repository/maven-public'; allowInsecureProtocol = true }
         maven { url 'https://maven.aliyun.com/repository/public' }
         maven { url 'https://repo1.maven.org/maven2' }
         google()

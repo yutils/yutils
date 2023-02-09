@@ -5,13 +5,13 @@ plugins {
     id 'kotlin-parcelize'
 }
 android {
-    compileSdk 32
+    compileSdk 33
     defaultConfig {
         applicationId "com.yujing.test"
         minSdk 21
-        targetSdk 32
-        versionCode 107
-        versionName "2.0.9"
+        targetSdk 33
+        versionCode 108
+        versionName "2.1.3"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -35,7 +35,7 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'androidx.core:core-ktx:1.8.0'
     implementation 'androidx.appcompat:appcompat:1.5.0'
-    implementation 'com.google.android.material:material:1.6.1'
+    implementation 'com.google.android.material:material:1.8.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'androidx.lifecycle:lifecycle-common-java8:2.5.1'
     testImplementation 'junit:junit:4.13.2'
@@ -47,7 +47,7 @@ dependencies {
     implementation project(':utils')
     implementation 'com.kotlinx:yhttp:1.1.4'
     //gson <!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
-    implementation 'com.google.code.gson:gson:2.9.1'
+    implementation 'com.google.code.gson:gson:2.10.1'
     //https://mvnrepository.com/artifact/org.greenrobot/eventbus
     implementation 'org.greenrobot:eventbus:3.3.1'
 }

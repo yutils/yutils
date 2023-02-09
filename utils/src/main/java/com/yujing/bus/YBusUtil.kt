@@ -1,6 +1,7 @@
 package com.yujing.bus
 
 import com.yujing.utils.YLog
+import java.util.Vector
 
 /**
  * bus 总线通信 工具类
@@ -79,7 +80,7 @@ class YBusUtil {
                 //不能用var i=0 while (i <list.size)，因为删除元素会导致错乱。比如，a，b，c，d，执行到b的时候，删除b，会发现，没有执行的是c
                 //不能使用迭代器，因为不知道删除的元素位置，不一定是当前迭代的元素
 
-                //所以，复制出临时listTemp
+                //所以，复制出临时listTemp  //val temp: MutableList<Any> = Vector()
                 val temp: MutableList<Any> = ArrayList()
                 var i = 0
                 while (i < listObject.size) temp.add(listObject[i++])

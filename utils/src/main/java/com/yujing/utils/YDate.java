@@ -1,7 +1,5 @@
 package com.yujing.utils;
 
-import android.annotation.SuppressLint;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;

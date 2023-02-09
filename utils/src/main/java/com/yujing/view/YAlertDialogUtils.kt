@@ -16,22 +16,24 @@ import java.util.*
 @Suppress("MemberVisibilityCanBePrivate", "unused")
 /*
 用法举例：
-val yDialog = YAlertDialogUtils()
-yDialog.titleTextSize = 20F
-yDialog.contentTextSize = 18F
-yDialog.buttonTextSize = 18F
-yDialog.width = (YScreenUtil.getScreenWidth() * 0.45).toInt()
-yDialog.contentPaddingTop = YScreenUtil.dp2px(40f)
-yDialog.contentPaddingBottom = YScreenUtil.dp2px(40f)
-yDialog.okButtonString = "确定"
-yDialog.cancelButtonString = "取消"
-val content= """
-|您正在执行一项操作
-|
-|执行后将无法修改，是否继续？
-""".trimMargin()
-yDialog.showMessageCancel("这是标题",content) {
-  //确定事件
+YAlertDialogUtils().apply {
+    titleTextSize = 20F
+    contentTextSize = 18F
+    buttonTextSize = 18F
+    width = (YScreenUtil.getScreenWidth() * 0.45).toInt()
+    contentPaddingTop = YScreenUtil.dp2px(40f)
+    contentPaddingBottom = YScreenUtil.dp2px(40f)
+    okButtonString = "确定"
+    cancelButtonString = "取消"
+    val content = """
+    |您正在执行一项操作
+    |
+    |执行后将无法修改，是否继续？
+    """.trimMargin()
+    //显示消息，包含取消按键
+    showMessageCancel("这是标题", content) {
+        //确定事件
+    }
 }
 
 //提示,有确定按钮，有取消按钮
@@ -54,19 +56,23 @@ YAlertDialogUtils().showSingleChoice("请选择一个", listOf("123","456","789"
 }
 
 //多选
-val listName: MutableList<String> = ArrayList()
-listName.add("项目1")
-listName.add("项目2")
-listName.add("项目3")
+val listName: MutableList<String> = ArrayList<String>().apply {
+    add("项目1")
+    add("项目2")
+    add("项目3")
+    add("项目4")
+    add("项目5")
+    add("项目6")
+}
 val checked = BooleanArray(listName.size) { i -> false } //默认选中项，最终选中项
-YAlertDialogUtils().showMultiChoice("请选择", listName.toTypedArray(), checked, {
+YAlertDialogUtils().showMultiChoice("请选择", listName.toTypedArray(), checked) {
     //筛选选中项
     val newList: MutableList<String> = ArrayList()
     for (index in checked.indices) {
         if (checked[index]) newList.add(listName[index])
     }
-    //newList
-},null)
+    textView1.text = "您选择了：${YJson.toJson(newList)}"
+}
 
 //列表
 YAlertDialogUtils().showList("请选择一个", listOf("123","456","789","000").toTypedArray()){
@@ -77,7 +83,6 @@ YAlertDialogUtils().showList("请选择一个", listOf("123","456","789","000").
 YAlertDialogUtils().showEdit("测试","请输入内容"){
     //YLog.i("输入了：$it")
 }
-
 
 //显示后再修改按钮颜色
 val it=yDialog.showMessageCancel("这是标题",content) {}
@@ -159,20 +164,20 @@ class YAlertDialogUtils {
     /**
      * 创建标题view
      */
-    fun createTitleView(title: String?): LinearLayout {
-        val linearLayout = LinearLayout(YApp.get())
-        linearLayout.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
-        linearLayout.removeAllViews()
-        linearLayout.orientation = LinearLayout.VERTICAL //设置纵向布局
-
-        val titleTextView = TextView(YApp.get())
-        titleTextView.text = title
-        titleTextView.setPadding(titlePaddingLeft, titlePaddingTop, titlePaddingRight, titlePaddingBottom)
-        titleTextView.gravity = titleTextViewGravity
-        titleTextView.textSize = titleTextSize
-        titleTextView.setTextColor(titleTextColor)
-        titleTextView.textAlignment = View.TEXT_ALIGNMENT_CENTER
-
+    fun createTitleView(title: CharSequence?): LinearLayout {
+        val linearLayout = LinearLayout(YApp.get()).apply {
+            removeAllViews()
+            layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+            orientation = LinearLayout.VERTICAL //设置纵向布局
+        }
+        val titleTextView = TextView(YApp.get()).apply {
+            text = title
+            setPadding(titlePaddingLeft, titlePaddingTop, titlePaddingRight, titlePaddingBottom)
+            gravity = titleTextViewGravity
+            textSize = titleTextSize
+            setTextColor(titleTextColor)
+            textAlignment = View.TEXT_ALIGNMENT_CENTER
+        }
         //隔断线
         val titleImageView = ImageView(YApp.get())
         titleImageView.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, titleImageViewHeight)
@@ -186,30 +191,31 @@ class YAlertDialogUtils {
     /**
      * 创建正文view
      */
-    fun createContentView(message: String?): ScrollView {
-        val scrollView = ScrollView(YApp.get())
-        scrollView.removeAllViews()
-        scrollView.layoutParams = FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT)
-
-        val linearLayout = LinearLayout(YApp.get())
-        linearLayout.removeAllViews()
-        linearLayout.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
-        linearLayout.orientation = LinearLayout.VERTICAL //设置纵向布局
-
-        val textView = TextView(YApp.get())
-        textView.text = message
-        textView.setPadding(contentPaddingLeft, contentPaddingTop, contentPaddingRight, contentPaddingBottom)
-        textView.gravity = contentTextViewGravity
-        textView.textSize = contentTextSize
-        textView.setTextColor(contentTextColor)
+    fun createContentView(message: CharSequence?): ScrollView {
+        val scrollView = ScrollView(YApp.get()).apply {
+            removeAllViews()
+            layoutParams = FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT)
+        }
+        val linearLayout = LinearLayout(YApp.get()).apply {
+            removeAllViews()
+            layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+            orientation = LinearLayout.VERTICAL //设置纵向布局
+        }
+        val textView = TextView(YApp.get()).apply {
+            text = message
+            setPadding(contentPaddingLeft, contentPaddingTop, contentPaddingRight, contentPaddingBottom)
+            gravity = contentTextViewGravity
+            textSize = contentTextSize
+            setTextColor(contentTextColor)
+        }
         if (contentTextViewGravity == Gravity.CENTER)
             textView.textAlignment = View.TEXT_ALIGNMENT_CENTER
 
         //隔断线
-        val contentImageView = ImageView(YApp.get())
-        contentImageView.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, contentImageViewHeight)
-        contentImageView.setBackgroundColor(contentImageViewColor)
-
+        val contentImageView = ImageView(YApp.get()).apply {
+            layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, contentImageViewHeight)
+            setBackgroundColor(contentImageViewColor)
+        }
         linearLayout.addView(textView)
         linearLayout.addView(contentImageView)
         scrollView.addView(linearLayout)
@@ -220,28 +226,30 @@ class YAlertDialogUtils {
     /**
      * 设置弹窗风格
      */
-    fun setStyleAndShow(alertDialog: AlertDialog, title: String?) {
-        //没有标题就不显示
-        if (title == null) alertDialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-        //是否全屏
-        if (fullScreen) {
-            alertDialog.window?.setFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE, WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE)
-            alertDialog.window?.decorView?.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_FULLSCREEN or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-            alertDialog.show()
-            alertDialog.window?.clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE)
-        } else {
-            alertDialog.show()
+    fun setStyleAndShow(alertDialog: AlertDialog, title: CharSequence?) {
+        alertDialog.apply {
+            //没有标题就不显示
+            if (title == null) requestWindowFeature(Window.FEATURE_NO_TITLE)
+            //是否全屏
+            if (fullScreen) {
+                window?.setFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE, WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE)
+                window?.decorView?.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_FULLSCREEN or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                show()
+                window?.clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE)
+            } else {
+                show()
+            }
+            //设置透明度
+            window?.attributes?.alpha = alpha
+            //设置宽度
+            width?.let { window?.attributes?.width = it }
+            //设置高度
+            height?.let { window?.attributes?.height = it }
+            //设置h大小宽，高
+            //alertDialog.window?.setLayout(width, height)
+            //设置Dialog从窗体中间弹出
+            window?.setGravity(Gravity.CENTER)
         }
-        //设置透明度
-        alertDialog.window?.attributes?.alpha = alpha
-        //设置宽度
-        width?.let { alertDialog.window?.attributes?.width = it }
-        //设置高度
-        height?.let { alertDialog.window?.attributes?.height = it }
-        //设置h大小宽，高
-        //alertDialog.window?.setLayout(width, height)
-        //设置Dialog从窗体中间弹出
-        alertDialog.window?.setGravity(Gravity.CENTER)
     }
 
     /**
@@ -250,12 +258,13 @@ class YAlertDialogUtils {
     fun setButton(alertDialog: AlertDialog, showCancel: Boolean = false) {
         //设置确定按钮
         val okButton = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE)
-        val okLayoutParams = okButton.layoutParams as LinearLayout.LayoutParams
-        okLayoutParams.height = LinearLayout.LayoutParams.WRAP_CONTENT
-        okLayoutParams.width = 0
-        okLayoutParams.weight = 1F
-        if (showCancel) okLayoutParams.marginStart = YScreenUtil.dp2px(5F)
-        okLayoutParams.gravity = Gravity.CENTER
+        val okLayoutParams = (okButton.layoutParams as LinearLayout.LayoutParams).apply {
+            height = LinearLayout.LayoutParams.WRAP_CONTENT
+            width = 0
+            weight = 1F
+            if (showCancel) marginStart = YScreenUtil.dp2px(5F)
+            gravity = Gravity.CENTER
+        }
         okButton.layoutParams = okLayoutParams
         YView.setPressBackgroundColor(okButton, okButtonBackgroundColor.xor(Color.parseColor("#60000000")), okButtonBackgroundColor)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -273,10 +282,11 @@ class YAlertDialogUtils {
 
         //设置取消按钮
         val cancelButton = alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE)
-        val cancelLayoutParams = cancelButton.layoutParams as LinearLayout.LayoutParams
-        cancelLayoutParams.height = LinearLayout.LayoutParams.WRAP_CONTENT
-        cancelLayoutParams.width = 0
-        cancelLayoutParams.weight = 1F
+        val cancelLayoutParams = (cancelButton.layoutParams as LinearLayout.LayoutParams).apply {
+            height = LinearLayout.LayoutParams.WRAP_CONTENT
+            width = 0
+            weight = 1F
+        }
         if (showCancel) cancelLayoutParams.marginEnd = YScreenUtil.dp2px(5F)
         cancelLayoutParams.gravity = Gravity.CENTER
         cancelButton.layoutParams = cancelLayoutParams
@@ -303,7 +313,7 @@ class YAlertDialogUtils {
     /**
      * 消息框，无按钮
      */
-    fun showMessage(title: String?, message: String?, time: Int? = 2000): AlertDialog {
+    fun showMessage(title: String?, message: CharSequence?, time: Int? = 2000): AlertDialog {
         //创建alertDialog
         val alertDialog = AlertDialog.Builder(YActivityUtil.getCurrentActivity())
             .setCustomTitle(if (title != null) createTitleView(title) else null)
@@ -312,7 +322,6 @@ class YAlertDialogUtils {
             .create()
 
         setStyleAndShow(alertDialog, title)
-
         YDelay.run(time!!) {
             alertDialog.dismiss()
         }
@@ -322,7 +331,7 @@ class YAlertDialogUtils {
     /**
      * 消息框，确定按钮
      */
-    fun showMessage(title: String?, message: String?, listener: (() -> Unit)? = null): AlertDialog {
+    fun showMessage(title: String?, message: CharSequence?, listener: (() -> Unit)? = null): AlertDialog {
         //创建alertDialog
         val alertDialog = AlertDialog.Builder(YActivityUtil.getCurrentActivity())
             .setCustomTitle(if (title != null) createTitleView(title) else null)
@@ -339,7 +348,7 @@ class YAlertDialogUtils {
     /**
      * 消息框，确定按钮、取消按钮
      */
-    fun showMessageCancel(title: String?, message: String?, listener: (() -> Unit)? = null, cancelListener: (() -> Unit)? = null): AlertDialog {
+    fun showMessageCancel(title: String?, message: CharSequence?, listener: (() -> Unit)? = null, cancelListener: (() -> Unit)? = null): AlertDialog {
         //创建alertDialog
         val alertDialog = AlertDialog.Builder(YActivityUtil.getCurrentActivity())
             .setCustomTitle(if (title != null) createTitleView(title) else null)
@@ -360,7 +369,7 @@ class YAlertDialogUtils {
      * 单选弹窗，确定按钮
      * @param index 单选框默认值：从0开始
      */
-    fun showSingleChoice(title: String?, itemName: Array<String?>, default: Int = -1, listener: (Int) -> Unit): AlertDialog {
+    fun showSingleChoice(title: CharSequence?, itemName: Array<String?>, default: Int = -1, listener: (Int) -> Unit): AlertDialog {
         //-1 是未选择
         val finalWhich = intArrayOf(-1)
         //创建alertDialog
@@ -387,7 +396,7 @@ class YAlertDialogUtils {
     /**
      * 列表框，无按钮
      */
-    fun showList(title: String?, itemName: Array<String?>, listener: (Int) -> Unit): AlertDialog {
+    fun showList(title: CharSequence?, itemName: Array<String?>, listener: (Int) -> Unit): AlertDialog {
         //创建alertDialog
         val alertDialog = AlertDialog.Builder(YActivityUtil.getCurrentActivity())
             .setCustomTitle(if (title != null) createTitleView(title) else null)
@@ -395,7 +404,6 @@ class YAlertDialogUtils {
                 listener(which)
             }.setCancelable(cancelable)
             .create()
-
         setStyleAndShow(alertDialog, title)
         return alertDialog
     }
@@ -403,30 +411,41 @@ class YAlertDialogUtils {
     /**
      * 输入框，确定按钮、取消按钮
      */
-    fun showEdit(title: String?, hint: String?, listener: (String) -> Unit, cancelListener: (() -> Unit)? = null, textWatcher: TextWatcher? = null): AlertDialog {
+    fun showEdit(title: String? = "请输入内容", text: CharSequence? = null, hint: String? = "请输入内容", listener: (String) -> Unit): AlertDialog {
+        return showEdit(title, text, hint, null, listener = listener, null)
+    }
+
+    /**
+     * 输入框，确定按钮、取消按钮
+     */
+    fun showEdit(title: String? = "请输入内容", text: CharSequence? = null, hint: String? = "请输入内容", textWatcher: TextWatcher? = null, listener: (String) -> Unit, cancelListener: (() -> Unit)? = null): AlertDialog {
         val editText = EditText(YApp.get())
         //创建alertDialog
         val alertDialog = AlertDialog.Builder(YActivityUtil.getCurrentActivity())
             .setCustomTitle(if (title != null) createTitleView(title) else null)
             .setView(
                 run {
-                    val linearLayout = LinearLayout(YApp.get())
-                    linearLayout.removeAllViews()
-                    linearLayout.orientation = LinearLayout.VERTICAL //设置纵向布局
-                    linearLayout.setPadding(0, 50, 0, 50)
+                    val linearLayout = LinearLayout(YApp.get()).apply {
+                        removeAllViews()
+                        orientation = LinearLayout.VERTICAL //设置纵向布局
+                        setPadding(0, 50, 0, 50)
+                    }
                     //输入框设置
-                    editText.setPadding(10, 20, 10, 20)
-                    editText.hint = hint
-                    editText.textSize = contentTextSize
-                    editText.setTextColor(Color.BLACK)
-                    editText.setBackgroundColor(Color.parseColor("#EEEEEE"))
-                    editText.addTextChangedListener(textWatcher)
+                    editText.apply {
+                        setPadding(10, 20, 10, 20)
+                        text?.let { setText(it) }
+                        this.hint = hint
+                        textSize = contentTextSize
+                        setTextColor(Color.BLACK)
+                        setBackgroundColor(Color.parseColor("#EEEEEE"))
+                        textWatcher?.let { addTextChangedListener(textWatcher) }
+                    }
                     linearLayout.addView(editText)
                     linearLayout
                 }
             )
             .setPositiveButton(okButtonString) { dialog, which ->
-                listener(editText.text.toString())
+                listener.invoke(editText.text.toString())
             }.setNegativeButton(cancelButtonString) { dialog, which ->
                 cancelListener?.invoke()
             }.setCancelable(cancelable)
@@ -440,7 +459,14 @@ class YAlertDialogUtils {
     /**
      * 多选弹窗，确定按钮、取消按钮
      */
-    fun showMultiChoice(title: String?, itemName: Array<String?>, checked: BooleanArray, listener: () -> Unit, cancelListener: (() -> Unit)? = null): AlertDialog {
+    fun showMultiChoice(title: CharSequence?, itemName: Array<String?>, checked: BooleanArray, listener: () -> Unit): AlertDialog {
+        return showMultiChoice(title, itemName, checked, listener, null)
+    }
+
+    /**
+     * 多选弹窗，确定按钮、取消按钮
+     */
+    fun showMultiChoice(title: CharSequence?, itemName: Array<String?>, checked: BooleanArray, listener: () -> Unit, cancelListener: (() -> Unit)? = null): AlertDialog {
         //创建alertDialog
         val alertDialog = AlertDialog.Builder(YActivityUtil.getCurrentActivity())
             .setCustomTitle(if (title != null) createTitleView(title) else null)
