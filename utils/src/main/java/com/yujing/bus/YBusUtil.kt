@@ -42,7 +42,7 @@ class YBusUtil {
     companion object {
         //类列表
         @JvmStatic
-        var listObject: MutableList<Any> = ArrayList()
+        var listObject: Vector<Any> = Vector()
 
         //延迟事件
         @JvmStatic

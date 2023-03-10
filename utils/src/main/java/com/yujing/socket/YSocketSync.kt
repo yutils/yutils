@@ -60,7 +60,7 @@ class YSocketSync(var ip: String?, var port: Int) {
     var hearBytes = ByteArray(0) // 心跳包内容，如果设置了heartbeatContent，则使用heartbeatContent，否则使用默认的心跳包内容
     var urgentData = 0xFF // 紧急数据,发送1个字节的紧急数据，默认情况下，服务器端没有开启紧急数据处理，不影响正常通信
     var isNoHeartbeatSendUrgentData = true  // 没有设置心跳包时,发送紧急数据
-    var connectListeners: MutableList<(Boolean) -> Unit> = ArrayList() // 连接监听
+    var connectListeners: Vector<(Boolean) -> Unit> = Vector() // 连接监听
     var isConnect = false // 当前连接状态
     var heartTime = 1000 * 3L // 心跳间隔时间
     var checkConnectTime = 1000 * 3L // 检查连接时间

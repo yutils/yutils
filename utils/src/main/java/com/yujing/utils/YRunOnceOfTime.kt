@@ -24,7 +24,7 @@ if (YRunOnceOfTime.check(1000,"tag1")) {
 class YRunOnceOfTime(var time: Long, var tag: String, var lastTime: Long) {
     companion object {
         @JvmStatic
-        val list: MutableList<YRunOnceOfTime> = ArrayList()
+        val list: Vector<YRunOnceOfTime> = Vector()
 
         /**
          * 清除全部
@@ -38,6 +38,7 @@ class YRunOnceOfTime(var time: Long, var tag: String, var lastTime: Long) {
          * 移除指定tag
          */
         @JvmStatic
+        @Synchronized
         fun remove(tag: String) {
             val mIterator = list.iterator()
             while (mIterator.hasNext()) {
@@ -50,6 +51,7 @@ class YRunOnceOfTime(var time: Long, var tag: String, var lastTime: Long) {
          * 移除包含关键字的tag
          */
         @JvmStatic
+        @Synchronized
         fun removeContains(tag: String) {
             val mIterator = list.iterator()
             while (mIterator.hasNext()) {
@@ -62,6 +64,7 @@ class YRunOnceOfTime(var time: Long, var tag: String, var lastTime: Long) {
          * 添加一个tag，如果已经存在就不添加
          */
         @JvmStatic
+        @Synchronized
         fun addTag(time: Long, tag: String) {
             var find = false
             for (item in list)
@@ -78,6 +81,7 @@ class YRunOnceOfTime(var time: Long, var tag: String, var lastTime: Long) {
          * 更新或添加一个tag，会更新最后一次时间
          */
         @JvmStatic
+        @Synchronized
         fun updateTag(time: Long, tag: String) {
             var find = false
             for (item in list)
@@ -123,6 +127,7 @@ class YRunOnceOfTime(var time: Long, var tag: String, var lastTime: Long) {
             }
          */
         @JvmStatic
+        @Synchronized
         fun check(time: Long, tag: String): Boolean {
             val check = check(tag)
             addTag(time, tag)
@@ -141,6 +146,7 @@ class YRunOnceOfTime(var time: Long, var tag: String, var lastTime: Long) {
             }
          */
         @JvmStatic
+        @Synchronized
         fun checkUpdate(time: Long, tag: String): Boolean {
             val check = check(tag)
             updateTag(time, tag)
@@ -151,6 +157,7 @@ class YRunOnceOfTime(var time: Long, var tag: String, var lastTime: Long) {
          * 运行，time内只允许运行一次，多余的事件直接抛弃
          */
         @JvmStatic
+        @Synchronized
         fun run(time: Long, tag: String, runnable: Runnable) {
             //如果没有找到对象，就创建并且运行
             if (check(tag)) {
@@ -163,6 +170,7 @@ class YRunOnceOfTime(var time: Long, var tag: String, var lastTime: Long) {
          * 运行，与上一次至少间隔time时间，多余的事件直接抛弃
          */
         @JvmStatic
+        @Synchronized
         fun runUpdate(time: Long, tag: String, runnable: Runnable) {
             //如果没有找到对象，就创建并且运行
             if (checkUpdate(time, tag)) {

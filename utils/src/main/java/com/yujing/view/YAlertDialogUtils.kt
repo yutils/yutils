@@ -85,11 +85,20 @@ YAlertDialogUtils().showEdit("测试","请输入内容"){
 }
 
 //显示后再修改按钮颜色
-val it=yDialog.showMessageCancel("这是标题",content) {}
-val buttonOk = it.getButton(AlertDialog.BUTTON_POSITIVE)
-val buttonCancel = it.getButton(AlertDialog.BUTTON_NEGATIVE)
-YView.setButtonBackgroundTint(buttonOk, Color.parseColor("#6045D0A0"), Color.parseColor("#FF45D0A0"))
-YView.setButtonBackgroundTint(buttonCancel, Color.parseColor("#6045D0A0"), Color.parseColor("#FF45D0A0"))
+YAlertDialogUtils().apply { fullScreen = false }.showMessageCancel(null, "是否离开当前页面？", {
+    finish()
+}, {}).apply {
+    getButton(AlertDialog.BUTTON_POSITIVE).apply {
+        text = "是"
+        setTextColor(Color.parseColor("#000000"))
+        YView.setButtonBackgroundTint(this, Color.parseColor("#2045D0A0"), Color.parseColor("#00000000"))
+    }
+    getButton(AlertDialog.BUTTON_NEGATIVE).apply {
+        text = "否"
+        setTextColor(Color.parseColor("#000000"))
+        YView.setButtonBackgroundTint(this, Color.parseColor("#2045D0A0"), Color.parseColor("#00000000"))
+    }
+}
  */
 /**
  * AlertDialog常用弹窗封装

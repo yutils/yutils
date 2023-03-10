@@ -10,7 +10,7 @@
 ![Gradle](https://img.shields.io/badge/Gradle-7.5.1-brightgreen.svg)
 [![last commit](https://img.shields.io/github/last-commit/yutils/yutils.svg)](https://github.com/yutils/yutils/commits/master)
 ![repo size](https://img.shields.io/github/repo-size/yutils/yutils.svg)
-![android studio](https://img.shields.io/badge/android%20studio-2021.3.1-green.svg)
+![android studio](https://img.shields.io/badge/android%20studio-2022.1.1-green.svg)
 [![maven](https://img.shields.io/badge/maven-address-green.svg)](https://search.maven.org/artifact/com.kotlinx/yutils)
 
 ## 已经从jitpack.io仓库移动至maven中央仓库
@@ -19,12 +19,12 @@
 
 ## Gradle 引用
 
-[添加依赖，当前最新版：————> 2.1.3　　　　![最新版](https://img.shields.io/badge/%E6%9C%80%E6%96%B0%E7%89%88-2.1.3-green.svg)](https://search.maven.org/artifact/com.kotlinx/yutils)
+[添加依赖，当前最新版：————> 2.1.4　　　　![最新版](https://img.shields.io/badge/%E6%9C%80%E6%96%B0%E7%89%88-2.1.4-green.svg)](https://search.maven.org/artifact/com.kotlinx/yutils)
 
 ```
 dependencies {
      //更新地址  https://github.com/yutils/yutils 建议过几天访问看下有没有新版本
-     implementation 'com.kotlinx:yutils:2.1.3'
+     implementation 'com.kotlinx:yutils:2.1.4'
 }
 ```
 

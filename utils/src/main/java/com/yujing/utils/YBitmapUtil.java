@@ -41,8 +41,7 @@ public class YBitmapUtil {
         float scaleWidth = ((float) w / width);
         float scaleHeight = ((float) h / height);
         matrix.postScale(scaleWidth, scaleHeight);
-        return Bitmap.createBitmap(bitmap, 0, 0, width, height,
-                matrix, true);
+        return Bitmap.createBitmap(bitmap, 0, 0, width, height, matrix, true);
     }
 
 
@@ -105,8 +104,7 @@ public class YBitmapUtil {
      * @return Bitmap
      */
     public static Bitmap getRounded(Bitmap bitmap, float roundPx) {
-        Bitmap output = Bitmap.createBitmap(bitmap.getWidth(),
-                bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        Bitmap output = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(output);
         final int color = 0xff424242;
         final Paint paint = new Paint();

@@ -1,5 +1,6 @@
 package com.yujing.utils
 
+import java.util.*
 import java.util.concurrent.TimeoutException
 
 
@@ -34,7 +35,7 @@ class YAsync private constructor() {
     /**
      * 队列
      */
-    private var tagList: MutableList<Command> = ArrayList()
+    private var tagList: Vector<Command> = Vector()
 
     /**
      * 单例
@@ -42,7 +43,11 @@ class YAsync private constructor() {
     companion object {
         private var instance: YAsync? = null
         fun getInstance(): YAsync {
-            if (instance == null) instance = YAsync()
+            if (instance == null) {
+                synchronized(YAsync::class.java) {
+                    if (instance == null) instance = YAsync()
+                }
+            }
             return instance!!
         }
     }
@@ -86,12 +91,7 @@ class YAsync private constructor() {
     @Suppress("UNCHECKED_CAST")
     @Throws(Exception::class)
     fun <T> submit(tag: String, timeOut: Long? = null, runnable: Runnable? = null): T? {
-        finish("wait_${tag}")
-        //判断是否有tag,有则抛出异常
-        if (!isAllowSameTag && tagList.any { it.tag == tag }) throw Exception("tag:$tag 已存在")
-        //创建command，并加入队列
-        val command = Command(tag, timeOut, runnable)
-        tagList.add(command)
+        val command = createCommand(tag, timeOut, runnable)
         command.run()
         //判断是否已经超时
         if (command.isTimeOut) {
@@ -99,6 +99,17 @@ class YAsync private constructor() {
             throw TimeoutException("执行超时")
         }
         return command.result as T?
+    }
+
+    @Synchronized
+    private fun createCommand(tag: String, timeOut: Long? = null, runnable: Runnable? = null): Command {
+        finish(if (tag.length > 5 && tag.substring(0, 5) != "wait_") tag else "wait_${tag}")
+        //判断是否有tag,有则抛出异常
+        if (!isAllowSameTag && tagList.any { it.tag == tag }) throw Exception("tag:$tag 已存在")
+        //创建command，并加入队列
+        val command = Command(tag, timeOut, runnable)
+        tagList.add(command)
+        return command
     }
 
     /**
@@ -165,6 +176,10 @@ class YAsync private constructor() {
             //解锁
             synchronized(lock) { lock.notifyAll() }
             return true
+        }
+
+        override fun toString(): String {
+            return "Command(tag='$tag', timeOut=$timeOut)"
         }
     }
 }
