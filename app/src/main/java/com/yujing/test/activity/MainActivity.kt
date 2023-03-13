@@ -68,6 +68,7 @@ class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
 
         Create.button(binding.wll, "清除屏幕") {
             textView1.text = ""
+            textView2.text = ""
         }
 
         //--------------------------------------------------------------------------------
@@ -135,9 +136,20 @@ class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
         }
         //--------------------------------------------------------------------------------
         Create.space(binding.wll)//换行
-        editText1 = Create.editText(binding.wll, "消息内容->哈哈哈")
-        Create.button(binding.wll, "Ybus发送消息1") {
-            Thread { YBusUtil.post("tag1", editText1.text.toString()) }.start()
+        editText1 = Create.editText(binding.wll, "哈哈哈")
+
+        Create.button(binding.wll, "Ybus消息1") {
+            YBusUtil.postSticky("tag1", editText1.text.toString())
+        }
+        val editText2 = Create.editText(binding.wll, "嘿嘿嘿")
+        Create.button(binding.wll, "Ybus消息2") {
+            Thread { YBusUtil.postSticky("tag2", editText2.text.toString()) }.start()
+        }
+        Create.button(binding.wll, "删除tag1") {
+            YBusUtil.removeSticky("tag1")
+        }
+        Create.button(binding.wll, "跳转") {
+            startActivity(TestActivity::class.java)
         }
 
         Create.button(binding.wll, "弹窗测试1") {
@@ -162,7 +174,7 @@ class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
         }
 
         Create.button(binding.wll, "弹窗测试2") {
-          YAlertDialogUtils().apply {
+            YAlertDialogUtils().apply {
                 titleTextSize = 20F
                 contentTextSize = 18F
                 buttonTextSize = 18F
@@ -255,6 +267,6 @@ class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
     @YBus("tag1", "tag2", threadMode = ThreadMode.MAIN)
     fun message1(message: String?) {
         YLog.i("收到：tag$message")
-        textView1.text = textView1.text.toString() + "收到1:$message \n"
+        textView2.text = textView2.text.toString() + "收到:$message \n"
     }
 }

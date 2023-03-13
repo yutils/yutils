@@ -3,6 +3,8 @@ package com.yujing.utils
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonParser
+import com.google.gson.reflect.TypeToken
+import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 
 
@@ -242,5 +244,72 @@ object YJson {
         } catch (e: Exception) {
             str
         }
+    }
+
+    /**
+     * 可以获取泛类类型
+     * val type = object : TypeReference<T>() {}.type
+     */
+    abstract class TypeReference<T> : Comparable<TypeReference<T>> {
+        val type: Type = (javaClass.genericSuperclass as ParameterizedType).actualTypeArguments[0]
+        override fun compareTo(other: TypeReference<T>) = 0
+    }
+
+    /**
+     * 实体转JSON
+     */
+    fun Any.toJson(): String {
+        return gson.toJson(this)
+    }
+
+    /**
+     * 实体转JSON
+     */
+    fun Any.encodeJson(): String {
+        return gson.toJson(this)
+    }
+
+    /**
+     * 判断字符串是否是json
+     */
+    fun String.isJson(): Boolean {
+        return try {
+            JsonParser.parseString(this)
+            true
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    /**
+     * JSON字符串转实体
+     */
+    inline fun <reified T : Any> decodeJson(json: String): T? {
+        val type = object : TypeToken<T>() {}.type
+        //val type = object : TypeReference<T>() {}.type  //if (type is ParameterizedType)type.actualTypeArguments.forEach { println(it.typeName) }
+        return try {
+            when {
+                "byte[]" == type.toString() -> json.toByteArray() as T
+                String::class.java == type -> this as T
+                else -> gson.fromJson(json, type) as T
+            }
+        } catch (e: Exception) {
+            YLog.e("实体转换错误：${e.message}", e)
+            null
+        }
+    }
+
+    /**
+     * JSON字符串转实体
+     */
+    inline fun <reified T : Any> String.toEntity(): T? {
+        return decodeJson(this)
+    }
+
+    /**
+     * json格式化
+     */
+    fun String.jsonFormat(): String? {
+        return YUtils.jsonFormat(this)
     }
 }

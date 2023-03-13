@@ -1,7 +1,8 @@
 package com.yujing.bus
 
+import android.os.Build
 import com.yujing.utils.YLog
-import java.util.Vector
+import java.util.*
 
 /**
  * bus 总线通信 工具类
@@ -46,23 +47,24 @@ class YBusUtil {
 
         //延迟事件
         @JvmStatic
-        var anySticky: YMessage<Any>? = null
+        var anySticky: Vector<YMessage<Any>> = Vector()
 
         /**
          * 必须调用，注册类，同register
          */
         @JvmStatic
-        fun init(anyClass: Any) {
-            register(anyClass)
+        fun init(anyObject: Any) {
+            register(anyObject)
         }
 
         /**
          * 注册类，用完后必须unregister
          */
         @JvmStatic
-        fun register(anyClass: Any) {
-            anySticky?.let { Utils.execute(anyClass, it) }
-            listObject.add(anyClass)
+        fun register(anyObject: Any) {
+            if (listObject.contains(anyObject)) return
+            anySticky.forEach { Utils.execute(anyObject, it) }
+            listObject.add(anyObject)
         }
 
         /**
@@ -109,29 +111,54 @@ class YBusUtil {
         }
 
         /**
-         * 发送粘性事件
+         * 发送粘性事件，当前注册的全部对象都能收到事件，未来每个新注册的对象也能收到事件。
+         * 如果多次添加tag相同的事件，那么会更新value的值
          */
         @JvmStatic
         fun postSticky(tag: String, value: Any?) {
-            anySticky = YMessage(tag, value)
-            subscribe(YMessage(tag, value))
+            var msg: YMessage<Any>? = null
+            anySticky.forEach {
+                if (it.type == tag) {
+                    it.data = value
+                    msg = it
+                }
+            }
+            if (msg == null) {
+                msg = YMessage(tag, value)
+                anySticky.add(msg)
+            }
+            subscribe(msg!!)
         }
 
         /**
-         * 发送粘性事件
+         * 发送粘性事件，当前注册的全部对象都能收到事件，未来每个新注册的对象也能收到事件
+         * 如果多次添加tag相同的事件，那么会更新value的值
          */
         @JvmStatic
         fun postSticky(tag: String) {
-            anySticky = YMessage(tag, null)
-            subscribe(YMessage(tag, null))
+            post(tag, null)
         }
 
         /**
          * 删除粘性事件
          */
         @JvmStatic
-        fun removeSticky() {
-            anySticky = null
+        fun removeSticky(tag: String) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                anySticky.removeIf { it.type == tag }
+            } else {
+                for (i in anySticky.size - 1..0) {
+                    if (anySticky[i].type == tag) anySticky.removeAt(i)
+                }
+            }
+        }
+
+        /**
+         * 清空粘性事件
+         */
+        @JvmStatic
+        fun clearSticky() {
+            anySticky.clear()
         }
 
         /**
@@ -146,16 +173,16 @@ class YBusUtil {
          * 目标类退出时候必须调用
          */
         @JvmStatic
-        fun onDestroy(any: Any) {
-            unregister(any)
+        fun onDestroy(anyObject: Any) {
+            unregister(anyObject)
         }
 
         /**
          * 移除目标类
          */
         @JvmStatic
-        fun unregister(any: Any) {
-            listObject.remove(any)
+        fun unregister(anyObject: Any) {
+            listObject.remove(anyObject)
         }
     }
 }

@@ -43,6 +43,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".activity.TestActivity" />
         <activity android:name=".activity.bluetooth.BleServerActivity" />
         <activity android:name=".activity.bluetooth.BleClientActivity" />
         <!--安装app-->
