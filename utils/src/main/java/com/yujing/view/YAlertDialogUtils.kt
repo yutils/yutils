@@ -80,7 +80,7 @@ YAlertDialogUtils().showList("请选择一个", listOf("123","456","789","000").
 }
 
 //输入框
-YAlertDialogUtils().showEdit("测试","请输入内容"){
+YAlertDialogUtils().showEdit("测试",text="123",hint="请输入内容"){
     //YLog.i("输入了：$it")
 }
 
@@ -442,7 +442,10 @@ class YAlertDialogUtils {
                     //输入框设置
                     editText.apply {
                         setPadding(10, 20, 10, 20)
-                        text?.let { setText(it) }
+                        text?.let {
+                            setText(it)
+                            setSelection(it.length)
+                        }
                         this.hint = hint
                         textSize = contentTextSize
                         setTextColor(Color.BLACK)

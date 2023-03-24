@@ -195,6 +195,12 @@ class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
             }
         }
 
+        Create.button(binding.wll, "弹窗测试2") {
+            YAlertDialogUtils().showEdit("测试",text="123",hint="请输入内容"){
+                YLog.i("输入了：$it")
+            }
+        }
+
         Create.space(binding.wll)
         var ySocketSync: YSocketSync? = null
 

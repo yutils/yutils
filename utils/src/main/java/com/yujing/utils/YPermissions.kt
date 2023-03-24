@@ -66,9 +66,7 @@ class YPermissions(val activity: ComponentActivity) {
         fun hasPermissions(context: Context?, vararg permissions: String?): Boolean {
             if (Build.VERSION.SDK_INT < 23) return true
             for (perm in permissions) {
-                if (PackageManager.PERMISSION_GRANTED !=
-                    ContextCompat.checkSelfPermission(context!!, perm!!)
-                ) return false
+                if (PackageManager.PERMISSION_GRANTED != ContextCompat.checkSelfPermission(context!!, perm!!)) return false
             }
             return true
         }
@@ -146,9 +144,14 @@ class YPermissions(val activity: ComponentActivity) {
 
         //如果包含悬浮窗权限，特殊处理
         for (item in permissions) {
-            if (item == Manifest.permission.SYSTEM_ALERT_WINDOW && !Settings.canDrawOverlays(activity)) {
-                val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:${activity.packageName}"))
-                activity.startActivityForResult(intent, 100)
+            try {
+                if (item == Manifest.permission.SYSTEM_ALERT_WINDOW && !Settings.canDrawOverlays(activity)) {
+                    val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:${activity.packageName}"))
+                    activity.startActivityForResult(intent, 100)
+                }
+            }catch (e:Exception){
+                e.printStackTrace()
+                YLog.e("申请悬浮窗权限失败：${e.message}")
             }
         }
 

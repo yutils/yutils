@@ -56,6 +56,10 @@ public class YString {
      */
     public static List<StringBuilder> group(String str, int digit) {
         List<StringBuilder> strings = new ArrayList<>();
+        if (str.length() < digit) {
+            strings.add(new StringBuilder(str));
+            return strings;
+        }
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < str.length(); i++) {
             char c = str.charAt(i);//获取每一个字
@@ -65,8 +69,7 @@ public class YString {
                 sb = new StringBuilder();
             }
         }
-        if (sb.length() > 0)
-            strings.add(sb);
+        if (sb.length() > 0) strings.add(sb);
         return strings;
     }
 
@@ -79,6 +82,11 @@ public class YString {
      * @return 拆分后的字符串
      */
     public static List<StringBuilder> groupDouble(String str, int digit) {
+        if (str.length() < digit / 2) {
+            List<StringBuilder> strings = new ArrayList<>();
+            strings.add(new StringBuilder(str));
+            return strings;
+        }
         List<StringBuilder> strings = new ArrayList<>();
         StringBuilder sb = new StringBuilder();
         int index = 0;
@@ -136,11 +144,7 @@ public class YString {
         int length = str.length();
         for (int i = 0; i < length; i++) {
             char c = str.charAt(i);//获取每一个字
-            if (charset != null)
-                index += String.valueOf(c).getBytes(charset).length;
-            else
-                index += String.valueOf(c).getBytes().length;
-
+            index += String.valueOf(c).getBytes(charset != null ? charset : Charset.defaultCharset()).length;
             //如果大于就换行
             if (index > digit) {
                 index = 0;
