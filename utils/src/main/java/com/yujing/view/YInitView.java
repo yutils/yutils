@@ -43,6 +43,7 @@ public void item2(View view) {
 }
  */
 @SuppressWarnings("unused")
+@Deprecated
 public class YInitView {
     //************************Activity****************************
     public static void init(Activity activity) {

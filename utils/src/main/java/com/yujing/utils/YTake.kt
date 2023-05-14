@@ -12,9 +12,8 @@ import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
-import com.yujing.contract.YListener1
 import java.io.File
-import java.util.*
+import java.util.Date
 
 /*
 用法：
@@ -133,7 +132,7 @@ class YTake {
          * 请求权限并拍照并剪切，返回URI
          */
         @JvmStatic
-        fun takeAndCorp(activity: ComponentActivity, onResult: (Uri?) -> Unit) {
+        fun takeAndCorp(activity: ComponentActivity, outputX: Int = 400, outputY: Int = 400, onResult: (Uri?) -> Unit) {
             activity.lifecycle.addObserver(object : DefaultLifecycleObserver {
                 var cropPicture: ActivityResultLauncher<Crop>? = null
                 var takePicture: ActivityResultLauncher<File>? = null
@@ -147,7 +146,7 @@ class YTake {
                     takePicture = activity.activityResultRegistry.register("key1", YTakePicture(activity)) {
                         if (it == null) return@register
                         val file = File(YPath.getPICTURES() + "/corp/${Date().time}.jpg")
-                        cropPicture?.launch(Crop(it, file, 400, 400))
+                        cropPicture?.launch(Crop(it, file, outputX, outputY))
                     }
                     //相机权限返回
                     registerPermission = activity.activityResultRegistry.register("CAMERA", ActivityResultContracts.RequestPermission()) { it: Boolean ->
@@ -174,11 +173,11 @@ class YTake {
          * 选择照片
          */
         @JvmStatic
-        fun chosePicture(activity: ComponentActivity, onResult: YListener1<Uri?>) {
+        fun chosePicture(activity: ComponentActivity, onResult: (Uri?) -> Unit) {
             val activityResultObserver = YActivityResultObserver(activity.activityResultRegistry, "chosePicture") {
                 if (it!!.resultCode == Activity.RESULT_OK) {
                     var uri = it.data?.data
-                    onResult.value(uri)
+                    onResult.invoke(uri)
                 }
             }
             activity.lifecycle.addObserver(activityResultObserver)
@@ -190,7 +189,7 @@ class YTake {
          * 选择照片和剪切
          */
         @JvmStatic
-        fun chosePictureAndCorp(activity: ComponentActivity, onResult: (Uri?) -> Unit) {
+        fun chosePictureAndCorp(activity: ComponentActivity, outputX: Int = 400, outputY: Int = 400, onResult: (Uri?) -> Unit) {
             var cropPicture: ActivityResultLauncher<Crop>? = null
             //剪切
             activity.lifecycle.addObserver(object : DefaultLifecycleObserver {
@@ -209,7 +208,7 @@ class YTake {
                 if (it!!.resultCode == Activity.RESULT_OK) {
                     val uri: Uri? = it.data?.data ?: return@YActivityResultObserver
                     val file = File(YPath.getPICTURES() + "/corp/${Date().time}.jpg")
-                    cropPicture?.launch(Crop(uri!!, file, 400, 400))
+                    cropPicture?.launch(Crop(uri!!, file, outputX, outputY))
                 }
             }
             activity.lifecycle.addObserver(activityResultObserver)

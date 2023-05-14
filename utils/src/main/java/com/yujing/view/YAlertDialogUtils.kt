@@ -31,15 +31,15 @@ YAlertDialogUtils().apply {
     |执行后将无法修改，是否继续？
     """.trimMargin()
     //显示消息，包含取消按键
-    showMessageCancel("这是标题", content) {
+    showMessageCancel("这是标题", content,{
         //确定事件
-    }
+    },{})
 }
 
 //提示,有确定按钮，有取消按钮
-YAlertDialogUtils().showMessageCancel("测试","确定删除？删除后不可撤销。"){
+YAlertDialogUtils().showMessageCancel("测试","确定删除？删除后不可撤销。",{
     //确定事件
-}
+},{})
 
 //提示,有确定按钮
 YAlertDialogUtils().showMessage("测试","确定删除？删除后不可撤销。"){
@@ -80,9 +80,9 @@ YAlertDialogUtils().showList("请选择一个", listOf("123","456","789","000").
 }
 
 //输入框
-YAlertDialogUtils().showEdit("测试",text="123",hint="请输入内容"){
+YAlertDialogUtils().showEdit("测试",text="123",hint="请输入内容",{
     //YLog.i("输入了：$it")
-}
+},{})
 
 //显示后再修改按钮颜色
 YAlertDialogUtils().apply { fullScreen = false }.showMessageCancel(null, "是否离开当前页面？", {
@@ -352,6 +352,13 @@ class YAlertDialogUtils {
         setStyleAndShow(alertDialog, title)
         setButton(alertDialog, false)
         return alertDialog
+    }
+
+    /**
+     * 消息框，确定按钮、取消按钮
+     */
+    fun showMessageCancel(title: String?, message: CharSequence?, listener: (() -> Unit)? = null): AlertDialog {
+        return showMessageCancel(title,message,listener,null)
     }
 
     /**

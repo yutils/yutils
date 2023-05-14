@@ -19,6 +19,7 @@ import java.nio.ByteBuffer
 <uses-permission android:name="android.permission.HARDWARE_TEST" />
 //过滤所有你设备不支持的应用
 <uses-feature android:name="android.hardware.usb.host" android:required="true"/>
+<uses-permission android:name="android.permission.USB_PERMISSION" />
 
 //创建
 private val yUsb = YUsb()
