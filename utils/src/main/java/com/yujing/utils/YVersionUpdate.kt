@@ -22,8 +22,6 @@ import kotlin.system.exitProcess
 
 /*使用说明,举例
 val url = "https://down.qq.com/qqweb/QQ_1/android_apk/AndroidQQ_8.4.5.4745_537065283.apk"
-
-//实例化
 var yVersionUpdate = YVersionUpdate()
 //设置按钮背景颜色
 yVersionUpdate.alertDialogListener = {
@@ -32,7 +30,6 @@ yVersionUpdate.alertDialogListener = {
     YView.setButtonBackgroundTint(buttonOk, Color.parseColor("#6045D0A0"), Color.parseColor("#FF45D0A0"))
     YView.setButtonBackgroundTint(buttonCancel, Color.parseColor("#6045D0A0"), Color.parseColor("#FF45D0A0"))
 }
-
 //服务器版本号, 是否强制更新, apk下载地址
 yVersionUpdate?.update(999, true, url)
 yVersionUpdate?.update(999, true, "1.0.1","这是更新说明")
@@ -43,30 +40,51 @@ fun onDestroy() {
 }
 */
 
+/*
+java:
+YVersionUpdate yVersionUpdate = new YVersionUpdate();
+ //设置按钮背景颜色
+yVersionUpdate.setAlertDialogListener(it -> {
+    Button buttonOk = it.getButton(AlertDialog.BUTTON_POSITIVE);
+    Button buttonCancel = it.getButton(AlertDialog.BUTTON_NEGATIVE);
+    YView.INSTANCE.setButtonBackgroundTint(buttonOk, Color.parseColor("#6045D0A0"), Color.parseColor("#FF45D0A0"));
+    YView.INSTANCE.setButtonBackgroundTint(buttonCancel, Color.parseColor("#6045D0A0"), Color.parseColor("#FF45D0A0"));
+    return null;
+});
+yVersionUpdate.getDialog().setFullScreen(false);
+//服务器版本号, 是否强制更新, apk下载地址
+yVersionUpdate.update(32, true, url, "1.1.1", "这是详细说明1\n这是详细说明2");
+
+ */
+
+
+
 /* 权限说明
 安装apk
 如果是安卓8.0以上先请求打开位置来源
-权限：<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+1.AndroidManifest.xml添加权限
+<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
-1.首先创建res/xml/file_paths.xml
+2.创建文件：res/xml/provider_paths.xml
 内容：
-<?xml version="1.0" encoding="UTF-8"?>
-<resources>
-    <paths>
-        <external-path path="" name="download"/>
-    </paths>
-</resources>
+<?xml version="1.0" encoding="utf-8"?>
+<paths xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- /storage/emulated/0/Download/${applicationId}/.beta/apk-->
+    <external-path name="beta_external_path" path="Download/"/>
+    <!--/storage/emulated/0/Android/data/${applicationId}/files/apk/-->
+    <external-path name="beta_external_files_path" path="Android/data/"/>
+</paths>
 
-2.再在AndroidManifest.xml  中的application加入
+3.在AndroidManifest.xml中的application加入
 <!--安装app-->
 <provider
     android:name="androidx.core.content.FileProvider"
-    android:authorities="${applicationId}.provider"
+    android:authorities="${applicationId}.fileProvider"
     android:exported="false"
     android:grantUriPermissions="true">
     <meta-data
         android:name="android.support.FILE_PROVIDER_PATHS"
-        android:resource="@xml/file_paths" />
+        android:resource="@xml/provider_paths"/>
 </provider>
 
  */

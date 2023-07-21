@@ -216,6 +216,7 @@ class YAlertDialogUtils {
             gravity = contentTextViewGravity
             textSize = contentTextSize
             setTextColor(contentTextColor)
+            setTextIsSelectable(true)
         }
         if (contentTextViewGravity == Gravity.CENTER)
             textView.textAlignment = View.TEXT_ALIGNMENT_CENTER
@@ -358,7 +359,7 @@ class YAlertDialogUtils {
      * 消息框，确定按钮、取消按钮
      */
     fun showMessageCancel(title: String?, message: CharSequence?, listener: (() -> Unit)? = null): AlertDialog {
-        return showMessageCancel(title,message,listener,null)
+        return showMessageCancel(title, message, listener, null)
     }
 
     /**
