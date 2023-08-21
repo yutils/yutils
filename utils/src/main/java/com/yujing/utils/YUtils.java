@@ -506,10 +506,10 @@ public class YUtils {
             context.registerReceiver(receiver, new IntentFilter(DELIVERED_SMS_ACTION));
 
         Intent sentIntent = new Intent(SENT_SMS_ACTION);
-        PendingIntent sentPI = PendingIntent.getBroadcast(context, 0, sentIntent, 0);
+        PendingIntent sentPI = PendingIntent.getBroadcast(context, 0, sentIntent, PendingIntent.FLAG_IMMUTABLE);
 
         Intent deliverIntent = new Intent(DELIVERED_SMS_ACTION);
-        PendingIntent deliverPI = PendingIntent.getBroadcast(context, 0, deliverIntent, 0);
+        PendingIntent deliverPI = PendingIntent.getBroadcast(context, 0, deliverIntent, PendingIntent.FLAG_IMMUTABLE);
 
         SmsManager smsManager = SmsManager.getDefault();
         //如果字数超过70,需拆分成多条短信发送

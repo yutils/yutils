@@ -318,7 +318,7 @@ public class YPicture {
         Uri uri = null;
         try (Cursor cursor = context.getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, new String[]{"_id"}, "_data=? ", new String[]{filePath}, null)) {
             if (cursor != null && cursor.moveToFirst()) {
-                int values1 = cursor.getInt(cursor.getColumnIndex("_id"));
+                int values1 = cursor.getInt(cursor.getColumnIndexOrThrow("_id"));
                 Uri baseUri = Uri.parse("content://media/external/images/media");
                 uri = Uri.withAppendedPath(baseUri, "" + values1);
             } else if (imageFile.exists()) {

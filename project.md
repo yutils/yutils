@@ -23,12 +23,12 @@
 
 ## Gradle 引用
 
-[添加依赖，当前最新版：————> 2.1.7　　　　![最新版](https://img.shields.io/badge/%E6%9C%80%E6%96%B0%E7%89%88-2.1.7-green.svg)](https://search.maven.org/artifact/com.kotlinx/yutils)
+[添加依赖，当前最新版：————> 2.1.9　　　　![最新版](https://img.shields.io/badge/%E6%9C%80%E6%96%B0%E7%89%88-2.1.9-green.svg)](https://search.maven.org/artifact/com.kotlinx/yutils)
 
 ```
 dependencies {
      //更新地址  https://github.com/yutils/yutils 建议过几天访问看下有没有新版本
-     implementation 'com.kotlinx:yutils:2.1.7'
+     implementation 'com.kotlinx:yutils:2.1.9'
 }
 ```
 
@@ -36,14 +36,8 @@ dependencies {
 ```
 allprojects {
     repositories {
-        //google()
-        //mavenCentral()
-        
-        //阿里云镜像
-        maven { url 'https://maven.aliyun.com/repository/public' }
-        maven { url 'https://maven.aliyun.com/repository/google' }
-
-        //如果还是不容易拉取,可以试试直接用maven.org
+        google()
+        mavenCentral()
         maven { url 'https://repo1.maven.org/maven2' }
     }
 ```

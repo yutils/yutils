@@ -5,7 +5,12 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.hardware.usb.*
+import android.hardware.usb.UsbDevice
+import android.hardware.usb.UsbDeviceConnection
+import android.hardware.usb.UsbEndpoint
+import android.hardware.usb.UsbInterface
+import android.hardware.usb.UsbManager
+import android.hardware.usb.UsbRequest
 import com.yujing.contract.YListener1
 import java.nio.ByteBuffer
 
@@ -170,8 +175,7 @@ class YUsb {
         this.productId = productId
         mUsbManager = YApp.get().getSystemService(Context.USB_SERVICE) as UsbManager
         //初始化广播
-        mPermissionIntent =
-            PendingIntent.getBroadcast(YApp.get(), 0, Intent(ACTION_USB_PERMISSION), 0)
+        mPermissionIntent = PendingIntent.getBroadcast(YApp.get(), 0, Intent(ACTION_USB_PERMISSION), PendingIntent.FLAG_IMMUTABLE)
         val filter = IntentFilter(ACTION_USB_PERMISSION)
         filter.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED);
         filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
@@ -210,7 +214,7 @@ class YUsb {
         if (device == null) return false
         val mPermissionIntent = PendingIntent.getBroadcast(
             YApp.get(), 0,
-            Intent(ACTION_USB_PERMISSION), PendingIntent.FLAG_ONE_SHOT
+            Intent(ACTION_USB_PERMISSION), PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE
         )
         mUsbManager.requestPermission(device, mPermissionIntent)
         status = true
@@ -395,7 +399,7 @@ class YUsb {
             }
             if (showLog) YLog.d("退出读取线程")
         }
-        readThread?.name="YUsb-read"
+        readThread?.name = "YUsb-read"
         readThread?.start()
     }
 
