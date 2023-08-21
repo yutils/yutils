@@ -16,7 +16,20 @@ import com.yujing.test.activity.bluetooth.BleClientActivity
 import com.yujing.test.activity.bluetooth.BleServerActivity
 import com.yujing.test.base.KBaseActivity
 import com.yujing.test.databinding.ActivityAllTestBinding
-import com.yujing.utils.*
+import com.yujing.utils.TTS
+import com.yujing.utils.YConvert
+import com.yujing.utils.YImageDialog
+import com.yujing.utils.YJson
+import com.yujing.utils.YLog
+import com.yujing.utils.YPath
+import com.yujing.utils.YPermissions
+import com.yujing.utils.YPropertiesUtils
+import com.yujing.utils.YScreenUtil
+import com.yujing.utils.YShow
+import com.yujing.utils.YTake
+import com.yujing.utils.YThread
+import com.yujing.utils.YToast
+import com.yujing.utils.YVersionUpdate
 import com.yujing.view.YAlertDialogUtils
 import com.yujing.view.YView
 import com.yutils.view.utils.Create
@@ -43,12 +56,15 @@ class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
                 YLifeEvent.onDestroy -> {
                     YLog.d("MainActivity，onDestroy")
                 }
+
                 YLifeEvent.onStart -> {
                     YLog.d("MainActivity，onStart")
                 }
+
                 YLifeEvent.onCreate -> {
                     YLog.d("MainActivity，onCreate")
                 }
+
                 else -> {}
             }
         }
@@ -69,6 +85,15 @@ class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
         Create.button(binding.wll, "清除屏幕") {
             textView1.text = ""
             textView2.text = ""
+            YToast.show(
+                """
+               屏幕宽高:${YScreenUtil.getScreenWidth()} x ${YScreenUtil.getScreenHeight()}
+               当前宽高：${YScreenUtil.getScreenWidthCurrent(this)} x ${YScreenUtil.getScreenHeightCurrent(this)}
+               DPI:${YScreenUtil.getDensityDpi()}   DP密度：${YScreenUtil.getDensity()}
+               DP转换：${YScreenUtil.dp2px(100F)}  ${YScreenUtil.px2dp(100)}
+               SP转换${YScreenUtil.sp2px(100F)}  ${YScreenUtil.px2sp(100)}
+               """.trimIndent()
+            )
         }
 
         //--------------------------------------------------------------------------------
@@ -111,7 +136,7 @@ class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
         }
 
         Create.button(binding.wll, "更新APP") {
-            val url = "https://down.qq.com/qqweb/QQlite/qqlite_5.9.3.3468_Android_537067382.apk"
+            val url = "https://downv6.qq.com/qqweb/QQ_1/android_apk/Android_8.9.76_HB_64.apk"
             yVersionUpdate.useNotificationDownload = false
             val description = "1.更新了xxxxxxx\n2.新增xxxxxxxxxxx\n3.修复xxxxx的bug\n4.版本迭代如果出现异常或者问题，请尽快联系开发者，进行修复和处理。谢谢大家的积极配合。"
             //yVersionUpdate.dialog.okButtonBackgroundColor= Color.parseColor("#21A9FA")
@@ -121,6 +146,7 @@ class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
                 YView.setButtonBackgroundTint(buttonOk, Color.parseColor("#6045D0A0"), Color.parseColor("#FF45D0A0"))
                 YView.setButtonBackgroundTint(buttonCancel, Color.parseColor("#6045D0A0"), Color.parseColor("#FF45D0A0"))
             }
+            yVersionUpdate.showFailDialog=true
             yVersionUpdate.update(634, true, url, "6.3.4", description + description + description)
         }
 
@@ -196,7 +222,7 @@ class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
         }
 
         Create.button(binding.wll, "弹窗测试2") {
-            YAlertDialogUtils().showEdit("测试",text="123",hint="请输入内容"){
+            YAlertDialogUtils().showEdit("测试", text = "123", hint = "请输入内容") {
                 YLog.i("输入了：$it")
             }
         }
@@ -256,11 +282,39 @@ class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
             YToast.show(Gson().toJson(YPropertiesUtils.getAll(path)))
         }
 
-        Create.button(binding.wll, "测试") {
+        Create.button(binding.wll, "输入框") {
             //输入框
             YAlertDialogUtils().showEdit("请输入", "数据") {
                 YShow.show(it, true)
             }
+        }
+
+        Create.button(binding.wll, "测试") {
+            val context = this
+            Thread {
+                val ys = YShow.show("AAAA", "BBBB")
+                ys.setMessage1("CCCC")
+                //onCreate创建完成监听
+                ys.setCreatedListener {
+                    it.setMessage2("DDDD")
+                }
+//                YThread.ui {
+//                    //修改背景
+//                    ys.rootView.setBackgroundColor(Color.GREEN)
+//                    //自定义view
+//                    ys.rootView.apply {
+//                        removeAllViews()
+//                        addView(TextView(context).apply {
+//                            text = "666"
+//                            setTextColor(Color.BLUE)
+//                        })
+//                    }
+//                }
+                //点击事件
+                ys.setOnClickListener {
+                    YToast.show("被点击了")
+                }
+            }.start()
         }
     }
 

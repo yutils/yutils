@@ -32,8 +32,8 @@ public class OldActivity extends KBaseActivity<Activity1101Binding> {
 }
  */
 abstract class KBaseActivity<B : ViewDataBinding>(layout: Int?) : YBaseActivity<B>(layout) {
-    override fun initAfter() {
-        YUtils.setFullScreen(this, true)
-        YUtils.setImmersive(this, true)
-    }
+//    override fun initAfter() {
+//        YUtils.setFullScreen(this, true)
+//        YUtils.setImmersive(this, true)
+//    }
 }

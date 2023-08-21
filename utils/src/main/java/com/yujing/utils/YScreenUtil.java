@@ -194,7 +194,7 @@ public class YScreenUtil {
      * @return Dpi
      */
     public static float getDensityDpi(Context context) {
-        return getDisplayMetrics(context).densityDpi;
+        return Resources.getSystem().getDisplayMetrics().densityDpi;
     }
 
     public static float getDensityDpi() {
@@ -208,25 +208,11 @@ public class YScreenUtil {
      * @return float密度
      */
     public static float getDensity(Context context) {
-        return getDisplayMetrics(context).density;
+        return Resources.getSystem().getDisplayMetrics().density;
     }
 
     public static float getDensity() {
         return getDensity(YApp.get());
-    }
-
-    /**
-     * 获取系统字体sp密度值
-     *
-     * @param context context
-     * @return float密度
-     */
-    public static float getScaledDensity(Context context) {
-        return getDisplayMetrics(context).scaledDensity;
-    }
-
-    public static float getScaledDensity() {
-        return getScaledDensity(YApp.get());
     }
 
     /**
@@ -236,6 +222,7 @@ public class YScreenUtil {
      * @param dpValue dp值
      * @return 转换后的px值
      */
+    @Deprecated
     public static int dp2px(Context context, float dpValue) {
         return (int) (dpValue * getDensity(context) + 0.5f);
     }
@@ -247,7 +234,7 @@ public class YScreenUtil {
      * @return 转换后的px
      */
     public static int dp2px(float dpValue) {
-        final float scale = Resources.getSystem().getDisplayMetrics().density;
+        float scale = Resources.getSystem().getDisplayMetrics().density;
         return (int) (dpValue * scale + 0.5f);
     }
 
@@ -258,6 +245,7 @@ public class YScreenUtil {
      * @param pxValue px值
      * @return 转换后的dp值
      */
+    @Deprecated
     public static float px2dp(Context context, int pxValue) {
         return (pxValue / getDensity(context) + 0.5f);
     }
@@ -269,7 +257,7 @@ public class YScreenUtil {
      * @return dp
      */
     public static float px2dp(int pxValue) {
-        final float scale = Resources.getSystem().getDisplayMetrics().density;
+        float scale = Resources.getSystem().getDisplayMetrics().density;
         return (pxValue / scale + 0.5f);
     }
 
@@ -280,8 +268,10 @@ public class YScreenUtil {
      * @param spValue sp值
      * @return 转换后的px值
      */
+    @Deprecated
     public static int sp2px(Context context, float spValue) {
-        return (int) (spValue * getScaledDensity(context) + 0.5f);
+        float scaledDensity = Resources.getSystem().getDisplayMetrics().scaledDensity;
+        return (int) (spValue * scaledDensity + 0.5f);
     }
 
     public static int sp2px(float spValue) {
@@ -295,8 +285,10 @@ public class YScreenUtil {
      * @param pxValue px值
      * @return 转换后的sp值
      */
+    @Deprecated
     public static float px2sp(Context context, int pxValue) {
-        return (pxValue / getScaledDensity(context) + 0.5f);
+        float scaledDensity = Resources.getSystem().getDisplayMetrics().scaledDensity;
+        return (pxValue / scaledDensity + 0.5f);
     }
 
     public static float px2sp(int pxValue) {
@@ -431,8 +423,9 @@ public class YScreenUtil {
     public static DisplayMetrics getDisplayMetrics(Context context) {
         WindowManager manager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         DisplayMetrics metrics = new DisplayMetrics();
-        if (manager != null)
+        if (manager != null) {
             manager.getDefaultDisplay().getRealMetrics(metrics);//manager.getDefaultDisplay().getMetrics(metrics);
+        }
         return metrics;
     }
 

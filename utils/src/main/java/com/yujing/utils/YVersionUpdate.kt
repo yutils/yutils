@@ -1,5 +1,10 @@
 package com.yujing.utils
 
+import android.graphics.Color
+import android.os.Build
+import android.text.SpannableStringBuilder
+import android.text.Spanned
+import android.text.style.ForegroundColorSpan
 import android.view.Gravity
 import androidx.appcompat.app.AlertDialog
 import com.yujing.view.YAlertDialogUtils
@@ -12,7 +17,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.io.File
 import java.io.FileOutputStream
-import java.util.*
+import java.util.Objects
 import kotlin.system.exitProcess
 
 /**
@@ -58,7 +63,6 @@ yVersionUpdate.update(32, true, url, "1.1.1", "这是详细说明1\n这是详细
  */
 
 
-
 /* 权限说明
 安装apk
 如果是安卓8.0以上先请求打开位置来源
@@ -102,6 +106,9 @@ class YVersionUpdate {
 
     //是否使用OkHttp
     var useOkHttp = true
+
+    //是否显示失败原因
+    var showFailDialog = true
 
     //通知栏下载
     private var yNoticeDownload: YNoticeDownload? = null
@@ -183,26 +190,6 @@ class YVersionUpdate {
             #最新版本:$serverCode${if (serverName.isNotEmpty()) "($serverName)" else ""}${if (versionDescription.isNotEmpty()) "\n更新说明：\n$versionDescription" else "\n"}
             #发现新版本，是否更新?
             """.trimMargin("#")
-
-//        val dialog =
-//            AlertDialog.Builder(activity).setTitle("软件更新").setCancelable(!isForceUpdate)
-//                .setMessage(sb)
-//                .setPositiveButton("更新（${YUtils.getVersionCode()}-->$serverCode）") { _, _ ->
-//                    when {
-//                        useNotificationDownload -> notifyDownApkFile()
-//                        useOkHttp -> okHttpDownApkFile()
-//                        else -> yHttpDownApkFile()
-//                    }
-//                }.setNegativeButton(if (isForceUpdate) "退出APP" else "暂不更新") { dialog, _ ->
-//                    // 判断强制更新
-//                    if (isForceUpdate) {
-//                        dialog.dismiss()
-//                        YActivityUtil.getCurrentActivity().finish()
-//                        exitProcess(0)
-//                    } else dialog.dismiss()
-//                }.create() // 创建
-//        dialog.show()
-
         dialog.contentTextViewGravity = Gravity.START
         dialog.okButtonString = "更新(${YUtils.getVersionCode()}→$serverCode)"
         dialog.cancelButtonString = if (isForceUpdate) "退出APP" else "暂不更新"
@@ -255,13 +242,12 @@ class YVersionUpdate {
                 try {
                     YInstallApk().install(file)
                 } catch (e: Exception) {
-                    YShow.show("下载完成", "安装异常：" + e.message)
+                    exceptionDialog("安装失败", "原因:${e.message}")
                 }
             }
 
             override fun fail(value: String) {
-                YShow.show(value)
-                YShow.setCancel(true)
+                exceptionDialog("下载失败", "原因:${value}")
             }
         })
     }
@@ -290,6 +276,10 @@ class YVersionUpdate {
                 val startTime = System.currentTimeMillis()
                 //文件下载别用过滤器
                 val response = OkHttpClient().newCall(request).execute()
+                if (response.code != 200) {
+                    exceptionDialog("下载失败", "code:${response.code}")
+                    return@launch
+                }
                 val inputStream = response.body?.byteStream()
                 inputStream?.let {
                     val output = FileOutputStream(file)
@@ -324,13 +314,53 @@ class YVersionUpdate {
                     try {
                         YInstallApk().install(file)
                     } catch (e: Exception) {
-                        YShow.show("下载完成", "安装异常：" + e.message)
+                        exceptionDialog("安装失败", "原因:${e.message}")
                     }
                 }
             } catch (e: Exception) {
-                YLog.e("下载失败", "下载失败：${e.message}")
-                YShow.show("下载失败", "${e.message}")
-                YShow.setCancel(true)
+                exceptionDialog("下载失败", "原因:${e.message}")
+            }
+        }
+    }
+
+    //异常时弹窗
+    private fun exceptionDialog(title: CharSequence, cause: CharSequence) {
+        if (!showFailDialog) {
+            val ys = YShow.show(title, cause)
+            ys.setOnClickListener {
+                if (isForceUpdate) {
+                    YActivityUtil.getCurrentActivity().finish()
+                    exitProcess(0)
+                } else {
+                    YShow.finish()
+                }
+            }
+            return
+        }
+        //失败原因弹窗
+        YShow.finish()
+        val content = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            SpannableStringBuilder().apply {
+                append("${cause}\n", ForegroundColorSpan(Color.parseColor("#FFFF0000")), Spanned.SPAN_INCLUSIVE_EXCLUSIVE)
+                append("下载地址：${downUrl}\n", ForegroundColorSpan(Color.parseColor("#FF51A691")), Spanned.SPAN_INCLUSIVE_EXCLUSIVE)
+                append("请尝试浏览器自行下载安装", ForegroundColorSpan(Color.parseColor("#FFFF8888")), Spanned.SPAN_INCLUSIVE_EXCLUSIVE)
+            }
+        } else {
+            "${cause}\n下载地址：${downUrl}\n请尝试浏览器自行下载安装"
+        }
+
+        YThread.ui {
+            //提示,有确定按钮
+            YAlertDialogUtils().apply {
+                cancelable = !isForceUpdate //如果是强制更新
+                okButtonString = if (isForceUpdate) "退出" else "确定"
+                showMessage(title, content) {
+                    // 判断强制更新 ,直接退出
+                    if (isForceUpdate) {
+                        YActivityUtil.getCurrentActivity().finish()
+                        exitProcess(0)
+                    }
+                }
             }
         }
     }

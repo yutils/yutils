@@ -36,15 +36,15 @@ YAlertDialogUtils().apply {
     },{})
 }
 
-//提示,有确定按钮，有取消按钮
-YAlertDialogUtils().showMessageCancel("测试","确定删除？删除后不可撤销。",{
-    //确定事件
-},{})
-
 //提示,有确定按钮
 YAlertDialogUtils().showMessage("测试","确定删除？删除后不可撤销。"){
     //确定事件
 }
+
+//提示,有确定按钮，有取消按钮
+YAlertDialogUtils().showMessageCancel("测试","确定删除？删除后不可撤销。",{
+    //确定事件
+},{})
 
 //提示,无按钮，标题为null时不显示标题
 YAlertDialogUtils().showMessage(null,"确定删除？删除后不可撤销。")
@@ -135,10 +135,10 @@ class YAlertDialogUtils {
     var buttonTextSize = 16F
 
     //确定按钮文字
-    var okButtonString = "确定"
+    var okButtonString: CharSequence = "确定"
 
     //确定按钮文字
-    var cancelButtonString = "取消"
+    var cancelButtonString: CharSequence = "取消"
 
     //title 文字对齐方式
     var titleTextViewGravity = Gravity.CENTER
@@ -323,7 +323,7 @@ class YAlertDialogUtils {
     /**
      * 消息框，无按钮
      */
-    fun showMessage(title: String?, message: CharSequence?, time: Int? = 2000): AlertDialog {
+    fun showMessage(title: CharSequence?, message: CharSequence?, time: Int? = 2000): AlertDialog {
         //创建alertDialog
         val alertDialog = AlertDialog.Builder(YActivityUtil.getCurrentActivity())
             .setCustomTitle(if (title != null) createTitleView(title) else null)
@@ -341,7 +341,7 @@ class YAlertDialogUtils {
     /**
      * 消息框，确定按钮
      */
-    fun showMessage(title: String?, message: CharSequence?, listener: (() -> Unit)? = null): AlertDialog {
+    fun showMessage(title: CharSequence?, message: CharSequence?, listener: (() -> Unit)? = null): AlertDialog {
         //创建alertDialog
         val alertDialog = AlertDialog.Builder(YActivityUtil.getCurrentActivity())
             .setCustomTitle(if (title != null) createTitleView(title) else null)
@@ -358,14 +358,14 @@ class YAlertDialogUtils {
     /**
      * 消息框，确定按钮、取消按钮
      */
-    fun showMessageCancel(title: String?, message: CharSequence?, listener: (() -> Unit)? = null): AlertDialog {
+    fun showMessageCancel(title: CharSequence?, message: CharSequence?, listener: (() -> Unit)? = null): AlertDialog {
         return showMessageCancel(title, message, listener, null)
     }
 
     /**
      * 消息框，确定按钮、取消按钮
      */
-    fun showMessageCancel(title: String?, message: CharSequence?, listener: (() -> Unit)? = null, cancelListener: (() -> Unit)? = null): AlertDialog {
+    fun showMessageCancel(title: CharSequence?, message: CharSequence?, listener: (() -> Unit)? = null, cancelListener: (() -> Unit)? = null): AlertDialog {
         //创建alertDialog
         val alertDialog = AlertDialog.Builder(YActivityUtil.getCurrentActivity())
             .setCustomTitle(if (title != null) createTitleView(title) else null)
@@ -428,14 +428,14 @@ class YAlertDialogUtils {
     /**
      * 输入框，确定按钮、取消按钮
      */
-    fun showEdit(title: String? = "请输入内容", text: CharSequence? = null, hint: String? = "请输入内容", listener: (String) -> Unit): AlertDialog {
+    fun showEdit(title: CharSequence? = "请输入内容", text: CharSequence? = null, hint: String? = "请输入内容", listener: (String) -> Unit): AlertDialog {
         return showEdit(title, text, hint, null, listener = listener, null)
     }
 
     /**
      * 输入框，确定按钮、取消按钮
      */
-    fun showEdit(title: String? = "请输入内容", text: CharSequence? = null, hint: String? = "请输入内容", textWatcher: TextWatcher? = null, listener: (String) -> Unit, cancelListener: (() -> Unit)? = null): AlertDialog {
+    fun showEdit(title: CharSequence? = "请输入内容", text: CharSequence? = null, hint: String? = "请输入内容", textWatcher: TextWatcher? = null, listener: (String) -> Unit, cancelListener: (() -> Unit)? = null): AlertDialog {
         val editText = EditText(YApp.get())
         //创建alertDialog
         val alertDialog = AlertDialog.Builder(YActivityUtil.getCurrentActivity())

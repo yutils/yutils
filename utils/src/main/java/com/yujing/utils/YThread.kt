@@ -303,6 +303,16 @@ object YThread {
      */
     @JvmStatic
     fun io(block: suspend CoroutineScope.() -> Unit) {
-        CoroutineScope(Dispatchers.IO).launch { withContext(Dispatchers.IO,block)}
+        CoroutineScope(Dispatchers.IO).launch { withContext(Dispatchers.IO, block) }
+    }
+    
+    /**
+     * delay延迟 柱塞线程
+     */
+    @JvmStatic
+    fun delay(timeMillis: Long) {
+        kotlinx.coroutines.runBlocking {
+            kotlinx.coroutines.delay(if (timeMillis < 0) 0 else timeMillis)//延时timeMillis毫秒
+        }
     }
 }
