@@ -55,7 +55,7 @@ abstract class YBaseFragment<B : ViewDataBinding>(var layout: Int?) : YFragment(
         initBefore()
         init()
         initAfter()
-        YBusUtil.init(this)
+        YBusUtil.register(this)
         return binding.root
     }
 
@@ -89,6 +89,6 @@ abstract class YBaseFragment<B : ViewDataBinding>(var layout: Int?) : YFragment(
 
     override fun onDestroy() {
         super.onDestroy()
-        YBusUtil.onDestroy(this)
+        YBusUtil.unregister(this)
     }
 }

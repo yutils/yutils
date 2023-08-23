@@ -6,11 +6,9 @@ plugins {
 }
 android {
     namespace 'com.yujing.utils' //不能修改
-//    compileSdk 31
     compileSdk 33
     defaultConfig {
         minSdk 19
-//        targetSdk 31
         targetSdk 33
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -29,15 +27,6 @@ android {
     buildFeatures {
         dataBinding = true
     }
-
-//    compileOptions {
-//        sourceCompatibility JavaVersion.VERSION_1_8
-//        targetCompatibility JavaVersion.VERSION_1_8
-//    }
-//    kotlinOptions {
-//        jvmTarget = '1.8'
-//    }
-
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
@@ -47,21 +36,13 @@ android {
     }
 }
 dependencies {
-    //低版本 是为了兼容其他目标版本低的工程
-//    implementation 'androidx.core:core-ktx:1.7.0'
-//    implementation 'androidx.appcompat:appcompat:1.4.2'
-//    implementation 'com.google.android.material:material:1.6.1'
-//    testImplementation 'junit:junit:4.13.2'
-//    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
-//    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
-
-    implementation 'androidx.core:core-ktx:1.10.0'
+    //https://developer.android.google.cn/kotlin/ktx?hl=zh-cn
+    implementation 'androidx.core:core-ktx:1.10.1'
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.google.android.material:material:1.9.0'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
-
     implementation 'com.google.code.gson:gson:2.10.1'
     //okhttp，https://search.maven.org/search?q=g:com.squareup.okhttp3%20AND%20a:okhttp
     implementation 'com.squareup.okhttp3:okhttp:4.10.0'

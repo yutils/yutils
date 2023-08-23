@@ -1,5 +1,7 @@
 package com.yujing.utils
 
+//import com.yutils.http.YHttp
+//import com.yutils.http.contract.YHttpDownloadFileListener
 import android.graphics.Color
 import android.os.Build
 import android.text.SpannableStringBuilder
@@ -8,8 +10,6 @@ import android.text.style.ForegroundColorSpan
 import android.view.Gravity
 import androidx.appcompat.app.AlertDialog
 import com.yujing.view.YAlertDialogUtils
-//import com.yutils.http.YHttp
-//import com.yutils.http.contract.YHttpDownloadFileListener
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -18,7 +18,6 @@ import okhttp3.Request
 import java.io.File
 import java.io.FileOutputStream
 import java.util.Objects
-import kotlin.system.exitProcess
 
 /**
  * 更新APP
@@ -93,7 +92,7 @@ yVersionUpdate.update(32, true, url, "1.1.1", "这是详细说明1\n这是详细
 
  */
 
-@Suppress("MemberVisibilityCanBePrivate", "FunctionName", "unused")
+@Suppress("MemberVisibilityCanBePrivate", "unused")
 class YVersionUpdate {
     var serverCode: Int = 0//服务器版本
     var isForceUpdate: Boolean = false//是否强制更新
@@ -204,8 +203,7 @@ class YVersionUpdate {
         }, {
             // 判断强制更新
             if (isForceUpdate) {
-                YActivityUtil.getCurrentActivity().finish()
-                exitProcess(0)
+                YUtils.exit()
             }
         })
         alertDialogListener?.invoke(alertDialog)
@@ -330,8 +328,7 @@ class YVersionUpdate {
             val ys = YShow.show(title, cause)
             ys.setOnClickListener {
                 if (isForceUpdate) {
-                    YActivityUtil.getCurrentActivity().finish()
-                    exitProcess(0)
+                    YUtils.exit()
                 } else {
                     YShow.finish()
                 }
@@ -359,8 +356,7 @@ class YVersionUpdate {
                 showMessage(title, content) {
                     // 判断强制更新 ,直接退出
                     if (isForceUpdate) {
-                        YActivityUtil.getCurrentActivity().finish()
-                        exitProcess(0)
+                        YUtils.exit()
                     }
                 }
             }
