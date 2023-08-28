@@ -2,6 +2,7 @@ package com.yujing.utils
 
 //import com.yutils.http.YHttp
 //import com.yutils.http.contract.YHttpDownloadFileListener
+import android.content.res.Resources
 import android.graphics.Color
 import android.os.Build
 import android.text.SpannableStringBuilder
@@ -25,18 +26,18 @@ import java.util.Objects
  */
 
 /*使用说明,举例
-val url = "https://down.qq.com/qqweb/QQ_1/android_apk/AndroidQQ_8.4.5.4745_537065283.apk"
-var yVersionUpdate = YVersionUpdate()
-//设置按钮背景颜色
-yVersionUpdate.alertDialogListener = {
-    val buttonOk = it.getButton(AlertDialog.BUTTON_POSITIVE)
-    val buttonCancel = it.getButton(AlertDialog.BUTTON_NEGATIVE)
-    YView.setButtonBackgroundTint(buttonOk, Color.parseColor("#6045D0A0"), Color.parseColor("#FF45D0A0"))
-    YView.setButtonBackgroundTint(buttonCancel, Color.parseColor("#6045D0A0"), Color.parseColor("#FF45D0A0"))
+val url = "https://downv6.qq.com/qqweb/QQ_1/android_apk/Android_8.9.76_HB_64.apk"
+val description = "1.更新了xxxxxxx\n2.新增xxxxxxxxxxx\n3.修复xxxxx的bug\n4.版本迭代如果出现异常或者问题，请尽快联系开发者，进行修复和处理。谢谢大家的积极配合。"
+val yVersionUpdate = YVersionUpdate().apply {
+    alertDialogListener = {
+        val buttonOk = it.getButton(AlertDialog.BUTTON_POSITIVE)
+        val buttonCancel = it.getButton(AlertDialog.BUTTON_NEGATIVE)
+        YView.setButtonBackgroundTint(buttonOk, Color.parseColor("#6045D0A0"), Color.parseColor("#FF45D0A0"))
+        YView.setButtonBackgroundTint(buttonCancel, Color.parseColor("#6045D0A0"), Color.parseColor("#FF45D0A0"))
+    }
+    compareType = 1 //1 通过code对比   2 通过name对比
+    update(999, false, url, "9.9.9", description)
 }
-//服务器版本号, 是否强制更新, apk下载地址
-yVersionUpdate?.update(999, true, url)
-yVersionUpdate?.update(999, true, "1.0.1","这是更新说明")
 
 //通知栏下载需要调用onDestroy()
 fun onDestroy() {
@@ -94,89 +95,94 @@ yVersionUpdate.update(32, true, url, "1.1.1", "这是详细说明1\n这是详细
 
 @Suppress("MemberVisibilityCanBePrivate", "unused")
 class YVersionUpdate {
-    var serverCode: Int = 0//服务器版本
+    var serverCode: Int? = 0//服务器版本
     var isForceUpdate: Boolean = false//是否强制更新
+    var serverName: String? = ""//服务器版本名
+    var description: String? = ""//版本说明
     lateinit var downUrl: String//下载路径
-    var serverName: String = ""//服务器版本名
-    var versionDescription: String = ""//版本说明
+    var useNotificationDownload = false //是否使用通知栏下载
+    var dialogUtils: YAlertDialogUtils//当前显示的AlertDialog
+    var alertDialogListener: ((AlertDialog) -> Unit)? = null//当前AlertDialog回调
+    var compareType = 1//对比版本更新类型  1 为通过code判断  2 为通过那么判断
+    var showFailDialog = true//是否显示失败原因
+    private var yNoticeDownload: YNoticeDownload? = null//通知栏下载
 
-    //是否使用通知栏下载
-    var useNotificationDownload = false
+    //var useOkHttp = true   //是否使用OkHttp
+    //yVersionUpdate.dialog.okButtonBackgroundColor= Color.parseColor("#21A9FA") //弹窗按钮颜色
+    //yVersionUpdate.dialog.okButtonTextColor= Color.parseColor("#FFFFFF") //弹窗按钮文字颜色
+    //yVersionUpdate.dialog.cancelButtonBackgroundColor= Color.parseColor("#21A9FA") //弹窗按钮颜色
+    //yVersionUpdate.dialog.cancelButtonTextColor= Color.parseColor("#FFFFFF") //弹窗按钮文字颜色
 
-    //是否使用OkHttp
-//    var useOkHttp = true
-
-    //是否显示失败原因
-    var showFailDialog = true
-
-    //通知栏下载
-    private var yNoticeDownload: YNoticeDownload? = null
-
-    //弹窗
-    //yVersionUpdate.dialog.okButtonBackgroundColor= Color.parseColor("#21A9FA")
-    //yVersionUpdate.dialog.okButtonTextColor= Color.parseColor("#FFFFFF")
-    //yVersionUpdate.dialog.cancelButtonBackgroundColor= Color.parseColor("#21A9FA")
-    //yVersionUpdate.dialog.cancelButtonTextColor= Color.parseColor("#FFFFFF")
-    var dialog = YAlertDialogUtils()
-
-    //当前显示的AlertDialog
-    var alertDialogListener: ((AlertDialog) -> Unit)? = null
+    //根据屏幕赋默认值
+    init {
+        val width = Resources.getSystem().displayMetrics.widthPixels
+        val height = Resources.getSystem().displayMetrics.heightPixels
+        dialogUtils = YAlertDialogUtils()
+        dialogUtils.lineSpacingMultiplier = 1.25F
+        //默认如果是横屏就全屏
+        dialogUtils.fullScreen = height < width
+    }
 
     /**
      * 立即检查一次更新
      */
     fun update(
-        serverCode: Int,//服务器版本
+        serverCode: Int?,//服务器版本
         isForceUpdate: Boolean = false,//是否强制更新
         downUrl: String,//下载路径
-        serverName: String = "",//服务器版本名
-        versionDescription: String = ""//版本说明
+        serverName: String? = "",//服务器版本名
+        description: String? = ""//版本说明
     ) {
         this.serverCode = serverCode
         this.isForceUpdate = isForceUpdate
         this.downUrl = downUrl
         this.serverName = serverName
-        this.versionDescription = versionDescription
+        this.description = description
 
-        if (serverCode > YUtils.getVersionCode()) needUpdate()
-        else noNeedUpdate()
+        if (compareType == 1) {
+            if (serverCode != null && serverCode <= YUtils.getVersionCode()) noNeedUpdate()
+            else needUpdate()
+        } else if (compareType == 2) {
+            if (serverName == YUtils.getVersionName()) noNeedUpdate()
+            else needUpdate()
+        }
     }
 
     /**
      * 需要更新时候才弹出，否则不弹出
      */
     fun updateNeedUpdateDisplay(
-        serverCode: Int,//服务器版本
+        serverCode: Int?,//服务器版本
         isForceUpdate: Boolean = false,//是否强制更新
         downUrl: String,//下载路径
-        serverName: String = "",//服务器版本名
-        versionDescription: String = ""//版本说明
+        serverName: String? = "",//服务器版本名
+        description: String? = ""//版本说明
     ) {
         this.serverCode = serverCode
         this.isForceUpdate = isForceUpdate
         this.downUrl = downUrl
         this.serverName = serverName
-        this.versionDescription = versionDescription
+        this.description = description
 
-        if (serverCode > YUtils.getVersionCode()) needUpdate()
+        if (compareType == 1) {
+            if (serverCode != null && serverCode <= YUtils.getVersionCode()) noNeedUpdate()
+        } else if (compareType == 2) {
+            if (serverName == YUtils.getVersionName()) noNeedUpdate()
+        }
     }
 
     /**
      * 不用更新时候弹窗
      */
     private fun noNeedUpdate() {
+        val local = "${YUtils.getVersionCode()}  (${YUtils.getVersionName()})"
         val sb = """
-            #本地版本:${YUtils.getVersionCode()}　(${YUtils.getVersionName()})
-            #最新版本:$serverCode${if (serverName.isNotEmpty()) "（$serverName）" else ""}${if (versionDescription.isNotEmpty()) "\n更新说明：\n$versionDescription" else "\n"}
+            #当前版本:${local}
             #已是最新版,无需更新!
             """.trimMargin("#")
-
-//        val dialog = AlertDialog.Builder(activity).setTitle("软件更新").setMessage(sb) // 设置内容
-//            .setPositiveButton("确定", null).create() // 创建
-//        dialog.show()
-        dialog.contentTextViewGravity = Gravity.START
-        dialog.okButtonString = "确定"
-        val alertDialog = dialog.showMessage("软件更新", sb) {}
+        dialogUtils.contentTextViewGravity = Gravity.START
+        dialogUtils.okButtonString = "确定"
+        val alertDialog = dialogUtils.showMessage("软件更新", sb) {}
         alertDialogListener?.invoke(alertDialog)
     }
 
@@ -184,16 +190,21 @@ class YVersionUpdate {
      * 需要更新时候弹窗
      */
     private fun needUpdate() {
+        val local = "${YUtils.getVersionCode()}  (${YUtils.getVersionName()})"
+        val server = "${if (serverCode != null) "$serverCode" else ""}${if (serverName != null && serverName!!.isNotEmpty()) "  ($serverName)" else ""}"
+        val tipsName = if (serverCode == null && (serverName == null || serverName!!.isEmpty())) "" else "最新版本:"
+        val description = if (description != null && description!!.isNotEmpty()) "\n更新说明：\n$description" else "\n"
         val sb = """
-            #本地版本:${YUtils.getVersionCode()}  (${YUtils.getVersionName()})
-            #最新版本:$serverCode${if (serverName.isNotEmpty()) "($serverName)" else ""}${if (versionDescription.isNotEmpty()) "\n更新说明：\n$versionDescription" else "\n"}
+            #本地版本:${local}
+            #${tipsName}${server}${description}
             #发现新版本，是否更新?
             """.trimMargin("#")
-        dialog.contentTextViewGravity = Gravity.START
-        dialog.okButtonString = "更新(${YUtils.getVersionCode()}→$serverCode)"
-        dialog.cancelButtonString = if (isForceUpdate) "退出APP" else "暂不更新"
-        dialog.cancelable = !isForceUpdate
-        val alertDialog = dialog.showMessageCancel("软件更新", sb, {
+
+        dialogUtils.contentTextViewGravity = Gravity.START
+        dialogUtils.okButtonString = "更新${if (compareType == 1 && serverCode != null) "(${YUtils.getVersionCode()}→$serverCode)" else ""}"
+        dialogUtils.cancelButtonString = if (isForceUpdate) "退出APP" else "暂不更新"
+        dialogUtils.cancelable = !isForceUpdate
+        val alertDialog = dialogUtils.showMessageCancel("软件更新", sb, {
             when {
                 useNotificationDownload -> notifyDownApkFile()
 //                useOkHttp -> okHttpDownApkFile()
@@ -202,9 +213,7 @@ class YVersionUpdate {
             }
         }, {
             // 判断强制更新
-            if (isForceUpdate) {
-                YUtils.exit()
-            }
+            if (isForceUpdate) YUtils.exit()
         })
         alertDialogListener?.invoke(alertDialog)
     }
@@ -327,11 +336,7 @@ class YVersionUpdate {
         if (!showFailDialog) {
             val ys = YShow.show(title, cause)
             ys.setOnClickListener {
-                if (isForceUpdate) {
-                    YUtils.exit()
-                } else {
-                    YShow.finish()
-                }
+                if (isForceUpdate) YUtils.exit() else YShow.finish()
             }
             ys.setCanCancel(!isForceUpdate)
             return
@@ -350,14 +355,12 @@ class YVersionUpdate {
 
         YThread.ui {
             //提示,有确定按钮
-            YAlertDialogUtils().apply {
+            dialogUtils.apply {
                 cancelable = !isForceUpdate //如果是强制更新
                 okButtonString = if (isForceUpdate) "退出" else "确定"
                 showMessage(title, content) {
                     // 判断强制更新 ,直接退出
-                    if (isForceUpdate) {
-                        YUtils.exit()
-                    }
+                    if (isForceUpdate) YUtils.exit()
                 }
             }
         }

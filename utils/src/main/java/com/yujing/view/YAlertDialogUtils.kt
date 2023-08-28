@@ -170,6 +170,14 @@ class YAlertDialogUtils {
     var titleImageViewHeight = 1 //px
     var contentImageViewHeight = 1 //px
 
+    //view创建监听
+    var createContentViewListener: ((View) -> Unit)? = null
+    var createTitleViewListener: ((View) -> Unit)? = null
+
+    //行间距
+    var lineSpacingAdd = 0.0F //行间距添加像素
+    var lineSpacingMultiplier = 1.0F//行间距倍数
+
     /**
      * 创建标题view
      */
@@ -194,6 +202,7 @@ class YAlertDialogUtils {
 
         linearLayout.addView(titleTextView)
         linearLayout.addView(titleImageView)
+        createTitleViewListener?.invoke(linearLayout)
         return linearLayout
     }
 
@@ -217,6 +226,7 @@ class YAlertDialogUtils {
             textSize = contentTextSize
             setTextColor(contentTextColor)
             setTextIsSelectable(true)
+            setLineSpacing(lineSpacingAdd, this@YAlertDialogUtils.lineSpacingMultiplier)
         }
         if (contentTextViewGravity == Gravity.CENTER)
             textView.textAlignment = View.TEXT_ALIGNMENT_CENTER
@@ -229,9 +239,10 @@ class YAlertDialogUtils {
         linearLayout.addView(textView)
         linearLayout.addView(contentImageView)
         scrollView.addView(linearLayout)
-
+        createContentViewListener?.invoke(scrollView)
         return scrollView
     }
+
 
     /**
      * 设置弹窗风格

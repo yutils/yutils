@@ -137,17 +137,18 @@ class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
 
         Create.button(binding.wll, "更新APP") {
             val url = "https://downv6.qq.com/qqweb/QQ_1/android_apk/Android_8.9.76_HB_64.apk"
-            yVersionUpdate.useNotificationDownload = false
             val description = "1.更新了xxxxxxx\n2.新增xxxxxxxxxxx\n3.修复xxxxx的bug\n4.版本迭代如果出现异常或者问题，请尽快联系开发者，进行修复和处理。谢谢大家的积极配合。"
-            //yVersionUpdate.dialog.okButtonBackgroundColor= Color.parseColor("#21A9FA")
-            yVersionUpdate.alertDialogListener = {
-                val buttonOk = it.getButton(AlertDialog.BUTTON_POSITIVE)
-                val buttonCancel = it.getButton(AlertDialog.BUTTON_NEGATIVE)
-                YView.setButtonBackgroundTint(buttonOk, Color.parseColor("#6045D0A0"), Color.parseColor("#FF45D0A0"))
-                YView.setButtonBackgroundTint(buttonCancel, Color.parseColor("#6045D0A0"), Color.parseColor("#FF45D0A0"))
+            yVersionUpdate.apply {
+                alertDialogListener = {
+                    val buttonOk = it.getButton(AlertDialog.BUTTON_POSITIVE)
+                    val buttonCancel = it.getButton(AlertDialog.BUTTON_NEGATIVE)
+                    YView.setButtonBackgroundTint(buttonOk, Color.parseColor("#6045D0A0"), Color.parseColor("#FF45D0A0"))
+                    YView.setButtonBackgroundTint(buttonCancel, Color.parseColor("#6045D0A0"), Color.parseColor("#FF45D0A0"))
+                }
+                showFailDialog = true
+                compareType = 1 //1 通过code对比   2 通过name对比
+                update(999, false, url, "9.9.9", description)
             }
-            yVersionUpdate.showFailDialog=true
-            yVersionUpdate.update(634, true, url, "6.3.4", description + description + description)
         }
 
         TTS.filter = { it.replace("不正确", "不在范围内") }
