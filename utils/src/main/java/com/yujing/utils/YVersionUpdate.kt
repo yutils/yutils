@@ -140,11 +140,9 @@ class YVersionUpdate {
         this.description = description
 
         if (compareType == 1) {
-            if (serverCode != null && serverCode <= YUtils.getVersionCode()) noNeedUpdate()
-            else needUpdate()
+            if (serverCode != null && serverCode <= YUtils.getVersionCode()) noNeedUpdate() else needUpdate()
         } else if (compareType == 2) {
-            if (serverName == YUtils.getVersionName()) noNeedUpdate()
-            else needUpdate()
+            if (serverName == YUtils.getVersionName()) noNeedUpdate() else needUpdate()
         }
     }
 
@@ -165,9 +163,13 @@ class YVersionUpdate {
         this.description = description
 
         if (compareType == 1) {
-            if (serverCode != null && serverCode <= YUtils.getVersionCode()) noNeedUpdate()
+            if (serverCode != null && serverCode <= YUtils.getVersionCode()) {
+                /*不做处理*/
+            } else needUpdate()
         } else if (compareType == 2) {
-            if (serverName == YUtils.getVersionName()) noNeedUpdate()
+            if (serverName == YUtils.getVersionName()) {
+                /*不做处理*/
+            } else needUpdate()
         }
     }
 

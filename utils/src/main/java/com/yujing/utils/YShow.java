@@ -69,7 +69,8 @@ ys.setOnClickListener {
  */
 @SuppressWarnings({"unused"})
 public class YShow extends Dialog {
-    public static volatile boolean defaultFullScreen = false;
+    public static volatile Boolean defaultFullScreen = null;
+
     public Activity activity;
     public ProgressBar mProgressBar;//进度
     public CharSequence message1;
@@ -274,7 +275,7 @@ public class YShow extends Dialog {
         if (activity == null || activity.isFinishing()) return;
         finish();
         YThread.runOnUiThread(() -> {
-            if (fullScreen == null) fullScreen = defaultFullScreen;
+            if (fullScreen == null) fullScreen = isDefaultFullScreen();
             if (fullScreen) {
                 //主要作用是焦点失能和焦点恢复，保证在弹出dialog时不会弹出虚拟按键且事件不会穿透。
                 if (this.getWindow() != null) {
@@ -417,7 +418,9 @@ public class YShow extends Dialog {
     }
 
     public static boolean isDefaultFullScreen() {
-        return defaultFullScreen;
+        if (defaultFullScreen != null) return defaultFullScreen;
+        //默认横屏true，竖屏false
+        return YScreenUtil.getScreenHeight() < YScreenUtil.getScreenWidth();
     }
 
     public static void setDefaultFullScreen(boolean defaultFullScreen) {

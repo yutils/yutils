@@ -147,7 +147,8 @@ class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
                 }
                 showFailDialog = true
                 compareType = 1 //1 通过code对比   2 通过name对比
-                update(999, false, url, "9.9.9", description)
+                dialogUtils.fullScreen = false
+                updateNeedUpdateDisplay(999, false, url, "9.9.9", description)
             }
         }
 
