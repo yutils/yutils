@@ -1,6 +1,8 @@
 package com.yujing.test.activity
 
 import android.graphics.Color
+import android.media.AudioAttributes
+import android.media.SoundPool
 import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
@@ -17,7 +19,9 @@ import com.yujing.test.activity.bluetooth.BleServerActivity
 import com.yujing.test.base.KBaseActivity
 import com.yujing.test.databinding.ActivityAllTestBinding
 import com.yujing.utils.TTS
+import com.yujing.utils.YApp
 import com.yujing.utils.YConvert
+import com.yujing.utils.YDelay
 import com.yujing.utils.YImageDialog
 import com.yujing.utils.YJson
 import com.yujing.utils.YLog
@@ -26,6 +30,7 @@ import com.yujing.utils.YPermissions
 import com.yujing.utils.YPropertiesUtils
 import com.yujing.utils.YScreenUtil
 import com.yujing.utils.YShow
+import com.yujing.utils.YSound
 import com.yujing.utils.YTake
 import com.yujing.utils.YThread
 import com.yujing.utils.YToast
@@ -317,6 +322,35 @@ class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
                     YToast.show("被点击了")
                 }
             }.start()
+        }
+
+
+        YSound.getInstance().put(0, R.raw.alarm)
+        YSound.getInstance().put(1, R.raw.success)
+        YSound.getInstance().put(2, R.raw.fail)
+
+        Create.button(binding.wll, "音效1") {
+            YSound.getInstance().play(1)
+        }
+        Create.button(binding.wll, "音效2") {
+            YSound.getInstance().play(2)
+        }
+        //报警
+        val runnable = Runnable {
+            YSound.getInstance().play(0, -1)
+        }
+        Create.button(binding.wll, "播放警报") {
+            TTS.speak("电子秤异常失重，请抬筐入秤并确认")
+            YDelay.run(5000, runnable)
+        }
+        Create.button(binding.wll, "停止警报") {
+            YDelay.remove(runnable)
+            YSound.getInstance().stopAll()
+        }
+
+        Create.button(binding.wll, "加载播放并释放资源") {
+            YSound.play(R.raw.success,1000)
+            YLog.i("立即执行")
         }
     }
 

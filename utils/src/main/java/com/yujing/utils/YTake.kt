@@ -92,6 +92,18 @@ lifecycle.addObserver(object : DefaultLifecycleObserver {
         registerPermission?.launch(Manifest.permission.CAMERA)
     }
 })
+
+//原生用法， 不用提前注册
+val file = File(getExternalFilesDir("")!!.absolutePath + "/img/1.jpg")
+if (!file.parentFile.exists()) file.parentFile.mkdirs()
+val uri: Uri = FileProvider.getUriForFile(this, applicationContext.packageName + ".fileProvider", file)
+//拍照
+activityResultRegistry.register("789", ActivityResultContracts.TakePicture()) {
+    if (!it) return@register  //拍照失败
+    val bitmap = YUri.getBitmap(this, uri)
+    YImageDialog.show(bitmap)
+    YLog.i("分辨率：${bitmap.width}x${bitmap.height} 路径：${file}   uri：${uri}")
+}.run { launch(uri) }
  */
 
 class YTake {

@@ -1,6 +1,7 @@
 package com.yujing.utils;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.regex.Pattern;
 
@@ -120,7 +121,7 @@ public class YNumber {
 
     //scale位小数
     public static double S2D(String s, int scale) {
-        return Double.parseDouble(S2S(s,scale));
+        return Double.parseDouble(S2S(s, scale));
     }
 
     //不显示科学计数，默认2位小数
@@ -130,14 +131,21 @@ public class YNumber {
 
     //不显示科学计数
     public static String showNumber(double d, int scale) {
+        return showNumber(new BigDecimal(String.valueOf(d)), scale);//format 要传入BigDecimal不能是double，举例：39.9850保留2位小数，如果是BigDecimal就是39.99，如果是double就是39.98
+    }
+
+    //不显示科学计数
+    public static String showNumber(BigDecimal bd, int scale) {
         StringBuilder mat = new StringBuilder("#");
         if (scale > 0) {
             mat.append(".");
             for (int i = 0; i < scale; i++)
                 mat.append("#");
         }
+        //#.##
         DecimalFormat df = new DecimalFormat(mat.toString());
-        return df.format(d);
+        df.setRoundingMode(RoundingMode.HALF_UP);
+        return df.format(bd);//format 要传入BigDecimal不能是double，举例：39.9850保留2位小数，如果是BigDecimal就是39.99，如果是double就是39.98
     }
 
     //不显示科学计数，默认2位小数，不够的填充0
@@ -147,13 +155,20 @@ public class YNumber {
 
     //不显示科学计数，不够的填充0
     public static String fill(double d, int scale) {
+        return fill(new BigDecimal(String.valueOf(d)), scale);
+    }
+
+    //不显示科学计数，不够的填充0
+    public static String fill(BigDecimal bd, int scale) {
         StringBuilder mat = new StringBuilder("0");
         if (scale > 0) {
             mat.append(".");
             for (int i = 0; i < scale; i++)
                 mat.append("0");
         }
+        //0.00
         DecimalFormat df = new DecimalFormat(mat.toString());
-        return df.format(d);
+        df.setRoundingMode(RoundingMode.HALF_UP);
+        return df.format(bd); //format 要传入BigDecimal不能是double，举例：39.9850保留2位小数，如果是BigDecimal就是39.99，如果是double就是39.98
     }
 }
