@@ -106,7 +106,7 @@ class YVersionUpdate {
     var compareType = 1//对比版本更新类型  1 为通过code判断  2 为通过那么判断
     var showFailDialog = true//是否显示失败原因
     private var yNoticeDownload: YNoticeDownload? = null//通知栏下载
-
+    var showLog = false
     //var useOkHttp = true   //是否使用OkHttp
     //yVersionUpdate.dialog.okButtonBackgroundColor= Color.parseColor("#21A9FA") //弹窗按钮颜色
     //yVersionUpdate.dialog.okButtonTextColor= Color.parseColor("#FFFFFF") //弹窗按钮文字颜色
@@ -242,12 +242,12 @@ class YVersionUpdate {
 //                    val message1 = "下载进度:${YNumber.fill((10000.0 * downloadSize / fileSize).toInt() / 100.0)}%"//下载进度，保留2位小数
 //                    val message2 = if (downloadSize > 1048576) "已下载:" + YNumber.fill(downloadSize / 1048576.0, 2) + "MB" else "已下载:" + downloadSize / 1024 + "KB"
 //                    YShow.show(message1, message2)
-//                    YLog.i("下载中", "$message1 $message2")
+//                    if (showLog) YLog.i("下载中", "$message1 $message2")
 //                }
 //            }
 //
 //            override fun success(file: File) {
-//                YLog.i("下载完成", "存放路径${file.path}")
+//                if (showLog) YLog.i("下载完成", "存放路径${file.path}")
 //                YShow.show("下载完成")
 //                try {
 //                    YInstallApk().install(file)
@@ -305,21 +305,21 @@ class YVersionUpdate {
                                 val message1 = "下载进度:${YNumber.fill((10000.0 * downloadSize / fileSize).toInt() / 100.0)}%"//下载进度，保留2位小数
                                 val message2 = if (downloadSize > 1048576) "已下载:" + YNumber.fill(downloadSize / 1048576.0, 2) + "MB" else "已下载:" + downloadSize / 1024 + "KB"
                                 YShow.show(message1, message2)
-                                YLog.i("下载中", "$message1 $message2")
+                                if (showLog) YLog.i("下载中", "$message1 $message2")
                             }
                         } else {
                             if (YRunOnceOfTime.check(100, "下载中") || len < b.size) {
                                 val message1 = "下载中..."
                                 val message2 = if (downloadSize > 1048576) "已下载:" + YNumber.fill(downloadSize / 1048576.0, 2) + "MB" else "已下载:" + downloadSize / 1024 + "KB"
                                 YShow.show(message1, message2)
-                                YLog.i("下载中", "$message1 $message2")
+                                if (showLog) YLog.i("下载中", "$message1 $message2")
                             }
                         }
                     }
                     output.flush()
                     output.close()
                     inputStream.close()
-                    YLog.i("下载完成", "下载完成，总长度：${downloadSize},存放路径${file.path},耗时：${System.currentTimeMillis() - startTime}毫秒")
+                    if (showLog) YLog.i("下载完成", "下载完成，总长度：${downloadSize},存放路径${file.path},耗时：${System.currentTimeMillis() - startTime}毫秒")
                     YShow.show("下载完成")
                     try {
                         YInstallApk().install(file)
@@ -379,7 +379,7 @@ class YVersionUpdate {
         yNoticeDownload?.isAPK = true
         yNoticeDownload?.setDownLoadComplete { uri, file ->
             YShow.show("下载完成")
-            YLog.i("下载完成")
+            if (showLog) YLog.i("下载完成")
             try {
                 YInstallApk().install(file)
             } catch (e: Exception) {
@@ -396,7 +396,7 @@ class YVersionUpdate {
             val message1 = "下载进度:${YNumber.fill((10000.0 * downloadSize / fileSize).toInt() / 100.0)}%"//下载进度，保留2位小数
             val message2 = if (downloadSize > 1048576) "已下载:" + YNumber.fill(downloadSize / 1048576.0, 2) + "MB" else "已下载:" + downloadSize / 1024 + "KB"
             YShow.show(message1, message2)
-            YLog.i("下载中", "$message1 $message2")
+            if (showLog) YLog.i("下载中", "$message1 $message2")
         }
         yNoticeDownload?.start()
     }

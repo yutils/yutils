@@ -5,8 +5,10 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+
 /**
  * 农历日期计算，农历节日获取，公历节日获取，星期获取，年属相获取
+ *
  * @author 余静 2020年7月25日10:09:59
  * 如：20200601 转换后   2020年 闰四月 初十 星期一（鼠年)
  */
@@ -290,7 +292,7 @@ public class YDataLunar {
             w = 0;
         }
         week = w;
-        if (week==0) week=7;
+        if (week == 0) week = 7;
         return weekDays[w];
     }
 
@@ -384,6 +386,7 @@ public class YDataLunar {
     }
 
     String festival = null;
+
     public String getFestival() {
         return festival;
     }

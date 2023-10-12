@@ -94,7 +94,7 @@ class YUdp(var ip: String, var port: Int) {
             } catch (e: SocketException) {
                 if ("Socket is closed" == e.message) YLog.i("发送数据时Socket关闭")
             } catch (e: Exception) {
-                if (showLog) YLog.e("发送数据时异常", e)
+                if (showLog) YLog.e("发送数据时异常:" + e.message, e)
             }
         }
         thread.name = "YUdp-同步发送"
@@ -131,7 +131,7 @@ class YUdp(var ip: String, var port: Int) {
                     if (reconnect) reStart()
                 } catch (e: Exception) {
                     Thread.currentThread().interrupt()
-                    if (showLog) YLog.e("读取数据时异常", e)
+                    if (showLog) YLog.e("读取数据时异常:" + e.message, e)
                     break
                 }
             }
@@ -159,6 +159,7 @@ class YUdp(var ip: String, var port: Int) {
 
     companion object {
         const val defaultTag = "UdpReceiveDefaultTagTag"
+
         @JvmStatic
         var showLog = false
 

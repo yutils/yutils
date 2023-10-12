@@ -24,6 +24,7 @@ public class YPath {
      * 默认路径
      * /data/data/< package name >/files
      * 相当于：var path = YApp.get().let { (it.getExternalFilesDir("")?.absolutePath ?: (it.filesDir.toString()))}
+     *
      * @return 路径
      */
     public static String get() {
@@ -61,6 +62,7 @@ public class YPath {
      * /data/data/< package name >/files/xxDir
      * 忽略警告：1,返回值不处理：ResultOfMethodCallIgnored，2,空指针：ConstantConditions
      * var path = YApp.get().let { (it.getExternalFilesDir("")?.absolutePath ?: (it.filesDir.toString())) + "/"+dir}
+     *
      * @param context 上下文
      * @param dir     自己的路径，dir前后加"/"都会被去掉
      * @return 路径
@@ -89,6 +91,7 @@ public class YPath {
      * /storage/emulated/0/Android/data/com.xx.xx/files/
      * /data/data/< package name >/files
      * 忽略警告：1,空指针：ConstantConditions
+     *
      * @param context 上下文
      * @return 路径
      */

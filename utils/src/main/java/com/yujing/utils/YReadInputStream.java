@@ -130,7 +130,7 @@ public class YReadInputStream {
                         if (!noDataNotReturn || bytes.length != 0) readListener.value(bytes);
                     }
                 } catch (Throwable e) {
-                    log("读取线程异常", e);
+                    log("读取线程异常：" + e.getMessage(), e);
                 }
             }
             log("关闭一个读取线程");

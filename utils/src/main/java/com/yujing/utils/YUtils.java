@@ -250,7 +250,7 @@ public class YUtils {
                             return obj.toString();
                         }
                     } catch (Exception e) {
-                        YLog.e("获取IMEI", "失败", e);
+                        YLog.e("获取IMEI", "失败：" + e.getMessage(), e);
                     }
                 }
             }
@@ -291,7 +291,7 @@ public class YUtils {
         try {
             verCode = context.getPackageManager().getPackageInfo(packageName, 0).versionCode;
         } catch (PackageManager.NameNotFoundException e) {
-            YLog.e("getVersionCode", "异常", e);
+            YLog.e("getVersionCode", "异常：" + e.getMessage(), e);
         }
         return verCode;
     }
@@ -322,7 +322,7 @@ public class YUtils {
         try {
             verName = context.getPackageManager().getPackageInfo(packageName, 0).versionName;
         } catch (PackageManager.NameNotFoundException e) {
-            YLog.e("getVersionName", "异常", e);
+            YLog.e("getVersionName", "异常：" + e.getMessage(), e);
         }
         return verName;
     }
@@ -352,7 +352,7 @@ public class YUtils {
     public static <T> T copyObject(T date) {
         if (date == null) return null;
         if (date instanceof Serializable) {
-            YLog.i("copyObject", "采用Serializable序列化");
+            YLog.d("copyObject", "采用Serializable序列化");
             try {
                 ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
                 ObjectOutputStream out = new ObjectOutputStream(byteOut);
@@ -369,7 +369,7 @@ public class YUtils {
             }
         }
         if (date instanceof Parcelable) {
-            YLog.i("copyObject", "采用Parcelable序列化");
+            YLog.d("copyObject", "采用Parcelable序列化");
             Parcel parcel = null;
             try {
                 parcel = Parcel.obtain();
@@ -383,8 +383,8 @@ public class YUtils {
                     parcel.recycle();
             }
         }
-        YLog.i("copyObject", "警告，对象未继承Serializable或Parcelable");
-        YLog.i("copyObject", "尝试Gson序列化");
+        YLog.d("copyObject", "警告，对象未继承Serializable或Parcelable");
+        YLog.d("copyObject", "尝试Gson序列化");
         try {
             Gson gson = new Gson();
             return (T) gson.fromJson(gson.toJson(date), date.getClass());
@@ -744,7 +744,7 @@ public class YUtils {
                 }
             }
         } catch (SocketException e) {
-            YLog.e("获取IPv6失败", "异常", e);
+            YLog.e("获取IPv6失败", "异常：" + e.getMessage(), e);
         }
         return ips;
     }
@@ -766,7 +766,7 @@ public class YUtils {
                 }
             }
         } catch (SocketException e) {
-            YLog.e("获取IPv4失败", "异常", e);
+            YLog.e("获取IPv4失败", "异常：" + e.getMessage(), e);
         }
         return ips;
     }

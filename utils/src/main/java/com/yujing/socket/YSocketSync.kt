@@ -65,7 +65,7 @@ class YSocketSync(var ip: String?, var port: Int) {
     var heartTime = 1000 * 3L // 心跳间隔时间
     var checkConnectTime = 1000 * 3L // 检查连接时间
     var readTimeOut = 1000 * 30L // 每次读取最长时间，防止inputStream.available()卡死
-    var showLog = true // 显示日志
+    var showLog = false // 显示日志
     var showReceiveLog = false // 显示接收日志
     var showSendLog = false // 显示发送日志
     var clearInputStream = false // 发送前是否清除inputStream缓存
@@ -198,7 +198,7 @@ class YSocketSync(var ip: String?, var port: Int) {
             true
         } catch (e: Exception) {
             isConnect = false
-            YLog.e("发送消息", e)
+            if (showSendLog) YLog.e("发送消息失败：" + e.message, e)
             false
         }
     }
@@ -219,9 +219,9 @@ class YSocketSync(var ip: String?, var port: Int) {
             isConnect = true
             return resultBytes
         } catch (e: TimeoutException) {
-            YLog.e("读取消息", e)
+            if (showReceiveLog) YLog.e("读取消息超时", e)
         } catch (e: Exception) {
-            YLog.e("读取消息", e)
+            if (showReceiveLog) YLog.e("读取消息失败：" + e.message, e)
             isConnect = false
         }
         return null

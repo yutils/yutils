@@ -311,7 +311,7 @@ class YUsb {
                     usbConnection?.bulkTransfer(usbEndpointOut, current, current.size, 500)
                 if (re == null || re < 0) {
                     errorCount++
-                    if (showLog) YLog.e("错误", "错误码：$re")
+                    YLog.e("错误", "错误码：$re")
                     if (errorCount >= 3) break
                 } else {
                     count += re
@@ -320,7 +320,7 @@ class YUsb {
             }
             return true
         } catch (e: Exception) {
-            if (showLog) YLog.e("发送失败", e)
+            if (showLog) YLog.e("发送失败：" + e.message, e)
             return false
         }
     }
@@ -393,11 +393,11 @@ class YUsb {
                     YThread.runOnUiThread { yListener1.value(result) }
                 } catch (e: Exception) {
                     Thread.currentThread().interrupt()
-                    if (showLog) YLog.e("读取数据时异常", e)
+                    if (showLog) YLog.e("读取数据时异常：" + e.message, e)
                     break
                 }
             }
-            if (showLog) YLog.d("退出读取线程")
+            YLog.d("退出读取线程")
         }
         readThread?.name = "YUsb-read"
         readThread?.start()

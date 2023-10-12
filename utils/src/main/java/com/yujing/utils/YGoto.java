@@ -10,6 +10,7 @@ import android.telephony.PhoneNumberUtils;
 
 /**
  * 跳转到常用页面
+ *
  * @author 余静 2021年3月10日13:13:43
  */
 
@@ -60,6 +61,7 @@ com.android.settings.WirelessSettings 无线和网络设置
  */
 public class YGoto {
     public static final int INSTALL_APP_CODE = 8899;
+
     /**
      * 跳转到设置界面
      *
@@ -134,6 +136,7 @@ public class YGoto {
 
     /**
      * 跳转到运行安装第三方APP权限设置
+     *
      * @param context context
      */
     public static void toInstallApp(Context context) {

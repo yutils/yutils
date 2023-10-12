@@ -151,7 +151,7 @@ public class YPlayer {
                     if (autoRestartTimeLimit > 0) {
                         autoRestartTime++;
                         if (autoRestartTime >= autoRestartTimeLimit) {
-                            YLog.i("YPlayer", "稳定运行" + autoRestartTimeLimit + "秒，自动重启播放");
+                            YLog.d("YPlayer", "稳定运行" + autoRestartTimeLimit + "秒，自动重启播放");
                             autoRestartTime = 0;
                             rePlay();
                         }

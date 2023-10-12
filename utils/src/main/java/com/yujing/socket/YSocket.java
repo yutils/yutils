@@ -148,7 +148,7 @@ public class YSocket {
     protected int heartTime = 1000 * 3;// 心跳间隔时间
     protected int CheckConnectTime = 1000 * 3;// 检查连接时间
     protected int timeOut = 1000 * 30; // 每次读取最长时间，防止inputStream.available()卡死
-    protected boolean showLog = true;// 显示日志
+    protected boolean showLog = false;// 显示日志
     protected boolean showReceiveLog = false; // 显示接收日志
     protected boolean showSendLog = false; // 显示发送日志
     protected InputStreamReadListener inputStreamReadListener;//读取InputStream接口

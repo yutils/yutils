@@ -90,7 +90,7 @@ class YBusUtil {
                 var j = 0
                 while (j < temp.size) Utils.execute(temp[j++], yMessage)
             } catch (e: Exception) {
-                YLog.e("总线发生异常", e)
+                YLog.e("总线发生异常" + e.message, e)
             }
         }
 

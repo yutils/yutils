@@ -30,7 +30,7 @@ import java.util.Locale;
 @Deprecated
 public class YTts {
     private static String TAG = "YTts";
-    public static boolean SHOW_LOG = true;//是否显示log
+    public static boolean showLog = false;//是否显示log
     private TextToSpeech textToSpeech; // TTS对象
     private float speechRate = 1.0f;//速度
     private float pitch = 1.0f;//音调
@@ -212,7 +212,7 @@ public class YTts {
         } else {
             textToSpeech.speak(speak, TextToSpeech.QUEUE_FLUSH, null);
         }
-        if (SHOW_LOG) YLog.i(TAG, " \nTTS: " + speak, YStackTrace.getTopClassLine(1));
+        if (showLog) YLog.i(TAG, " \n" + speak, YStackTrace.getTopClassLine(1));
         history.add(0, speak);
         if (history.size() > 1000) history.remove(history.size() - 1);
         return this;
@@ -268,7 +268,7 @@ public class YTts {
         } else {
             textToSpeech.speak(speak, TextToSpeech.QUEUE_ADD, null);
         }
-        if (SHOW_LOG) Log.i(TAG, " \nTTS: " + speak);
+        if (showLog) Log.i(TAG, " \nTTS: " + speak);
         history.add(0, speak);
         if (history.size() > 1000) history.remove(history.size() - 1);
         return this;

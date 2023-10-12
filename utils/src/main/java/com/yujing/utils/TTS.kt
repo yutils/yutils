@@ -40,7 +40,7 @@ object TTS {
     var speechRate = 1.0f //速度
     var pitch = 1.0f //音调
     var filter: ((String) -> String?)? = null
-    var SHOW_LOG = true //是否显示log
+    var showLog = false //是否显示log
     var history = mutableListOf<String>()//历史记录，倒序，最多1000条
 
     //是否是第一次播放语音
@@ -63,10 +63,12 @@ object TTS {
                         Log.e(TAG, "TTS初始化失败，语言包丢失")
                         1
                     }
+
                     TextToSpeech.LANG_NOT_SUPPORTED -> {
                         Log.e(TAG, "TTS初始化失败，语音不支持")
                         2
                     }
+
                     else -> {
                         Log.i(TAG, "TTS初始化成功")
                         0
@@ -99,7 +101,7 @@ object TTS {
         if (initState == -1) return init(YApp.get()) { if (it) speak(str) }
         if (initState != 0 || str == null || str.isEmpty() || textToSpeech == null) return
         val speak: String? = if (filter != null) filter?.invoke(str) else str
-        if (speak == null || speak.isEmpty()) return
+        if (speak.isNullOrEmpty()) return
         textToSpeech?.setSpeechRate(speechRate) //速度
         textToSpeech?.setPitch(pitch) // 设置音调，值越大声音越尖（女生），值越小则变成男声,1.0是常规
         if (Build.VERSION.SDK_INT >= 21) {
@@ -107,7 +109,7 @@ object TTS {
         } else {
             textToSpeech?.speak(speak, TextToSpeech.QUEUE_FLUSH, null)
         }
-        if (SHOW_LOG) YLog.i(TAG, "TTS: $speak", if (isFirst) 0 else YStackTrace.getTopClassLine(1))
+        if (showLog) YLog.i(TAG, "$speak", if (isFirst) 0 else YStackTrace.getTopClassLine(1))
         isFirst = false //是否是第一次播放语音，因为第一次播放语音时，日志获取不到调用类，因为上面有个递归，递归又在初始化回调里面，所以第一次播放不偏移行
         history.add(0, speak)
         if (history.size > 1000) history.removeAt(history.size - 1)
@@ -180,7 +182,7 @@ object TTS {
         if (initState == -1) return init(YApp.get()) { if (it) speakQueue(str) }
         if (initState != 0 || str == null || str.isEmpty() || textToSpeech == null) return
         val speak: String? = if (filter != null) filter?.invoke(str) else str
-        if (speak == null || speak.isEmpty()) return
+        if (speak.isNullOrEmpty()) return
         textToSpeech?.setSpeechRate(speechRate) //速度
         textToSpeech?.setPitch(pitch) // 设置音调，值越大声音越尖（女生），值越小则变成男声,1.0是常规
         if (Build.VERSION.SDK_INT >= 21) {
@@ -188,7 +190,7 @@ object TTS {
         } else {
             textToSpeech?.speak(speak, TextToSpeech.QUEUE_ADD, null)
         }
-        if (SHOW_LOG) YLog.i(TAG, "TTS: $speak", if (isFirst) 0 else YStackTrace.getTopClassLine(1))
+        if (showLog) YLog.i(TAG, "$speak", if (isFirst) 0 else YStackTrace.getTopClassLine(1))
         isFirst = false //是否是第一次播放语音，因为第一次播放语音时，日志获取不到调用类，因为上面有个递归，递归又在初始化回调里面，所以第一次播放不偏移行
         history.add(0, speak)
         if (history.size > 1000) history.removeAt(history.size - 1)

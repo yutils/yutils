@@ -70,6 +70,9 @@ val a = YThread.timeOut(2000) {
 YLog.i("a= $a")
  */
 object YThread {
+    @JvmStatic
+    var showLog = false
+
     /**
      * 获取主线程handler
      */
@@ -143,7 +146,7 @@ object YThread {
         val allStackTraces = Thread.getAllStackTraces()
         for ((thread) in allStackTraces) sb.append("线程：").append(thread.name).append(",id=").append(thread.id).append(",state=").append(thread.state).append("\n")
         val str = sb.toString()
-        YLog.i(str)
+        if (showLog) YLog.i(str)
         return str
     }
 
@@ -161,7 +164,7 @@ object YThread {
             for (stackTraceElement in stack) sb.append(stackTraceElement.toString()).append("\n")
         }
         val str = sb.toString()
-        YLog.i(str)
+        if (showLog) YLog.i(str)
         return str
     }
 
@@ -251,7 +254,7 @@ object YThread {
             try {
                 runnable.run()
             } catch (e: InterruptedException) {
-                Log.i("timeOut", "InterruptedException")
+                if (showLog) Log.i("timeOut", "InterruptedException")
             } catch (e: Exception) {
                 e.printStackTrace()
                 executorService.shutdownNow()
@@ -262,7 +265,7 @@ object YThread {
         return try {
             future[timeOut.toLong(), TimeUnit.MILLISECONDS]
         } catch (e: TimeoutException) {
-            YLog.e("执行超时", 1)
+            if (showLog) YLog.e("执行超时", 1)
             executorService.shutdownNow()
             false
         } catch (e: Exception) {
@@ -305,7 +308,7 @@ object YThread {
     fun io(block: suspend CoroutineScope.() -> Unit) {
         CoroutineScope(Dispatchers.IO).launch { withContext(Dispatchers.IO, block) }
     }
-    
+
     /**
      * delay延迟 柱塞线程
      */

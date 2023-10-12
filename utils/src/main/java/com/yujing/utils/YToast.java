@@ -19,7 +19,7 @@ public class YToast {
     private static Toast toast;
     private static YQueue yQueue;
     private static volatile int queueTime = 1000;//队列显示一条toast至少显示这么长时间
-    public static boolean SHOW_LOG = true;//是否显示log
+    public static boolean showLog = false;//是否显示log
     public static List<String> history = new ArrayList<>();//历史记录，倒序，最多1000条
 
     /**
@@ -77,7 +77,7 @@ public class YToast {
      */
     public static void show(Context context, String text, int topClass) {
         if (context == null || text == null) return;
-        if (SHOW_LOG) YLog.i("Toast: " + text, YStackTrace.getTopClassLine(1 + topClass));
+        if (showLog) YLog.i("YToast ", text, YStackTrace.getTopClassLine(1 + topClass));
         YThread.runOnUiThread(() -> {
             if (toast != null) {
                 toast.cancel();
@@ -130,7 +130,7 @@ public class YToast {
      */
     public static void showLong(Context context, String text, int topClass) {
         if (context == null || text == null) return;
-        if (SHOW_LOG) YLog.i("Toast: " + text, YStackTrace.getTopClassLine(1 + topClass));
+        if (showLog) YLog.i("YToast ", text, YStackTrace.getTopClassLine(1 + topClass));
         YThread.runOnUiThread(() -> {
             if (toast != null) {
                 toast.cancel();

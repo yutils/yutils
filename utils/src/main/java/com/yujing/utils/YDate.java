@@ -11,9 +11,9 @@ import java.util.Objects;
  * 日期操作类
  *
  * @author 余静 2020年3月20日11:18:39
- *
- *
- *
+ * <p>
+ * <p>
+ * <p>
  * 新类LocalDate用法，仅支持java8+和api26+
  * LocalDate localDate = LocalDate.of(2018, 2, 6);
  * int year = localDate.getYear();
@@ -30,9 +30,9 @@ import java.util.Objects;
  * System.out.println(len);     // 28
  * System.out.println(bool);    // false
  * System.out.println(today);   // 2018-02-06
- *
- *
- *
+ * <p>
+ * <p>
+ * <p>
  * LocalDate localDate = LocalDate.of(2018, 2, 6);
  * String str1 = localDate.format(DateTimeFormatter.BASIC_ISO_DATE);
  * String str2 = localDate.format(DateTimeFormatter.ISO_LOCAL_DATE);
@@ -42,9 +42,9 @@ import java.util.Objects;
  * System.out.println(str2);   //2018-02-06
  * System.out.println(date1);  //2018-02-06
  * System.out.println(date2);  //2018-02-06
- *
- *
- *
+ * <p>
+ * <p>
+ * <p>
  * LocalDate localDate = LocalDate.of(2018, 2, 6);
  * LocalDate localDate1 = localDate.withYear(2019);                        //年份修改为2019
  * LocalDate localDate2 = localDate1.withDayOfMonth(25);                   //日改为25

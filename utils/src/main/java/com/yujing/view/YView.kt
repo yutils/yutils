@@ -111,6 +111,7 @@ object YView {
                     viewScale(child, scale, needWidth, needHeight, needViewGroup, ignores, allViewSize)
                 }
             }
+
             is ImageView -> {
                 map["id"] = id
                 map["width"] = view.width
@@ -119,6 +120,7 @@ object YView {
                 if (needWidth) view.layoutParams.width = (view.width * scale).toInt()
                 if (needHeight) view.layoutParams.height = (view.height * scale).toInt()
             }
+
             is Button -> {
                 map["id"] = id
                 map["textSize"] = view.textSize
@@ -129,18 +131,21 @@ object YView {
                 if (needWidth) view.layoutParams.width = (view.width * scale).toInt()
                 if (needHeight) view.layoutParams.height = (view.height * scale).toInt()
             }
+
             is EditText -> {
                 map["id"] = id
                 map["textSize"] = view.textSize
                 allViewSize.add(map)
                 view.setTextSize(TypedValue.COMPLEX_UNIT_PX, view.textSize * scale)
             }
+
             is TextView -> {
                 map["id"] = id
                 map["textSize"] = view.textSize
                 allViewSize.add(map)
                 view.setTextSize(TypedValue.COMPLEX_UNIT_PX, view.textSize * scale)
             }
+
             else -> {
                 map["id"] = id
                 map["width"] = view.width
@@ -181,6 +186,7 @@ object YView {
                     viewReduction(child, allViewSize)
                 }
             }
+
             is ImageView -> {
                 map?.let {
                     val width = map["width"].toString().toInt()
@@ -189,6 +195,7 @@ object YView {
                     view.layoutParams.height = height
                 }
             }
+
             is Button -> {
                 map?.let {
                     val textSize = map["textSize"].toString().toFloat()
@@ -199,18 +206,21 @@ object YView {
                     view.layoutParams.height = height
                 }
             }
+
             is EditText -> {
                 map?.let {
                     val textSize = map["textSize"].toString().toFloat()
                     view.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize)
                 }
             }
+
             is TextView -> {
                 map?.let {
                     val textSize = map["textSize"].toString().toFloat()
                     view.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize)
                 }
             }
+
             else -> {
                 map?.let {
                     val width = map["width"].toString().toInt()

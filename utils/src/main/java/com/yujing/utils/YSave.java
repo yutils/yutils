@@ -59,7 +59,9 @@ public class YSave {
     private String path; //保存文件位置
     private String extensionName; //扩展名
 
-    public static boolean isUseCache() {return useCache;}
+    public static boolean isUseCache() {
+        return useCache;
+    }
 
     public static void setUseCache(boolean useCache) {
         YSave.useCache = useCache;
@@ -187,7 +189,8 @@ public class YSave {
                 object = (T) classOfT.cast(getCache().get(key));
                 if (object != null) return object;
             } catch (Exception e) {
-                YLog.i("类型转换失败,数据：" + getCache().get(key) + " 采用JSON反序列化模式运行。错误异常：" + e.getMessage());
+                e.printStackTrace();
+                YLog.e("类型转换失败,数据：" + getCache().get(key) + " 采用JSON反序列化模式运行。错误异常：" + e.getMessage());
             }
         }
         // 读盘，如果是byte[]直接返回
@@ -266,6 +269,7 @@ public class YSave {
     public static YSave create(String path, String extensionName) {
         return new YSave(YApp.get(), path, extensionName);
     }
+
     // 创建，带context
     public static YSave create(Context context) {
         return new YSave(context);

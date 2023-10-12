@@ -86,6 +86,7 @@ public class YBluetooth implements YBluetoothDeviceConnect {
     YBluetoothDeviceConnect btAndBle;
     //区分是BT还是BLE
     private String type = null;
+    public static boolean showLog = false;
 
     /**
      * 设置成单例模式
@@ -149,7 +150,7 @@ public class YBluetooth implements YBluetoothDeviceConnect {
         public void onScanResult(int callbackType, ScanResult result) {
             super.onScanResult(callbackType, result);
             BluetoothDevice device = result.getDevice();
-            YLog.i(TAG, "搜索到设备：" + device.getName() + "，" + ((device.getType() == 1) ? "BT" : "BLE") + "，" + device.getAddress() + ",信号强度：" + result.getRssi());
+            if (showLog) YLog.i(TAG, "搜索到设备：" + device.getName() + "，" + ((device.getType() == 1) ? "BT" : "BLE") + "，" + device.getAddress() + ",信号强度：" + result.getRssi());
             searchListener.value(device, result.getRssi());
         }
     };

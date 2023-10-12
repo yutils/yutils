@@ -1,4 +1,5 @@
 package com.yujing.utils;
+
 import androidx.annotation.NonNull;
 
 import java.util.ArrayList;

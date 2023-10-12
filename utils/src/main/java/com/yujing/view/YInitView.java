@@ -68,9 +68,9 @@ public class YInitView {
                 mClass = mClass.getSuperclass();
             }
         } catch (IllegalAccessException e) {
-            YLog.e("调用方法权限不足", e);
+            YLog.e("调用方法权限不足：" + e.getMessage(), e);
         } catch (IllegalArgumentException e) {
-            YLog.e("接口接收参数个数不匹配", e);
+            YLog.e("接口接收参数个数不匹配：" + e.getMessage(), e);
         }
     }
 
@@ -94,19 +94,19 @@ public class YInitView {
                                 method.invoke(object);
                             }
                         } catch (IllegalAccessException e) {
-                            YLog.e("调用方法权限不足", e);
+                            YLog.e("调用方法权限不足：" + e.getMessage(), e);
                         } catch (IllegalArgumentException e) {
-                            YLog.e("接口接收参数个数不匹配", e);
+                            YLog.e("接口接收参数个数不匹配：" + e.getMessage(), e);
                         } catch (InvocationTargetException e) {
                             // 获取目标异常
                             Throwable t = e.getTargetException();
                             if (t.getMessage() != null && t.getMessage().contains("checkNotNullParameter")) {
-                                YLog.e("YInitView", "调用的目标方法异常，发送数据有null，然接收参数却不能为null，可以设置接收参数后面加?", t);
+                                YLog.e("YInitView", "调用的目标方法异常，发送数据有null，然接收参数却不能为null，可以设置接收参数后面加? message：" + e.getMessage(), t);
                             } else {
-                                YLog.e("YInitView", "调用目标异常，如下", t);
+                                YLog.e("YInitView", "调用目标异常，如下：" + t.getMessage(), t);
                             }
                         } catch (Throwable t) {
-                            YLog.e("YInitView", "未知异常", t);
+                            YLog.e("YInitView", "未知异常：" + t.getMessage(), t);
                         }
                     });
                 }
@@ -186,9 +186,9 @@ public class YInitView {
                 mClass = mClass.getSuperclass();
             }
         } catch (IllegalAccessException e) {
-            YLog.e("调用方法权限不足", e);
+            YLog.e("调用方法权限不足：" + e.getMessage(), e);
         } catch (IllegalArgumentException e) {
-            YLog.e("接口接收参数个数不匹配", e);
+            YLog.e("接口接收参数个数不匹配：" + e.getMessage(), e);
         }
     }
 
@@ -212,19 +212,19 @@ public class YInitView {
                                 method.invoke(object);
                             }
                         } catch (IllegalAccessException e) {
-                            YLog.e("调用方法权限不足", e);
+                            YLog.e("调用方法权限不足：" + e.getMessage(), e);
                         } catch (IllegalArgumentException e) {
-                            YLog.e("接口接收参数个数不匹配", e);
+                            YLog.e("接口接收参数个数不匹配：" + e.getMessage(), e);
                         } catch (InvocationTargetException e) {
                             // 获取目标异常
                             Throwable t = e.getTargetException();
                             if (t.getMessage() != null && t.getMessage().contains("checkNotNullParameter")) {
-                                YLog.e("YInitView", "调用的目标方法异常，发送数据有null，然接收参数却不能为null，可以设置接收参数后面加?", t);
+                                YLog.e("YInitView", "调用的目标方法异常，发送数据有null，然接收参数却不能为null，可以设置接收参数后面加? message：" + e.getMessage(), t);
                             } else {
-                                YLog.e("YInitView", "调用目标异常，如下", t);
+                                YLog.e("YInitView", "调用目标异常，如下：" + t.getMessage(), t);
                             }
                         } catch (Throwable t) {
-                            YLog.e("YInitView", "未知异常", t);
+                            YLog.e("YInitView", "未知异常：" + t.getMessage(), t);
                         }
                     });
                 }
@@ -320,9 +320,9 @@ public class YInitView {
                 mClass = mClass.getSuperclass();
             }
         } catch (IllegalAccessException e) {
-            YLog.e("调用方法权限不足", e);
+            YLog.e("调用方法权限不足：" + e.getMessage(), e);
         } catch (IllegalArgumentException e) {
-            YLog.e("接口接收参数个数不匹配", e);
+            YLog.e("接口接收参数个数不匹配：" + e.getMessage(), e);
         }
     }
 

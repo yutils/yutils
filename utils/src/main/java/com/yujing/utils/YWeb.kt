@@ -93,6 +93,7 @@ class YWeb(var activity: Activity, var webView: WebView, var frameLayout: FrameL
                 activity.window.clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN)
                 activity.window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)//全屏
             }
+
             Configuration.ORIENTATION_PORTRAIT -> {
                 activity.window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
                 activity.window.addFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN)//非全屏

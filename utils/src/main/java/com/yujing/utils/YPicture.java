@@ -53,6 +53,7 @@ override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) 
 @SuppressWarnings("unused")
 @Deprecated
 public class YPicture {
+    public static boolean showLog = true;
     private Activity activity;
 
     public static final int REQUEST_CODE_CAMERA = 16000;
@@ -105,7 +106,7 @@ public class YPicture {
             it.putExtra(MediaStore.EXTRA_OUTPUT, cameraUri);
             activity.startActivityForResult(it, REQUEST_CODE_CAMERA);
         } catch (Exception e) {
-            YLog.e("gotoCamera错误", e);
+            if (showLog) YLog.e("gotoCamera错误：" + e.getMessage(), e);
             YToast.show("请开启摄像权限");
         }
     }

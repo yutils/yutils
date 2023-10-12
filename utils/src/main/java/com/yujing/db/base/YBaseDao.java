@@ -83,6 +83,7 @@ public class UserDao extends YBaseDao<User> {
 }
  */
 public abstract class YBaseDao<T> {
+    public boolean showLog = false;
 
     abstract public SQLiteDatabase getDB();
 
@@ -139,7 +140,7 @@ public abstract class YBaseDao<T> {
 
     //删除当前表
     public void dropTable() {
-        YLog.i("删除表：" + tableName());
+        if (showLog) YLog.i("删除表：" + tableName());
         getDB().execSQL("DROP TABLE IF EXISTS " + tableName());
     }
 }

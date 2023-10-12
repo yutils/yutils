@@ -59,6 +59,8 @@ NSDClient.stopServiceDiscovery()
 
  */
 object YNdsClient {
+    var showLog = true
+
     /**
      * 发现网络服务的监听器
      */
@@ -72,30 +74,30 @@ object YNdsClient {
         if (nsDicListener != null) return YLog.e("正在发现服务")
         nsDicListener = object : NsdManager.DiscoveryListener {
             override fun onStopDiscoveryFailed(serviceType: String, errorCode: Int) {
-                YLog.e("停止（网络服务发现）失败")
+                if (showLog) YLog.e("停止（网络服务发现）失败")
             }
 
             override fun onStartDiscoveryFailed(serviceType: String, errorCode: Int) {
-                YLog.e("启动（网络服务发现）失败")
+                if (showLog) YLog.e("启动（网络服务发现）失败")
                 YThread.runOnUiThread { listener?.value(false, null) }
             }
 
             override fun onServiceLost(serviceInfo: NsdServiceInfo) {
-                YLog.i("服务丢失：" + serviceInfo.serviceName)
+                if (showLog) YLog.i("服务丢失：" + serviceInfo.serviceName)
             }
 
             override fun onServiceFound(serviceInfo: NsdServiceInfo) {
                 // 发现网络服务时就会触发该事件
-                YLog.i("找到（网络服务）  " + serviceInfo.serviceName + " " + serviceInfo.serviceType)
+                if (showLog) YLog.i("找到（网络服务）  " + serviceInfo.serviceName + " " + serviceInfo.serviceType)
                 YThread.runOnUiThread { listener?.value(true, serviceInfo) }
             }
 
             override fun onDiscoveryStopped(serviceType: String) {
-                YLog.i("（网络服务发现）停止中")
+                if (showLog) YLog.i("（网络服务发现）停止中")
             }
 
             override fun onDiscoveryStarted(serviceType: String) {
-                YLog.i("（网络服务发现）启动中")
+                if (showLog) YLog.i("（网络服务发现）启动中")
             }
         }
         val nsdManager = YApp.get().getSystemService(Context.NSD_SERVICE) as NsdManager
@@ -119,15 +121,15 @@ object YNdsClient {
 
         nsDicListener = object : NsdManager.DiscoveryListener {
             override fun onStopDiscoveryFailed(serviceType: String, errorCode: Int) {
-                YLog.e("停止（网络服务发现）失败")
+                if (showLog) YLog.e("停止（网络服务发现）失败")
             }
 
             override fun onStartDiscoveryFailed(serviceType: String, errorCode: Int) {
-                YLog.e("启动（网络服务发现）失败")
+                if (showLog) YLog.e("启动（网络服务发现）失败")
             }
 
             override fun onServiceLost(serviceInfo: NsdServiceInfo) {
-                YLog.i("服务丢失：" + serviceInfo.serviceName)
+                if (showLog) YLog.i("服务丢失：" + serviceInfo.serviceName)
                 list.remove(serviceInfo)
                 //list根据serviceName去重
                 for (i in list.size - 1 downTo 0) {
@@ -139,7 +141,7 @@ object YNdsClient {
 
             override fun onServiceFound(serviceInfo: NsdServiceInfo) {
                 // 发现网络服务时就会触发该事件
-                YLog.i("找到（网络服务）  " + serviceInfo.serviceName + " " + serviceInfo.serviceType)
+                if (showLog) YLog.i("找到（网络服务）  " + serviceInfo.serviceName + " " + serviceInfo.serviceType)
                 var isExist = false
                 for (i in list.size - 1 downTo 0) {
                     if (list[i].serviceName == serviceInfo.serviceName && list[i].serviceType == serviceInfo.serviceType && list[i].port == serviceInfo.port) {
@@ -153,11 +155,11 @@ object YNdsClient {
             }
 
             override fun onDiscoveryStopped(serviceType: String) {
-                YLog.i("（网络服务发现）停止中")
+                if (showLog) YLog.i("（网络服务发现）停止中")
             }
 
             override fun onDiscoveryStarted(serviceType: String) {
-                YLog.i("（网络服务发现）启动中")
+                if (showLog) YLog.i("（网络服务发现）启动中")
             }
         }
         val nsdManager = YApp.get().getSystemService(Context.NSD_SERVICE) as NsdManager
@@ -176,12 +178,12 @@ object YNdsClient {
                         ip=${nsdServiceInfo.host?.hostAddress}
                         port=${nsdServiceInfo.port}
                     """.trimIndent()
-                YLog.i("服务连接成功：\n$s")
+                if (showLog) YLog.i("服务连接成功：\n$s")
                 YThread.runOnUiThread { listener?.value(true, nsdServiceInfo) }
             }
 
             override fun onResolveFailed(nsdServiceInfo: NsdServiceInfo, arg1: Int) {
-                YLog.e("服务连接失败")
+                if (showLog) YLog.e("服务连接失败")
                 YThread.runOnUiThread { listener?.value(false, nsdServiceInfo) }
             }
         }
@@ -199,9 +201,9 @@ object YNdsClient {
         try {
             val nsdManager = YApp.get().getSystemService(AppCompatActivity.NSD_SERVICE) as NsdManager
             nsdManager.stopServiceDiscovery(nsDicListener) // 关闭网络发现
-            YLog.i("关闭网络发现成功")
+            if (showLog) YLog.i("关闭网络发现成功")
         } catch (e: Exception) {
-            YLog.e("关闭网络发现失败", e.message)
+            if (showLog) YLog.e("关闭网络发现失败", e.message)
         }
         nsDicListener = null
     }
@@ -226,7 +228,7 @@ object YNdsClient {
             stopServiceDiscovery()
             //超时后，发现不再处理
             if (timeOut != null && System.currentTimeMillis() - startTime > timeOut) {
-                YLog.e("自动连接网络服务超时")
+                if (showLog) YLog.e("自动连接网络服务超时")
                 return@discoverService
             }
             if (success) {
@@ -236,7 +238,7 @@ object YNdsClient {
                     resolveService(value!!) { success, value ->
                         //超时后，连接成功不再处理
                         if (timeOut != null && System.currentTimeMillis() - startTime > timeOut) {
-                            YLog.e("自动连接网络服务超时")
+                            if (showLog) YLog.e("自动连接网络服务超时")
                             return@resolveService
                         }
                         listener(success, value)

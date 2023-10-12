@@ -15,7 +15,6 @@ import android.renderscript.Allocation
 import android.renderscript.Element
 import android.renderscript.RenderScript
 import android.renderscript.ScriptIntrinsicYuvToRGB
-import android.util.Log
 import android.util.Size
 import android.view.Surface
 import android.view.TextureView.SurfaceTextureListener
@@ -200,7 +199,7 @@ class YCamera(var textureView: AutoFitTextureView, var id: String?) {
         // 获取摄像头的管理者CameraManager
         val manager = YApp.get().getSystemService(Context.CAMERA_SERVICE) as CameraManager
         try {
-            YLog.i(TAG, "相机个数：${manager.cameraIdList.size} 分别：${manager.cameraIdList.contentToString()} 准备启用:${id}")
+            YLog.d(TAG, "相机个数：${manager.cameraIdList.size} 分别：${manager.cameraIdList.contentToString()} 准备启用:${id}")
             // 遍历所有摄像头
             for (item in manager.cameraIdList) {
                 if (id == item) {
@@ -216,7 +215,7 @@ class YCamera(var textureView: AutoFitTextureView, var id: String?) {
                         textureView.setAspectRatio(mPreviewSize!!.height, mPreviewSize!!.width)
                     }
 
-                    YLog.i("预览分辨率：${mPreviewSize!!.width}x${mPreviewSize!!.height}")
+                    YLog.d("预览分辨率：${mPreviewSize!!.width}x${mPreviewSize!!.height}")
                     mCameraId = item
                     mSensorOrientation = characteristics.get(CameraCharacteristics.SENSOR_ORIENTATION)!!
                     break
@@ -224,7 +223,7 @@ class YCamera(var textureView: AutoFitTextureView, var id: String?) {
             }
         } catch (e: CameraAccessException) {
             val msg = "初始化摄像头失败"
-            YLog.e(TAG, msg, e)
+            YLog.e(TAG, msg + ":" + e.message, e)
             if (errorListener != null) errorListener?.value(msg)
         }
     }
@@ -250,7 +249,7 @@ class YCamera(var textureView: AutoFitTextureView, var id: String?) {
                 }
 
                 override fun onDisconnected(camera: CameraDevice) {
-                    YLog.i(TAG, "摄像头设备断开连接")
+                    YLog.e(TAG, "摄像头设备断开连接")
                     onDestroy()
                 }
 
@@ -262,7 +261,7 @@ class YCamera(var textureView: AutoFitTextureView, var id: String?) {
             }, null)
         } catch (e: Exception) {
             val msg = "相机打开失败"
-            YLog.e(TAG, msg, e)
+            YLog.e(TAG, msg + ":" + e.message, e)
             if (errorListener != null) errorListener?.value(msg)
         }
     }
@@ -400,7 +399,7 @@ class YCamera(var textureView: AutoFitTextureView, var id: String?) {
 
         } catch (e: CameraAccessException) {
             val msg = "开启预览失败"
-            YLog.e(TAG, msg, e)
+            YLog.e(TAG, msg + ":" + e.message, e)
             if (errorListener != null) errorListener?.value(msg)
         }
     }
@@ -433,7 +432,7 @@ class YCamera(var textureView: AutoFitTextureView, var id: String?) {
             mCaptureSession?.setRepeatingRequest(mPreviewRequestBuilder?.build()!!, object : CaptureCallback() {}, null)
         } catch (e: Exception) {
             val msg = "预览失败"
-            YLog.e(TAG, msg, e)
+            YLog.e(TAG, msg + ":" + e.message, e)
             if (errorListener != null) errorListener?.value(msg)
         }
     }
@@ -496,7 +495,7 @@ class YCamera(var textureView: AutoFitTextureView, var id: String?) {
             }, null)
         } catch (e: Exception) {
             val msg = "拍照失败"
-            YLog.e(TAG, msg, e)
+            YLog.e(TAG, msg + ":" + e.message, e)
             YThread.runOnUiThread { errorListener?.value(msg) }
         }
     }

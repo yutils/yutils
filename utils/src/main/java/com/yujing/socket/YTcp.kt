@@ -14,6 +14,8 @@ import java.net.SocketAddress
  * 保持连接，同步请求参照：YSocketSync
  */
 object YTcp {
+    var showLog = false //是否显示log
+
     /**
      * 连接并发送数据
      * 举例：
@@ -30,7 +32,7 @@ object YTcp {
         try {
             val socAddress: SocketAddress = InetSocketAddress(ip, port) // 连接
             socket.connect(socAddress, timeOut)
-            YLog.i("连接成功... (${ip}:${port})")
+            if (showLog) YLog.i("连接成功... (${ip}:${port})")
             return handler.invoke(socket)
         } finally {
             try {

@@ -23,6 +23,8 @@ NSDService.registerService("_ipfs-discovery._udp") {
 NSDService.unregisterService()
  */
 object YNdsService {
+    var showLog = false
+
     /**
      * 注册网络服务的监听器
      */
@@ -34,16 +36,16 @@ object YNdsService {
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     @JvmStatic
     fun registerService(serviceType: String = "_nsdchat._tcp", listener: YListener1<Boolean>? = null) {
-        if (nsRegListener != null) return YLog.e("已经注册过了")
+        if (nsRegListener != null) return if (showLog) YLog.e("已经注册过了") else "".let { }
         var port = 9999
         try {
             val sock = ServerSocket(0)
             port = sock.localPort
             sock.close()
         } catch (e: Exception) {
-            YLog.e("不能设置端口：${e.message}")
+            if (showLog) YLog.e("不能设置端口：${e.message}")
         }
-        YLog.i("端口：$port")
+        if (showLog) YLog.i("端口：$port")
 
         // 注册网络服务的名称、类型、端口
         val nsdServiceInfo = NsdServiceInfo()
@@ -57,20 +59,20 @@ object YNdsService {
         // 实现一个网络服务的注册事件监听器，监听器的对象应该保存起来以便之后进行注销
         nsRegListener = object : NsdManager.RegistrationListener {
             override fun onUnregistrationFailed(arg0: NsdServiceInfo, arg1: Int) {
-                YLog.e("注销（网络服务）失败")
+                if (showLog) YLog.e("注销（网络服务）失败")
             }
 
             override fun onServiceUnregistered(arg0: NsdServiceInfo) {
-                YLog.i("注销（网络服务）完成")
+                if (showLog) YLog.i("注销（网络服务）完成")
             }
 
             override fun onServiceRegistered(arg0: NsdServiceInfo) {
-                YLog.i("（网络服务）注册完成")
+                if (showLog) YLog.i("（网络服务）注册完成")
                 YThread.runOnUiThread { listener?.value(true) }
             }
 
             override fun onRegistrationFailed(arg0: NsdServiceInfo, arg1: Int) {
-                YLog.e("（网络服务）注册失败")
+                if (showLog) YLog.e("（网络服务）注册失败")
                 YThread.runOnUiThread { listener?.value(false) }
             }
         }
@@ -89,9 +91,9 @@ object YNdsService {
         try {
             val nsdManager = YApp.get().getSystemService(AppCompatActivity.NSD_SERVICE) as NsdManager
             nsdManager.unregisterService(nsRegListener) // 注销网络服务
-            YLog.i("注销网络服务成功")
+            if (showLog) YLog.i("注销网络服务成功")
         } catch (e: Exception) {
-            YLog.e("注销网络服务失败", e.message)
+            if (showLog) YLog.e("注销网络服务失败", e.message)
         }
         nsRegListener = null
     }

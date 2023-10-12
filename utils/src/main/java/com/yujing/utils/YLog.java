@@ -291,6 +291,7 @@ public class YLog {
 
     /**
      * 时间差
+     *
      * @return 时间差
      */
     public static long getTimeDifference() {
@@ -299,6 +300,7 @@ public class YLog {
 
     /**
      * 设置时间差，应该设置：标准时间-本机时间=差值
+     *
      * @param timeDifference 时间差
      */
     public static void setTimeDifference(long timeDifference) {
@@ -331,7 +333,7 @@ public class YLog {
                     del(date);
                 }
             } catch (Throwable e) {
-                YLog.e("清理日志失败", e);
+                YLog.e("清理日志失败:" + e.getMessage(), e);
             }
         }
     }

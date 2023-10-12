@@ -149,7 +149,7 @@ class YPermissions(val activity: ComponentActivity) {
                     val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:${activity.packageName}"))
                     activity.startActivityForResult(intent, 100)
                 }
-            }catch (e:Exception){
+            } catch (e: Exception) {
                 e.printStackTrace()
                 YLog.e("申请悬浮窗权限失败：${e.message}")
             }

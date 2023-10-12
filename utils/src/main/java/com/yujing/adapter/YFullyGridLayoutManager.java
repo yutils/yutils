@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * 解决RecyclerView在ScrollView中的高度不正常问题
+ *
  * @author 余静 2018年11月30日12:14:20
  */
 @SuppressWarnings("unused")
@@ -68,13 +69,13 @@ class YFullyGridLayoutManager extends GridLayoutManager {
         if (position < getItemCount()) {
             try {
                 View view = recycler.getViewForPosition(0);// fix动态添加时报IndexOutOfBoundsException
-                    RecyclerView.LayoutParams p = (RecyclerView.LayoutParams) view.getLayoutParams();
-                    int childWidthSpec = ViewGroup.getChildMeasureSpec(widthSpec, getPaddingLeft() + getPaddingRight(), p.width);
-                    int childHeightSpec = ViewGroup.getChildMeasureSpec(heightSpec, getPaddingTop() + getPaddingBottom(), p.height);
-                    view.measure(childWidthSpec, childHeightSpec);
-                    measuredDimension[0] = view.getMeasuredWidth() + p.leftMargin + p.rightMargin;
-                    measuredDimension[1] = view.getMeasuredHeight() + p.bottomMargin + p.topMargin;
-                    recycler.recycleView(view);
+                RecyclerView.LayoutParams p = (RecyclerView.LayoutParams) view.getLayoutParams();
+                int childWidthSpec = ViewGroup.getChildMeasureSpec(widthSpec, getPaddingLeft() + getPaddingRight(), p.width);
+                int childHeightSpec = ViewGroup.getChildMeasureSpec(heightSpec, getPaddingTop() + getPaddingBottom(), p.height);
+                view.measure(childWidthSpec, childHeightSpec);
+                measuredDimension[0] = view.getMeasuredWidth() + p.leftMargin + p.rightMargin;
+                measuredDimension[1] = view.getMeasuredHeight() + p.bottomMargin + p.topMargin;
+                recycler.recycleView(view);
             } catch (Exception e) {
                 e.printStackTrace();
             }

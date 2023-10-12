@@ -106,6 +106,7 @@ public class BleClient {
     //读取数据监听
     private YListener1<byte[]> readListener;
     Context context;
+    public boolean showLog = false;
 
     public BleClient(Context context) {
         this.context = context;
@@ -136,11 +137,11 @@ public class BleClient {
         @Override
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
             super.onConnectionStateChange(gatt, status, newState);
-            YLog.i(TAG, "onConnectionStateChange()");
+            if (showLog) YLog.i(TAG, "onConnectionStateChange()");
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 //连接成功
                 if (newState == BluetoothGatt.STATE_CONNECTED) {
-                    YLog.i(TAG, "连接成功");
+                    if (showLog) YLog.i(TAG, "连接成功");
                     if (runnable != null) YDelay.remove(runnable);
                     //发现服务
                     gatt.discoverServices();
@@ -163,7 +164,7 @@ public class BleClient {
             super.onServicesDiscovered(gatt, status);
             //直到这里才是真正建立了可通信的连接
             isConnecting = false;
-            YLog.i(TAG, "onServicesDiscovered()---建立连接");
+            if (showLog) YLog.i(TAG, "onServicesDiscovered()---建立连接");
             //获取初始化服务和特征值
             initServiceAndChara();
             //订阅通知
@@ -180,7 +181,7 @@ public class BleClient {
         @Override
         public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
             super.onCharacteristicRead(gatt, characteristic, status);
-            YLog.i(TAG, "onCharacteristicRead()");
+            if (showLog) YLog.i(TAG, "onCharacteristicRead()");
             byte[] data = characteristic.getValue();
             if (readListener != null)
                 YThread.runOnUiThread(() -> readListener.value(data));
@@ -192,7 +193,7 @@ public class BleClient {
         @Override
         public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
             super.onCharacteristicWrite(gatt, characteristic, status);
-            YLog.i(TAG, "onCharacteristicWrite()  status=" + status + ",value=" + YConvert.bytesToHexString(characteristic.getValue()));
+            if (showLog) YLog.i(TAG, "onCharacteristicWrite()  status=" + status + ",value=" + YConvert.bytesToHexString(characteristic.getValue()));
         }
 
         /**
@@ -201,7 +202,7 @@ public class BleClient {
         @Override
         public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
             super.onCharacteristicChanged(gatt, characteristic);
-            YLog.i(TAG, "onCharacteristicChanged()" + Arrays.toString(characteristic.getValue()));
+            if (showLog) YLog.i(TAG, "onCharacteristicChanged()" + Arrays.toString(characteristic.getValue()));
             byte[] data = characteristic.getValue();
             if (readListener != null)
                 YThread.runOnUiThread(() -> readListener.value(data));
@@ -230,28 +231,28 @@ public class BleClient {
                 if ((charaProp & BluetoothGattCharacteristic.PROPERTY_READ) > 0) {
                     read_UUID_chara = characteristic.getUuid();
                     read_UUID_service = bluetoothGattService.getUuid();
-                    YLog.i(TAG, "read_chara=" + read_UUID_chara + "----read_service=" + read_UUID_service);
+                    if (showLog) YLog.i(TAG, "read_chara=" + read_UUID_chara + "----read_service=" + read_UUID_service);
                 }
                 if ((charaProp & BluetoothGattCharacteristic.PROPERTY_WRITE) > 0) {
                     write_UUID_chara = characteristic.getUuid();
                     write_UUID_service = bluetoothGattService.getUuid();
-                    YLog.i(TAG, "write_chara=" + write_UUID_chara + "----write_service=" + write_UUID_service);
+                    if (showLog) YLog.i(TAG, "write_chara=" + write_UUID_chara + "----write_service=" + write_UUID_service);
                 }
                 if ((charaProp & BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE) > 0) {
                     write_UUID_chara = characteristic.getUuid();
                     write_UUID_service = bluetoothGattService.getUuid();
-                    YLog.i(TAG, "write_chara=" + write_UUID_chara + "----write_service=" + write_UUID_service);
+                    if (showLog) YLog.i(TAG, "write_chara=" + write_UUID_chara + "----write_service=" + write_UUID_service);
 
                 }
                 if ((charaProp & BluetoothGattCharacteristic.PROPERTY_NOTIFY) > 0) {
                     notify_UUID_chara = characteristic.getUuid();
                     notify_UUID_service = bluetoothGattService.getUuid();
-                    YLog.i(TAG, "notify_chara=" + notify_UUID_chara + "----notify_service=" + notify_UUID_service);
+                    if (showLog) YLog.i(TAG, "notify_chara=" + notify_UUID_chara + "----notify_service=" + notify_UUID_service);
                 }
                 if ((charaProp & BluetoothGattCharacteristic.PROPERTY_INDICATE) > 0) {
                     indicate_UUID_chara = characteristic.getUuid();
                     indicate_UUID_service = bluetoothGattService.getUuid();
-                    YLog.i(TAG, "indicate_chara=" + indicate_UUID_chara + "----indicate_service=" + indicate_UUID_service);
+                    if (showLog) YLog.i(TAG, "indicate_chara=" + indicate_UUID_chara + "----indicate_service=" + indicate_UUID_service);
                 }
             }
         }
@@ -265,13 +266,14 @@ public class BleClient {
     public void send(byte[] data) {
         BluetoothGattService service = mBluetoothGatt.getService(write_UUID_service);
         BluetoothGattCharacteristic charaWrite = service.getCharacteristic(write_UUID_chara);
-        YLog.i(TAG, "发送数据长度：" + data.length + "字节");
+        if (showLog) YLog.i(TAG, "发送数据长度：" + data.length + "字节");
         charaWrite.setValue(data);
         mBluetoothGatt.writeCharacteristic(charaWrite);
     }
 
     //结束扫描
     Runnable runnable;
+
     /**
      * 开始扫描 10秒后自动停止
      */

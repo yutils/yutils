@@ -301,7 +301,7 @@ public class YFileUtil {
         try {
             is = context.getResources().getAssets().open(fileName);
         } catch (IOException e) {
-            YLog.e("readAssets", "异常", e);
+            YLog.e("readAssets", "异常：" + e.getMessage(), e);
         }
         return is;
     }

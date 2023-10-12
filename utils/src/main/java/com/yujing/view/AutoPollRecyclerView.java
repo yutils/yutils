@@ -10,6 +10,7 @@ import java.lang.ref.WeakReference;
 
 /**
  * 自动滚动 RecyclerView
+ *
  * @author yujing 2021年8月26日23:10:35
  */
 

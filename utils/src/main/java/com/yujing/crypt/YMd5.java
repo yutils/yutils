@@ -1,4 +1,5 @@
 package com.yujing.crypt;
+
 import com.yujing.utils.YLog;
 
 import java.security.MessageDigest;

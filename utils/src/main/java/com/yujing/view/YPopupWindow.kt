@@ -195,6 +195,7 @@ class YPopupWindow<B : ViewDataBinding>(var activity: Activity, var layout: Int)
     //窗口
     var popupWindow: PopupWindow
     var binding: B
+
     init {
         val view: View =
             LayoutInflater.from(activity).inflate(layout, null)
@@ -211,13 +212,13 @@ class YPopupWindow<B : ViewDataBinding>(var activity: Activity, var layout: Int)
         popupWindow.setBackgroundDrawable(ColorDrawable(Color.argb(0, 0, 0, 0)))
     }
 
-    fun setFullScreen(isFullScreen:Boolean) {
+    fun setFullScreen(isFullScreen: Boolean) {
         if (isFullScreen) {
             //(YScreenUtil.getScreenWidth(activity) * (2F / 5F)).toInt()
             popupWindow.height = YScreenUtil.getScreenHeight(activity)
             popupWindow.width = YScreenUtil.getScreenWidth(activity)
             popupWindow.isClippingEnabled = false
-        }else{
+        } else {
             //因为某些机型是虚拟按键的,所以要加上以下设置防止挡住按键
             popupWindow.width = WindowManager.LayoutParams.MATCH_PARENT
             popupWindow.height = WindowManager.LayoutParams.MATCH_PARENT

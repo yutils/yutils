@@ -11,6 +11,7 @@ import java.util.List;
 
 /**
  * 获取一个SQLiteOpenHelper
+ *
  * @author 余静 2021年5月26日10:55:21
  */
 /*用法
@@ -25,7 +26,7 @@ SQLiteDatabase db = yHelper.setOnUpgradeListener(listener).getDatabase();
 SQLiteDatabase db = YDB.getHelper("test.db", 2).setOnUpgradeListener(onUpgradeListener).getDatabase();
  */
 public class YHelper extends SQLiteOpenHelper {
-   private OnUpgradeListener onUpgradeListener;
+    private OnUpgradeListener onUpgradeListener;
 
     public YHelper(Context context, String name, int version) {
         super(context, name, null, version);
@@ -42,7 +43,7 @@ public class YHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        onUpgradeListener.onUpgrade(db,oldVersion,newVersion);
+        onUpgradeListener.onUpgrade(db, oldVersion, newVersion);
     }
 
     public YHelper setOnUpgradeListener(OnUpgradeListener onUpgradeListener) {

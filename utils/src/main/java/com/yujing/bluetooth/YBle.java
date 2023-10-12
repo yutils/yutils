@@ -53,7 +53,7 @@ public class YBle implements YBluetoothDeviceConnect {
     private UUID notify_UUID_chara;
     private UUID indicate_UUID_service;
     private UUID indicate_UUID_chara;
-
+    public boolean showLog = false;
     YSuccessFailListener<BluetoothDevice, String> listener;
     //读取数据监听
     private YListener1<byte[]> readListener;
@@ -111,7 +111,7 @@ public class YBle implements YBluetoothDeviceConnect {
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 //连接成功
                 if (newState == BluetoothGatt.STATE_CONNECTED) {
-                    YLog.i(TAG, "连接成功");
+                    if (showLog) YLog.i(TAG, "连接成功");
                     //发现服务
                     gatt.discoverServices();
                 }
@@ -132,7 +132,7 @@ public class YBle implements YBluetoothDeviceConnect {
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
             super.onServicesDiscovered(gatt, status);
             //直到这里才是真正建立了可通信的连接
-            YLog.i(TAG, "onServicesDiscovered()---建立连接");
+            if (showLog) YLog.i(TAG, "onServicesDiscovered()---建立连接");
             //获取初始化服务和特征值
             initServiceAndChara();
             //订阅通知
@@ -200,7 +200,7 @@ public class YBle implements YBluetoothDeviceConnect {
     public void send(byte[] data) {
         BluetoothGattService service = mBluetoothGatt.getService(write_UUID_service);
         BluetoothGattCharacteristic charaWrite = service.getCharacteristic(write_UUID_chara);
-        YLog.i(TAG, "发送数据长度：" + data.length + "字节");
+        if (showLog) YLog.i(TAG, "发送数据长度：" + data.length + "字节");
         charaWrite.setValue(data);
         mBluetoothGatt.writeCharacteristic(charaWrite);
 
