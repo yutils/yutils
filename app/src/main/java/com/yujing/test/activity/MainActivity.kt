@@ -1,8 +1,6 @@
 package com.yujing.test.activity
 
 import android.graphics.Color
-import android.media.AudioAttributes
-import android.media.SoundPool
 import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
@@ -19,7 +17,6 @@ import com.yujing.test.activity.bluetooth.BleServerActivity
 import com.yujing.test.base.KBaseActivity
 import com.yujing.test.databinding.ActivityAllTestBinding
 import com.yujing.utils.TTS
-import com.yujing.utils.YApp
 import com.yujing.utils.YConvert
 import com.yujing.utils.YDelay
 import com.yujing.utils.YImageDialog
@@ -86,7 +83,6 @@ class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
             binding.wll.requestLayout()
             binding.wll.invalidate()
         }
-
         Create.button(binding.wll, "清除屏幕") {
             textView1.text = ""
             textView2.text = ""
@@ -349,7 +345,7 @@ class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
         }
 
         Create.button(binding.wll, "加载播放并释放资源") {
-            YSound.play(R.raw.success,1000)
+            YSound.play(R.raw.success, 1000)
             YLog.i("立即执行")
         }
     }

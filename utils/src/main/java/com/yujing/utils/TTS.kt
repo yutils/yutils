@@ -37,10 +37,16 @@ object TTS {
         private set
     var textToSpeech: TextToSpeech? = null
         private set
+    @JvmStatic
     var speechRate = 1.0f //速度
+    @JvmStatic
     var pitch = 1.0f //音调
+
+    @JvmStatic
     var filter: ((String) -> String?)? = null
+    @JvmStatic
     var showLog = false //是否显示log
+    @JvmStatic
     var history = mutableListOf<String>()//历史记录，倒序，最多1000条
 
     //是否是第一次播放语音
@@ -99,7 +105,7 @@ object TTS {
     @JvmStatic
     fun speak(str: String?) {
         if (initState == -1) return init(YApp.get()) { if (it) speak(str) }
-        if (initState != 0 || str == null || str.isEmpty() || textToSpeech == null) return
+        if (initState != 0 || str.isNullOrEmpty() || textToSpeech == null) return
         val speak: String? = if (filter != null) filter?.invoke(str) else str
         if (speak.isNullOrEmpty()) return
         textToSpeech?.setSpeechRate(speechRate) //速度
@@ -180,7 +186,7 @@ object TTS {
     @JvmStatic
     fun speakQueue(str: String?) {
         if (initState == -1) return init(YApp.get()) { if (it) speakQueue(str) }
-        if (initState != 0 || str == null || str.isEmpty() || textToSpeech == null) return
+        if (initState != 0 || str.isNullOrEmpty() || textToSpeech == null) return
         val speak: String? = if (filter != null) filter?.invoke(str) else str
         if (speak.isNullOrEmpty()) return
         textToSpeech?.setSpeechRate(speechRate) //速度
