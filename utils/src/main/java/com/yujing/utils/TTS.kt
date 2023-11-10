@@ -103,6 +103,7 @@ object TTS {
      * @param str 语音播放文字内容
      */
     @JvmStatic
+    @Synchronized
     fun speak(str: String?) {
         if (initState == -1) return init(YApp.get()) { if (it) speak(str) }
         if (initState != 0 || str.isNullOrEmpty() || textToSpeech == null) return
@@ -184,6 +185,7 @@ object TTS {
      * @param speak 语音播放文字内容
      */
     @JvmStatic
+    @Synchronized
     fun speakQueue(str: String?) {
         if (initState == -1) return init(YApp.get()) { if (it) speakQueue(str) }
         if (initState != 0 || str.isNullOrEmpty() || textToSpeech == null) return

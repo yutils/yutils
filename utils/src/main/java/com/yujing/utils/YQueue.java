@@ -26,7 +26,7 @@ public class YQueue {
      * @param runnable 回调
      */
     @SuppressWarnings({"UnclearExpression"})
-    public void run(final int time, final Runnable runnable) {
+    public synchronized void run(final int time, final Runnable runnable) {
         Thread thread = new Thread(() -> {
             try {
                 if (YClass.isAndroid()) YThread.runOnUiThread(runnable);
@@ -45,7 +45,7 @@ public class YQueue {
      *
      * @param runnable 线程
      */
-    private void add(Runnable runnable) {
+    private synchronized void add(Runnable runnable) {
         synchronized (pool) {
             if (pool.isShutdown()) {
                 pool = Executors.newSingleThreadExecutor();
@@ -61,14 +61,14 @@ public class YQueue {
     /**
      * 停止当前队列中全部请求
      */
-    public void stopAll() {
+    public synchronized void stopAll() {
         if (pool != null) pool.shutdownNow().clear();
     }
 
     /**
      * 关闭释放线程池,线程池有线程在运行时，运行完才会关闭
      */
-    public void shutdown() {
+    public synchronized void shutdown() {
         synchronized (pool) {
             if (!pool.isShutdown()) pool.shutdown();
         }
@@ -77,7 +77,7 @@ public class YQueue {
     /**
      * 退出释放线程
      */
-    public void onDestroy() {
+    public synchronized void onDestroy() {
         shutdown();
         stopAll();
     }
