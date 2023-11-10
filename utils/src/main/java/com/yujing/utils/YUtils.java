@@ -31,8 +31,10 @@ import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -847,12 +849,45 @@ public class YUtils {
     }
 
     /**
+     * 打开软键盘
+     */
+    public static boolean openSoftKeyboard(Activity activity, EditText editText) {
+        //重新获取焦点
+        editText.requestFocus();
+        //关联view的方式弹出输入法
+        InputMethodManager manager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+        //是否成功
+        return manager.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT);
+    }
+
+    /**
      * 关闭软键盘
      */
+    public static boolean closeSoftKeyboard(Activity activity, EditText editText) {
+        InputMethodManager manager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+        //是否成功
+        return manager.hideSoftInputFromWindow(editText.getWindowToken(), InputMethodManager.HIDE_IMPLICIT_ONLY);
+    }
+
+    /**
+     * 强制打开软键盘（已打开就会被关闭）
+     */
+    public static void openSoftKeyboard(Activity activity) {
+        //关联view的方式弹出输入法
+        InputMethodManager manager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+        //强制弹出
+        activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
+        activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+        //如果显示就隐藏，如果隐藏就显示
+        manager.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_NOT_ALWAYS);
+    }
+
+    /**
+     * 强制关闭软键盘（不一定有效）
+     */
     public static void closeSoftKeyboard(Activity activity) {
-        InputMethodManager inputManger = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
-        if (inputManger != null)
-            inputManger.hideSoftInputFromWindow(activity.getWindow().getDecorView().getWindowToken(), 0);
+        InputMethodManager manager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+        manager.hideSoftInputFromWindow(activity.getWindow().getDecorView().getWindowToken(), 0);
     }
 
     /**
