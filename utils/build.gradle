@@ -47,4 +47,4 @@ dependencies {
     //okhttp，https://search.maven.org/search?q=g:com.squareup.okhttp3%20AND%20a:okhttp
     implementation 'com.squareup.okhttp3:okhttp:4.10.0'
 }
-apply from: "${getRootDir().absolutePath}/gradles/publish-maven.gradle" //maven相关.可删掉此行
+//apply from: "${getRootDir().absolutePath}/gradles/publish-maven.gradle" //maven相关.可删掉此行

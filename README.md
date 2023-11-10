@@ -13,7 +13,7 @@ Welcome to my GitHub ! ! !
 安卓串口通信app，实现读取串口数据，实现重新组包一次性读取完整数据。可连续读取任意长度数据。觉着不错的话可以 Start 一下哟！
 
 ----
-**2.  [databinding](https://github.com/yutils/kotlinx)**  ---->  [https://github.com/yutils/kotlinx](https://github.com/yutils/kotlinx)  
+**2.  [kotlinx](https://github.com/yutils/kotlinx)**  ---->  [https://github.com/yutils/kotlinx](https://github.com/yutils/kotlinx)  
 采用kotlin扩展方法的方式来扩展kotlin功能。增加易用性。 举例："你好".toast()   举例："日志".logI()
 
 ----
