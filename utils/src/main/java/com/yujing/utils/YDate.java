@@ -259,6 +259,10 @@ public class YDate {
      */
     public static Calendar getFirstDayOfYear(Calendar c) {
         c.set(Calendar.DAY_OF_YEAR, 1);
+        c.set(Calendar.HOUR_OF_DAY, 0);
+        c.set(Calendar.MINUTE, 0);
+        c.set(Calendar.SECOND, 0);
+        c.set(Calendar.MILLISECOND, 0);
         return c;
     }
 
@@ -276,6 +280,10 @@ public class YDate {
         c.set(Calendar.DAY_OF_YEAR, 1);
         c.add(Calendar.DAY_OF_YEAR, -1);
         c.add(Calendar.YEAR, 1);
+        c.set(Calendar.HOUR_OF_DAY, 23);
+        c.set(Calendar.MINUTE, 59);
+        c.set(Calendar.SECOND, 59);
+        c.set(Calendar.MILLISECOND, 999);
         return c;
     }
 
@@ -291,6 +299,10 @@ public class YDate {
      */
     public static Calendar getFirstDayOfMonth(Calendar c) {
         c.set(Calendar.DAY_OF_MONTH, 1);
+        c.set(Calendar.HOUR_OF_DAY, 0);
+        c.set(Calendar.MINUTE, 0);
+        c.set(Calendar.SECOND, 0);
+        c.set(Calendar.MILLISECOND, 0);
         return c;
     }
 
@@ -308,6 +320,10 @@ public class YDate {
         c.set(Calendar.DAY_OF_MONTH, 1);
         c.add(Calendar.MONTH, 1);
         c.add(Calendar.DAY_OF_YEAR, -1);
+        c.set(Calendar.HOUR_OF_DAY, 23);
+        c.set(Calendar.MINUTE, 59);
+        c.set(Calendar.SECOND, 59);
+        c.set(Calendar.MILLISECOND, 999);
         return c;
     }
 
@@ -322,7 +338,11 @@ public class YDate {
      * 获取一周第一天
      */
     public static Calendar getFirstDayOfWeek(Calendar c) {
-        c.set(Calendar.DAY_OF_WEEK, 1);
+        c.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);//星期一，中国人星期一是开始
+        c.set(Calendar.HOUR_OF_DAY, 0);
+        c.set(Calendar.MINUTE, 0);
+        c.set(Calendar.SECOND, 0);
+        c.set(Calendar.MILLISECOND, 0);
         return c;
     }
 
@@ -337,8 +357,12 @@ public class YDate {
      * 获取一周最后一天
      */
     public static Calendar getLastDayOfWeek(Calendar c) {
-        c.set(Calendar.DAY_OF_WEEK, 1);
-        c.add(Calendar.DAY_OF_YEAR, 6);
+        c.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+        c.add(Calendar.DAY_OF_YEAR,6);//加6天，中国人星期日是结束
+        c.set(Calendar.HOUR_OF_DAY, 23);
+        c.set(Calendar.MINUTE, 59);
+        c.set(Calendar.SECOND, 59);
+        c.set(Calendar.MILLISECOND, 999);
         return c;
     }
 
@@ -382,6 +406,127 @@ public class YDate {
      */
     public static Date getLastDayOfWeek(Date date) {
         return getLastDayOfWeek(dateToCalendar(date)).getTime();
+    }
+
+
+    /**
+     * 获取当天的开始时间
+     */
+    /*
+     System.out.println("获取当天的开始时间");
+     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+     System.out.println(sdf.format(getStartTimeOfDay().getTime()));
+     */
+    public static Calendar getStartTimeOfDay() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        return calendar;
+    }
+
+    /**
+     * 获取当天的结束时间
+     */
+    public static Calendar getEndTimeOfDay() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 23);
+        calendar.set(Calendar.MINUTE, 59);
+        calendar.set(Calendar.SECOND, 59);
+        calendar.set(Calendar.MILLISECOND, 999); // 设置为999毫秒，尽可能接近最后一秒
+        return calendar;
+    }
+
+    /**
+     * 获取当周的开始时间
+     */
+    public static Calendar getStartTimeOfWeek() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);//星期一，中国人星期一是开始
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        return calendar;
+    }
+
+    /**
+     * 获取当周的结束时间
+     */
+    public static Calendar getEndTimeOfWeek() {
+        Calendar calendar = Calendar.getInstance();
+        // 设置为本周的最后一天
+        calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+        calendar.add(Calendar.DAY_OF_YEAR,6);//加6天，中国人星期日是结束
+        // 将时间设置为23点59分59秒，即本周结束的时刻
+        calendar.set(Calendar.HOUR_OF_DAY, 23);
+        calendar.set(Calendar.MINUTE, 59);
+        calendar.set(Calendar.SECOND, 59);
+        calendar.set(Calendar.MILLISECOND, 999);
+        return calendar;
+    }
+
+    /**
+     * 获取当月的开始时间
+     */
+    public static Calendar getStartTimeOfMonth() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.DAY_OF_MONTH, 1);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        return calendar;
+    }
+
+    /**
+     * 获取当月的结束时间
+     */
+    public static Calendar getEndTimeOfMonth() {
+        Calendar calendar = Calendar.getInstance();
+        // 将日期设置为下月的第一天
+        calendar.add(Calendar.MONTH, 1);
+        calendar.set(Calendar.DAY_OF_MONTH, 1);
+        // 将时间设置为0点0分0秒，即下月第一天的开始时刻
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        // 回退一毫秒，得到本月的最后一毫秒
+        calendar.add(Calendar.MILLISECOND, -1);
+        return calendar;
+    }
+
+    /**
+     * 获取当年的开始时间
+     */
+    public static Calendar getStartTimeOfYear() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.DAY_OF_YEAR, 1);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        return calendar;
+    }
+
+    /**
+     * 获取当年的结束时间
+     */
+    public static Calendar getEndTimeOfYear() {
+        Calendar calendar = Calendar.getInstance();
+        // 将日期设置为下一年的第一天
+        calendar.add(Calendar.YEAR, 1);
+        calendar.set(Calendar.DAY_OF_YEAR, 1);
+        // 将时间设置为0点0分0秒，即下一年第一天的开始时刻
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        // 回退一毫秒，得到本年的最后一毫秒
+        calendar.add(Calendar.MILLISECOND, -1);
+        return calendar;
     }
 
     /**

@@ -56,7 +56,7 @@ YAlertDialogUtils().showSingleChoice("请选择一个", listOf("123","456","789"
 }
 
 //多选
-val listName: MutableList<String> = ArrayList<String>().apply {
+val listName: MutableList<CharSequence> = ArrayList<CharSequence>().apply {
     add("项目1")
     add("项目2")
     add("项目3")
@@ -67,7 +67,7 @@ val listName: MutableList<String> = ArrayList<String>().apply {
 val checked = BooleanArray(listName.size) { i -> false } //默认选中项，最终选中项
 YAlertDialogUtils().showMultiChoice("请选择", listName.toTypedArray(), checked) {
     //筛选选中项
-    val newList: MutableList<String> = ArrayList()
+    val newList: MutableList<CharSequence> = ArrayList()
     for (index in checked.indices) {
         if (checked[index]) newList.add(listName[index])
     }
@@ -397,7 +397,7 @@ class YAlertDialogUtils {
      * 单选弹窗，确定按钮
      * @param index 单选框默认值：从0开始
      */
-    fun showSingleChoice(title: CharSequence?, itemName: Array<String?>, default: Int = -1, listener: (Int) -> Unit): AlertDialog {
+    fun showSingleChoice(title: CharSequence?, itemName: Array<CharSequence?>, default: Int = -1, listener: (Int) -> Unit): AlertDialog {
         //-1 是未选择
         val finalWhich = intArrayOf(-1)
         //创建alertDialog
@@ -424,7 +424,7 @@ class YAlertDialogUtils {
     /**
      * 列表框，无按钮
      */
-    fun showList(title: CharSequence?, itemName: Array<String?>, listener: (Int) -> Unit): AlertDialog {
+    fun showList(title: CharSequence?, itemName: Array<CharSequence?>, listener: (Int) -> Unit): AlertDialog {
         //创建alertDialog
         val alertDialog = AlertDialog.Builder(YActivityUtil.getCurrentActivity())
             .setCustomTitle(if (title != null) createTitleView(title) else null)
@@ -439,14 +439,14 @@ class YAlertDialogUtils {
     /**
      * 输入框，确定按钮、取消按钮
      */
-    fun showEdit(title: CharSequence? = "请输入内容", text: CharSequence? = null, hint: String? = "请输入内容", listener: (String) -> Unit): AlertDialog {
+    fun showEdit(title: CharSequence? = "请输入内容", text: CharSequence? = null, hint: CharSequence? = "请输入内容", listener: (String) -> Unit): AlertDialog {
         return showEdit(title, text, hint, null, listener = listener, null)
     }
 
     /**
      * 输入框，确定按钮、取消按钮
      */
-    fun showEdit(title: CharSequence? = "请输入内容", text: CharSequence? = null, hint: String? = "请输入内容", textWatcher: TextWatcher? = null, listener: (String) -> Unit, cancelListener: (() -> Unit)? = null): AlertDialog {
+    fun showEdit(title: CharSequence? = "请输入内容", text: CharSequence? = null, hint: CharSequence? = "请输入内容", textWatcher: TextWatcher? = null, listener: (String) -> Unit, cancelListener: (() -> Unit)? = null): AlertDialog {
         val editText = EditText(YApp.get())
         //创建alertDialog
         val alertDialog = AlertDialog.Builder(YActivityUtil.getCurrentActivity())
@@ -490,14 +490,14 @@ class YAlertDialogUtils {
     /**
      * 多选弹窗，确定按钮、取消按钮
      */
-    fun showMultiChoice(title: CharSequence?, itemName: Array<String?>, checked: BooleanArray, listener: () -> Unit): AlertDialog {
+    fun showMultiChoice(title: CharSequence?, itemName: Array<CharSequence?>, checked: BooleanArray, listener: () -> Unit): AlertDialog {
         return showMultiChoice(title, itemName, checked, listener, null)
     }
 
     /**
      * 多选弹窗，确定按钮、取消按钮
      */
-    fun showMultiChoice(title: CharSequence?, itemName: Array<String?>, checked: BooleanArray, listener: () -> Unit, cancelListener: (() -> Unit)? = null): AlertDialog {
+    fun showMultiChoice(title: CharSequence?, itemName: Array<CharSequence?>, checked: BooleanArray, listener: () -> Unit, cancelListener: (() -> Unit)? = null): AlertDialog {
         //创建alertDialog
         val alertDialog = AlertDialog.Builder(YActivityUtil.getCurrentActivity())
             .setCustomTitle(if (title != null) createTitleView(title) else null)
