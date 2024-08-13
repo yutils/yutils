@@ -6,10 +6,10 @@ plugins {
 }
 android {
     namespace 'com.yujing.utils' //不能修改
-    compileSdk 33
+    compileSdk 34
     defaultConfig {
         minSdk 19
-        targetSdk 33
+        targetSdk 34
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -37,14 +37,14 @@ android {
 }
 dependencies {
     //https://developer.android.google.cn/kotlin/ktx?hl=zh-cn
-    implementation 'androidx.core:core-ktx:1.10.1'
-    implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'com.google.android.material:material:1.9.0'
+    implementation 'androidx.core:core-ktx:1.13.1'
+    implementation 'androidx.appcompat:appcompat:1.7.0'
+    implementation 'com.google.android.material:material:1.12.0'
     testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
-    implementation 'com.google.code.gson:gson:2.10.1'
-    //okhttp，https://search.maven.org/search?q=g:com.squareup.okhttp3%20AND%20a:okhttp
-    implementation 'com.squareup.okhttp3:okhttp:4.10.0'
+    androidTestImplementation 'androidx.test.ext:junit:1.2.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.6.1'
+    implementation 'com.google.code.gson:gson:2.11.0'
+    //okhttp，https://central.sonatype.com/artifact/com.squareup.okhttp3/okhttp
+    implementation 'com.squareup.okhttp3:okhttp:4.12.0'
 }
 //apply from: "${getRootDir().absolutePath}/gradles/publish-maven.gradle" //maven相关.可删掉此行
