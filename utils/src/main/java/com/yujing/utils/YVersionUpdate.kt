@@ -36,7 +36,7 @@ val yVersionUpdate = YVersionUpdate().apply {
         YView.setButtonBackgroundTint(buttonCancel, Color.parseColor("#6045D0A0"), Color.parseColor("#FF45D0A0"))
     }
     compareType = 1 //1 通过code对比   2 通过name对比
-    update(999, false, url, "9.9.9", description)
+    updateNeedUpdateDisplay(999, false, url, "9.9.9", description)
 }
 
 //通知栏下载需要调用onDestroy()
@@ -295,7 +295,7 @@ class YVersionUpdate {
                     val output = FileOutputStream(file)
                     var downloadSize = 0L   //当前长度
                     val fileSize = response.body!!.contentLength()  //总长度
-                    val b = ByteArray(4096)
+                    val b = ByteArray(131072) // 128KB
                     var len: Int
                     while (inputStream.read(b).also { len = it } != -1) {
                         output.write(b, 0, len)

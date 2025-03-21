@@ -252,7 +252,7 @@ public class YReadInputStream {
         int i = 0;//第几次组包
         int count = inputStream.available();//可读取多少字节内容
         do {
-            byte[] newBytes = new byte[1024];
+            byte[] newBytes = new byte[16384];
             int newSize = inputStream.read(newBytes, 0, count);
             if (newSize > 0) {
                 bytes.addByte(newBytes, newSize);
@@ -289,7 +289,7 @@ public class YReadInputStream {
                 if (sleep) SystemClock.sleep(1);
                 continue;
             }
-            byte[] newBytes = new byte[Math.max(minLength, 1024)];
+            byte[] newBytes = new byte[Math.max(minLength, 16384)];
             int newSize = inputStream.read(newBytes, 0, inputStream.available());
             if (newSize > 0) {
                 bytes.addByte(newBytes, newSize);

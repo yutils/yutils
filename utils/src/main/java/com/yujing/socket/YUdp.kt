@@ -50,7 +50,7 @@ YUdp.sendSyncLength("192.168.6.3", 8080, data, 16384, 1000)
 */
 class YUdp(var ip: String, var port: Int) {
     //一次最多读取多长的数据
-    var readMaxLength: Int = 1024
+    var readMaxLength: Int = 16384
 
     //超时时间
     var soTimeout = 1000 * 5
@@ -72,7 +72,7 @@ class YUdp(var ip: String, var port: Int) {
 
     fun start() = send(ByteArray(0))
 
-    fun reStart() = start()
+    fun reStart() = start() //重新连接
 
     fun reStart(ip: String, port: Int) {
         this.ip = ip
@@ -178,7 +178,7 @@ class YUdp(var ip: String, var port: Int) {
         */
         @JvmStatic
         @Throws(java.net.SocketTimeoutException::class)
-        fun sendSync(ip: String, port: Int, data: ByteArray, readMaxLength: Int = 1024, timeout: Int = 1000): ByteArray {
+        fun sendSync(ip: String, port: Int, data: ByteArray, readMaxLength: Int = 16384, timeout: Int = 1000): ByteArray {
             //向服务器端发送数据
             // 1.定义服务器的地址、端口号、数据
             val address = InetAddress.getByName(ip)

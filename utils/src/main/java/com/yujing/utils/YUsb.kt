@@ -275,7 +275,7 @@ class YUsb {
     }
 
     /**
-     * 发送数据，每次发送长度为4096，如果大于4096就拆包
+     * 发送数据
      * @bytes 发送的数据
      */
     fun send(bytes: ByteArray) {
@@ -288,13 +288,13 @@ class YUsb {
     }
 
     /**
-     * 同步发送数据，每次发送长度为4096，如果大于4096就拆包
+     * 同步发送数据，每次发送长度为16384，如果大于16384就拆包
      * @bytes 发送的数据
      */
     fun sendSynchronization(bytes: ByteArray): Boolean {
         if (!status) return false
         try {
-            val sendLength = 4096 //每次写入长度
+            val sendLength = 16384 //每次写入长度
             var count = 0 //统计已经发送长度
             var errorCount = 0 //统计已经发送长度
             while (true) {
@@ -360,12 +360,12 @@ class YUsb {
     }
 
     /**
-     * 启动读取线程。默认每次最长读取1024，没次读取3秒超时
+     * 启动读取线程。默认每次最长读取16384，没次读取3秒超时
      * @yListener1 每次回调长度是读取数据的真实长度
      */
     private var readThread: Thread? = null
     fun startRead(yListener1: YListener1<ByteArray>) {
-        startRead(1024, 3000, yListener1)
+        startRead(16384, 3000, yListener1)
     }
 
     /**

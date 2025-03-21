@@ -615,7 +615,7 @@ public class YConvert {
      */
     public static byte[] inputStream2Bytes(InputStream inputStream) throws Exception {
         ByteArrayOutputStream bs = new ByteArrayOutputStream();
-        byte[] buffer = new byte[1024];
+        byte[] buffer = new byte[16384];
         int len;
         while ((len = inputStream.read(buffer)) != -1)
             bs.write(buffer, 0, len);

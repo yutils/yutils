@@ -99,7 +99,7 @@ public class YFileUtil {
             return null;
         }
         try (FileInputStream stream = new FileInputStream(file); ByteArrayOutputStream out = new ByteArrayOutputStream((int) file.length())) {
-            byte[] b = new byte[1024 * 4];
+            byte[] b = new byte[1024 * 16];
             int n;
             while ((n = stream.read(b)) != -1)
                 out.write(b, 0, n);
@@ -206,7 +206,7 @@ public class YFileUtil {
                 if (temp.isFile()) {
                     FileInputStream input = new FileInputStream(temp);
                     FileOutputStream output = new FileOutputStream(target + File.separator + temp.getName());
-                    byte[] b = new byte[1024];
+                    byte[] b = new byte[16384];
                     int len;
                     while ((len = input.read(b)) != -1) {
                         output.write(b, 0, len);
@@ -227,7 +227,7 @@ public class YFileUtil {
                 Objects.requireNonNull(file.getParentFile()).mkdirs();
                 file.createNewFile();
                 FileOutputStream outputStream = new FileOutputStream(file);
-                byte[] buffer = new byte[1024];
+                byte[] buffer = new byte[16384];
                 int byteRead;
                 while ((byteRead = inputStream.read(buffer)) != -1) {
                     outputStream.write(buffer, 0, byteRead);
@@ -371,7 +371,7 @@ public class YFileUtil {
                 else
                     in = context.getAssets().open(fileName);
                 OutputStream out = new FileOutputStream(outFile);
-                byte[] buf = new byte[1024];
+                byte[] buf = new byte[16384];
                 int len;
                 while ((len = in.read(buf)) > 0) {
                     out.write(buf, 0, len);
@@ -419,7 +419,7 @@ public class YFileUtil {
                 srcFile.delete();
             InputStream in = context.getAssets().open(assetFileName);
             OutputStream out = new FileOutputStream(srcFile);
-            byte[] buf = new byte[1024];
+            byte[] buf = new byte[16384];
             int len;
             while ((len = in.read(buf)) > 0) {
                 out.write(buf, 0, len);
