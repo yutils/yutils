@@ -929,7 +929,7 @@ public class YUtils {
      * @return 是否成功
      */
     public static boolean openTcp(int port) {
-        return shellRootNoReturn("setprop service.adb.tcp.port " + port, "start adbd");
+        return shellRootNoReturn("setprop service.adb.tcp.port " + port,"stop adbd", "start adbd");
     }
 
     /**
@@ -939,7 +939,7 @@ public class YUtils {
      * @return 是否成功
      */
     public static boolean closeTcp(int port) {
-        return shellRootNoReturn("setprop service.adb.tcp.port " + port, "stop adbd");
+        return shellRootNoReturn("stop adbd");
     }
 
     /**
