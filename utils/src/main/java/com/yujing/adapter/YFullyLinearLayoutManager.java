@@ -15,6 +15,7 @@ import com.yujing.utils.YLog;
  * @author 余静 2018年11月30日12:14:26
  */
 @SuppressWarnings("unused")
+@Deprecated
 class YFullyLinearLayoutManager extends LinearLayoutManager {
 
     private static final String TAG = YFullyLinearLayoutManager.class.getSimpleName();

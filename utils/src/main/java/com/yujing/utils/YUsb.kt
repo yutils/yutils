@@ -11,6 +11,7 @@ import android.hardware.usb.UsbEndpoint
 import android.hardware.usb.UsbInterface
 import android.hardware.usb.UsbManager
 import android.hardware.usb.UsbRequest
+import androidx.core.content.ContextCompat
 import com.yujing.contract.YListener1
 import java.nio.ByteBuffer
 
@@ -179,7 +180,7 @@ class YUsb {
         val filter = IntentFilter(ACTION_USB_PERMISSION)
         filter.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED);
         filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
-        YApp.get().registerReceiver(mUsbReceiver, filter)
+        ContextCompat.registerReceiver(YApp.get(), mUsbReceiver, filter, ContextCompat.RECEIVER_NOT_EXPORTED)
         //查找USB设备
         return find(vendorId, productId)
     }

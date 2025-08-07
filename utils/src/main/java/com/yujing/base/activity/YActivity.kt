@@ -26,6 +26,7 @@ base.setEventListener { event, obj ->
     }
 }
  */
+@kotlin.Deprecated("作废，不再使用，直接使用AppCompatActivity的生命周期")
 abstract class YActivity : AppCompatActivity() {
     var yEventListeners: MutableList<YLifeEventListener> = ArrayList()
 

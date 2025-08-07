@@ -15,10 +15,8 @@ dependencyResolutionManagement {
 //        maven { url 'http://maven.kotlinx.com:8081/repository/maven-public'; allowInsecureProtocol = true }
 //        maven { url 'https://maven.aliyun.com/repository/public' }
         maven { url 'https://repo1.maven.org/maven2' }
-        maven {
-            url 'https://maven.google.com/'
-        }
+        maven { url 'https://maven.google.com/' }
     }
 }
-rootProject.name='utils_yutils'
-include ':test',  ':utils'
+rootProject.name = 'utils_yutils'
+include ':test', ':utils'

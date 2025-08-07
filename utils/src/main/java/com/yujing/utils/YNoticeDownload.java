@@ -74,7 +74,7 @@ public class YNoticeDownload {
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(DownloadManager.ACTION_DOWNLOAD_COMPLETE);
         intentFilter.addAction(DownloadManager.ACTION_NOTIFICATION_CLICKED);
-        activity.registerReceiver(mReceiver, intentFilter); //注册自定义广播
+        ContextCompat.registerReceiver(activity, mReceiver, intentFilter, ContextCompat.RECEIVER_NOT_EXPORTED); //注册自定义广播
         mDownloadManager = (DownloadManager) activity.getSystemService(Context.DOWNLOAD_SERVICE);
         //申请权限
         String[] Permissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
@@ -243,7 +243,7 @@ public class YNoticeDownload {
     }
 
     public void onResume() {
-        if (mReceiver != null) activity.registerReceiver(mReceiver, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+        if (mReceiver != null) ContextCompat.registerReceiver(activity, mReceiver, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE), ContextCompat.RECEIVER_NOT_EXPORTED);
     }
 
     public void onDestroy() {

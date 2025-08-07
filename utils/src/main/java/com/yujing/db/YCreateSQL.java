@@ -18,6 +18,7 @@ import java.util.Map;
  *
  * @author 余静
  */
+@Deprecated
 public class YCreateSQL {
     // CREATE TABLE IF NOT EXISTS `User`(`id` TEXT NULL,`account` TEXT
     // NULL,`name` TEXT NULL,`phone` TEXT NULL,`nickname` TEXT NULL,`age` TEXT

@@ -2,9 +2,9 @@ package com.yujing.base
 
 import android.content.Intent
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
-import com.yujing.base.activity.YActivity
 import com.yujing.bus.YBusUtil
 import com.yujing.utils.YShow
 
@@ -44,7 +44,18 @@ fun message(message: Any) {
     YLog.i("收到：$message")
 }
  */
-abstract class YBaseActivity<B : ViewDataBinding>(var layout: Int?) : YActivity() {
+/*
+原生方案
+class MainActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityMainBinding
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+    }
+}
+ */
+abstract class YBaseActivity<B : ViewDataBinding>(var layout: Int?) : AppCompatActivity() {
     //open val binding: B by lazy { DataBindingUtil.setContentView(this, layout) }
     lateinit var binding: B
     var isActive = false

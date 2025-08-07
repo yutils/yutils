@@ -28,6 +28,7 @@ YSetRecyclerView.init(this,binding.recyclerView,RecyclerView.VERTICAL,3)
 YSetRecyclerView.init(this,binding.recyclerView,RecyclerView.HORIZONTAL,3)
  */
 @SuppressWarnings("unused")
+@Deprecated
 public class YSetRecyclerView {
     /**
      * 默认纵向布局

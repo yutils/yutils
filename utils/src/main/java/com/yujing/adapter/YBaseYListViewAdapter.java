@@ -77,6 +77,7 @@ public class MyListAdapter extends BaseAdapter {
 }
  */
 @SuppressWarnings("unused")
+@Deprecated
 public abstract class YBaseYListViewAdapter<T> extends BaseAdapter {
     protected List<T> list;
     protected Context context;

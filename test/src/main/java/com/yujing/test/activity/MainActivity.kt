@@ -6,7 +6,6 @@ import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
 import com.google.gson.Gson
-import com.yujing.base.contract.YLifeEvent
 import com.yujing.bus.ThreadMode
 import com.yujing.bus.YBus
 import com.yujing.bus.YBusUtil
@@ -37,6 +36,7 @@ import com.yujing.view.YView
 import com.yutils.view.utils.Create
 
 
+@Suppress("unused")
 class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
     lateinit var textView1: TextView
     lateinit var textView2: TextView
@@ -50,26 +50,8 @@ class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
     override fun init() {
         binding.wll.removeAllViews()
         binding.ll.removeAllViews()
-        textView1 = Create.textView(binding.ll).apply { text = "本APP只是YUtils，分功能测试页面，临时页面" }.apply { textSize = 18F }
+        textView1 = Create.textView(binding.ll).apply { text = "本APP只是YUtils分功能测试页面，临时页面" }.apply { textSize = 18F }
         textView2 = Create.textView(binding.ll)
-        //生命周期监听
-        setEventListener { event, obj ->
-            when (event) {
-                YLifeEvent.onDestroy -> {
-                    YLog.d("MainActivity，onDestroy")
-                }
-
-                YLifeEvent.onStart -> {
-                    YLog.d("MainActivity，onStart")
-                }
-
-                YLifeEvent.onCreate -> {
-                    YLog.d("MainActivity，onCreate")
-                }
-
-                else -> {}
-            }
-        }
 
         Create.button(binding.wll, "退出APP") {
             finish()
@@ -236,16 +218,16 @@ class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
         Create.button(binding.wll, "连接") {
             ySocketSync?.exit()
             ySocketSync = YSocketSync("192.168.1.21", 8888)
-            ySocketSync?.hearBytes = byteArrayOf(0)//心跳
-            ySocketSync?.readTimeOut = 1000 * 5L//读取超时
-            ySocketSync?.showLog = true
-            ySocketSync?.showSendLog = true
-            ySocketSync?.showReceiveLog = true
-            ySocketSync?.clearInputStream = true //发送前清空输入流
-            ySocketSync?.connectListeners?.add {
+            ySocketSync.hearBytes = byteArrayOf(0)//心跳
+            ySocketSync.readTimeOut = 1000 * 5L//读取超时
+            ySocketSync.showLog = true
+            ySocketSync.showSendLog = true
+            ySocketSync.showReceiveLog = true
+            ySocketSync.clearInputStream = true //发送前清空输入流
+            ySocketSync.connectListeners.add {
                 YLog.i("连接状态", "连接${if (it) "成功" else "失败"}")
             }
-            ySocketSync?.start()
+            ySocketSync.start()
         }
 
         Create.button(binding.wll, "发送（同步）") {

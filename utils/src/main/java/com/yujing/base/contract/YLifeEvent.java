@@ -3,6 +3,7 @@ package com.yujing.base.contract;
 /**
  * 生命周期事件
  */
+@Deprecated
 public enum YLifeEvent {
     //public
     onCreate,

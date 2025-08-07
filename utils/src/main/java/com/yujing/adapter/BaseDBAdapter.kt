@@ -69,6 +69,7 @@ class CarAdapter<T>(var list: List<T>?) : RecyclerView.Adapter<MyViewHolder>() {
     }
 }
  */
+@Deprecated("废弃")
 abstract class BaseDBAdapter<T>(var layout: Int, var list: List<T>?) : RecyclerView.Adapter<BaseDBHolder>() {
     //recyclerView
     var recyclerView: RecyclerView? = null

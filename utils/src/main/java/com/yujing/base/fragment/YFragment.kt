@@ -25,6 +25,7 @@ base.setEventListener { event, obj ->
     }
 }
  */
+@kotlin.Deprecated("作废，不再使用")
 abstract class YFragment : Fragment() {
     var yEventListeners: MutableList<YLifeEventListener> = ArrayList()
 

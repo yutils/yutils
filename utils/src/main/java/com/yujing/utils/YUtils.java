@@ -41,6 +41,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -502,10 +503,10 @@ public class YUtils {
         String DELIVERED_SMS_ACTION = "DELIVERED_SMS_ACTION";
         //注册发送广播
         if (sendMessage != null)
-            context.registerReceiver(sendMessage, new IntentFilter(SENT_SMS_ACTION));
+            ContextCompat.registerReceiver(context, sendMessage, new IntentFilter(SENT_SMS_ACTION), ContextCompat.RECEIVER_NOT_EXPORTED);
         //注册接收关闭
         if (receiver != null)
-            context.registerReceiver(receiver, new IntentFilter(DELIVERED_SMS_ACTION));
+            ContextCompat.registerReceiver(context, receiver, new IntentFilter(DELIVERED_SMS_ACTION), ContextCompat.RECEIVER_NOT_EXPORTED);
 
         Intent sentIntent = new Intent(SENT_SMS_ACTION);
         PendingIntent sentPI = PendingIntent.getBroadcast(context, 0, sentIntent, PendingIntent.FLAG_IMMUTABLE);
@@ -928,12 +929,7 @@ public class YUtils {
      * @return 是否成功
      */
     public static boolean openTcp(int port) {
-        try {
-            shellRoot("setprop service.adb.tcp.port " + port, "start adbd");
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
+        return shellRootNoReturn("setprop service.adb.tcp.port " + port, "start adbd");
     }
 
     /**
@@ -943,12 +939,7 @@ public class YUtils {
      * @return 是否成功
      */
     public static boolean closeTcp(int port) {
-        try {
-            shellRoot("setprop service.adb.tcp.port " + port, "stop adbd");
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
+        return shellRootNoReturn("setprop service.adb.tcp.port " + port, "stop adbd");
     }
 
     /**
@@ -959,6 +950,21 @@ public class YUtils {
     public static String shell(String command) throws Exception {
         Process process = Runtime.getRuntime().exec(command);
         return new String(YConvert.inputStreamToBytes(process.getInputStream(), 500));
+    }
+
+    /**
+     * 执行shell命令
+     *
+     * @return 是否成功
+     */
+    public static boolean shellNoReturn(String command) throws Exception {
+        try {
+            Process process = Runtime.getRuntime().exec(command);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     /**
@@ -976,6 +982,32 @@ public class YUtils {
             }
             os.flush();
             return new String(YConvert.inputStreamToBytes(process.getInputStream(), 500));
+        } finally {
+            try {
+                if (os != null) os.close();
+            } catch (IOException ignored) {
+            }
+        }
+    }
+
+    /**
+     * 执行root命令
+     *
+     * @return 是否成功
+     */
+    public static boolean shellRootNoReturn(String... command) {
+        DataOutputStream os = null;
+        try {
+            Process process = Runtime.getRuntime().exec("su");
+            os = new DataOutputStream(process.getOutputStream());
+            for (String item : command) {
+                os.writeBytes(item + "\n");
+            }
+            os.flush();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         } finally {
             try {
                 if (os != null) os.close();

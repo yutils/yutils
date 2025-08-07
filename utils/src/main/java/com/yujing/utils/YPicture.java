@@ -51,6 +51,7 @@ override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) 
 }
  */
 @SuppressWarnings("unused")
+//使用YTake替代
 @Deprecated
 public class YPicture {
     public static boolean showLog = true;

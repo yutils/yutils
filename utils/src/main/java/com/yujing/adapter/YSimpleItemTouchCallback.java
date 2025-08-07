@@ -11,6 +11,7 @@ import java.util.Collections;
  * @author 余静 2018年11月30日12:14:38
  */
 @SuppressWarnings("unused")
+@Deprecated
 public class YSimpleItemTouchCallback extends ItemTouchHelper.Callback {
     private YBaseYRecyclerViewAdapter mAdapter;
 

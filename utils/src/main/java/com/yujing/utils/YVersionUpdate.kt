@@ -276,7 +276,7 @@ class YVersionUpdate {
         val saveApkName = "update_$serverCode.apk"
         val file = File(YPath.getFilePath(YApp.get()) + "/download/" + saveApkName)
         val parent = file.parentFile
-        if (!Objects.requireNonNull(parent).exists()) parent.mkdirs()
+        if (parent?.exists() == false) parent.mkdirs()
         if (file.exists()) file.delete() // 删除存在文件
 
         val request: Request = Request.Builder().url(downUrl).get().build()

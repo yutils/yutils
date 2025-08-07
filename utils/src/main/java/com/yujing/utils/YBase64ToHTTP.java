@@ -12,6 +12,7 @@ import java.util.Objects;
  * 2017年3月13日 下午17:49:30
  */
 @SuppressWarnings("unused")
+@Deprecated
 public class YBase64ToHTTP {
     private static final char[] ENCODE = new char[]{
             'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',// 0-9

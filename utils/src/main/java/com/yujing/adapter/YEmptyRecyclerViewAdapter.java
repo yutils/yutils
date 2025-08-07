@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
  *
  * @author 余静 2018年11月30日12:13:46
  */
+@Deprecated
 public class YEmptyRecyclerViewAdapter extends RecyclerView.Adapter<YEmptyRecyclerViewAdapter.EmptyHolder> {
     private final Context context;
     private TextView tv;

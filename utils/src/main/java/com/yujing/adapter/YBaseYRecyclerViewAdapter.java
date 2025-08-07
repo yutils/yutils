@@ -126,6 +126,7 @@ class CarAdapter<T>(var data: List<T>?) : RecyclerView.Adapter<MyViewHolder>() {
 }
  */
 @SuppressWarnings({"unused", "NullableProblems"})
+@Deprecated
 public abstract class YBaseYRecyclerViewAdapter<T> extends RecyclerView.Adapter<YBaseYRecyclerViewAdapter.BaseViewHolder> {
     private List<T> list;//数据
     private Context context;//context
@@ -362,6 +363,7 @@ public abstract class YBaseYRecyclerViewAdapter<T> extends RecyclerView.Adapter<
     }
 
     //--------------------class-------------------------
+    @Deprecated
     public static abstract class BaseViewHolder extends RecyclerView.ViewHolder {
 
         private Context context;

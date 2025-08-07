@@ -8,4 +8,5 @@ import androidx.recyclerview.widget.RecyclerView
  * @author 余静 2022年6月7日10:21:55
  * 全称 BaseDataBindingViewHolder
  */
+@Deprecated("废弃")
 class BaseDBHolder(var binding: ViewDataBinding) : RecyclerView.ViewHolder(binding.root)

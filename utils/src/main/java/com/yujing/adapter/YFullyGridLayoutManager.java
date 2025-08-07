@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
  * @author 余静 2018年11月30日12:14:20
  */
 @SuppressWarnings("unused")
+@Deprecated
 class YFullyGridLayoutManager extends GridLayoutManager {
 
     public YFullyGridLayoutManager(Context context, int spanCount) {

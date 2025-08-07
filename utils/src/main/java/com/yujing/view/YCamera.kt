@@ -112,6 +112,7 @@ class MainActivity : YBaseActivity<ActivityMainBinding>(R.layout.activity_main) 
 }
  */
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+@Deprecated("废弃")
 class YCamera(var textureView: AutoFitTextureView, var id: String?) {
     companion object {
         private const val TAG = "YCamera"

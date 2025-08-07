@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
-import com.yujing.base.fragment.YFragment
+import androidx.fragment.app.Fragment
 import com.yujing.bus.YBusUtil
 
 /**
@@ -32,7 +32,7 @@ public class OldFragment extends YBaseFragment<Activity1101Binding> {
     }
 }
  */
-abstract class YBaseFragment<B : ViewDataBinding>(var layout: Int?) : YFragment() {
+abstract class YBaseFragment<B : ViewDataBinding>(var layout: Int?) : Fragment() {
     // open val binding: B by lazy { DataBindingUtil.inflate(inflater, layout, container, false) }
     lateinit var binding: B
     lateinit var inflater: LayoutInflater

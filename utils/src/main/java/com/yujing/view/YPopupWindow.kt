@@ -197,8 +197,7 @@ class YPopupWindow<B : ViewDataBinding>(var activity: Activity, var layout: Int)
     var binding: B
 
     init {
-        val view: View =
-            LayoutInflater.from(activity).inflate(layout, null)
+        val view: View = LayoutInflater.from(activity).inflate(layout, null)
         binding = DataBindingUtil.bind(view)!!
         popupWindow = PopupWindow()
         popupWindow.contentView = view
