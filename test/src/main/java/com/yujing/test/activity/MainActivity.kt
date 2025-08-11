@@ -3,6 +3,7 @@ package com.yujing.test.activity
 import android.graphics.Color
 import android.widget.EditText
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
 import com.google.gson.Gson
@@ -329,6 +330,20 @@ class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
         Create.button(binding.wll, "加载播放并释放资源") {
             YSound.play(R.raw.success, 1000)
             YLog.i("立即执行")
+        }
+
+        Create.button(binding.wll, "json转对象") {
+            val json1 = """{"id":123,"name":"啦啦啦"}"""
+            val json2 = """[{"id":11,"name":"哈哈哈"},{"id":22,"name":"嘿嘿嘿"}]"""
+
+            class TestBean(var id: Int, var name: String?)
+            YJson.toObject<TestBean>(json1) { value ->
+                Toast.makeText(this, "解析结果: ${value?.name}", Toast.LENGTH_SHORT).show()
+            }
+            val list = YJson.toObject<List<TestBean>>(json2)
+            for (i in list!!) {
+                Toast.makeText(this, "解析结果: ${i.id},${i.name}", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 

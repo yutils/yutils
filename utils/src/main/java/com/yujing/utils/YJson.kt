@@ -96,6 +96,7 @@ val lms: MutableList<Map<String, User>> = ArrayList()
 var str = toJson(lms, "yyyy年MM月dd日 HH:mm:ss")
 toListMap(str, String::class.java, User::class.java, "yyyy年MM月dd日 HH:mm:ss")
  */
+
 object YJson {
     /**
      * 获取一个gson对象
@@ -151,6 +152,54 @@ object YJson {
     fun <T> toBean(jsonStr: String, cl: Class<T>?, dateFormat: String? = null): T {
         val gson = if (dateFormat == null) gson else getGsonDate(dateFormat)
         return gson.fromJson(jsonStr, cl)
+    }
+
+    /**
+     * 将json转换成复杂对象(并自定义日期格式)
+     */
+    /*
+        使用：
+        val json1 = """{"id":123,"name":"啦啦啦"}"""
+        class TestBean(var id: Int,var name: String?)
+        YJson.toObject<TestBean>(json1) { value ->
+            Toast.makeText(this, "解析结果: ${value?.name}", Toast.LENGTH_SHORT).show()
+        }
+     */
+    @JvmStatic
+    inline fun <reified T> toObject(jsonStr: String, dateFormat: String? = null, crossinline listener: (T?) -> Unit) {
+        val gson = if (dateFormat == null) gson else getGsonDate(dateFormat)
+        val type = object : TypeToken<T>() {}.type
+        try {
+            val t: T = gson.fromJson(jsonStr, type)
+            listener(t)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    /**
+     * 将json转换成复杂对象
+     */
+    /*
+    使用：
+    val json2 = """[{"id":11,"name":"哈哈哈"},{"id":22,"name":"嘿嘿嘿"}]"""
+    class TestBean(var id: Int,var name: String?)
+    val list = YJson.toObject<List<TestBean>>(json2)
+    for (i in list!!) {
+        Toast.makeText(this, "解析结果: ${i.id},${i.name}", Toast.LENGTH_SHORT).show()
+    }
+    */
+    @JvmStatic
+    inline fun <reified T> toObject(jsonStr: String?, dateFormat: String? = null): T? {
+        if (jsonStr.isNullOrBlank()) return null
+        val gsonInstance = if (dateFormat == null) gson else getGsonDate(dateFormat)
+        val type = object : TypeToken<T>() {}.type
+        return try {
+            gsonInstance.fromJson(jsonStr, type)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
     }
 
     /**

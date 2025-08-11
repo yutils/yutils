@@ -3,7 +3,7 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-kapt'
     id 'kotlin-parcelize'
-//    id 'com.vanniktech.maven.publish' version "0.34.0" apply true //maven上传插件
+    id 'com.vanniktech.maven.publish' version "0.34.0" apply true //maven上传插件
 }
 android {
     namespace 'com.yujing.utils' //不能修改
@@ -48,4 +48,4 @@ dependencies {
     //okhttp，https://central.sonatype.com/artifact/com.squareup.okhttp3/okhttp
     implementation 'com.squareup.okhttp3:okhttp:5.1.0'
 }
-//apply from: "${getRootDir().absolutePath}/gradles/publish-maven-central.gradle" //maven相关.可删掉此行
+apply from: "${getRootDir().absolutePath}/gradles/publish-maven-central.gradle" //maven相关.可删掉此行
