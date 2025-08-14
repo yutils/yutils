@@ -17,7 +17,7 @@ Welcome to my GitHub ! ! !
 采用kotlin扩展方法的方式来扩展kotlin功能。增加易用性。 举例："你好".toast()   举例："日志".logI()
 
 ----
-**3.  [kotlinx](https://github.com/yutils/FaceRec-Android)**  ---->  [https://github.com/yutils/FaceRec-Android](https://github.com/yutils/FaceRec-Android)  
+**3.  [FaceRec-Android](https://github.com/yutils/FaceRec-Android)**  ---->  [https://github.com/yutils/FaceRec-Android](https://github.com/yutils/FaceRec-Android)  
 安卓人脸识别，Android face recognition using InsightFaceSDK， 完全离线，本地运行，实时人脸检测、特征提取与比对，适用于生物识别、身份认证等场景。
 
 ----
