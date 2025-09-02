@@ -120,11 +120,11 @@ public class YShow extends Dialog {
             //lp.width=dip2px(getContext(), 90);
             window.setAttributes(lp);//应用设置
             //设置 window的Background为圆角
-            GradientDrawable gradientDrawable = new GradientDrawable();
             int strokeWidth = 1; // 1dp 边框宽度
             int roundRadius = 5; // 6dp 圆角半径
             int strokeColor = Color.parseColor("#303A89FF");//边框颜色
             int fillColor = Color.parseColor("#A0000000");//内部填充颜色
+            GradientDrawable gradientDrawable = new GradientDrawable();
             gradientDrawable.setColor(fillColor);
             gradientDrawable.setCornerRadius(dip2px(getContext(), roundRadius));
             gradientDrawable.setStroke(dip2px(getContext(), strokeWidth), strokeColor);
@@ -163,13 +163,13 @@ public class YShow extends Dialog {
         linearLayout.setMinimumHeight(dip2px(getContext(), 90));//最小高度
         linearLayout.setMinimumWidth(dip2px(getContext(), 90));//最小宽度
 
-        LinearLayout.LayoutParams imageViewLayoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        imageViewLayoutParams.gravity = Gravity.CENTER;//设置中心对其
+        LinearLayout.LayoutParams progressBarParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        progressBarParams.gravity = Gravity.CENTER;//设置中心对其
         //实例化一个ProgressBar
         ProgressBar mProgressBar = new ProgressBar(getContext(), null, android.R.attr.progressBarStyle);
         mProgressBar.setId(id1);
         mProgressBar.setIndeterminate(true);
-        mProgressBar.setLayoutParams(imageViewLayoutParams);
+        mProgressBar.setLayoutParams(progressBarParams);
 
         LinearLayout.LayoutParams tvParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         tvParams.setMargins(0, 0, 0, 0);

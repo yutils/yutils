@@ -85,9 +85,14 @@ abstract class YBaseActivity<B : ViewDataBinding>(var layout: Int?) : AppCompatA
         startActivity(intent)
     }
 
-    override fun onStop() {
-        super.onStop()
+    override fun onPause() {
         isActive = false
+        super.onPause()
+    }
+
+    override fun onStop() {
+        isActive = false
+        super.onStop()
     }
 
     override fun onResume() {

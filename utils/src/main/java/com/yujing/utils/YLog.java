@@ -3,6 +3,7 @@ package com.yujing.utils;
 import android.content.Context;
 import android.util.Log;
 
+import com.yujing.bus.ThreadMode;
 import com.yujing.contract.YLogListener;
 import com.yujing.contract.YLogSaveListener;
 
@@ -30,6 +31,8 @@ import java.util.Locale;
     YLog.setLogListener { type, tag, msg -> }
     //保存日志开
     YLog.saveOpen(YPath.getFilePath(this, "log"))
+    //写日志线程
+    YLog.setThreadMode(ThreadMode.IO)
     //保存日志监听,不保存DEBUG
     YLog.setLogSaveListener { type, tag, msg -> return@setLogSaveListener type != YLog.DEBUG }
     //删除30天以前日志
@@ -53,6 +56,8 @@ public class YLog {
     private static YLogListener logListener;
     //日志保存回调监听
     private static YLogSaveListener logSaveListener;
+    private static ThreadMode threadMode = ThreadMode.CURRENT;
+    private static YThreadPool logPool; //日志写入线程池
     //类型
     public static final String VERBOSE = "v";   //VERBOSE
     public static final String DEBUG = "d";     //DEBUG
@@ -252,7 +257,17 @@ public class YLog {
     //如 save("路径",“v”,“错误”,“网络异常”);
     public static void save(String path, String type, String tag, String msg) {
         String saveString = formatTime.format(new Date(System.currentTimeMillis() + timeDifference)) + "\t" + type + "\t" + (TAG.equals(tag) ? "log" : tag) + ":" + msg + "\n";
-        YFileUtil.addStringToFile(new File(path), saveString);
+        if (threadMode == ThreadMode.CURRENT) {
+            YFileUtil.addStringToFile(new File(path), saveString);
+        } else if (threadMode == ThreadMode.MAIN) {
+            YThread.runOnUiThread(() -> YFileUtil.addStringToFile(new File(path), saveString));
+        } else if (threadMode == ThreadMode.IO) {
+            if (logPool == null) {
+                logPool = new YThreadPool();
+                logPool.setThreadNum(1);
+            }
+            logPool.add(() -> YFileUtil.addStringToFile(new File(path), saveString));
+        }
     }
 
     public static void save(String type, String tag, String msg) {
@@ -412,5 +427,13 @@ public class YLog {
         //回调个监听函数
         if (logListener != null) logListener.value(type, TAG, msg);
         if (isSave) save(type, TAG, msg);
+    }
+
+    public static ThreadMode getThreadMode() {
+        return threadMode;
+    }
+
+    public static void setThreadMode(ThreadMode threadMode) {
+        YLog.threadMode = threadMode;
     }
 }

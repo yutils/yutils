@@ -1,6 +1,7 @@
 package com.yujing.test
 
 import android.app.Application
+import com.yujing.bus.ThreadMode
 import com.yujing.utils.*
 
 class App : Application() {
@@ -29,6 +30,7 @@ class App : Application() {
         YActivityUtil.init(this)
         //保存日志开
         YLog.saveOpen(YPath.getFilePath(this, "log"))
+        YLog.setThreadMode(ThreadMode.IO)
         YLog.setLogSaveListener { type, tag, msg -> return@setLogSaveListener type != YLog.DEBUG }
         //保存最近30天日志
         YLog.delDaysAgo(30)
