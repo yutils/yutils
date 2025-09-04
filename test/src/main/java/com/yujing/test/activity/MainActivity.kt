@@ -21,7 +21,6 @@ import com.yujing.utils.YConvert
 import com.yujing.utils.YDelay
 import com.yujing.utils.YImageDialog
 import com.yujing.utils.YJson
-import com.yujing.utils.YJson.toJson
 import com.yujing.utils.YLog
 import com.yujing.utils.YPath
 import com.yujing.utils.YPermissions
@@ -31,11 +30,13 @@ import com.yujing.utils.YShow
 import com.yujing.utils.YSound
 import com.yujing.utils.YTake
 import com.yujing.utils.YThread
+import com.yujing.utils.YTimer
 import com.yujing.utils.YToast
 import com.yujing.utils.YVersionUpdate
 import com.yujing.view.YAlertDialogUtils
 import com.yujing.view.YView
 import com.yutils.view.utils.Create
+import kotlinx.coroutines.Job
 
 
 @Suppress("unused")
@@ -346,6 +347,22 @@ class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
                 Toast.makeText(this, "解析结果: ${i.id},${i.name}", Toast.LENGTH_SHORT).show()
             }
         }
+        val yTimer = YTimer()
+        var job: Job? = null
+
+        Create.button(binding.wll, "YTimer") {
+            job?.cancel() //停止先前job，保证了唯一性
+            job = yTimer.loopIO(1000) {
+                YLog.i("YTimer", "YTimer1:${Thread.currentThread().name}")
+            }
+            yTimer.loopUI(500) {
+                YLog.i("YTimer", "YTimer2:${Thread.currentThread().name}")
+            }
+        }
+
+        Create.button(binding.wll, "YTimerStop") {
+            yTimer.stop()
+        }
     }
 
     //通知栏下载需要调用onDestroy()
@@ -354,9 +371,10 @@ class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
         yVersionUpdate.onDestroy()
     }
 
-    @YBus("tag1", "tag2", threadMode = ThreadMode.MAIN)
+    @YBus("tag1", "tag2")
     fun message1(message: String?) {
-        YLog.i("收到：tag$message")
+        YLog.i("收到：$message   线程：${Thread.currentThread().name}")
         textView2.text = textView2.text.toString() + "收到:$message \n"
     }
+
 }

@@ -6,7 +6,18 @@ import com.yujing.utils.YBytes
 import com.yujing.utils.YConvert
 import com.yujing.utils.YLog
 import com.yujing.utils.YThread
-import java.net.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
+import java.net.DatagramPacket
+import java.net.DatagramSocket
+import java.net.InetAddress
+import java.net.SocketException
+import java.net.SocketTimeoutException
 
 /**
  * Udp通信
@@ -67,8 +78,17 @@ class YUdp(var ip: String, var port: Int) {
     //YBus-Tag
     var tag = defaultTag
 
-    //读取线程
-    private var readThread: Thread? = null
+    //创建作用域  myScope?.launch(Dispatchers.IO) {}
+    var myScope: CoroutineScope? = null
+        get() {
+            // 检查当前作用域是否有效（非空且未取消）
+            if (field != null && field!!.coroutineContext[Job]?.isCancelled == false) {
+                return field
+            }
+            // 无效则创建新作用域（添加默认调度器，如Dispatchers.Default）
+            field = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+            return field
+        }
 
     fun start() = send(ByteArray(0))
 
@@ -82,9 +102,9 @@ class YUdp(var ip: String, var port: Int) {
 
     //同步发送
     fun send(data: ByteArray) {
-        val thread = Thread {
+        onDestroy()
+        myScope?.launch(Dispatchers.IO) {
             try {
-                onDestroy()
                 datagramSocket = DatagramSocket()
                 if (showLog) YLog.i("UDP发送数据", YConvert.bytesToHexString(data))
                 datagramSocket?.send(
@@ -97,16 +117,12 @@ class YUdp(var ip: String, var port: Int) {
                 if (showLog) YLog.e("发送数据时异常:" + e.message, e)
             }
         }
-        thread.name = "YUdp-同步发送"
-        thread.start()
     }
 
-    //同步发送
     @Synchronized
     private fun read() {
-        readThread?.interrupt()
-        readThread = Thread {
-            while (!Thread.interrupted()) {
+        myScope?.launch(Dispatchers.IO) {
+            while (this.isActive) {
                 try {
                     // 接收服务器端响应的数据
                     // 1.创建数据报，用于接收服务器端响应的数据
@@ -137,17 +153,14 @@ class YUdp(var ip: String, var port: Int) {
             }
             if (showLog) YLog.d("退出读取线程")
         }
-        readThread?.name = "YUdp-读取线程"
-        readThread?.start()
     }
 
     fun onDestroy() {
-        readThread?.interrupt()
+        myScope?.cancel()
         datagramSocket?.close()
     }
 
     fun sendSync(data: ByteArray): ByteArray {
-        onDestroy()
         return sendSync(
             data = data,
             ip = ip,
@@ -218,7 +231,7 @@ class YUdp(var ip: String, var port: Int) {
         @JvmStatic
         fun sendSyncTime(
             ip: String, port: Int, data: ByteArray,
-            timeout: Int = 1000
+            timeout: Int = 1000,
         ): ByteArray {
             return sendSyncLength(ip, port, data, 1024 * 1024, timeout)
         }

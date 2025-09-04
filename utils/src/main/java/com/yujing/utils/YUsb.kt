@@ -13,6 +13,15 @@ import android.hardware.usb.UsbManager
 import android.hardware.usb.UsbRequest
 import androidx.core.content.ContextCompat
 import com.yujing.contract.YListener1
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import java.nio.ByteBuffer
 
 /**
@@ -75,6 +84,18 @@ class YUsb {
         //USB权限
         const val ACTION_USB_PERMISSION = "com.android.example.USB_PERMISSION"
     }
+
+    //创建作用域  myScope?.launch(Dispatchers.IO) {}
+    var myScope: CoroutineScope? = null
+        get() {
+            // 检查当前作用域是否有效（非空且未取消）
+            if (field != null && field!!.coroutineContext[Job]?.isCancelled == false) {
+                return field
+            }
+            // 无效则创建新作用域（添加默认调度器，如Dispatchers.Default）
+            field = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+            return field
+        }
 
     //USB管理
     lateinit var mUsbManager: UsbManager
@@ -262,8 +283,10 @@ class YUsb {
      * @sleep 休息毫秒
      */
     fun close(sleep: Long) {
-        Thread.sleep(sleep)
-        usbConnection?.close()
+        runBlocking {
+            delay(sleep)
+            usbConnection?.close()
+        }
     }
 
     /**
@@ -281,11 +304,9 @@ class YUsb {
      */
     fun send(bytes: ByteArray) {
         if (!status) return
-        val thread = Thread {
+        myScope?.launch(Dispatchers.IO) {
             sendSynchronization(bytes)
         }
-        thread.name = "YUsb—send"
-        thread.start()
     }
 
     /**
@@ -364,10 +385,11 @@ class YUsb {
      * 启动读取线程。默认每次最长读取16384，没次读取3秒超时
      * @yListener1 每次回调长度是读取数据的真实长度
      */
-    private var readThread: Thread? = null
     fun startRead(yListener1: YListener1<ByteArray>) {
         startRead(16384, 3000, yListener1)
     }
+
+    private var job: Job? = null
 
     /**
      * 启动读取线程。
@@ -377,15 +399,11 @@ class YUsb {
      */
     @Synchronized
     fun startRead(maxLength: Int, timeOut: Int, yListener1: YListener1<ByteArray>) {
-        readThread?.interrupt()
-        readThread = Thread {
-            while (!Thread.interrupted()) {
+        job?.cancel()
+        job = myScope?.launch(Dispatchers.IO) {
+            while (this.isActive) {
                 if (!status) {
-                    try {
-                        Thread.sleep(10)
-                    } catch (e: Exception) {
-                        readThread?.interrupt()
-                    }
+                    delay(10)
                     continue
                 }
                 try {
@@ -393,22 +411,19 @@ class YUsb {
                     val result = read(maxLength, timeOut) ?: continue
                     YThread.runOnUiThread { yListener1.value(result) }
                 } catch (e: Exception) {
-                    Thread.currentThread().interrupt()
                     if (showLog) YLog.e("读取数据时异常：" + e.message, e)
                     break
                 }
             }
             YLog.d("退出读取线程")
         }
-        readThread?.name = "YUsb-read"
-        readThread?.start()
     }
 
     /**
      * 停止读取线程
      */
     fun stopRead() {
-        readThread?.interrupt()
+        myScope?.cancel()
     }
 
     fun onDestroy() {

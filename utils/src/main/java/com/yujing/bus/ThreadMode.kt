@@ -9,7 +9,6 @@ package com.yujing.bus
  */
 enum class ThreadMode {
     CURRENT,
-    NEW,
     MAIN,
     IO
 }

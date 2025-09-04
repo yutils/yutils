@@ -2,187 +2,368 @@ package com.yujing.bus
 
 import android.os.Build
 import com.yujing.utils.YLog
-import java.util.*
+import com.yujing.utils.YThread
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
+import java.lang.reflect.Method
+import java.util.Vector
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.CopyOnWriteArrayList
 
 /**
- * bus 总线通信 工具类
- * 底层原理：循环遍历所有注册类
- * @author 余静 2021年3月31日11:37:59
+ * YBus 改进版：注册期建索引，运行期零扫描
+ *
+ * 用法保持不变：
+ *  - YBusUtil.init(this) / register(this) / unregister(this)
+ *  - YBusUtil.post(tag, value) / postSticky(tag, value)
  */
-/*用法
-
-//注册该类
-YBusUtil.init(this)
-
-//发送消息
-YBusUtil.post("tag1","123456789")
-
-//接收消息
-@YBus("tag1")
-fun message(message: Any) {
-    YLog.i("收到：$message")
-}
-
-//接收全部消息
-@YBus
-fun message(key: Any,message: Any) {
-    YLog.i("收到：$key:$message")
-    textView1.text = "收到：$key:$message"
-}
-//接收全部消息
-@YBus
-fun message(yMessage: YMessage<Any>) {
-    YLog.i("收到：$key:$message")
-    textView1.text = "收到：$key:$message"
-}
-
-//解绑该类
-YBusUtil.onDestroy(this)
-*/
+@Suppress("unused")
 class YBusUtil {
     companion object {
-        //类列表
+        // 与旧版保持字段名一致（若外部有引用）
         @JvmStatic
         var listObject: Vector<Any> = Vector()
 
-        //延迟事件
         @JvmStatic
         var anySticky: Vector<YMessage<Any>> = Vector()
 
-        /**
-         * 必须调用，注册类，同register
-         */
-        @JvmStatic
-        fun init(anyObject: Any) {
-            register(anyObject)
-        }
+        // -------- 索引与缓存 --------
+        // 类 -> 该类的订阅方法（已提取注解信息、参数信息）
+        private val methodCache = ConcurrentHashMap<Class<*>, List<SubscriberMethod>>()
 
-        /**
-         * 注册类，用完后必须unregister
-         */
+        // tag -> 订阅（只含显式 tag 的方法）
+        private val tagIndex = ConcurrentHashMap<String, CopyOnWriteArrayList<Subscription>>()
+
+        // 通配（@YBus() 或 value=[""]）
+        private val wildcardIndex = CopyOnWriteArrayList<Subscription>()
+
+        // 对象 -> 该对象的所有订阅（用于快速注销/定向分发）
+        private val objectSubs = ConcurrentHashMap<Any, List<Subscription>>()
+
+        //创建作用域  busScope?.launch(Dispatchers.IO) {}
+        var busScope: CoroutineScope? = null
+            get() {
+                // 检查当前作用域是否有效（非空且未取消）
+                if (field != null && field!!.coroutineContext[Job]?.isCancelled == false) {
+                    return field
+                }
+                // 无效则创建新作用域（添加默认调度器，如Dispatchers.Default）
+                field = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+                return field
+            }
+
+        // -------- 对外 API --------
+        @JvmStatic
+        fun init(anyObject: Any) = register(anyObject)
+
         @JvmStatic
         fun register(anyObject: Any) {
             if (listObject.contains(anyObject)) return
-            anySticky.forEach { Utils.execute(anyObject, it) }
             listObject.add(anyObject)
-        }
 
-        /**
-         * 接收事件，并且调用已经注册类中包含@YBus注解的类
-         */
-        @Synchronized
-        @JvmStatic
-        private fun subscribe(yMessage: YMessage<Any>) {
-            try {
-                //不能用for (i in list)循环，因为list长度不固定，循环途中增加或删除元素，会导致并发修改异常
-                //list.forEach循环，增加元素会导致并发修改异常,删除不会
-                //不能用for (i in list.indices)循环，因为list长度不固定，循环途中增删除元素，会导致并发修改异常或数组越界，增加不会
-                //不能用for (i in 0..list.size-1)，同上
-                //不能用for (i in list.size-1..0)，倒着循环删1个没问题，但是可能会同时移除多个
-                //不能用var i=0 while (i <list.size)，因为删除元素会导致错乱。比如，a，b，c，d，执行到b的时候，删除b，会发现，没有执行的是c
-                //不能使用迭代器，因为不知道删除的元素位置，不一定是当前迭代的元素
+            // 1) 取或建该类的方法索引
+            val clazz = anyObject.javaClass
+            val methods = methodCache.getOrPut(clazz) { findSubscriberMethods(clazz) }
 
-                //所以，复制出临时listTemp  //val temp: MutableList<Any> = Vector()
-                val temp: MutableList<Any> = ArrayList()
-                var i = 0
-                while (i < listObject.size) temp.add(listObject[i++])
-                //执行
-                var j = 0
-                while (j < temp.size) Utils.execute(temp[j++], yMessage)
-            } catch (e: Exception) {
-                YLog.e("总线发生异常" + e.message, e)
+            // 2) 将对象实例化后的订阅放入全局索引
+            val subs = ArrayList<Subscription>(methods.size)
+            for (m in methods) {
+                val sub = Subscription(anyObject, m)
+                subs.add(sub)
+                if (m.isWildcard) {
+                    // 通配
+                    if (!wildcardIndex.contains(sub)) wildcardIndex.add(sub)
+                } else {
+                    for (tag in m.tags) {
+                        val list = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                            tagIndex.computeIfAbsent(tag) { CopyOnWriteArrayList() }
+                        } else {
+                            // 低版本兼容实现
+                            synchronized(tagIndex) { // 同步处理，保证线程安全
+                                var list = tagIndex[tag]
+                                if (list == null) {
+                                    list = CopyOnWriteArrayList()
+                                    tagIndex[tag] = list
+                                }
+                                list
+                            }
+                        }
+                        if (!list.contains(sub)) list.add(sub)
+                    }
+                }
+            }
+            objectSubs[anyObject] = subs
+
+            // 3) 补发 sticky（仅发给该对象自身）
+            if (anySticky.isNotEmpty()) {
+                for (msg in anySticky) {
+                    dispatchToTarget(anyObject, msg)
+                }
             }
         }
 
-        /**
-         * 发送事件
-         */
         @JvmStatic
-        fun post(tag: String, value: Any?) {
-            subscribe(YMessage(tag, value))
+        fun unregister(anyObject: Any) {
+            listObject.remove(anyObject)
+            val subs = objectSubs.remove(anyObject) ?: return
+            for (sub in subs) {
+                val sm = sub.subscriberMethod
+                if (sm.isWildcard) {
+                    wildcardIndex.remove(sub)
+                } else {
+                    for (tag in sm.tags) {
+                        tagIndex[tag]?.remove(sub)
+                    }
+                }
+            }
         }
 
-        /**
-         * 发送事件
-         */
         @JvmStatic
-        fun post(tag: String) {
-            subscribe(YMessage(tag, null))
+        fun onDestroy(anyObject: Any) = unregister(anyObject)
+
+        @JvmStatic
+        fun destroyAll() {
+            listObject.clear()
+            objectSubs.clear()
+            tagIndex.clear()
+            wildcardIndex.clear()
         }
 
-        /**
-         * 发送粘性事件，当前注册的全部对象都能收到事件，未来每个新注册的对象也能收到事件。
-         * 如果多次添加tag相同的事件，那么会更新value的值
-         */
+        // 发送事件（零扫描分发）
+        @JvmStatic
+        fun post(tag: String, value: Any?) = subscribe(YMessage(tag, value))
+
+        @JvmStatic
+        fun post(tag: String) = subscribe(YMessage(tag, null))
+
+        //串行
+        @OptIn(ExperimentalCoroutinesApi::class)
+        private val serialScope = CoroutineScope(Dispatchers.Default.limitedParallelism(1))
+
+        //串行消息
+        fun postSerial(tag: String, value: Any?) {
+            serialScope.launch {
+                subscribe(YMessage(tag, value))
+            }
+        }
+
+        @JvmStatic
+        private fun subscribe(yMessage: YMessage<Any>) {
+            try {
+                // 命中显式 tag + 通配
+                val targets = ArrayList<Subscription>()
+                tagIndex[yMessage.type ?: ""]?.let { targets.addAll(it) }
+                if (wildcardIndex.isNotEmpty()) targets.addAll(wildcardIndex)
+
+                if (targets.isEmpty()) return
+                for (sub in targets) {
+                    // 显式 tag 的方法天然匹配；通配方法需要按签名做一次轻量判断
+                    if (!matches(sub.subscriberMethod, yMessage)) continue
+                    invokeByThreadMode(sub, yMessage)
+                }
+            } catch (e: Throwable) {
+                YLog.e("YBus", "分发异常：${e.message}", e)
+            }
+        }
+
+        // 发送 sticky
         @JvmStatic
         fun postSticky(tag: String, value: Any?) {
             var msg: YMessage<Any>? = null
-            anySticky.forEach {
-                if (it.type == tag) {
-                    it.data = value
-                    msg = it
+            for (m in anySticky) {
+                if (m.type == tag) {
+                    m.data = value
+                    msg = m
+                    break
                 }
             }
             if (msg == null) {
                 msg = YMessage(tag, value)
                 anySticky.add(msg)
             }
-            subscribe(msg!!)
+            subscribe(msg)
         }
 
-        /**
-         * 发送粘性事件，当前注册的全部对象都能收到事件，未来每个新注册的对象也能收到事件
-         * 如果多次添加tag相同的事件，那么会更新value的值
-         */
         @JvmStatic
-        fun postSticky(tag: String) {
-            post(tag, null)
-        }
+        fun postSticky(tag: String) = postSticky(tag, null)
 
-        /**
-         * 删除粘性事件
-         */
         @JvmStatic
         fun removeSticky(tag: String) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                anySticky.removeIf { it.type == tag }
+            for (i in anySticky.size - 1 downTo 0) if (anySticky[i].type == tag) anySticky.removeAt(i)
+        }
+
+        @JvmStatic
+        fun clearSticky() = anySticky.clear()
+
+        // -------- 提供给 Utils.execute 的“定向分发”，兼容旧调用点 --------
+        internal fun dispatchToTarget(targetObj: Any, yMessage: YMessage<Any>) {
+            val subs = objectSubs[targetObj] ?: return
+            for (sub in subs) {
+                val sm = sub.subscriberMethod
+                if (!sm.isWildcard && (yMessage.type == null || !sm.tags.contains(yMessage.type))) continue
+                if (!matches(sm, yMessage)) continue
+                invokeByThreadMode(sub, yMessage)
+            }
+        }
+
+        // ===== 索引构建 =====
+        private fun findSubscriberMethods(clazz: Class<*>): List<SubscriberMethod> {
+            val list = ArrayList<SubscriberMethod>()
+            var c: Class<*>? = clazz
+            while (c != null && c != Any::class.java && c != Object::class.java) {
+                for (m in c.declaredMethods) {
+                    val ann = m.getAnnotation(YBus::class.java) ?: continue
+                    m.isAccessible = true
+                    val tags = ann.value
+                    val tagList = if (tags.isEmpty() || (tags.size == 1 && tags[0].isEmpty())) emptyList() else tags.toList()
+                    val isWildcard = tagList.isEmpty()
+                    val paramTypes = m.parameterTypes
+                    val pattern = computePattern(isWildcard, paramTypes)
+                    val dataType = when (pattern) {
+                        CallPattern.WILDCARD_DATA1 -> paramTypes[0]
+                        CallPattern.WILDCARD_TAG_DATA2 -> if (paramTypes.size >= 2) paramTypes[1] else null
+                        else -> null
+                    }
+                    list.add(
+                        SubscriberMethod(
+                            method = m,
+                            threadMode = ann.threadMode,
+                            tags = tagList,
+                            isWildcard = isWildcard,
+                            paramTypes = paramTypes,
+                            pattern = pattern,
+                            expectedDataType = dataType
+                        )
+                    )
+                }
+                c = c.superclass
+            }
+            return list
+        }
+
+        private fun computePattern(isWildcard: Boolean, params: Array<Class<*>>): CallPattern {
+            return if (isWildcard) {
+                when (params.size) {
+                    0 -> CallPattern.WILDCARD_0
+                    1 -> if (YMessage::class.java.isAssignableFrom(params[0]))
+                        CallPattern.WILDCARD_MSG else CallPattern.WILDCARD_DATA1
+
+                    else -> CallPattern.WILDCARD_TAG_DATA2 // (tag, data)
+                }
             } else {
-                for (i in anySticky.size - 1..0) {
-                    if (anySticky[i].type == tag) anySticky.removeAt(i)
+                when (params.size) {
+                    0 -> CallPattern.TAG_0
+                    1 -> CallPattern.TAG_DATA1         // (data)
+                    else -> CallPattern.TAG_TAGDATA2   // (tag, data)
                 }
             }
         }
 
-        /**
-         * 清空粘性事件
-         */
-        @JvmStatic
-        fun clearSticky() {
-            anySticky.clear()
+        // ===== 运行期匹配 & 调用 =====
+        private fun matches(sm: SubscriberMethod, msg: YMessage<Any>): Boolean {
+            return when (sm.pattern) {
+                CallPattern.WILDCARD_0,
+                CallPattern.WILDCARD_MSG,
+                CallPattern.TAG_0,
+                CallPattern.TAG_DATA1,
+                CallPattern.TAG_TAGDATA2,
+                    -> true
+
+                CallPattern.WILDCARD_DATA1 -> {
+                    val d = msg.data ?: return false
+                    sm.expectedDataType?.isAssignableFrom(d.javaClass) == true
+                }
+
+                CallPattern.WILDCARD_TAG_DATA2 -> {
+                    val d = msg.data ?: return true /* 允许 (tag, null) */
+                    sm.expectedDataType?.isAssignableFrom(d.javaClass) == true
+                }
+            }
         }
 
-        /**
-         * 移除全部bus
-         */
-        @JvmStatic
-        fun destroyAll() {
-            listObject.clear()
+        private fun invokeByThreadMode(sub: Subscription, msg: YMessage<Any>) {
+            val sm = sub.subscriberMethod
+            val r = { safeInvoke(sub.target, sm, msg) }
+
+            when (sm.threadMode) {
+                ThreadMode.CURRENT -> r()
+                ThreadMode.MAIN -> {
+                    if (YThread.isMainThread()) {
+                        r()
+                    } else {
+                        // 切回主线程执行
+                        busScope?.launch(Dispatchers.Main) { r() }
+                    }
+                }
+
+                ThreadMode.IO -> {
+                    if (YThread.isMainThread()) {
+                        // 切到 IO 线程池
+                        busScope?.launch(Dispatchers.IO) { r() }
+                    } else {
+                        r()
+                    }
+                }
+            }
         }
 
-        /**
-         * 目标类退出时候必须调用
-         */
-        @JvmStatic
-        fun onDestroy(anyObject: Any) {
-            unregister(anyObject)
-        }
+        private fun safeInvoke(target: Any, sm: SubscriberMethod, msg: YMessage<Any>) {
+            try {
+                val m = sm.method
+                when (sm.pattern) {
+                    CallPattern.WILDCARD_0,
+                    CallPattern.TAG_0,
+                        -> m.invoke(target)
 
-        /**
-         * 移除目标类
-         */
-        @JvmStatic
-        fun unregister(anyObject: Any) {
-            listObject.remove(anyObject)
+                    CallPattern.WILDCARD_MSG -> m.invoke(target, msg)
+
+                    CallPattern.WILDCARD_DATA1 -> m.invoke(target, msg.data)
+
+                    CallPattern.WILDCARD_TAG_DATA2 -> m.invoke(target, msg.type, msg.data)
+
+                    CallPattern.TAG_DATA1 -> m.invoke(target, msg.data)
+
+                    CallPattern.TAG_TAGDATA2 -> m.invoke(target, msg.type, msg.data)
+                }
+            } catch (t: Throwable) {
+                // 复用你原来的错误提示语义
+                val methodName = sm.method.name
+                val clsName = target.javaClass.name
+                YLog.e("YBus", "调用异常：类=$clsName，方法=$methodName，消息=$msg", t)
+            }
         }
     }
 }
+
+// ======== 内部结构体 ========
+private enum class CallPattern {
+    // 无 tag（通配）
+    WILDCARD_0,           // ()
+    WILDCARD_MSG,         // (YMessage)
+    WILDCARD_DATA1,       // (data)
+    WILDCARD_TAG_DATA2,   // (tag, data)
+
+    // 显式 tag
+    TAG_0,                // ()
+    TAG_DATA1,            // (data)
+    TAG_TAGDATA2          // (tag, data)
+}
+
+private data class SubscriberMethod(
+    val method: Method,
+    val threadMode: ThreadMode,
+    val tags: List<String>,
+    val isWildcard: Boolean,
+    val paramTypes: Array<Class<*>>,
+    val pattern: CallPattern,
+    val expectedDataType: Class<*>?,
+)
+
+private data class Subscription(
+    val target: Any,
+    val subscriberMethod: SubscriberMethod,
+)

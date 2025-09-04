@@ -1,5 +1,15 @@
 package com.yujing.utils
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+
 /**
  * 循环执行
  * @author yujing 2022年6月7日10:53:30
@@ -10,6 +20,11 @@ val yTimer = YTimer()
 
 //每秒调用一次
 yTimer.loopIO(1000) {  }
+
+//每秒调用一次，并且取消上一次的循环，不重复多个timer
+var job: Job? = null
+job?.cancel()
+job = yTimer.loopIO(1000) {  }
 
 //每秒调用一次，最多调用5次，或者10秒,回调UI线程
 yTimer.loopUI(1000,5,10000) {  }
@@ -22,8 +37,17 @@ override fun onDestroy() {
 
  */
 class YTimer {
-    //循环线程
-    private var loopThread: Thread? = null
+    //作用域
+    var myScope: CoroutineScope? = null
+        get() {
+            // 检查当前作用域是否有效（非空且未取消）
+            if (field != null && field!!.coroutineContext[Job]?.isCancelled == false) {
+                return field
+            }
+            // 无效则创建新作用域（添加默认调度器，如Dispatchers.Default）
+            field = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+            return field
+        }
 
     /**
      * 循环执行（IO线程），执行完毕后休息指定时间后继续,直到最大执行次数或者超时
@@ -33,33 +57,28 @@ class YTimer {
      * @param listener 执行回调监听
      */
     @Synchronized
-    fun loopIO(intervalTime: Long, maxNumber: Long = Long.MAX_VALUE, maxMillisecond: Long = Long.MAX_VALUE, listener: () -> Unit) {
+    fun loopIO(intervalTime: Long, maxNumber: Long = Long.MAX_VALUE, maxMillisecond: Long = Long.MAX_VALUE, listener: () -> Unit): Job? {
         //次数统计
         var count = 0L
         //开始时间
         val startTime = System.currentTimeMillis()
         //摧毁之前线程
-        loopThread?.interrupt()
-        loopThread = Thread {
+        return myScope?.launch(Dispatchers.IO) {
             //当统计次数大于最大统计次数，或者执行时间大于最大时间，立即停止循环
-            while (!Thread.interrupted()) {
+            while (this.isActive) {
                 try {
                     count++
                     if (count > maxNumber) break
                     if (System.currentTimeMillis() - startTime > maxMillisecond) break
                     listener.invoke()
-                    Thread.sleep(intervalTime)
-                } catch (e: InterruptedException) {
-                    Thread.currentThread().interrupt()
-                    break
+                    delay(intervalTime)
                 } catch (e: Exception) {
                     e.printStackTrace()
-                    Thread.sleep(intervalTime)
+                    delay(intervalTime)
                     continue
                 }
             }
         }
-        loopThread?.start()
     }
 
     /**
@@ -70,16 +89,35 @@ class YTimer {
      * @param listener 执行回调监听
      */
     @Synchronized
-    fun loopUI(intervalTime: Long, maxNumber: Long = Long.MAX_VALUE, maxMillisecond: Long = Long.MAX_VALUE, listener: () -> Unit) {
-        loopIO(intervalTime, maxNumber, maxMillisecond) { YThread.ui { listener.invoke() } }
+    fun loopUI(intervalTime: Long, maxNumber: Long = Long.MAX_VALUE, maxMillisecond: Long = Long.MAX_VALUE, listener: () -> Unit): Job? {
+        //次数统计
+        var count = 0L
+        //开始时间
+        val startTime = System.currentTimeMillis()
+        //摧毁之前线程
+        return myScope?.launch(Dispatchers.Main) {
+            //当统计次数大于最大统计次数，或者执行时间大于最大时间，立即停止循环
+            while (this.isActive) {
+                try {
+                    count++
+                    if (count > maxNumber) break
+                    if (System.currentTimeMillis() - startTime > maxMillisecond) break
+                    listener.invoke()
+                    delay(intervalTime)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    delay(intervalTime)
+                    continue
+                }
+            }
+        }
     }
 
     /**
-     * 停止循环执行
+     * 停止(全部)循环执行
      */
     fun stop() {
-        loopThread?.interrupt()
-        loopThread = null
+        myScope?.cancel()
     }
 
     companion object {
@@ -98,19 +136,21 @@ class YTimer {
             val startTime = System.currentTimeMillis()
             //返回的对象
             var obj: T? = null
-            //当统计次数大于最大统计次数，或者执行时间大于最大时间，或者监听返回不为null，立即停止循环
-            while (count <= maxNumber || System.currentTimeMillis() - startTime <= maxMillisecond) {
-                try {
-                    count++
-                    obj = listener.invoke()
-                    if (obj != null) break
-                    Thread.sleep(intervalTime)
-                } catch (e: InterruptedException) {
-                    break
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                    Thread.sleep(intervalTime)
-                    continue
+            runBlocking {
+                //当统计次数大于最大统计次数，或者执行时间大于最大时间，或者监听返回不为null，立即停止循环
+                while (count <= maxNumber || System.currentTimeMillis() - startTime <= maxMillisecond) {
+                    try {
+                        count++
+                        obj = listener.invoke()
+                        if (obj != null) break
+                        delay(intervalTime)
+                    } catch (e: InterruptedException) {
+                        break
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        delay(intervalTime)
+                        continue
+                    }
                 }
             }
             return obj
