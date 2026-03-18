@@ -1206,8 +1206,8 @@ public class YUtils {
     public static void reStartAPP(Context context, Class<? extends Activity> activityClass) {
         Intent intent = new Intent(YActivityUtil.getCurrentActivity(), activityClass);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.putExtra("isRestart",true);
         context.startActivity(intent);
-        YActivityUtil.closeAllActivity();
         exit();
     }
 
@@ -1218,7 +1218,10 @@ public class YUtils {
      */
     public static void reStartAPP(Context context) {
         Intent intent = context.getPackageManager().getLaunchIntentForPackage(context.getPackageName());
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        if (intent != null){
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.putExtra("isRestart",true);
+        }
         context.startActivity(intent);
         exit();
     }
@@ -1234,7 +1237,7 @@ public class YUtils {
      * 退出APP
      */
     public static void exit() {
-        YActivityUtil.closeAllActivity();
+        //YActivityUtil.closeAllActivity();
         android.os.Process.killProcess(android.os.Process.myPid());
         System.exit(0);
     }

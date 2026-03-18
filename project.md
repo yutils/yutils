@@ -1,16 +1,16 @@
 # Yutils #
 
-工具类 采用java17,kotlin2.2.10，安卓15.0，API35 ，androidx，gradle9.0。
+工具类 采用java17,kotlin2.3.20，安卓15.0，API35 ，androidx，gradle9.4。
 
 安卓各种工具详见...源码。  
 主要包含：各种基类，蓝牙控制，自定义总线，加密解密，SQLite数据库，Socket保持长连接，UDP通信，图片处理，日期处理，弹出自定义对话框，GSP获取，计时器，通知栏下载，处理队列，延迟操作，防粘连操作，文件处理保存，对象保存，线程池处理，单例toast，APP版本更新，快速拍照、选择相册、截图，webView封装，相机封装，多媒体播放封装，弹窗popupWindow快速实现，各种类型转换，APP启动，重启，shell执行，等...  
 不断完善中。
 
 [![platform](https://img.shields.io/badge/platform-Android-lightgrey.svg)](https://developer.android.google.cn/studio/index.html)
-![Gradle](https://img.shields.io/badge/Gradle-9.0.0-brightgreen.svg)
+![Gradle](https://img.shields.io/badge/Gradle-9.4.0-brightgreen.svg)
 [![last commit](https://img.shields.io/github/last-commit/yutils/yutils.svg)](https://github.com/yutils/yutils/commits/master)
 ![repo size](https://img.shields.io/github/repo-size/yutils/yutils.svg)
-![android studio](https://img.shields.io/badge/android%20studio-2025.1.2-green.svg)
+![android studio](https://img.shields.io/badge/android%20studio-2025.3.2-green.svg)
 [![maven](https://img.shields.io/badge/maven-address-green.svg)](https://search.maven.org/artifact/com.kotlinx/yutils)
 
 ## 已经从jitpack.io仓库移动至maven中央仓库
@@ -23,12 +23,12 @@
 
 ## Gradle 引用
 
-[添加依赖，当前最新版：————> 2.3.0　　　　![最新版](https://img.shields.io/badge/%E6%9C%80%E6%96%B0%E7%89%88-2.3.0-green.svg)](https://search.maven.org/artifact/com.kotlinx/yutils)
+[添加依赖，当前最新版：————> 2.3.1　　　　![最新版](https://img.shields.io/badge/%E6%9C%80%E6%96%B0%E7%89%88-2.3.1-green.svg)](https://search.maven.org/artifact/com.kotlinx/yutils)
 
 ```
 dependencies {
      //更新地址  https://github.com/yutils/yutils 建议过几天访问看下有没有新版本
-     implementation 'com.kotlinx:yutils:2.3.0'
+     implementation 'com.kotlinx:yutils:2.3.1'
 }
 ```
 

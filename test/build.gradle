@@ -1,16 +1,15 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
-    id 'kotlin-kapt'
-    id 'kotlin-parcelize'
+    
 }
 android {
     namespace 'com.yujing.test'
-    compileSdk 34
+    compileSdk 35
     defaultConfig {
         applicationId "com.yujing.test"
         minSdk 21
-        targetSdk 34
+        targetSdk 35
         versionCode 230
         versionName "2.3.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -44,7 +43,7 @@ dependencies {
     //关联lib
     implementation project(':utils')
     //gson <!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
-    implementation 'com.google.code.gson:gson:2.13.1'
+    implementation 'com.google.code.gson:gson:2.13.2'
     //https://mvnrepository.com/artifact/org.greenrobot/eventbus
     implementation 'org.greenrobot:eventbus:3.3.1'
 }
