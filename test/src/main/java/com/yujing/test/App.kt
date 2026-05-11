@@ -1,6 +1,7 @@
 package com.yujing.test
 
 import android.app.Application
+import com.kotlinx.Kotlinx
 import com.yujing.bus.ThreadMode
 import com.yujing.utils.*
 
@@ -28,6 +29,7 @@ class App : Application() {
         instance = this
         YUtils.init(this)
         YActivityUtil.init(this)
+        Kotlinx.init(this)
         //保存日志开
         YLog.saveOpen(YPath.getFilePath(this, "log"))
         YLog.setThreadMode(ThreadMode.IO)

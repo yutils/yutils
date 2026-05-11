@@ -43,7 +43,12 @@ dependencies {
     //关联lib
     implementation project(':utils')
     //gson <!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
-    implementation 'com.google.code.gson:gson:2.13.2'
+    implementation 'com.google.code.gson:gson:2.14.0'
     //https://mvnrepository.com/artifact/org.greenrobot/eventbus
     implementation 'org.greenrobot:eventbus:3.3.1'
+
+    //okhttp，https://central.sonatype.com/artifact/com.squareup.okhttp3/okhttp
+    implementation 'com.squareup.okhttp3:okhttp:5.3.2'
+    implementation 'com.squareup.okhttp3:logging-interceptor:5.3.2'
+    implementation 'com.kotlinx:kotlinx:1.1.7'
 }
