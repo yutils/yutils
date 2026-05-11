@@ -7,4 +7,9 @@
 
     <external-path path="DCIM" name="DCIM/"/>
 
+
+    <!-- 应用私有外部存储：/Android/data/包名/files/ -->
+    <external-files-path
+        name="private_files"
+        path="."/> <!-- "." 表示私有存储根目录，包含所有子目录 -->
 </paths>

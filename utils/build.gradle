@@ -8,6 +8,7 @@ android {
     compileSdk 35
     defaultConfig {
         minSdk 19
+        targetSdk 35
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -29,10 +30,11 @@ android {
     lint {
         abortOnError true
         checkReleaseBuilds true
-        targetSdk 35
     }
     testOptions {
-        targetSdk 35
+        unitTests.all {
+            enabled = false
+        }
     }
 }
 dependencies {

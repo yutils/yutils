@@ -19,10 +19,19 @@
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.CAMERA" />
+
+
+    <!-- 安装未知应用（Android 8+，声明即可，代码不再主动跳转） -->
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+    <!-- Android 12+ PackageInstaller 需要 -->
+    <uses-permission android:name="android.permission.REQUEST_DELETE_PACKAGES" />
+    <!-- 存储权限（仅 Android 9 及以下需要） -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+
 
     <application
         android:name=".App"
@@ -46,7 +55,7 @@
         <activity android:name=".activity.TestActivity" />
         <activity android:name=".activity.bluetooth.BleServerActivity" />
         <activity android:name=".activity.bluetooth.BleClientActivity" />
-        <!--安装app-->
+        <!-- 安装APK专用 FileProvider -->
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileProvider"
