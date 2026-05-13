@@ -1,1 +1,46 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" />
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <queries>
+        <!-- 讯飞 -->
+        <package android:name="com.iflytek.speechsuite" />
+        <package android:name="com.iflytek.speechcloud" />
+        <package android:name="com.iflytek.tts" />
+
+        <!-- 百度/度秘 -->
+        <package android:name="com.baidu.duersdk.opensdk" />
+
+        <!-- 小米/小爱 -->
+        <package android:name="com.xiaomi.mibrain.speech" />
+        <package android:name="com.xiaomi.aiasst.service" />
+
+        <!-- 华为 -->
+        <package android:name="com.huawei.hiai.tts" />
+        <package android:name="com.huawei.speech.tts" />
+
+        <!-- OPPO -->
+        <package android:name="com.oppo.speech" />
+        <package android:name="com.coloros.speech" />
+
+        <!-- vivo -->
+        <package android:name="com.vivo.aiservice" />
+
+        <!-- 搜狗 -->
+        <package android:name="org.nobody.sgtts" />
+
+        <!-- 海康 -->
+        <package android:name="com.hikvision.hikttsservice" />
+
+        <!-- 阿里 -->
+        <package android:name="com.alibaba.ailabs.tts" />
+
+        <!-- 腾讯 -->
+        <package android:name="com.tencent.tts" />
+
+        <!-- 谷歌 -->
+        <package android:name="com.google.android.tts" />
+
+        <!-- 系统原生（无中文） -->
+        <package android:name="com.svox.pico" />
+        <package android:name="com.svox.classic" />
+    </queries>
+</manifest>

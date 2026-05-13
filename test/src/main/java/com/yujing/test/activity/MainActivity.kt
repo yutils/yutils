@@ -136,6 +136,20 @@ class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
         Create.button(binding.wll, "TTS过滤") {
             TTS.speakToast("电子秤皮重不正确")
         }
+
+        //TTS播放测试
+        Create.button(binding.wll, "TTS播放测试") {
+//            TTS.enginePackageOrder = listOf(
+//                "com.iflytek.speechsuite",           // 讯飞 64 位
+//                "com.iflytek.speechcloud",          // 讯飞 32 位
+//                "com.xiaomi.mibrain.speech",        // 小米 TTS
+//                "org.nobody.sgtts",                 // 搜狗 TTS（成功时自动将 speechRate 设为 2.5）
+//                "com.hikvision.hikttsservice",      // 海康威视
+//                "com.baidu.duersdk.opensdk",        // 度秘语音
+//                "com.vivo.aiservice",               // vivo
+//            )
+            TTS.speakToast("TTS播放测试,必须在 Manifest 声明要查询的 TTS 引擎")
+        }
         //--------------------------------------------------------------------------------
         Create.space(binding.wll)//换行
         editText1 = Create.editText(binding.wll, "哈哈哈")
