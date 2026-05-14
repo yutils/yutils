@@ -945,25 +945,48 @@ public class YUtils {
     /**
      * 执行shell命令
      *
-     * @return 是否成功
+     * @return 命令输出字符串
      */
     public static String shell(String command) throws Exception {
         Process process = Runtime.getRuntime().exec(command);
-        return new String(YConvert.inputStreamToBytes(process.getInputStream(), 500));
+        try {
+            return new String(YConvert.inputStreamToBytes(process.getInputStream(), 500));
+        } finally {
+            quietlyClose(process.getErrorStream());
+            quietlyClose(process.getOutputStream());
+            quietlyClose(process.getInputStream());
+            process.destroy();
+        }
     }
 
     /**
      * 执行shell命令
      *
-     * @return 是否成功
+     * @return 是否成功拉起进程
      */
     public static boolean shellNoReturn(String command) throws Exception {
+        Process process = null;
         try {
-            Process process = Runtime.getRuntime().exec(command);
+            process = Runtime.getRuntime().exec(command);
             return true;
         } catch (Exception e) {
             e.printStackTrace();
             return false;
+        } finally {
+            if (process != null) {
+                quietlyClose(process.getErrorStream());
+                quietlyClose(process.getOutputStream());
+                quietlyClose(process.getInputStream());
+                process.destroy();
+            }
+        }
+    }
+
+    private static void quietlyClose(java.io.Closeable stream) {
+        if (stream == null) return;
+        try {
+            stream.close();
+        } catch (IOException ignored) {
         }
     }
 
@@ -974,8 +997,9 @@ public class YUtils {
      */
     public static String shellRoot(String... command) throws Exception {
         DataOutputStream os = null;
+        Process process = null;
         try {
-            Process process = Runtime.getRuntime().exec("su");
+            process = Runtime.getRuntime().exec("su");
             os = new DataOutputStream(process.getOutputStream());
             for (String item : command) {
                 os.writeBytes(item + "\n");
@@ -987,6 +1011,11 @@ public class YUtils {
                 if (os != null) os.close();
             } catch (IOException ignored) {
             }
+            if (process != null) {
+                quietlyClose(process.getErrorStream());
+                quietlyClose(process.getInputStream());
+                process.destroy();
+            }
         }
     }
 
@@ -997,8 +1026,9 @@ public class YUtils {
      */
     public static boolean shellRootNoReturn(String... command) {
         DataOutputStream os = null;
+        Process process = null;
         try {
-            Process process = Runtime.getRuntime().exec("su");
+            process = Runtime.getRuntime().exec("su");
             os = new DataOutputStream(process.getOutputStream());
             for (String item : command) {
                 os.writeBytes(item + "\n");
@@ -1012,6 +1042,11 @@ public class YUtils {
             try {
                 if (os != null) os.close();
             } catch (IOException ignored) {
+            }
+            if (process != null) {
+                quietlyClose(process.getErrorStream());
+                quietlyClose(process.getInputStream());
+                process.destroy();
             }
         }
     }

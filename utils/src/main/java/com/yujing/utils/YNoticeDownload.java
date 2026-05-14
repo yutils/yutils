@@ -163,7 +163,8 @@ public class YNoticeDownload {
 
     public void setUrl(String url) {
         this.url = url;
-        if (url.length() > 4 && url.substring(url.length() - 4).toLowerCase().equals(".apk")) isAPK = true;
+        if (url != null && url.length() > 4 && url.substring(url.length() - 4).toLowerCase().equals(".apk"))
+            isAPK = true;
     }
 
     public boolean isAPK() {

@@ -140,6 +140,9 @@ public class YActivityUtil {
      * 通过名称关闭Activity
      */
     public static void closeActivityByName(String name) {
+        if (activityStack.isEmpty()) {
+            return;
+        }
         int index = activityStack.size() - 1;
         while (true) {
             Activity activity = activityStack.get(index);

@@ -53,31 +53,35 @@ public class YUri {
      */
     public static String getPathForN(Context context, Uri uri) {
         if (uri == null) return null;
-        try {
-            Cursor returnCursor = context.getContentResolver().query(uri, null, null, null, null);
-            int nameIndex = returnCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
-            returnCursor.moveToFirst();
-            String name = (returnCursor.getString(nameIndex));
-            File file = new File(context.getFilesDir(), name);
-            InputStream inputStream = context.getContentResolver().openInputStream(uri);
-            FileOutputStream outputStream = new FileOutputStream(file);
-            int read;
-            int maxBufferSize = 1 * 1024 * 1024;
-            int bytesAvailable = inputStream.available();
-            int bufferSize = Math.min(bytesAvailable, maxBufferSize);
-
-            final byte[] buffers = new byte[bufferSize];
-            while ((read = inputStream.read(buffers)) != -1) {
-                outputStream.write(buffers, 0, read);
+        try (Cursor returnCursor = context.getContentResolver().query(uri, null, null, null, null)) {
+            if (returnCursor == null || !returnCursor.moveToFirst()) {
+                return null;
             }
-            returnCursor.close();
-            inputStream.close();
-            outputStream.close();
-            return file.getPath();
+            int nameIndex = returnCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+            if (nameIndex < 0) {
+                return null;
+            }
+            String name = returnCursor.getString(nameIndex);
+            if (name == null || name.isEmpty()) {
+                return null;
+            }
+            File file = new File(context.getFilesDir(), name);
+            try (InputStream inputStream = context.getContentResolver().openInputStream(uri);
+                 FileOutputStream outputStream = new FileOutputStream(file)) {
+                if (inputStream == null) {
+                    return null;
+                }
+                final byte[] buffers = new byte[8192];
+                int read;
+                while ((read = inputStream.read(buffers)) != -1) {
+                    outputStream.write(buffers, 0, read);
+                }
+                return file.getPath();
+            }
         } catch (Exception e) {
             e.printStackTrace();
+            return null;
         }
-        return null;
     }
 
     /**

@@ -13,7 +13,9 @@ import androidx.appcompat.app.AlertDialog
 import com.yujing.view.YAlertDialogUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import kotlin.coroutines.cancellation.CancellationException
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.io.File
@@ -98,6 +100,7 @@ yVersionUpdate.update(32, true, url, "1.1.1", "这是详细说明1\n这是详细
  */
 
 @Suppress("MemberVisibilityCanBePrivate", "unused")
+@Deprecated("废弃,请使用 implementation \"com.kotlinx:appUpdate:0.0.1\"")
 class YVersionUpdate {
     var serverCode: Int? = 0//服务器版本
     var isForceUpdate: Boolean = false//是否强制更新
@@ -113,6 +116,9 @@ class YVersionUpdate {
     var showLog = false
     var isShowApplyUnknownPermission = false //是否弹出安装未知应用权限（自我更新不需要弹权限）
     //var useOkHttp = true   //是否使用OkHttp
+
+    private val downloadJob = SupervisorJob()
+    private val downloadScope = CoroutineScope(downloadJob + Dispatchers.IO)
     //yVersionUpdate.dialog.okButtonBackgroundColor= Color.parseColor("#21A9FA") //弹窗按钮颜色
     //yVersionUpdate.dialog.okButtonTextColor= Color.parseColor("#FFFFFF") //弹窗按钮文字颜色
     //yVersionUpdate.dialog.cancelButtonBackgroundColor= Color.parseColor("#21A9FA") //弹窗按钮颜色
@@ -145,7 +151,8 @@ class YVersionUpdate {
         this.description = description
 
         if (compareType == 1) {
-            if (serverCode != null && serverCode <= YUtils.getVersionCode()) noNeedUpdate() else needUpdate()
+            if (serverCode == null) return
+            if (serverCode <= YUtils.getVersionCode()) noNeedUpdate() else needUpdate()
         } else if (compareType == 2) {
             if (serverName == YUtils.getVersionName()) noNeedUpdate() else needUpdate()
         }
@@ -168,7 +175,8 @@ class YVersionUpdate {
         this.description = description
 
         if (compareType == 1) {
-            if (serverCode != null && serverCode <= YUtils.getVersionCode()) {
+            if (serverCode == null) return
+            if (serverCode <= YUtils.getVersionCode()) {
                 /*不做处理*/
             } else needUpdate()
         } else if (compareType == 2) {
@@ -235,77 +243,69 @@ class YVersionUpdate {
     private fun okHttpDownApkFile() {
         YShow.show("正在下载", "请稍候...")
         YShow.setCancel(!isForceUpdate)
-//        var saveApkName = downUrl.substring(downUrl.lastIndexOf("/") + 1)
-//        saveApkName = saveApkName
-//            .replace("*", "_").replace("#", "_").replace(":", "_").replace("?", "_")
-//            .replace("/", "_").replace("\\", "_").replace("|", "_").replace("<", "_")
-//            .replace(">", "_").replace(" ", "_")
-        val saveApkName = "update_$serverCode.apk"
+        val saveApkName = "update_${serverCode ?: "latest"}.apk"
         val file = File(YPath.getFilePath(YApp.get()) + "/download/" + saveApkName)
         val parent = file.parentFile
         if (parent?.exists() == false) parent.mkdirs()
         if (file.exists()) file.delete() // 删除存在文件
 
         val request: Request = Request.Builder().url(downUrl).get().build()
-        //协程
-        CoroutineScope(Dispatchers.IO).launch {
+        downloadScope.launch {
             try {
                 val startTime = System.currentTimeMillis()
-                //文件下载别用过滤器
-                val response = OkHttpClient().newCall(request).execute()
-                if (response.code != 200) {
-                    exceptionDialog("下载失败", "code:${response.code}")
-                    return@launch
-                }
-                val inputStream = response.body?.byteStream()
-                inputStream?.let {
-                    val output = FileOutputStream(file)
-                    var downloadSize = 0L   //当前长度
-                    val fileSize = response.body!!.contentLength()  //总长度
-                    val b = ByteArray(131072) // 128KB
-                    var len: Int
-                    while (inputStream.read(b).also { len = it } != -1) {
-                        output.write(b, 0, len)
-                        downloadSize += len
-                        if (fileSize > 0) {
-                            if (YRunOnceOfTime.check(100, "下载中") || downloadSize == fileSize) {
-                                val message1 =
-                                    "下载进度:${YNumber.fill((10000.0 * downloadSize / fileSize).toInt() / 100.0)}%"//下载进度，保留2位小数
-                                val message2 = if (downloadSize > 1048576) "已下载:" + YNumber.fill(
-                                    downloadSize / 1048576.0,
-                                    2
-                                ) + "MB" else "已下载:" + downloadSize / 1024 + "KB"
-                                YShow.show(message1, message2)
-                                if (showLog) YLog.i("下载中", "$message1 $message2")
-                            }
-                        } else {
-                            if (YRunOnceOfTime.check(100, "下载中") || len < b.size) {
-                                val message1 = "下载中..."
-                                val message2 = if (downloadSize > 1048576) "已下载:" + YNumber.fill(
-                                    downloadSize / 1048576.0,
-                                    2
-                                ) + "MB" else "已下载:" + downloadSize / 1024 + "KB"
-                                YShow.show(message1, message2)
-                                if (showLog) YLog.i("下载中", "$message1 $message2")
-                            }
-                        }
+                OkHttpClient().newCall(request).execute().use { response ->
+                    if (response.code != 200) {
+                        exceptionDialog("下载失败", "code:${response.code}")
+                        return@use
                     }
-                    output.flush()
-                    output.close()
-                    inputStream.close()
-                    if (showLog) YLog.i(
-                        "下载完成",
-                        "下载完成，总长度：${downloadSize},存放路径${file.path},耗时：${System.currentTimeMillis() - startTime}毫秒"
-                    )
-                    YShow.show("下载完成")
-                    try {
-                        if (isShowApplyUnknownPermission) {
-                            YInstallApk().install(file)
-                        } else {
-                            YInstallApkOneself().install(file)
+                    val body = response.body
+                    body.byteStream().use { inputStream ->
+                        FileOutputStream(file).use { output ->
+                            var downloadSize = 0L
+                            val fileSize = body.contentLength()
+                            val b = ByteArray(131072) // 128KB
+                            var len: Int
+                            while (inputStream.read(b).also { len = it } != -1) {
+                                output.write(b, 0, len)
+                                downloadSize += len
+                                if (fileSize > 0) {
+                                    if (YRunOnceOfTime.check(100, "下载中") || downloadSize == fileSize) {
+                                        val message1 =
+                                            "下载进度:${YNumber.fill((10000.0 * downloadSize / fileSize).toInt() / 100.0)}%"
+                                        val message2 = if (downloadSize > 1048576) "已下载:" + YNumber.fill(
+                                            downloadSize / 1048576.0,
+                                            2
+                                        ) + "MB" else "已下载:" + downloadSize / 1024 + "KB"
+                                        YShow.show(message1, message2)
+                                        if (showLog) YLog.i("下载中", "$message1 $message2")
+                                    }
+                                } else {
+                                    if (YRunOnceOfTime.check(100, "下载中") || len < b.size) {
+                                        val message1 = "下载中..."
+                                        val message2 = if (downloadSize > 1048576) "已下载:" + YNumber.fill(
+                                            downloadSize / 1048576.0,
+                                            2
+                                        ) + "MB" else "已下载:" + downloadSize / 1024 + "KB"
+                                        YShow.show(message1, message2)
+                                        if (showLog) YLog.i("下载中", "$message1 $message2")
+                                    }
+                                }
+                            }
+                            if (showLog) YLog.i(
+                                "下载完成",
+                                "下载完成，总长度：${downloadSize},存放路径${file.path},耗时：${System.currentTimeMillis() - startTime}毫秒"
+                            )
+                            YShow.show("下载完成")
+                            try {
+                                if (isShowApplyUnknownPermission) {
+                                    YInstallApk().install(file)
+                                } else {
+                                    YInstallApkOneself().install(file)
+                                }
+                            } catch (e: Exception) {
+                                exceptionDialog("安装失败", "原因:${e.message}")
+                            }
                         }
-                    } catch (e: Exception) {
-                        exceptionDialog("安装失败", "原因:${e.message}")
                     }
                 }
             } catch (e: Exception) {
@@ -409,6 +409,7 @@ class YVersionUpdate {
 
     //需要调用,注销广播
     fun onDestroy() {
+        downloadJob.cancel()
         yNoticeDownload?.onDestroy()
         YShow.finish()
     }

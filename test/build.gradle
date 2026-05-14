@@ -50,5 +50,5 @@ dependencies {
     //okhttp，https://central.sonatype.com/artifact/com.squareup.okhttp3/okhttp
     implementation 'com.squareup.okhttp3:okhttp:5.3.2'
     implementation 'com.squareup.okhttp3:logging-interceptor:5.3.2'
-    implementation 'com.kotlinx:kotlinx:1.1.7'
+    implementation 'com.kotlinx:kotlinx:1.1.8'
 }

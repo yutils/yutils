@@ -140,7 +140,7 @@ class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
         //TTS播放测试
         Create.button(binding.wll, "TTS播放测试") {
 //            TTS.enginePackageOrder = listOf(
-//                "com.iflytek.speechsuite",           // 讯飞 64 位
+//                "com.iflytek.speechsuite",          // 讯飞 64 位
 //                "com.iflytek.speechcloud",          // 讯飞 32 位
 //                "com.xiaomi.mibrain.speech",        // 小米 TTS
 //                "org.nobody.sgtts",                 // 搜狗 TTS（成功时自动将 speechRate 设为 2.5）

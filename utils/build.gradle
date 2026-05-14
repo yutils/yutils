@@ -5,10 +5,10 @@ plugins {
 }
 android {
     namespace 'com.yujing.utils' //不能修改
-    compileSdk 35
+    compileSdk 34
     defaultConfig {
         minSdk 19
-        targetSdk 35
+        targetSdk 34
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {

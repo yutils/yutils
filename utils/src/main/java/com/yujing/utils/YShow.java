@@ -22,6 +22,8 @@ import androidx.annotation.IdRes;
 
 import com.yujing.contract.YListener1;
 
+import java.util.concurrent.CountDownLatch;
+
 /**
  * 半透明等待对话框，单例模式
  *
@@ -383,18 +385,20 @@ public class YShow extends Dialog {
                 yDialog.setFullScreen(fullScreen);
                 yDialog.show();
             } else {
-                double newTag = Math.random();
+                final CountDownLatch latch = new CountDownLatch(1);
+                final double newTag = Math.random();
                 YThread.runOnUiThread(() -> {
-                    //等待初始化完成后运行，确保yDialog!=null,转同步
                     yDialog = new YShow(activity, message1, message2, canCancel);
                     yDialog.tag = newTag;
                     yDialog.setFullScreen(fullScreen);
                     yDialog.show();
+                    latch.countDown();
                 });
-                //确保yDialog new成功
-                do {
-                    YThread.delay(1);
-                } while (yDialog == null || yDialog.tag != newTag);
+                try {
+                    latch.await();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
             }
         }
         return yDialog;

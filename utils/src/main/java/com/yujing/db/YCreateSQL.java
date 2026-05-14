@@ -20,6 +20,11 @@ import java.util.Map;
  */
 @Deprecated
 public class YCreateSQL {
+    /** SQL 字符串字面量中单引号转义 */
+    private static String escapeSqlLiteral(String raw) {
+        if (raw == null) return null;
+        return raw.replace("'", "''");
+    }
     // CREATE TABLE IF NOT EXISTS `User`(`id` TEXT NULL,`account` TEXT
     // NULL,`name` TEXT NULL,`phone` TEXT NULL,`nickname` TEXT NULL,`age` TEXT
     // NULL,`sex` TEXT NULL,`password` TEXT NULL,`photourl` TEXT NULL)
@@ -129,10 +134,10 @@ public class YCreateSQL {
                     if (obj != null) {
                         if (!isComplexType(obj)) {// 不是复杂类型直接存放
                             tempKey += "`" + field.getName() + "`" + ",";
-                            tempValues += "'" + obj.toString() + "',";
+                            tempValues += "'" + escapeSqlLiteral(obj.toString()) + "',";
                         } else {// 是复杂类型直接序列化
                             tempKey += "`" + field.getName() + "`" + ",";
-                            tempValues += "'" + gson.toJson(obj) + "',";
+                            tempValues += "'" + escapeSqlLiteral(gson.toJson(obj)) + "',";
                         }
                     } else {
                         tempKey += "`" + field.getName() + "`" + ",";
@@ -158,9 +163,9 @@ public class YCreateSQL {
             Object obj = entry.getValue();
             if (obj != null) {
                 if (isComplexType(obj)) {// 如果是复杂类
-                    tempwhere += "`" + entry.getKey() + "`" + " " + Symbol + "'" + gson.toJson(entry.getValue()) + "' AND ";
+                    tempwhere += "`" + entry.getKey() + "`" + " " + Symbol + "'" + escapeSqlLiteral(gson.toJson(entry.getValue())) + "' AND ";
                 } else {
-                    tempwhere += "`" + entry.getKey() + "`" + " " + Symbol + "'" + entry.getValue().toString() + "' AND ";
+                    tempwhere += "`" + entry.getKey() + "`" + " " + Symbol + "'" + escapeSqlLiteral(entry.getValue().toString()) + "' AND ";
                 }
             } else {
                 tempwhere += "`" + entry.getKey() + "`" + " is null AND ";
@@ -184,9 +189,9 @@ public class YCreateSQL {
                 if (!Modifier.isFinal(field.getModifiers())) {
                     if (obj != null) {// 如果该值为空就插入空串
                         if (!isComplexType(obj)) {// 不是复杂类型直接存放
-                            temp += "`" + field.getName() + "`" + "='" + obj.toString() + "',";
+                            temp += "`" + field.getName() + "`" + "='" + escapeSqlLiteral(obj.toString()) + "',";
                         } else {// 是复杂类型直接序列化
-                            temp += "`" + field.getName() + "`" + "='" + gson.toJson(obj) + "',";
+                            temp += "`" + field.getName() + "`" + "='" + escapeSqlLiteral(gson.toJson(obj)) + "',";
                         }
                     } else {
                         temp += "`" + field.getName() + "`" + "= null ,";

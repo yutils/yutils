@@ -9,6 +9,7 @@ import android.provider.Settings;
 import android.text.TextUtils;
 
 import androidx.activity.ComponentActivity;
+import androidx.annotation.Nullable;
 
 import java.io.File;
 
@@ -45,15 +46,29 @@ import java.io.File;
 YInstallApk().install(YPath.getSDCard() + "/app.apk")
  */
 public class YInstallApk {
+    @Nullable
     private ComponentActivity activity;
 
     public YInstallApk() {
-        this((ComponentActivity) YActivityUtil.getCurrentActivity());
+        activity = resolveComponentActivity(YActivityUtil.getCurrentActivity());
     }
 
-
-    public YInstallApk(ComponentActivity activity) {
+    public YInstallApk(@Nullable ComponentActivity activity) {
         this.activity = activity;
+    }
+
+    @Nullable
+    private static ComponentActivity resolveComponentActivity(@Nullable Activity raw) {
+        if (raw instanceof ComponentActivity) {
+            return (ComponentActivity) raw;
+        }
+        return null;
+    }
+
+    @Nullable
+    private ComponentActivity installActivity() {
+        if (activity != null) return activity;
+        return resolveComponentActivity(YActivityUtil.getCurrentActivity());
     }
 
     public void install(String apkPath) {
@@ -67,32 +82,54 @@ public class YInstallApk {
             install(apkUri);
         } else {
             Uri apkUri = Uri.fromFile(file);
-            installApk(activity, apkUri);
+            Context ctx = installContextForLegacy();
+            if (ctx == null) {
+                YToast.show("无法安装：找不到可用上下文");
+                return;
+            }
+            installApk(ctx, apkUri);
         }
+    }
+
+    @Nullable
+    private Context installContextForLegacy() {
+        ComponentActivity ca = installActivity();
+        if (ca != null) return ca;
+        return YApp.get();
     }
 
     public void install(Uri apkUri) {
         YThread.runOnUiThread(() -> {
+            ComponentActivity ca = installActivity();
+            Context ctx = ca != null ? ca : YApp.get();
+            if (ctx == null) {
+                YToast.show("无法安装：找不到可用上下文");
+                return;
+            }
             if (Build.VERSION.SDK_INT >= 26) {
                 //先判断是否有安装未知来源应用的权限
-                boolean haveInstallPermission = activity.getPackageManager().canRequestPackageInstalls();
+                boolean haveInstallPermission = ctx.getPackageManager().canRequestPackageInstalls();
                 if (haveInstallPermission) {
-                    installApk(activity, apkUri);
+                    installApk(ctx, apkUri);
+                } else if (ca == null) {
+                    YToast.show("无法请求安装权限，请改用 ComponentActivity 或手动允许安装未知应用");
+                    installApk(ctx, apkUri);
                 } else {
                     //请求权限之后回调
-                    YActivityResultObserver activityResultObserver = new YActivityResultObserver(activity.getActivityResultRegistry(), "YInstallApk", result -> {
-                        if (result.getResultCode() == Activity.RESULT_OK)
-                            if (apkUri != null) installApk(activity, apkUri);
+                    final ComponentActivity launchActivity = ca;
+                    YActivityResultObserver activityResultObserver = new YActivityResultObserver(launchActivity.getActivityResultRegistry(), "YInstallApk", result -> {
+                        if (result.getResultCode() == Activity.RESULT_OK && apkUri != null)
+                            installApk(launchActivity, apkUri);
                         return null;
                     });
-                    activity.getLifecycle().addObserver(activityResultObserver);
+                    launchActivity.getLifecycle().addObserver(activityResultObserver);
 
-                    Uri packageURI = Uri.parse("package:" + activity.getPackageName());
+                    Uri packageURI = Uri.parse("package:" + launchActivity.getPackageName());
                     Intent intent = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, packageURI);
                     activityResultObserver.launch(intent);
                 }
             } else {
-                installApk(activity, apkUri);
+                installApk(ctx, apkUri);
             }
         });
     }

@@ -7,6 +7,7 @@ import android.os.Build;
 import android.util.Log;
 
 import androidx.activity.ComponentActivity;
+import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
 
 import java.io.File;
@@ -39,29 +40,49 @@ import java.io.File;
  */
 public class YInstallApkOneself {
     private static final String TAG = "YInstallApk";
+    @Nullable
     private ComponentActivity activity;
 
     public YInstallApkOneself() {
-        this((ComponentActivity) YActivityUtil.getCurrentActivity());
+        activity = resolveComponentActivity(YActivityUtil.getCurrentActivity());
     }
 
-    public YInstallApkOneself(ComponentActivity activity) {
+    public YInstallApkOneself(@Nullable ComponentActivity activity) {
         this.activity = activity;
     }
 
+    @Nullable
+    private static ComponentActivity resolveComponentActivity(@Nullable android.app.Activity raw) {
+        if (raw instanceof ComponentActivity) return (ComponentActivity) raw;
+        return null;
+    }
+
+    @Nullable
+    private Context installContext() {
+        if (activity != null) return activity;
+        ComponentActivity refreshed = resolveComponentActivity(YActivityUtil.getCurrentActivity());
+        if (refreshed != null) return refreshed;
+        return YApp.get();
+    }
+
     public void install(File file) {
+        Context ctx = installContext();
+        if (ctx == null) {
+            YToast.show("无法安装：找不到可用上下文");
+            return;
+        }
         if (!file.exists()) {
             YToast.show("APK文件不存在：" + file.getAbsolutePath());
             return;
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            installWithFileProvider(getPrivateDirUri(file));
+            installWithFileProvider(ctx, getPrivateDirUri(ctx, file));
         } else {
-            installApk(activity, Uri.fromFile(file));
+            installApk(ctx, Uri.fromFile(file));
         }
     }
 
-    private void installWithFileProvider(Uri apkUri) {
+    private void installWithFileProvider(Context ctx, Uri apkUri) {
         YThread.runOnUiThread(() -> {
             try {
                 Intent intent = new Intent(Intent.ACTION_VIEW);
@@ -70,16 +91,16 @@ public class YInstallApkOneself {
                 intent.setDataAndType(apkUri, "application/vnd.android.package-archive");
 
                 for (android.content.pm.ResolveInfo resolveInfo :
-                        activity.getPackageManager().queryIntentActivities(intent, 0)) {
+                        ctx.getPackageManager().queryIntentActivities(intent, 0)) {
                     String packageName = resolveInfo.activityInfo.packageName;
-                    activity.grantUriPermission(
+                    ctx.grantUriPermission(
                             packageName,
                             apkUri,
                             Intent.FLAG_GRANT_READ_URI_PERMISSION
                     );
                 }
 
-                activity.startActivity(intent);
+                ctx.startActivity(intent);
             } catch (Exception e) {
                 Log.e(TAG, "FileProvider安装失败", e);
                 YToast.show("安装失败，请手动安装");
@@ -87,10 +108,10 @@ public class YInstallApkOneself {
         });
     }
 
-    private Uri getPrivateDirUri(File file) {
+    private Uri getPrivateDirUri(Context ctx, File file) {
         return FileProvider.getUriForFile(
-                activity,
-                activity.getPackageName() + ".fileProvider",
+                ctx,
+                ctx.getPackageName() + ".fileProvider",
                 file
         );
     }

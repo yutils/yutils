@@ -65,15 +65,28 @@ activityResultRegistry.register("789", ActivityResultContracts.TakePicture()) {
 @Deprecated
 class YActivityResultObserver(val registry: ActivityResultRegistry, val key: String = "key", val onResult: (ActivityResult?) -> Unit) : DefaultLifecycleObserver {
     private var arl: ActivityResultLauncher<Intent>? = null
+    private var pendingIntent: Intent? = null
+
     override fun onCreate(owner: LifecycleOwner) {
         arl = registry.register(key, ActivityResultContracts.StartActivityForResult(), onResult)
+        pendingIntent?.let { intent ->
+            pendingIntent = null
+            arl?.launch(intent)
+        }
     }
 
     fun launch(intent: Intent) {
-        arl?.launch(intent)
+        val launcher = arl
+        if (launcher != null) {
+            launcher.launch(intent)
+        } else {
+            pendingIntent = intent
+        }
     }
 
     override fun onDestroy(owner: LifecycleOwner) {
         arl?.unregister()
+        arl = null
+        pendingIntent = null
     }
 }
