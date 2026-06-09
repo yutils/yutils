@@ -2,15 +2,15 @@ package com.yujing.test.activity
 
 import android.widget.EditText
 import android.widget.TextView
+import com.yujing.base.YBaseActivity
 import com.yujing.bus.ThreadMode
 import com.yujing.bus.YBus
 import com.yujing.test.R
-import com.yujing.test.base.KBaseActivity
 import com.yujing.test.databinding.ActivityAllTestBinding
 import com.yujing.utils.YLog
 import com.yutils.view.utils.Create
 
-class TestActivity : KBaseActivity<ActivityAllTestBinding>(R.layout.activity_all_test) {
+class TestActivity : YBaseActivity<ActivityAllTestBinding>(R.layout.activity_all_test) {
     lateinit var textView1: TextView
     lateinit var textView2: TextView
     lateinit var editText1: EditText

@@ -8,6 +8,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
 import com.google.gson.Gson
 import com.kotlinx.apkUpdate.AppUpdate
+import com.yujing.base.YBaseActivity
 import com.yujing.bus.ThreadMode
 import com.yujing.bus.YBus
 import com.yujing.bus.YBusUtil
@@ -15,7 +16,6 @@ import com.yujing.socket.YSocketSync
 import com.yujing.test.R
 import com.yujing.test.activity.bluetooth.BleClientActivity
 import com.yujing.test.activity.bluetooth.BleServerActivity
-import com.yujing.test.base.KBaseActivity
 import com.yujing.test.databinding.ActivityAllTestBinding
 import com.yujing.utils.TTS
 import com.yujing.utils.YConvert
@@ -41,14 +41,16 @@ import kotlinx.coroutines.Job
 
 
 @Suppress("unused")
-class MainActivity : KBaseActivity<ActivityAllTestBinding>(null) {
+class MainActivity : YBaseActivity<ActivityAllTestBinding>(null) {
     lateinit var textView1: TextView
     lateinit var textView2: TextView
     lateinit var editText1: EditText
     var yVersionUpdate = YVersionUpdate()
 
     override fun initBefore() {
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_all_test)
+        //binding = DataBindingUtil.setContentView(this, R.layout.activity_all_test)
+        binding = ActivityAllTestBinding.inflate(layoutInflater)
+        setContentView(binding.root)
     }
 
     override fun init() {

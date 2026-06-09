@@ -297,7 +297,11 @@ public class YShow extends Dialog {
 
     @Override
     public void dismiss() {
-        super.dismiss();
+        try {
+            super.dismiss();
+        } catch (Exception e) {
+            YLog.e("关闭Yshow时异常",e);
+        }
     }
 
     // ------------------------------------------------------- static -------------------------------------------------------

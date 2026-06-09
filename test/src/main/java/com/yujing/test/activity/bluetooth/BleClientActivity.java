@@ -9,6 +9,7 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.LayoutInflater;
 import android.view.View;
 
 import androidx.annotation.RequiresApi;
@@ -45,7 +46,8 @@ public class BleClientActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         YPermissions.Companion.requestAll(this);
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_ble_client);
+        //binding = DataBindingUtil.setContentView(this, R.layout.activity_ble_client);
+        binding =  ActivityBleClientBinding.inflate(getLayoutInflater());
         bleClient = new BleClient(this);
         bleClient.setConnectListener(aBoolean -> {
             if (aBoolean) {

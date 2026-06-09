@@ -474,26 +474,63 @@ public class YBitmapUtil {
         return ret;
     }
 
+    /** 默认允许 R/G/B 最大偏差（YUV→RGB、JPEG 压缩会引入少量色差） */
+    private static final int DEFAULT_GRAY_CHANNEL_DIFF = 12;
+    /** 默认要求采样点中「近灰」像素占比 */
+    private static final float DEFAULT_GRAY_RATIO = 0.85f;
+    /** 网格采样目标列数（实际采样数 ≈ GRID × GRID） */
+    private static final int GRAY_SAMPLE_GRID = 8;
+
     /**
-     * 判断是否是黑白图片（灰阶度图片），需要格式为 Bitmap.Config.ARGB_8888
+     * 判断是否是黑白/灰阶画面（如红外、无滤光片 UVC）。
+     * <p>
+     * 旧实现仅取 3 点且要求 R==G==B 完全相等，易受单点噪声与压缩误差影响。
+     * 现改为：全图网格采样 + 通道差阈值 + 多数投票，兼顾准确度与性能。
      *
-     * @param bitmap 原始图片
-     * @return 是否是灰阶度图片
+     * @param bitmap 原始图片（任意 Config，内部按 ARGB 像素解读）
+     * @return 采样点中足够比例为「近灰」则视为灰阶摄像头画面
      */
     public static boolean isGray(Bitmap bitmap) {
+        return isGray(bitmap, DEFAULT_GRAY_CHANNEL_DIFF, DEFAULT_GRAY_RATIO);
+    }
+
+    /**
+     * @param maxChannelDiff   单像素 R/G/B 最大允许偏差，0 表示必须完全相等
+     * @param grayRatioThreshold 判定为灰阶所需的「近灰」像素占比，建议 0.8~0.9
+     */
+    public static boolean isGray(Bitmap bitmap, int maxChannelDiff, float grayRatioThreshold) {
         if (isEmptyBitmap(bitmap)) return false;
-        //取三点，都是黑白就是黑白
-        // 中心原点
-        int centX = bitmap.getWidth() / 2;
-        int centY = bitmap.getHeight() / 2;
-        int px1 = bitmap.getPixel(centX, centY);
-        //4象限中心点
-        int px2 = bitmap.getPixel(centX + (bitmap.getWidth() - centX) / 2, centY + (bitmap.getHeight() - centY) / 2);
-        //2象限中心点
-        int px3 = bitmap.getPixel(centX - (bitmap.getWidth() - centX) / 2, centY - (bitmap.getHeight() - centY) / 2);
-        return ((Color.red(px1) == Color.green(px1) && Color.red(px1) == Color.blue(px1))
-                && (Color.red(px2) == Color.green(px2) && Color.red(px2) == Color.blue(px2))
-                && (Color.red(px3) == Color.green(px3) && Color.red(px3) == Color.blue(px3)));
+        if (maxChannelDiff < 0) maxChannelDiff = 0;
+        if (grayRatioThreshold <= 0f) grayRatioThreshold = DEFAULT_GRAY_RATIO;
+        if (grayRatioThreshold > 1f) grayRatioThreshold = 1f;
+
+        final int w = bitmap.getWidth();
+        final int h = bitmap.getHeight();
+        final int stepX = Math.max(1, w / GRAY_SAMPLE_GRID);
+        final int stepY = Math.max(1, h / GRAY_SAMPLE_GRID);
+        final int startX = stepX / 2;
+        final int startY = stepY / 2;
+
+        int grayCount = 0;
+        int total = 0;
+        final int[] row = new int[w];
+
+        for (int y = startY; y < h; y += stepY) {
+            bitmap.getPixels(row, 0, w, 0, y, w, 1);
+            for (int x = startX; x < w; x += stepX) {
+                final int px = row[x];
+                final int a = (px >>> 24) & 0xFF;
+                if (a < 16) continue;
+                final int r = (px >>> 16) & 0xFF;
+                final int g = (px >>> 8) & 0xFF;
+                final int b = px & 0xFF;
+                final int max = Math.max(r, Math.max(g, b));
+                final int min = Math.min(r, Math.min(g, b));
+                total++;
+                if (max - min <= maxChannelDiff) grayCount++;
+            }
+        }
+        return total > 0 && ((float) grayCount / total) >= grayRatioThreshold;
     }
 
     /**

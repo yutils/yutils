@@ -6,10 +6,10 @@ import android.os.Build
 import android.widget.EditText
 import android.widget.TextView
 import androidx.annotation.RequiresApi
+import com.yujing.base.YBaseActivity
 import com.yujing.bluetooth.BleServer
 import com.yujing.contract.YListener1
 import com.yujing.test.R
-import com.yujing.test.base.KBaseActivity
 import com.yujing.test.databinding.ActivityAllTestBinding
 import com.yujing.utils.YConvert
 import com.yutils.view.utils.Create
@@ -18,7 +18,7 @@ import com.yutils.view.utils.Create
  * BLE蓝牙服务广播
  */
 @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-class BleServerActivity : KBaseActivity<ActivityAllTestBinding>(R.layout.activity_all_test) {
+class BleServerActivity : YBaseActivity<ActivityAllTestBinding>(R.layout.activity_all_test) {
     lateinit var textView1: TextView
     lateinit var textView2: TextView
     lateinit var editText1: EditText

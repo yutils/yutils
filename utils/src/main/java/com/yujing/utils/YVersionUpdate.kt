@@ -100,7 +100,7 @@ yVersionUpdate.update(32, true, url, "1.1.1", "这是详细说明1\n这是详细
  */
 
 @Suppress("MemberVisibilityCanBePrivate", "unused")
-@Deprecated("废弃,请使用 implementation \"com.kotlinx:appUpdate:0.0.1\"")
+@Deprecated("废弃,请使用 implementation 'com.kotlinx:appUpdate:0.0.1'")
 class YVersionUpdate {
     var serverCode: Int? = 0//服务器版本
     var isForceUpdate: Boolean = false//是否强制更新
