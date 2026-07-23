@@ -140,8 +140,10 @@ public class YSave {
             if (object != null) return object;
         }
         // 读盘，如果是byte[]直接返回
-        if (type.toString().equals("byte[]")) {
-            return YFileUtil.fileToByte(readFile(key));
+        if (type == byte[].class) {
+            byte[] bytes = YFileUtil.fileToByte(readFile(key));
+            if (useCache && bytes != null) getCache().put(key, bytes);
+            return bytes != null ? bytes : defaultObject;
         }
         // 读盘，如果是null直接返回
         String value = readString(key);

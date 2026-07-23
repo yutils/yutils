@@ -138,6 +138,10 @@ class YAsync private constructor() {
          */
         private var timeOutThread: Thread? = null
 
+        // ✅ 新增：完成标志位
+        @Volatile
+        private var isFinished = false
+
         /**
          * 开始超时计时，执行，加锁
          */
@@ -153,7 +157,10 @@ class YAsync private constructor() {
                         //设置已经超时
                         isTimeOut = true
                         //解锁
-                        synchronized(lock) { lock.notifyAll() }
+                        synchronized(lock) {
+                            isFinished = true  // ✅ 超时也标记完成
+                            lock.notifyAll()
+                        }
                     } catch (ignore: InterruptedException) {
                         //线程提前被打断（interrupt）
                     }
@@ -163,7 +170,11 @@ class YAsync private constructor() {
             //执行方法,同步执行或异步执行
             runnable?.let { if (YAsync.getInstance().isSyncExecute) it.run() else Thread(it).start() }
             //加锁
-            synchronized(lock) { lock.wait() }
+            synchronized(lock) {
+                while (!isFinished) {
+                    lock.wait()
+                }
+            }
         }
 
         /**
@@ -174,7 +185,10 @@ class YAsync private constructor() {
             //终止倒计时
             timeOutThread?.interrupt()
             //解锁
-            synchronized(lock) { lock.notifyAll() }
+            synchronized(lock) {
+                isFinished = true  // ✅ 先设标志位，再 notify
+                lock.notifyAll()
+            }
             return true
         }
 

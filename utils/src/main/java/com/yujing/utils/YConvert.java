@@ -475,6 +475,7 @@ public class YConvert {
      * @param context context
      * @return Bitmap
      */
+    @Deprecated
     public static Bitmap nv21ToBitmapFast(byte[] nv21, int width, int height, Context context) {
         RenderScript rs = RenderScript.create(context);
         ScriptIntrinsicYuvToRGB toRgb = ScriptIntrinsicYuvToRGB.create(rs, Element.U8_4(rs));
@@ -495,7 +496,7 @@ public class YConvert {
         rs.destroy();
         return newBitmap;
     }
-
+    @Deprecated
     public static Bitmap nv21ToBitmapFast(byte[] nv21, int width, int height) {
         return nv21ToBitmapFast(nv21, width, height, YApp.get());
     }

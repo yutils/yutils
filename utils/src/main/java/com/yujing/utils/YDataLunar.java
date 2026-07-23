@@ -29,8 +29,6 @@ public class YDataLunar {
     final static String chineseNumber[] = {"一", "二", "三", "四", "五", "六", "七", "八", "九", "十", "十一", "十二"};
     //星期
     final static String[] weekDays = new String[]{"星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"};
-    //日期格式
-    final static SimpleDateFormat chineseDateFormat = new SimpleDateFormat("yyyy年MM月dd日", Locale.CHINA);
     // 农历部分假日
     final static String[] lunarHoliday = new String[]{"0101 春节", "0115 元宵", "0505 端午", "0707 情人", "0715 中元", "0815 中秋", "0909 重阳", "1208 腊八", "1224 小年", "0100 除夕"};
     // 公历部分节假日
@@ -145,6 +143,7 @@ public class YDataLunar {
         String nowadays;
         Date baseDate = null;
         Date nowaday = null;
+        SimpleDateFormat chineseDateFormat = new SimpleDateFormat("yyyy年MM月dd日", Locale.CHINA);
         try {
             baseDate = chineseDateFormat.parse("1900年1月31日");
         } catch (ParseException e) {

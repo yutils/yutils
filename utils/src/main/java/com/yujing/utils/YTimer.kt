@@ -138,7 +138,7 @@ class YTimer {
             var obj: T? = null
             runBlocking {
                 //当统计次数大于最大统计次数，或者执行时间大于最大时间，或者监听返回不为null，立即停止循环
-                while (count <= maxNumber || System.currentTimeMillis() - startTime <= maxMillisecond) {
+                while (count <= maxNumber && System.currentTimeMillis() - startTime <= maxMillisecond) {
                     try {
                         count++
                         obj = listener.invoke()

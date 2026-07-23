@@ -210,8 +210,10 @@ public class YReadInputStream {
     public static byte[] readOnce(InputStream inputStream, long timeOut) throws Exception {
         long startTime = System.currentTimeMillis();
         int count = 0;
-        while (count == 0 && System.currentTimeMillis() - startTime < timeOut)
+        while (count == 0 && System.currentTimeMillis() - startTime < timeOut) {
             count = inputStream.available();//获取真正长度
+            if (sleep) SystemClock.sleep(1);//休息1毫秒
+        }
         if (System.currentTimeMillis() - startTime >= timeOut) {
             throw new TimeoutException("读取超时");
         }

@@ -33,9 +33,10 @@ public class YScreenUtil {
      * @param activity activity
      */
     public static void toPortrait(Activity activity) {
-        if (activity.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-            activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        if (activity.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         }
+
     }
 
     /**
@@ -45,8 +46,8 @@ public class YScreenUtil {
      */
     @SuppressLint("SourceLockedOrientationActivity")
     public static void toLandscape(Activity activity) {
-        if (activity.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        if (activity.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         }
     }
 

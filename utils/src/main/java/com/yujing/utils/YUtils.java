@@ -605,6 +605,7 @@ public class YUtils {
         ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         if (manager == null) return false;
         @SuppressLint("MissingPermission") NetworkInfo info = manager.getActiveNetworkInfo();
+        if (info == null) return false;
         return Objects.requireNonNull(info).getState() == NetworkInfo.State.CONNECTED;
     }
 

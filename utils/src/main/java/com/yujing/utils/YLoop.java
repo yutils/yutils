@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 循环调用某一个类中的某一个方法
@@ -33,8 +34,7 @@ protected void onDestroy() {
 */
 public class YLoop {
     // 记录哪些类的哪些方法正在被调用
-    private static final Map<String, Boolean> MethodStatus = new HashMap<>();
-
+    private static final Map<String, Boolean> MethodStatus = new ConcurrentHashMap<>();
     public static void stop(Object obj, String methodName) {
         MethodStatus.put(sign(obj, methodName), false);
     }

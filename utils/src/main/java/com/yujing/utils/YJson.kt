@@ -338,9 +338,19 @@ object YJson {
         //val type = object : TypeReference<T>() {}.type  //if (type is ParameterizedType)type.actualTypeArguments.forEach { println(it.typeName) }
         return try {
             when {
-                "byte[]" == type.toString() -> json.toByteArray() as T
-                String::class.java == type -> this as T
-                else -> gson.fromJson(json, type) as T
+                // 利用 reified 直接判断，安全可靠
+                T::class.java == ByteArray::class.java -> {
+                    json.toByteArray(Charsets.UTF_8) as T
+                }
+                // String 无需特殊处理，Gson 原生支持；若需自定义也可保留
+                T::class.java == String::class.java -> {
+                    json as T
+                }
+                // 其他所有类型（包括 List<User> 等嵌套泛型）统一走 Gson
+                else -> {
+                    val type = object : TypeToken<T>() {}.type
+                    gson.fromJson(json, type) as T
+                }
             }
         } catch (e: Exception) {
             YLog.e("实体转换错误：${e.message}", e)

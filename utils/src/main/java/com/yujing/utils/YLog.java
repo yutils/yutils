@@ -40,8 +40,6 @@ import java.util.Locale;
  */
 @SuppressWarnings({"FieldCanBeLocal", "WeakerAccess"})
 public class YLog {
-    public static SimpleDateFormat formatDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-    public static SimpleDateFormat formatTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.getDefault());
     //保存日志时时间差=服务器时间-当前本地时间  时间换算显示=当前本地时间+系统时间差
     private static long timeDifference = 0L;
     //是否保存日志
@@ -256,6 +254,7 @@ public class YLog {
 
     //如 save("路径",“v”,“错误”,“网络异常”);
     public static void save(String path, String type, String tag, String msg) {
+        SimpleDateFormat formatTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.getDefault());
         String saveString = formatTime.format(new Date(System.currentTimeMillis() + timeDifference)) + "\t" + type + "\t" + (TAG.equals(tag) ? "log" : tag) + ":" + msg + "\n";
         if (threadMode == ThreadMode.CURRENT) {
             YFileUtil.addStringToFile(new File(path), saveString);
@@ -272,6 +271,7 @@ public class YLog {
 
     public static void save(String type, String tag, String msg) {
         if (saveLogDir == null) return;
+        SimpleDateFormat formatDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
         String filePath = saveLogDir + "/" + formatDate.format(new Date(System.currentTimeMillis() + timeDifference)) + ".log";
         if (logSaveListener != null) {
             if (logSaveListener.value(type, tag, msg)) save(filePath, type, tag, msg);
@@ -341,6 +341,7 @@ public class YLog {
             if (index == -1) continue;
             String date = item.getName().substring(0, index);
             try {
+                SimpleDateFormat formatDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
                 long timeOld = formatDate.parse(date).getTime();
                 long timeLimit = new Date(System.currentTimeMillis() + timeDifference).getTime() - 1000L * 60 * 60 * 24 * daysAgo;
                 if (timeOld < timeLimit) {

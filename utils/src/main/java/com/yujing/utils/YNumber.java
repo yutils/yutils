@@ -109,7 +109,7 @@ public class YNumber {
 
     //scale位小数
     public static String S2S(String s, int scale) {
-        if (s == null || s.isEmpty() || (isDouble(s) && isInt(s)))
+        if (s == null || s.isEmpty() || (!isDouble(s) && !isInt(s)))
             return "0";
         return D2S(Double.parseDouble(s), scale);
     }
