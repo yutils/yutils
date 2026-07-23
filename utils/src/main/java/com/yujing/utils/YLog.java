@@ -62,6 +62,11 @@ public class YLog {
     public static final String INFO = "i";      //INFO
     public static final String WARN = "w";      //WARN
     public static final String ERROR = "e";     //ERROR
+    public static boolean IS_SHOW_LOG_VERBOSE = true;
+    public static boolean IS_SHOW_LOG_DEBUG = true;
+    public static boolean IS_SHOW_LOG_INFO = true;
+    public static boolean IS_SHOW_LOG_WARN = true;
+    public static boolean IS_SHOW_LOG_ERROR = true;
 
     //-------------------------------------------静态方法↓-------------------------------------------
 
@@ -387,10 +392,13 @@ public class YLog {
             msg = "错误！无法定位到方法行。\n" + msg;
         }
         if (msg == null) {
-            if (YClass.isAndroid())
-                Log.e(TAG, codeLine + " \n" + "null", tr);
-            else
+            if (YClass.isAndroid()) {
+                if (IS_SHOW_LOG_ERROR) {
+                    Log.e(TAG, codeLine + " \n" + "null", tr);
+                }
+            } else {
                 System.err.println("TAG:" + TAG + "\tcodeLine:" + codeLine + " \n" + "null" + ((tr == null) ? "" : ("\tThrowable:" + tr.getMessage())));
+            }
             return;
         }
         List<StringBuilder> lines = YString.groupActual(msg, LOG_MAX_LENGTH - codeLine.length() - 10);
@@ -401,19 +409,24 @@ public class YLog {
             if (YClass.isAndroid()) {
                 switch (type) {
                     case VERBOSE:
-                        Log.v(TAG, value, tr);
+                        if (IS_SHOW_LOG_VERBOSE)
+                            Log.v(TAG, value, tr);
                         break;
                     case DEBUG:
-                        Log.d(TAG, value, tr);
+                        if (IS_SHOW_LOG_DEBUG)
+                            Log.d(TAG, value, tr);
                         break;
                     case INFO:
-                        Log.i(TAG, value, tr);
+                        if (IS_SHOW_LOG_INFO)
+                            Log.i(TAG, value, tr);
                         break;
                     case WARN:
-                        Log.w(TAG, value, tr);
+                        if (IS_SHOW_LOG_WARN)
+                            Log.w(TAG, value, tr);
                         break;
                     case ERROR:
-                        Log.e(TAG, value, tr);
+                        if (IS_SHOW_LOG_ERROR)
+                            Log.e(TAG, value, tr);
                         break;
                 }
             } else {
