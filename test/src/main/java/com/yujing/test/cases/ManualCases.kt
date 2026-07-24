@@ -19,6 +19,7 @@ import com.yujing.utils.YConvert
 import com.yujing.utils.YDateDialog
 import com.yujing.utils.YImageDialog
 import com.yujing.utils.YPermissions
+import com.yujing.utils.YScreenUtil
 import com.yujing.utils.YShow
 import com.yujing.utils.YSound
 import com.yujing.utils.YTake
@@ -92,10 +93,22 @@ object UiManualCases {
             val root = activity.window.decorView
             val bmp = YView.toBitmap(root)
             if (bmp != null && bmp.width > 0) {
-                YImageDialog.show(YBitmapUtil.zoom(bmp, 200, 350))
+                // 勿压成固定小尺寸再弹窗（会极糊）；等比限制最长边即可
+                val maxSide = (YScreenUtil.getScreenWidth() * 0.9f).toInt().coerceAtLeast(720)
+                val preview = if (bmp.width > maxSide || bmp.height > maxSide) {
+                    val scale = maxSide.toFloat() / maxOf(bmp.width, bmp.height)
+                    YBitmapUtil.zoom(
+                        bmp,
+                        (bmp.width * scale).toInt().coerceAtLeast(1),
+                        (bmp.height * scale).toInt().coerceAtLeast(1),
+                    )
+                } else {
+                    bmp
+                }
+                YImageDialog.show(preview)
                 markPassed(c, "截图 ${bmp.width}x${bmp.height}")
             } else {
-                markFailed(c, "toBitmap 失败")
+                markFailed(c, "toBitmap 失败（宽高为 0？）")
             }
         },
         ManualTestCase("ui.view.drawable", "YView Drawable 工厂", TestCategory.UI) { activity, c ->

@@ -42,6 +42,9 @@ fun reduction() {
     //如果有view没生效，刷新view
     YView.refreshAllView(binding.root)
 }
+
+// View 截图（与 View 同像素尺寸；勿再强行压成很小再放大）
+val bitmap = YView.toBitmap(binding.root)
  */
 object YView {
     /**
@@ -65,20 +68,33 @@ object YView {
     }
 
     /**
-     * View转bitmap
+     * View 转 Bitmap（与 View 同像素尺寸，1:1 绘制，不额外缩小）
      *
-     * @param v View
-     * @return Bitmap
+     * 注意：若再调用 [com.yujing.utils.YBitmapUtil.zoom] 压到很小再放大显示，会看起来模糊；
+     * 预览请等比缩小（例如限制最长边），或直接交给 ImageView 缩放显示。
+     *
+     * @param v View（需已完成布局，width/height > 0）
+     * @return Bitmap，尺寸无效时返回 null
      */
     @JvmStatic
-    fun toBitmap(v: View): Bitmap? {
-        val b = Bitmap.createBitmap(v.width, v.height, Bitmap.Config.ARGB_8888)
-        val c = Canvas(b)
-        v.layout(v.left, v.top, v.right, v.bottom)
+    @JvmOverloads
+    fun toBitmap(v: View, config: Bitmap.Config = Bitmap.Config.ARGB_8888): Bitmap? {
+        val width = v.width
+        val height = v.height
+        if (width <= 0 || height <= 0) return null
+        val bitmap = Bitmap.createBitmap(width, height, config)
+        // 与屏幕密度一致，避免 ImageView 按错误 density 二次缩放发糊
+        bitmap.density = v.resources.displayMetrics.densityDpi
+        val canvas = Canvas(bitmap)
         val bgDrawable = v.background
-        if (bgDrawable != null) bgDrawable.draw(c) else c.drawColor(Color.WHITE)
-        v.draw(c)
-        return b
+        if (bgDrawable != null) {
+            bgDrawable.setBounds(0, 0, width, height)
+            bgDrawable.draw(canvas)
+        } else {
+            canvas.drawColor(Color.WHITE)
+        }
+        v.draw(canvas)
+        return bitmap
     }
 
     /**

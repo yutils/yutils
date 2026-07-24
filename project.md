@@ -734,6 +734,9 @@ YScreenUtil.setImmersive(this, true)
 YScreenUtil.setAlpha(this, 0.5F)
 //获取当前屏幕截图，不包含状态栏
 YScreenUtil.snapShotWithoutStatusBar(this)
+
+// View 截图：与 View 同像素尺寸（1:1）。不要再压成很小的固定宽高再弹窗预览，否则会糊
+val bmp = YView.toBitmap(binding.root)
 ```
 
 ----
