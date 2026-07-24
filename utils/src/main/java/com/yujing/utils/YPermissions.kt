@@ -103,9 +103,11 @@ class YPermissions(val activity: ComponentActivity) {
             var findFail = false
             for (item in pending) {
                 //浮窗权限，特殊处理
-                if (item == Manifest.permission.SYSTEM_ALERT_WINDOW && Settings.canDrawOverlays(activity)) {
-                    successListener?.value(item)
-                    continue
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    if (item == Manifest.permission.SYSTEM_ALERT_WINDOW && Settings.canDrawOverlays(activity)) {
+                        successListener?.value(item)
+                        continue
+                    }
                 }
                 //再检查一遍，不能这样写：if (map[item]){ } 因为：map[item]可能为null
                 if (map[item] == true) {
