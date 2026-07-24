@@ -53,7 +53,7 @@ public class YDelay {
                 Thread.sleep(time);
                 runnable.run();
             } catch (Exception e) {
-                YLog.e("runIO异常",e);
+                YLog.e("runIO异常", e);
             }
         });
         thread.setName("延时运行");

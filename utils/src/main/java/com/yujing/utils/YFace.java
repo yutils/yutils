@@ -8,8 +8,6 @@ import android.graphics.PointF;
 import android.graphics.RectF;
 import android.media.FaceDetector;
 
-import com.yujing.utils.YLog;
-
 /**
  * 人脸识别类
  *

@@ -178,7 +178,7 @@ public class YShow extends Dialog {
         tvParams.gravity = Gravity.CENTER;//设置中心
         //实例化一个TextView
         TextView tv = new TextView(getContext());
-        mProgressBar.setId(id2);
+        tv.setId(id2);
         tv.setLayoutParams(tvParams);
         tv.setTextSize(12);
         tv.setTextColor(Color.parseColor("#EEEEEE"));
@@ -189,7 +189,7 @@ public class YShow extends Dialog {
         tvParams2.gravity = Gravity.CENTER;//设置中心
         //实例化第二个TextView
         TextView tv2 = new TextView(getContext());
-        mProgressBar.setId(id3);
+        tv2.setId(id3);
         tv2.setLayoutParams(tvParams2);
         tv2.setTextSize(10);
         tv2.setTextColor(Color.parseColor("#EEEEEE"));
@@ -274,9 +274,18 @@ public class YShow extends Dialog {
 
     @Override
     public void show() {
-        if (activity == null || activity.isFinishing()) return;
-        finish();
+        if (activity == null || activity.isFinishing() || activity.isDestroyed()) return;
+        // 注意：此处不能调用 finish()，否则会把静态单例 yDialog 置空，导致下次 show 又新建一个
         YThread.runOnUiThread(() -> {
+            // post 后再次检查，避免 Activity 已销毁仍 BadTokenException
+            if (activity == null || activity.isFinishing() || activity.isDestroyed()) return;
+            // 已在显示则只刷新文案，不重复弹出
+            if (isShowing()) {
+                setMessage1(message1);
+                setMessage2(message2);
+                setCancelable(canCancel);
+                return;
+            }
             if (fullScreen == null) fullScreen = isDefaultFullScreen();
             if (fullScreen) {
                 //主要作用是焦点失能和焦点恢复，保证在弹出dialog时不会弹出虚拟按键且事件不会穿透。
@@ -300,7 +309,7 @@ public class YShow extends Dialog {
         try {
             super.dismiss();
         } catch (Exception e) {
-            YLog.e("关闭Yshow时异常",e);
+            YLog.e("关闭Yshow时异常", e);
         }
     }
 
@@ -377,32 +386,48 @@ public class YShow extends Dialog {
     }
 
     public synchronized static YShow show(Activity activity, CharSequence message1, CharSequence message2, boolean canCancel, Boolean fullScreen) {
-        if (isShow()) {
+        if (activity == null || activity.isFinishing() || activity.isDestroyed()) {
+            return yDialog;
+        }
+        // 同一 Activity 下永远单例：已有实例（含正在显示 / 尚未 show 完）则只更新文字，不重建
+        if (yDialog != null && yDialog.activity == activity) {
+            yDialog.message1 = message1;
+            yDialog.message2 = message2;
+            yDialog.canCancel = canCancel;
+            if (fullScreen != null) yDialog.fullScreen = fullScreen;
+            final YShow dialog = yDialog;
             YThread.runOnUiThread(() -> {
-                setMessage(message1);
-                setMessageOther(message2);
-                setCancel(canCancel);
+                if (dialog != yDialog) return;
+                dialog.setMessage1(message1);
+                dialog.setMessage2(message2);
+                dialog.setCanCancel(canCancel);
+                if (!dialog.isShowing()) {
+                    dialog.show();
+                }
             });
+            return yDialog;
+        }
+        // 跨 Activity 或尚无实例：关掉旧的再建新的
+        if (YThread.isMainThread()) {
+            finish();
+            yDialog = new YShow(activity, message1, message2, canCancel);
+            yDialog.setFullScreen(fullScreen);
+            yDialog.show();
         } else {
-            if (YThread.isMainThread()) {
+            final CountDownLatch latch = new CountDownLatch(1);
+            final double newTag = Math.random();
+            YThread.runOnUiThread(() -> {
+                finish();
                 yDialog = new YShow(activity, message1, message2, canCancel);
+                yDialog.tag = newTag;
                 yDialog.setFullScreen(fullScreen);
                 yDialog.show();
-            } else {
-                final CountDownLatch latch = new CountDownLatch(1);
-                final double newTag = Math.random();
-                YThread.runOnUiThread(() -> {
-                    yDialog = new YShow(activity, message1, message2, canCancel);
-                    yDialog.tag = newTag;
-                    yDialog.setFullScreen(fullScreen);
-                    yDialog.show();
-                    latch.countDown();
-                });
-                try {
-                    latch.await();
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
+                latch.countDown();
+            });
+            try {
+                latch.await();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
             }
         }
         return yDialog;
@@ -457,7 +482,24 @@ public class YShow extends Dialog {
      * 关闭对话框
      */
     public static void finish() {
-        if (yDialog != null) yDialog.dismiss();
+        if (yDialog == null) return;
+        final YShow dialog = yDialog;
+        yDialog = null;
+        if (YThread.isMainThread()) {
+            try {
+                dialog.dismiss();
+            } catch (Exception e) {
+                YLog.e("关闭Yshow时异常", e);
+            }
+        } else {
+            YThread.runOnUiThread(() -> {
+                try {
+                    dialog.dismiss();
+                } catch (Exception e) {
+                    YLog.e("关闭Yshow时异常", e);
+                }
+            });
+        }
     }
 
     /**

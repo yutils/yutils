@@ -5,7 +5,6 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
-import java.util.Objects;
 
 /**
  * 日期操作类
@@ -113,7 +112,8 @@ public class YDate {
         SimpleDateFormat dateFormatNew = new SimpleDateFormat(newDateFormat, Locale.getDefault());
         try {
             Date date = dateFormatOld.parse(oldDateString);
-            newDateString = dateFormatNew.format(Objects.requireNonNull(date));
+            if (date != null)
+                newDateString = dateFormatNew.format(date);
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -258,12 +258,13 @@ public class YDate {
      * 获取一年第一天
      */
     public static Calendar getFirstDayOfYear(Calendar c) {
-        c.set(Calendar.DAY_OF_YEAR, 1);
-        c.set(Calendar.HOUR_OF_DAY, 0);
-        c.set(Calendar.MINUTE, 0);
-        c.set(Calendar.SECOND, 0);
-        c.set(Calendar.MILLISECOND, 0);
-        return c;
+        Calendar cal = (Calendar) c.clone();
+        cal.set(Calendar.DAY_OF_YEAR, 1);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        return cal;
     }
 
     /**
@@ -277,14 +278,15 @@ public class YDate {
      * 获取一年最后一天
      */
     public static Calendar getLastDayOfYear(Calendar c) {
-        c.set(Calendar.DAY_OF_YEAR, 1);
-        c.add(Calendar.DAY_OF_YEAR, -1);
-        c.add(Calendar.YEAR, 1);
-        c.set(Calendar.HOUR_OF_DAY, 23);
-        c.set(Calendar.MINUTE, 59);
-        c.set(Calendar.SECOND, 59);
-        c.set(Calendar.MILLISECOND, 999);
-        return c;
+        Calendar cal = (Calendar) c.clone();
+        cal.set(Calendar.DAY_OF_YEAR, 1);
+        cal.add(Calendar.DAY_OF_YEAR, -1);
+        cal.add(Calendar.YEAR, 1);
+        cal.set(Calendar.HOUR_OF_DAY, 23);
+        cal.set(Calendar.MINUTE, 59);
+        cal.set(Calendar.SECOND, 59);
+        cal.set(Calendar.MILLISECOND, 999);
+        return cal;
     }
 
     /**
@@ -298,12 +300,13 @@ public class YDate {
      * 获取一个月第一天
      */
     public static Calendar getFirstDayOfMonth(Calendar c) {
-        c.set(Calendar.DAY_OF_MONTH, 1);
-        c.set(Calendar.HOUR_OF_DAY, 0);
-        c.set(Calendar.MINUTE, 0);
-        c.set(Calendar.SECOND, 0);
-        c.set(Calendar.MILLISECOND, 0);
-        return c;
+        Calendar cal = (Calendar) c.clone();
+        cal.set(Calendar.DAY_OF_MONTH, 1);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        return cal;
     }
 
     /**
@@ -317,14 +320,15 @@ public class YDate {
      * 获取一个月最后一天
      */
     public static Calendar getLastDayOfMonth(Calendar c) {
-        c.set(Calendar.DAY_OF_MONTH, 1);
-        c.add(Calendar.MONTH, 1);
-        c.add(Calendar.DAY_OF_YEAR, -1);
-        c.set(Calendar.HOUR_OF_DAY, 23);
-        c.set(Calendar.MINUTE, 59);
-        c.set(Calendar.SECOND, 59);
-        c.set(Calendar.MILLISECOND, 999);
-        return c;
+        Calendar cal = (Calendar) c.clone();
+        cal.set(Calendar.DAY_OF_MONTH, 1);
+        cal.add(Calendar.MONTH, 1);
+        cal.add(Calendar.DAY_OF_YEAR, -1);
+        cal.set(Calendar.HOUR_OF_DAY, 23);
+        cal.set(Calendar.MINUTE, 59);
+        cal.set(Calendar.SECOND, 59);
+        cal.set(Calendar.MILLISECOND, 999);
+        return cal;
     }
 
     /**
@@ -335,15 +339,20 @@ public class YDate {
     }
 
     /**
-     * 获取一周第一天
+     * 获取一周第一天（周一为周首；避免仅 set DAY_OF_WEEK 在周日落到下一周）
      */
     public static Calendar getFirstDayOfWeek(Calendar c) {
-        c.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);//星期一，中国人星期一是开始
-        c.set(Calendar.HOUR_OF_DAY, 0);
-        c.set(Calendar.MINUTE, 0);
-        c.set(Calendar.SECOND, 0);
-        c.set(Calendar.MILLISECOND, 0);
-        return c;
+        Calendar cal = (Calendar) c.clone();
+        cal.setFirstDayOfWeek(Calendar.MONDAY);//星期一，中国人星期一是开始
+        int day = cal.get(Calendar.DAY_OF_WEEK);
+        // Mon=0 … Sat=5，Sun=6
+        int offset = (day == Calendar.SUNDAY) ? 6 : (day - Calendar.MONDAY);
+        cal.add(Calendar.DAY_OF_MONTH, -offset);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        return cal;
     }
 
     /**
@@ -354,16 +363,16 @@ public class YDate {
     }
 
     /**
-     * 获取一周最后一天
+     * 获取一周最后一天（周日）
      */
     public static Calendar getLastDayOfWeek(Calendar c) {
-        c.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
-        c.add(Calendar.DAY_OF_YEAR,6);//加6天，中国人星期日是结束
-        c.set(Calendar.HOUR_OF_DAY, 23);
-        c.set(Calendar.MINUTE, 59);
-        c.set(Calendar.SECOND, 59);
-        c.set(Calendar.MILLISECOND, 999);
-        return c;
+        Calendar cal = getFirstDayOfWeek(c);
+        cal.add(Calendar.DAY_OF_YEAR, 6);//加6天，中国人星期日是结束
+        cal.set(Calendar.HOUR_OF_DAY, 23);
+        cal.set(Calendar.MINUTE, 59);
+        cal.set(Calendar.SECOND, 59);
+        cal.set(Calendar.MILLISECOND, 999);
+        return cal;
     }
 
     /**
@@ -458,7 +467,7 @@ public class YDate {
         Calendar calendar = Calendar.getInstance();
         // 设置为本周的最后一天
         calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
-        calendar.add(Calendar.DAY_OF_YEAR,6);//加6天，中国人星期日是结束
+        calendar.add(Calendar.DAY_OF_YEAR, 6);//加6天，中国人星期日是结束
         // 将时间设置为23点59分59秒，即本周结束的时刻
         calendar.set(Calendar.HOUR_OF_DAY, 23);
         calendar.set(Calendar.MINUTE, 59);

@@ -8,10 +8,17 @@ import android.view.Gravity
 import android.view.View
 import android.view.Window
 import android.view.WindowManager
-import android.widget.*
+import android.widget.EditText
+import android.widget.FrameLayout
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.ScrollView
+import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
-import com.yujing.utils.*
-import java.util.*
+import com.yujing.utils.YActivityUtil
+import com.yujing.utils.YApp
+import com.yujing.utils.YDelay
+import com.yujing.utils.YScreenUtil
 
 @Suppress("MemberVisibilityCanBePrivate", "unused")
 /*

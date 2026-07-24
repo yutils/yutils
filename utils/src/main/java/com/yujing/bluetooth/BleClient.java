@@ -1,5 +1,8 @@
 package com.yujing.bluetooth;
 
+import static android.bluetooth.BluetoothDevice.TRANSPORT_LE;
+import static android.content.Context.BLUETOOTH_SERVICE;
+
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -22,9 +25,6 @@ import com.yujing.utils.YThread;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
-
-import static android.bluetooth.BluetoothDevice.TRANSPORT_LE;
-import static android.content.Context.BLUETOOTH_SERVICE;
 
 /**
  * 蓝牙BLE读取
@@ -111,8 +111,8 @@ public class BleClient {
     public BleClient(Context context) {
         this.context = context;
         mBluetoothManager = (BluetoothManager) context.getSystemService(BLUETOOTH_SERVICE);
-        mBluetoothAdapter = mBluetoothManager.getAdapter();
-        if (mBluetoothAdapter == null || !mBluetoothAdapter.isEnabled()) {
+        mBluetoothAdapter = mBluetoothManager != null ? mBluetoothManager.getAdapter() : null;
+        if (mBluetoothAdapter != null && !mBluetoothAdapter.isEnabled()) {
             open();
         }
     }
@@ -120,7 +120,7 @@ public class BleClient {
     //打开蓝牙
     public void open() {
         //没有打开蓝牙
-        if (!mBluetoothAdapter.isEnabled()) {
+        if (mBluetoothAdapter != null && !mBluetoothAdapter.isEnabled()) {
             //提示当前应用请求蓝牙
             mBluetoothAdapter.enable();
             //提示某个应用请求蓝牙
@@ -145,12 +145,27 @@ public class BleClient {
                     if (runnable != null) YDelay.remove(runnable);
                     //发现服务
                     gatt.discoverServices();
+                } else if (newState == BluetoothGatt.STATE_DISCONNECTED) {
+                    //正常断开
+                    if (showLog) YLog.i(TAG, "连接已断开");
+                    isConnecting = false;
+                    try {
+                        gatt.close();
+                    } catch (Exception ignored) {
+                    }
+                    if (mBluetoothGatt == gatt) mBluetoothGatt = null;
+                    if (connectListener != null)
+                        YThread.runOnUiThread(() -> connectListener.value(false));
                 }
             } else {
                 //连接失败
                 YLog.e(TAG, "失败==" + status);
-                mBluetoothGatt.close();
                 isConnecting = false;
+                try {
+                    if (mBluetoothGatt != null) mBluetoothGatt.close();
+                } catch (Exception ignored) {
+                }
+                mBluetoothGatt = null;
                 if (connectListener != null)
                     YThread.runOnUiThread(() -> connectListener.value(false));
             }
@@ -167,8 +182,16 @@ public class BleClient {
             if (showLog) YLog.i(TAG, "onServicesDiscovered()---建立连接");
             //获取初始化服务和特征值
             initServiceAndChara();
-            //订阅通知
-            mBluetoothGatt.setCharacteristicNotification(mBluetoothGatt.getService(notify_UUID_service).getCharacteristic(notify_UUID_chara), true);
+            //订阅通知（无 Notify 特征时跳过，避免 NPE）
+            if (notify_UUID_service != null && notify_UUID_chara != null && mBluetoothGatt != null) {
+                BluetoothGattService notifyService = mBluetoothGatt.getService(notify_UUID_service);
+                if (notifyService != null) {
+                    BluetoothGattCharacteristic notifyChara = notifyService.getCharacteristic(notify_UUID_chara);
+                    if (notifyChara != null) {
+                        mBluetoothGatt.setCharacteristicNotification(notifyChara, true);
+                    }
+                }
+            }
             //mBluetoothGatt.requestMtu(512);
             if (connectListener != null)
                 YThread.runOnUiThread(() -> connectListener.value(true));
@@ -259,13 +282,21 @@ public class BleClient {
     }
 
     public void read() {
-        BluetoothGattCharacteristic characteristic = mBluetoothGatt.getService(read_UUID_service).getCharacteristic(read_UUID_chara);
+        if (mBluetoothGatt == null || read_UUID_service == null || read_UUID_chara == null) return;
+        BluetoothGattService service = mBluetoothGatt.getService(read_UUID_service);
+        if (service == null) return;
+        BluetoothGattCharacteristic characteristic = service.getCharacteristic(read_UUID_chara);
+        if (characteristic == null) return;
         mBluetoothGatt.readCharacteristic(characteristic);
     }
 
     public void send(byte[] data) {
+        if (data == null || mBluetoothGatt == null || write_UUID_service == null || write_UUID_chara == null)
+            return;
         BluetoothGattService service = mBluetoothGatt.getService(write_UUID_service);
+        if (service == null) return;
         BluetoothGattCharacteristic charaWrite = service.getCharacteristic(write_UUID_chara);
+        if (charaWrite == null) return;
         if (showLog) YLog.i(TAG, "发送数据长度：" + data.length + "字节");
         charaWrite.setValue(data);
         mBluetoothGatt.writeCharacteristic(charaWrite);
@@ -279,13 +310,27 @@ public class BleClient {
      */
     public void scanDevice(android.bluetooth.le.ScanCallback scanCallback, Runnable scanEnd) {
         this.scanCallback = scanCallback;
+        if (mBluetoothAdapter == null) {
+            isScanning = false;
+            if (scanEnd != null) YThread.runOnUiThread(scanEnd);
+            return;
+        }
+        android.bluetooth.le.BluetoothLeScanner scanner = mBluetoothAdapter.getBluetoothLeScanner();
+        if (scanner == null) {
+            isScanning = false;
+            if (scanEnd != null) YThread.runOnUiThread(scanEnd);
+            return;
+        }
         isScanning = true;
-        mBluetoothAdapter.getBluetoothLeScanner().startScan(scanCallback);
+        scanner.startScan(scanCallback);
         runnable = () -> {
             //结束扫描
-            mBluetoothAdapter.getBluetoothLeScanner().stopScan(scanCallback);
+            if (mBluetoothAdapter != null) {
+                android.bluetooth.le.BluetoothLeScanner s = mBluetoothAdapter.getBluetoothLeScanner();
+                if (s != null) s.stopScan(scanCallback);
+            }
             isScanning = false;
-            YThread.runOnUiThread(scanEnd);
+            if (scanEnd != null) YThread.runOnUiThread(scanEnd);
         };
         //10秒后停止扫描
         YDelay.run(1000 * 10, runnable);
@@ -297,8 +342,10 @@ public class BleClient {
     public void stopScanDevice() {
         YDelay.remove(runnable);
         isScanning = false;
-        if (mBluetoothAdapter.getBluetoothLeScanner() != null)
-            mBluetoothAdapter.getBluetoothLeScanner().stopScan(scanCallback);
+        if (mBluetoothAdapter != null) {
+            android.bluetooth.le.BluetoothLeScanner scanner = mBluetoothAdapter.getBluetoothLeScanner();
+            if (scanner != null) scanner.stopScan(scanCallback);
+        }
     }
 
     public void setReadListener(YListener1<byte[]> readListener) {
@@ -318,7 +365,10 @@ public class BleClient {
     }
 
     public void onDestroy() {
-        if (mBluetoothGatt != null)
+        if (mBluetoothGatt != null) {
             mBluetoothGatt.disconnect();
+            mBluetoothGatt.close();
+            mBluetoothGatt = null;
+        }
     }
 }

@@ -3,7 +3,10 @@ package com.yujing.test
 import android.app.Application
 import com.kotlinx.Kotlinx
 import com.yujing.bus.ThreadMode
-import com.yujing.utils.*
+import com.yujing.utils.YActivityUtil
+import com.yujing.utils.YLog
+import com.yujing.utils.YPath
+import com.yujing.utils.YUtils
 
 class App : Application() {
     //标准单列

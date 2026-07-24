@@ -11,7 +11,6 @@ import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
@@ -76,7 +75,9 @@ class YPermissions(val activity: ComponentActivity) {
          */
         @JvmStatic
         fun requestAll(activity: ComponentActivity) {
-            YPermissions(activity).request(*getManifestPermissions(activity)!!)
+            val permissions = getManifestPermissions(activity) ?: return
+            if (permissions.isEmpty()) return
+            YPermissions(activity).request(*permissions)
         }
     }
 
@@ -88,6 +89,49 @@ class YPermissions(val activity: ComponentActivity) {
 
     //全部权限请求成功回调
     private var allSuccessListener: YListener? = null
+
+    //即将请求的数组
+    private var array: Array<String>? = null
+
+    // 使用无 LifecycleOwner 的 register，允许在 Activity 已 STARTED/RESUMED 后创建
+    private var register: ActivityResultLauncher<Array<String>>? =
+        activity.activityResultRegistry.register(
+            "YPermissions_${System.identityHashCode(this)}",
+            ActivityResultContracts.RequestMultiplePermissions()
+        ) { map ->
+            val pending = array ?: return@register
+            var findFail = false
+            for (item in pending) {
+                //浮窗权限，特殊处理
+                if (item == Manifest.permission.SYSTEM_ALERT_WINDOW && Settings.canDrawOverlays(activity)) {
+                    successListener?.value(item)
+                    continue
+                }
+                //再检查一遍，不能这样写：if (map[item]){ } 因为：map[item]可能为null
+                if (map[item] == true) {
+                    successListener?.value(item)
+                } else {
+                    findFail = true
+                    failListener?.value(item)
+                }
+            }
+            if (!findFail) {
+                allSuccessListener?.value()
+            }
+            array = null
+        }
+
+    init {
+        activity.lifecycle.addObserver(object : DefaultLifecycleObserver {
+            override fun onDestroy(owner: LifecycleOwner) {
+                try {
+                    register?.unregister()
+                } catch (_: Exception) {
+                }
+                register = null
+            }
+        })
+    }
 
     fun setSuccessListener(successListener: YListener1<String>): YPermissions {
         this.successListener = successListener
@@ -104,15 +148,11 @@ class YPermissions(val activity: ComponentActivity) {
         return this
     }
 
-    //即将请求的数组
-    private var array: Array<String>? = null
-
     /**
      * 获取权限
      * @param permissions 权限列表
      */
-    fun request(vararg permissions: String):
-            YPermissions {
+    fun request(vararg permissions: String): YPermissions {
         //成功的权限
         if (Build.VERSION.SDK_INT < 23) {
             for (item in permissions) successListener?.value(item)
@@ -155,54 +195,8 @@ class YPermissions(val activity: ComponentActivity) {
             }
         }
 
-        //请求权限
-        //旧的方法： ActivityCompat.requestPermissions(activity!!, toApplyList.toArray(tmpList), 888)
-        array = noPermissions.toArray(arrayOfNulls<String>(noPermissions.size))
-        //注册生命周期
-        activity.lifecycle.addObserver(object : DefaultLifecycleObserver {
-            //注册权限请求
-            var register: ActivityResultLauncher<Array<String>>? = null
-
-            @RequiresApi(Build.VERSION_CODES.M)
-            override fun onCreate(owner: LifecycleOwner) {
-                super.onCreate(owner)
-                register = activity.activityResultRegistry.register("YPermissions", ActivityResultContracts.RequestMultiplePermissions()) { map ->
-                    map?.let {
-                        array?.let {
-                            var findFail = false//是否有不成功的权限
-                            for (item in it) {
-                                //浮窗权限，特殊处理
-                                if (item == Manifest.permission.SYSTEM_ALERT_WINDOW && Settings.canDrawOverlays(activity)) {
-                                    successListener?.value(item)
-                                    continue
-                                }
-                                //再检查一遍，不能这样写：if (map[item]){ } 因为：map[item]可能为null
-                                if (map[item] == true) {
-                                    //同意
-                                    successListener?.value(item)
-                                } else {
-                                    findFail = true
-                                    //拒绝
-                                    failListener?.value(item)
-                                }
-                            }
-                            //如果没有不成功的权限
-                            if (!findFail) {
-                                allSuccessListener?.value()
-                            }
-                            array = null
-                        }
-                    }
-                }
-                //注册
-                register?.launch(array)
-            }
-
-            override fun onDestroy(owner: LifecycleOwner) {
-                super.onDestroy(owner)
-                register?.unregister()
-            }
-        })
+        array = noPermissions.toTypedArray()
+        register?.launch(array)
         return this
     }
 }

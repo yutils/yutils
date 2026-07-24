@@ -33,8 +33,6 @@ public class YQueue {
                 else runnable.run();
                 Thread.sleep(time);
             } catch (InterruptedException ignored) {
-            } finally {
-                shutdown();
             }
         });
         add(thread);

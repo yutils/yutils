@@ -12,9 +12,9 @@ import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -142,8 +142,8 @@ public class YSocket {
     protected int UrgentData = 0xFF;
     //没有设置心跳包时,发送紧急数据
     protected boolean noHeartbeatSendUrgentData = true;
-    protected List<StateListener> connectListeners = new ArrayList<>();// 连接监听
-    protected List<DataListener> dataListeners = new ArrayList<>();// 数据收到数据监听
+    protected List<StateListener> connectListeners = new CopyOnWriteArrayList<>();// 连接监听
+    protected List<DataListener> dataListeners = new CopyOnWriteArrayList<>();// 数据收到数据监听
     protected boolean connect;// 连接状态
     protected int heartTime = 1000 * 3;// 心跳间隔时间
     protected int CheckConnectTime = 1000 * 3;// 检查连接时间
@@ -434,19 +434,22 @@ public class YSocket {
 
         void send(final byte[] bytes) {
             if (socket == null) return;
-            try {
-                if (bytes == null || bytes.length == 0) {
-                    //如果开启了,没有设置心跳包时发送紧急数据
-                    if (noHeartbeatSendUrgentData) socket.sendUrgentData(UrgentData);
+            synchronized (YSocket.this) {
+                if (socket == null) return;
+                try {
+                    if (bytes == null || bytes.length == 0) {
+                        //如果开启了,没有设置心跳包时发送紧急数据
+                        if (noHeartbeatSendUrgentData) socket.sendUrgentData(UrgentData);
+                        connect = true;
+                        return;
+                    }
+                    OutputStream os = socket.getOutputStream();// 获得输出流
+                    os.write(bytes);
+                    os.flush();
                     connect = true;
-                    return;
+                } catch (Exception e) {
+                    connect = false;
                 }
-                OutputStream os = socket.getOutputStream();// 获得输出流
-                os.write(bytes);
-                os.flush();
-                connect = true;
-            } catch (Exception e) {
-                connect = false;
             }
         }
     }
@@ -467,11 +470,15 @@ public class YSocket {
             while (!isInterrupted()) {
                 if (socket == null || !connect) {
                     try {
-                        socket = (createSocketInterceptor != null) ? createSocketInterceptor.create() : new Socket();
-                        SocketAddress socAddress = new InetSocketAddress(ip, port);// 连接
-                        socket.connect(socAddress, 1000 * 5);
-                        socket.setKeepAlive(true);
-                        connect = true;
+                        synchronized (YSocket.this) {
+                            closeSocket();
+                            Socket newSocket = (createSocketInterceptor != null) ? createSocketInterceptor.create() : new Socket();
+                            SocketAddress socAddress = new InetSocketAddress(ip, port);// 连接
+                            newSocket.connect(socAddress, 1000 * 5);
+                            newSocket.setKeepAlive(true);
+                            socket = newSocket;
+                            connect = true;
+                        }
                         printLog("连接成功... (" + ip + ":" + port + ")");
                         connectListener.isSuccess(true);
                     } catch (Exception e) {
@@ -497,8 +504,11 @@ public class YSocket {
         @Override
         public void run() {
             while (!isInterrupted()) {
+                Socket s = null;
                 try {
-                    InputStream is = socket.getInputStream();
+                    s = socket;
+                    if (s == null) break;
+                    InputStream is = s.getInputStream();
                     byte[] resultBytes = inputStreamToBytes(is);
                     if (resultBytes == null) {
                         if (showReceiveLog) printLog("resultByte==null");
@@ -514,6 +524,12 @@ public class YSocket {
                 } catch (TimeoutException ignored) {
                 } catch (Exception e) {
                     printLog("ReadThread：" + e.getMessage());
+                    // 仅当异常仍来自当前 socket 时标记断开，避免重连成功后被旧读线程误置 false
+                    synchronized (YSocket.this) {
+                        if (s == socket || socket == null) {
+                            connect = false;
+                        }
+                    }
                     // 失败3秒后重新读取
                     if (!isInterrupted()) {
                         try {
@@ -557,15 +573,20 @@ public class YSocket {
      * 关闭Socket
      */
     protected void closeSocket() {
-        try {
-            if (socket != null) {
+        if (socket != null) {
+            try {
                 socket.getInputStream().close();
-                socket.getOutputStream().close();
-                socket.close();
-                socket = null;
+            } catch (Exception ignored) {
             }
-        } catch (IOException e) {
-            printLog("closeSocket:" + e.getMessage());
+            try {
+                socket.getOutputStream().close();
+            } catch (Exception ignored) {
+            }
+            try {
+                socket.close();
+            } catch (Exception ignored) {
+            }
+            socket = null;
         }
     }
 
@@ -619,7 +640,7 @@ public class YSocket {
      * @param bytes 消息byte[]
      * @return 是否发送成功
      */
-    public boolean sendSync(final byte[] bytes) {
+    public synchronized boolean sendSync(final byte[] bytes) {
         // socket==null直接返回失败
         if (socket == null) return false;
         // 判断消息为空直接丢弃
@@ -705,15 +726,20 @@ public class YSocket {
             return inputStreamReadListener.inputStreamToBytes(inputStream);
         long startTime = currentTimeMillis();
         int count = 0;
-        while (count == 0 && currentTimeMillis() - startTime < timeOut)
+        while (count == 0 && currentTimeMillis() - startTime < timeOut) {
             count = inputStream.available();//获取真正长度
+            if (count == 0) Thread.sleep(1);
+        }
         if (currentTimeMillis() - startTime >= timeOut)
             throw new TimeoutException("读取超时");
         byte[] bytes = new byte[count];
         // 一定要读取count个数据，如果inputStream.read(bytes);可能读不完
         int readCount = 0; // 已经成功读取的字节的个数
-        while (readCount < count)
-            readCount += inputStream.read(bytes, readCount, count - readCount);
+        while (readCount < count) {
+            int n = inputStream.read(bytes, readCount, count - readCount);
+            if (n == -1) throw new IOException("连接已关闭(EOF)");
+            readCount += n;
+        }
         return bytes;
     }
 

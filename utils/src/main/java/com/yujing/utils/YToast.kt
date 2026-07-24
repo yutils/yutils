@@ -18,6 +18,7 @@ import com.yujing.utils.YThread.runOnUiThread
 object YToast {
     private var toast: Toast? = null
     private var yQueue: YQueue? = null
+
     /**
      * 设置队列显示时间 毫秒
      */

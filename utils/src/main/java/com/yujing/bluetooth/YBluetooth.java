@@ -125,7 +125,7 @@ public class YBluetooth implements YBluetoothDeviceConnect {
 
     //初始化
     public YBluetooth init(Context context, String type) {
-        this.context = context;
+        this.context = context.getApplicationContext();
         this.type = type;
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (bluetoothAdapter == null) {
@@ -137,11 +137,17 @@ public class YBluetooth implements YBluetoothDeviceConnect {
         } else if (TYPE_BLE.equals(type)) {
             btAndBle = new YBle(context);
         }
+        // 每次 init 重建 Filter，避免重复 addAction；onDestroy 后可再次 init
+        intent = new IntentFilter();
         intent.addAction(BluetoothDevice.ACTION_FOUND);//搜索发现设备
         intent.addAction(BluetoothDevice.ACTION_BOND_STATE_CHANGED);//状态改变
         intent.addAction(BluetoothAdapter.ACTION_SCAN_MODE_CHANGED);//行动扫描模式改变了
         intent.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);//动作状态发生了变化
-        context.registerReceiver(mReceiver, intent);
+        try {
+            this.context.registerReceiver(mReceiver, intent);
+        } catch (Exception e) {
+            YLog.e(TAG, "registerReceiver失败:" + e.getMessage());
+        }
         return this;
     }
 
@@ -151,29 +157,33 @@ public class YBluetooth implements YBluetoothDeviceConnect {
             super.onScanResult(callbackType, result);
             BluetoothDevice device = result.getDevice();
             if (showLog) YLog.i(TAG, "搜索到设备：" + device.getName() + "，" + ((device.getType() == 1) ? "BT" : "BLE") + "，" + device.getAddress() + ",信号强度：" + result.getRssi());
-            searchListener.value(device, result.getRssi());
+            if (searchListener != null) searchListener.value(device, result.getRssi());
         }
     };
 
     //开始搜索
     public YBluetooth search(YListener2<BluetoothDevice, Integer> listener) {
         searchListener = listener;
+        if (bluetoothAdapter == null) return this;
         if (TYPE_BT.equals(type)) {
             bluetoothAdapter.startDiscovery();
         } else if (TYPE_BLE.equals(type)) {
-            bluetoothAdapter.getBluetoothLeScanner().startScan(scanCallback);
+            android.bluetooth.le.BluetoothLeScanner scanner = bluetoothAdapter.getBluetoothLeScanner();
+            if (scanner != null) scanner.startScan(scanCallback);
         }
         return this;
     }
 
     //停止搜索
     public YBluetooth cancelSearch() {
+        if (bluetoothAdapter == null) return this;
         if (TYPE_BT.equals(type)) {
             if (bluetoothAdapter.isDiscovering())
                 bluetoothAdapter.cancelDiscovery();
         } else if (TYPE_BLE.equals(type)) {
             //停止
-            bluetoothAdapter.getBluetoothLeScanner().stopScan(scanCallback);
+            android.bluetooth.le.BluetoothLeScanner scanner = bluetoothAdapter.getBluetoothLeScanner();
+            if (scanner != null) scanner.stopScan(scanCallback);
         }
         return this;
     }
@@ -186,7 +196,7 @@ public class YBluetooth implements YBluetoothDeviceConnect {
     //打开蓝牙
     public YBluetooth open() {
         //没有打开蓝牙
-        if (!bluetoothAdapter.isEnabled()) {
+        if (bluetoothAdapter != null && !bluetoothAdapter.isEnabled()) {
             //提示当前应用请求蓝牙
             bluetoothAdapter.enable();
             //提示某个应用请求蓝牙
@@ -208,15 +218,15 @@ public class YBluetooth implements YBluetoothDeviceConnect {
         List<BluetoothDevice> bluetoothDevices = new ArrayList<>();
         if (pairedDevices.size() > 0) {
             for (BluetoothDevice device : pairedDevices) {
-//                if (TYPE_BT.equals(type)) {
-//                    if (device.getType() == 1)
-//                        btAndBle = new YBt(context);
-//                } else if (TYPE_BLE.equals(type)) {
-//                    if (device.getType() == 2)
-//                        btAndBle = new YBle(context);
-//                } else {
-//                    bluetoothDevices.add(device);
-//                }
+                if (TYPE_BT.equals(type)) {
+                    if (device.getType() == BluetoothDevice.DEVICE_TYPE_CLASSIC)
+                        bluetoothDevices.add(device);
+                } else if (TYPE_BLE.equals(type)) {
+                    if (device.getType() == BluetoothDevice.DEVICE_TYPE_LE)
+                        bluetoothDevices.add(device);
+                } else {
+                    bluetoothDevices.add(device);
+                }
                 YLog.d(TAG, "已配对" + device.getName() + "：" + device.getAddress());
             }
         }
@@ -287,10 +297,12 @@ public class YBluetooth implements YBluetoothDeviceConnect {
     //关闭蓝牙
     public void onDestroy() {
         cancelSearch();
-        if (context != null) {
-            if (mReceiver != null)
+        if (context != null && mReceiver != null) {
+            try {
                 context.unregisterReceiver(mReceiver);
-            mReceiver = null;
+            } catch (Exception ignored) {
+            }
+            // 保留 mReceiver，便于单例再次 init
         }
         if (btAndBle != null) btAndBle.onDestroy();
     }

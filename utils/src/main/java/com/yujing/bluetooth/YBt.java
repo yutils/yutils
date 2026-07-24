@@ -70,37 +70,57 @@ public class YBt implements YBluetoothDeviceConnect {
     @Override
     public void connect(BluetoothDevice device, YSuccessFailListener<BluetoothDevice, String> listener) {
         Thread thread = new Thread(() -> {
-            if (device.getBondState() == BluetoothDevice.BOND_NONE) {
-                //如果这个设备取消了配对，则尝试配对
-                device.createBond();
-            } else if (device.getBondState() == BluetoothDevice.BOND_BONDED) {
-                try {
-                    //通过和服务器协商的uuid来进行连接
-                    bluetoothSocket = device.createRfcommSocketToServiceRecord(SPP_UUID);
-                    YLog.d("blueTooth", "开始连接...");
-                    //如果当前socket处于非连接状态则调用连接
-                    if (!bluetoothSocket.isConnected()) {
-                        //你应当确保在调用connect()时设备没有执行搜索设备的操作。
-                        // 如果搜索设备也在同时进行，那么将会显著地降低连接速率，并很大程度上会连接失败。
-                        bluetoothSocket.connect();
-                    }
-                    YLog.d("blueTooth", "已经链接");
-                    YThread.runOnUiThread(() -> listener.success(device));
-                    read();
-                } catch (Exception e) {
-                    YLog.e("blueTooth", "...连接失败");
-                    YThread.runOnUiThread(() -> listener.fail("连接失败"));
-                    try {
-                        bluetoothSocket.close();
-                    } catch (IOException e1) {
-                        e1.printStackTrace();
-                    }
-                    e.printStackTrace();
+            try {
+                int bondState = device.getBondState();
+                if (bondState == BluetoothDevice.BOND_NONE) {
+                    //如果这个设备取消了配对，则尝试配对，并等待结果
+                    device.createBond();
+                    bondState = waitBonded(device, 30000);
+                } else if (bondState == BluetoothDevice.BOND_BONDING) {
+                    bondState = waitBonded(device, 30000);
                 }
+                if (bondState != BluetoothDevice.BOND_BONDED) {
+                    YThread.runOnUiThread(() -> listener.fail("配对失败或超时"));
+                    return;
+                }
+                //通过和服务器协商的uuid来进行连接
+                bluetoothSocket = device.createRfcommSocketToServiceRecord(SPP_UUID);
+                YLog.d("blueTooth", "开始连接...");
+                //如果当前socket处于非连接状态则调用连接
+                if (!bluetoothSocket.isConnected()) {
+                    //你应当确保在调用connect()时设备没有执行搜索设备的操作。
+                    // 如果搜索设备也在同时进行，那么将会显著地降低连接速率，并很大程度上会连接失败。
+                    bluetoothSocket.connect();
+                }
+                YLog.d("blueTooth", "已经链接");
+                YThread.runOnUiThread(() -> listener.success(device));
+                read();
+            } catch (Exception e) {
+                YLog.e("blueTooth", "...连接失败");
+                YThread.runOnUiThread(() -> listener.fail("连接失败"));
+                try {
+                    if (bluetoothSocket != null) bluetoothSocket.close();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+                e.printStackTrace();
             }
         });
         thread.setName("YBt-连接线程");
         thread.start();
+    }
+
+    /**
+     * 等待配对完成
+     */
+    private int waitBonded(BluetoothDevice device, long timeoutMs) throws InterruptedException {
+        long end = System.currentTimeMillis() + timeoutMs;
+        while (System.currentTimeMillis() < end) {
+            int state = device.getBondState();
+            if (state == BluetoothDevice.BOND_BONDED) return state;
+            Thread.sleep(200);
+        }
+        return device.getBondState();
     }
 
     /**
@@ -109,6 +129,7 @@ public class YBt implements YBluetoothDeviceConnect {
     @Override
     public void send(byte[] bytes) {
         try {
+            if (bluetoothSocket == null) return;
             OutputStream outputStream = bluetoothSocket.getOutputStream();
             outputStream.write(bytes);
             outputStream.flush();
@@ -163,5 +184,10 @@ public class YBt implements YBluetoothDeviceConnect {
     public void onDestroy() {
         if (readInputStream != null)
             readInputStream.stop();
+        try {
+            if (bluetoothSocket != null) bluetoothSocket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

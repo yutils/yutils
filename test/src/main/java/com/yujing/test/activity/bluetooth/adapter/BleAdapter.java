@@ -21,7 +21,7 @@ public class BleAdapter extends BaseAdapter {
     public BleAdapter(Context mContext, List<BluetoothDevice> bluetoothDevices, List<Integer> rssis) {
         this.mContext = mContext;
         this.mBluetoothDevices = bluetoothDevices;
-        mRssis=rssis;
+        mRssis = rssis;
     }
 
     @Override
@@ -52,7 +52,7 @@ public class BleAdapter extends BaseAdapter {
         BluetoothDevice device = (BluetoothDevice) getItem(position);
         viewHolder.name.setText(device.getName());
         viewHolder.introduce.setText(device.getAddress());
-        viewHolder.tvRssi.setText(mRssis.get(position)+"");
+        viewHolder.tvRssi.setText(mRssis.get(position) + "");
         return convertView;
     }
 
@@ -61,10 +61,11 @@ public class BleAdapter extends BaseAdapter {
         public TextView name;
         public TextView introduce;
         public TextView tvRssi;
+
         public ViewHolder(View view) {
             name = view.findViewById(R.id.name);
-            introduce =  view.findViewById(R.id.introduce);
-            tvRssi=view.findViewById(R.id.rssi);
+            introduce = view.findViewById(R.id.introduce);
+            tvRssi = view.findViewById(R.id.rssi);
         }
     }
 }

@@ -497,7 +497,7 @@ public class YBitmapUtil {
      * @return 采样点中足够比例为「近灰」则视为灰阶摄像头画面
      */
     public static boolean isGray(Bitmap bitmap) {
-        return isGray(bitmap, DEFAULT_GRAY_CHANNEL_DIFF, DEFAULT_GRAY_RATIO,GRAY_SAMPLE_GRID);
+        return isGray(bitmap, DEFAULT_GRAY_CHANNEL_DIFF, DEFAULT_GRAY_RATIO, GRAY_SAMPLE_GRID);
     }
 
     /**

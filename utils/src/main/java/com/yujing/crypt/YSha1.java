@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -19,7 +20,7 @@ public class YSha1 {
      * @return String
      */
     public static String SHA1(String str) {
-        return getSha1(str.getBytes()).toUpperCase();
+        return getSha1(str.getBytes(StandardCharsets.UTF_8)).toUpperCase();
     }
 
     /**
@@ -29,7 +30,7 @@ public class YSha1 {
      * @return SHA1值
      */
     public static String getSha1(byte[] bytes) {
-        String fingerprint = null;
+        String fingerprint = "";
         try {
             MessageDigest digest = MessageDigest.getInstance(SHA1);
             byte[] digestBytes = digest.digest(bytes);
@@ -57,7 +58,7 @@ public class YSha1 {
             MessageDigest digest = MessageDigest.getInstance(SHA1);
             byte[] buffer = new byte[1024 * 1024];
             int len;
-            while ((len = in.read(buffer)) > 0) {
+            while ((len = in.read(buffer)) != -1) {
                 digest.update(buffer, 0, len);
             }
             String sha1 = new BigInteger(1, digest.digest()).toString(16);

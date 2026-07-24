@@ -228,16 +228,19 @@ class YPopupWindow<B : ViewDataBinding>(var activity: Activity, var layout: Int)
 
 
     fun show() {
+        if (activity.isFinishing || activity.isDestroyed) return
         popupWindow.showAtLocation(activity.window.decorView, Gravity.BOTTOM, 0, 0)
     }
 
     //显示窗口，显示在view下面或者上面
     fun show(parentView: View) {
+        if (activity.isFinishing || activity.isDestroyed) return
         popupWindow.showAtLocation(parentView, Gravity.CENTER, 0, 0)
     }
 
     //显示窗口，显示在view下面或者上面
     fun showAsDropDown(parentView: View) {
+        if (activity.isFinishing || activity.isDestroyed) return
         //获取View当前绝对位置，相对当前activity而言.getLocationOnScreen(position);相对整个屏幕而言.
         val position = IntArray(2)
         parentView.getLocationInWindow(position)

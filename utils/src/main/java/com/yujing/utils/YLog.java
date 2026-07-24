@@ -62,11 +62,11 @@ public class YLog {
     public static final String INFO = "i";      //INFO
     public static final String WARN = "w";      //WARN
     public static final String ERROR = "e";     //ERROR
-    public static boolean IS_SHOW_LOG_VERBOSE = true;
-    public static boolean IS_SHOW_LOG_DEBUG = true;
-    public static boolean IS_SHOW_LOG_INFO = true;
-    public static boolean IS_SHOW_LOG_WARN = true;
-    public static boolean IS_SHOW_LOG_ERROR = true;
+    public static boolean IS_SHOW_LOG_VERBOSE = true; //是否在logcat中显示VERBOSE
+    public static boolean IS_SHOW_LOG_DEBUG = true;//是否在logcat中显示DEBUG
+    public static boolean IS_SHOW_LOG_INFO = true;//是否在logcat中显示INFO
+    public static boolean IS_SHOW_LOG_WARN = true;//是否在logcat中显示WARN
+    public static boolean IS_SHOW_LOG_ERROR = true;//是否在logcat中显示ERROR
 
     //-------------------------------------------静态方法↓-------------------------------------------
 

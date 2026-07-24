@@ -57,12 +57,19 @@ public class YThreadPool {
      */
     public synchronized void add(Runnable runnable) {
         if (pool == null || pool.isShutdown()) pool = new ScheduledThreadPoolExecutor(threadNum);
-        pool.execute(() -> {
-            runnable.run();
-            //执行完一个线程回调
-            if (runListener != null) runListener.run(pool);
-            //全部执行完毕回调，当前排队线程数pool.getQueue().size()
-            if (finishListener != null && pool.getQueue().size() == 0) finishListener.success();
+        final ScheduledThreadPoolExecutor currentPool = pool;
+        currentPool.execute(() -> {
+            try {
+                runnable.run();
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                //执行完一个线程回调
+                if (runListener != null) runListener.run(currentPool);
+                //全部执行完毕回调，当前排队线程数pool.getQueue().size()
+                if (finishListener != null && currentPool.getQueue().size() == 0)
+                    finishListener.success();
+            }
         });
     }
 
@@ -82,6 +89,7 @@ public class YThreadPool {
         System.out.println("总线程数：" + taskCount);
      */
     public int getPoolSize() {
+        if (pool == null) return 0;
         return pool.isShutdown() ? -1 : pool.getPoolSize();
     }
 
@@ -90,7 +98,7 @@ public class YThreadPool {
      */
     public void shutdown() {
         synchronized (this) {
-            if (!pool.isShutdown()) pool.shutdown();
+            if (pool != null && !pool.isShutdown()) pool.shutdown();
         }
     }
 

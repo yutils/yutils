@@ -8,7 +8,8 @@ import java.io.InputStream
 import java.net.InetSocketAddress
 import java.net.Socket
 import java.net.SocketAddress
-import java.util.*
+import java.util.Arrays
+import java.util.Vector
 import java.util.concurrent.TimeoutException
 
 /**
@@ -111,19 +112,22 @@ class YSocketSync(var ip: String?, var port: Int) {
 
         fun send(bytes: ByteArray?) {
             if (ySocketSync.socket == null) return
-            try {
-                if (bytes == null || bytes.isEmpty()) {
-                    //如果开启了,没有设置心跳包时发送紧急数据
-                    if (ySocketSync.isNoHeartbeatSendUrgentData) ySocketSync.socket?.sendUrgentData(ySocketSync.urgentData)
+            synchronized(ySocketSync) {
+                if (ySocketSync.socket == null) return
+                try {
+                    if (bytes == null || bytes.isEmpty()) {
+                        //如果开启了,没有设置心跳包时发送紧急数据
+                        if (ySocketSync.isNoHeartbeatSendUrgentData) ySocketSync.socket?.sendUrgentData(ySocketSync.urgentData)
+                        ySocketSync.isConnect = true
+                        return
+                    }
+                    val os = ySocketSync.socket?.getOutputStream() // 获得输出流
+                    os?.write(bytes)
+                    os?.flush()
                     ySocketSync.isConnect = true
-                    return
+                } catch (e: Exception) {
+                    ySocketSync.isConnect = false
                 }
-                val os = ySocketSync.socket?.getOutputStream() // 获得输出流
-                os?.write(bytes)
-                os?.flush()
-                ySocketSync.isConnect = true
-            } catch (e: Exception) {
-                ySocketSync.isConnect = false
             }
         }
     }
@@ -140,11 +144,15 @@ class YSocketSync(var ip: String?, var port: Int) {
             while (!isInterrupted) {
                 if (ySocketSync.socket == null || !ySocketSync.isConnect) {
                     try {
-                        ySocketSync.socket = ySocketSync.createSocketInterceptor?.invoke() ?: Socket()
-                        val socAddress: SocketAddress = InetSocketAddress(ySocketSync.ip, ySocketSync.port) // 连接
-                        ySocketSync.socket?.connect(socAddress, 1000 * 5)
-                        ySocketSync.socket?.keepAlive = true
-                        ySocketSync.isConnect = true
+                        synchronized(ySocketSync) {
+                            ySocketSync.closeSocket()
+                            val newSocket = ySocketSync.createSocketInterceptor?.invoke() ?: Socket()
+                            val socAddress: SocketAddress = InetSocketAddress(ySocketSync.ip, ySocketSync.port) // 连接
+                            newSocket.connect(socAddress, 1000 * 5)
+                            newSocket.keepAlive = true
+                            ySocketSync.socket = newSocket
+                            ySocketSync.isConnect = true
+                        }
                         ySocketSync.printLog("连接成功... (${ySocketSync.ip}:${ySocketSync.port})")
                         connectListener?.invoke(true)
                     } catch (e: Exception) {
@@ -251,12 +259,19 @@ class YSocketSync(var ip: String?, var port: Int) {
         inputStreamReadListener?.let { return it.invoke(inputStream) }
         val startTime = System.currentTimeMillis()
         var count = 0
-        while (count == 0 && System.currentTimeMillis() - startTime < readTimeOut) count = inputStream.available() //获取真正长度
+        while (count == 0 && System.currentTimeMillis() - startTime < readTimeOut) {
+            count = inputStream.available() //获取真正长度
+            if (count == 0) Thread.sleep(1)
+        }
         if (System.currentTimeMillis() - startTime >= readTimeOut) throw TimeoutException("读取超时")
         val bytes = ByteArray(count)
         // 一定要读取count个数据，如果inputStream.read(bytes);可能读不完
         var readCount = 0 // 已经成功读取的字节的个数
-        while (readCount < count) readCount += inputStream.read(bytes, readCount, count - readCount)
+        while (readCount < count) {
+            val n = inputStream.read(bytes, readCount, count - readCount)
+            if (n == -1) throw IOException("连接已关闭(EOF)")
+            readCount += n
+        }
         return bytes
     }
 
@@ -273,10 +288,15 @@ class YSocketSync(var ip: String?, var port: Int) {
     fun closeSocket() {
         try {
             socket?.shutdownInput()
+        } catch (_: Exception) {
+        }
+        try {
             socket?.shutdownOutput()
+        } catch (_: Exception) {
+        }
+        try {
             socket?.close()
-        } catch (e: IOException) {
-            printLog("closeSocket:" + e.message)
+        } catch (_: Exception) {
         }
         socket = null
     }

@@ -28,6 +28,8 @@ import com.yujing.utils.YLog
 import com.yujing.utils.YThread
 import java.nio.ByteBuffer
 import java.util.*
+import java.util.concurrent.Executors
+import java.util.concurrent.atomic.AtomicBoolean
 
 
 /**
@@ -147,6 +149,10 @@ class YCamera(var textureView: AutoFitTextureView, var id: String?) {
     private var mCaptureSession: CameraCaptureSession? = null
     private var mPreviewRequestBuilder: CaptureRequest.Builder? = null
     private var mSurfaceTexture: SurfaceTexture? = null
+    private val analyzing = AtomicBoolean(false)
+    private val analysisExecutor = Executors.newSingleThreadExecutor { r ->
+        Thread(r, "YCamera-analysis").apply { isDaemon = true }
+    }
     private var mPreviewSurface: Surface? = null
     private var screenStopTime = 0 //当前已经有多少秒屏幕没有响应
     private var checkThread: Thread? = null  //检查屏幕无响应线程
@@ -257,6 +263,8 @@ class YCamera(var textureView: AutoFitTextureView, var id: String?) {
                 override fun onError(camera: CameraDevice, error: Int) {
                     val msg = "摄像头设备异常：${error}"
                     YLog.e(TAG, msg)
+                    camera.close()
+                    mCameraDevice = null
                     YThread.runOnUiThread { errorListener?.value(msg) }
                 }
             }, null)
@@ -308,28 +316,43 @@ class YCamera(var textureView: AutoFitTextureView, var id: String?) {
                 //val startTime = System.currentTimeMillis()
                 if (image.format == ImageFormat.YUV_420_888) {
                     val bitmap = ImageUtil.imageToBitmap_YUV_420_888(YApp.get(), image)
-                    Thread {
-                        if (bitmap == null) return@Thread
-                        //预览相对于原数据可能有旋转
-                        val matrix = Matrix()
-                        val ori = getCameraOri(mCameraId!!)
-                        matrix.postRotate(if (CAMERA_ID_BACK == mCameraId) ori.toFloat() else -ori.toFloat())
-                        // 对于前置数据，镜像处理
-                        if (CAMERA_ID_FRONT == mCameraId) matrix.postScale(-1f, 1f)
-                        // 和预览画面相同的bitmap
-                        val previewBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, false)
+                    // 避免每帧 new Thread；忙碌时丢帧
+                    if (active && analyzing.compareAndSet(false, true)) {
+                        try {
+                            analysisExecutor.execute {
+                                try {
+                                    if (!active || bitmap == null) return@execute
+                                    //预览相对于原数据可能有旋转
+                                    val matrix = Matrix()
+                                    val ori = getCameraOri(mCameraId!!)
+                                    matrix.postRotate(if (CAMERA_ID_BACK == mCameraId) ori.toFloat() else -ori.toFloat())
+                                    // 对于前置数据，镜像处理
+                                    if (CAMERA_ID_FRONT == mCameraId) matrix.postScale(-1f, 1f)
+                                    // 和预览画面相同的bitmap
+                                    val previewBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, false)
 
-                        //如果打开了人脸监听
-                        if (faceListener != null) {
-                            val rfs = YFace.findFaceRectFs(previewBitmap, maxFaces)
-                            if (rfs != null) {
-                                //显示人脸框
-                                if (showFacesRectF) YFace.drawFaceInfos(rfs, previewBitmap)
-                                YThread.runOnUiThread { faceListener?.value(previewBitmap) }
+                                    //如果打开了人脸监听
+                                    if (faceListener != null) {
+                                        val rfs = YFace.findFaceRectFs(previewBitmap, maxFaces)
+                                        if (rfs != null) {
+                                            //显示人脸框
+                                            if (showFacesRectF) YFace.drawFaceInfos(rfs, previewBitmap)
+                                            YThread.runOnUiThread {
+                                                if (active) faceListener?.value(previewBitmap)
+                                            }
+                                        }
+                                    }
+                                    YThread.runOnUiThread {
+                                        if (active) analysisListener?.value(previewBitmap)
+                                    }
+                                } finally {
+                                    analyzing.set(false)
+                                }
                             }
+                        } catch (_: Exception) {
+                            analyzing.set(false)
                         }
-                        YThread.runOnUiThread { analysisListener?.value(previewBitmap) }
-                    }.start()
+                    }
                 }
                 //Log.d(TAG, "耗时:${System.currentTimeMillis() - startTime}")
             }
@@ -523,8 +546,10 @@ class YCamera(var textureView: AutoFitTextureView, var id: String?) {
 
     /**
      * 退出并释放全部
+     * 注意：switch() 也会调用本方法，故不清空 listener、不关闭 analysisExecutor
      */
     fun onDestroy() {
+        active = false
         try {
             mCaptureSession?.close()
             mCaptureSession = null

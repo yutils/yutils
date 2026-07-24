@@ -39,6 +39,7 @@ public class YOneBitCrypt {
      * @return 结果
      */
     public static byte[] decrypt(byte[] bytes, byte password) {
+        password = getPassword(password);
         for (int i = 0; i < bytes.length; i++) {
             bytes[i] -= 67 * i + i * i * password;
         }

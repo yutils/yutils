@@ -109,13 +109,21 @@ public abstract class YBaseDao<T> {
     // 查询全部
     public List<T> query() {
         Cursor cursor = getDB().query(tableName(), null, null, null, null, null, null);
-        return cursorToList(cursor);
+        try {
+            return cursorToList(cursor);
+        } finally {
+            if (cursor != null && !cursor.isClosed()) cursor.close();
+        }
     }
 
     // 查询
     public List<T> query(String whereClause, String... whereArgs) {
         Cursor cursor = getDB().query(tableName(), null, whereClause, whereArgs, null, null, null);
-        return cursorToList(cursor);
+        try {
+            return cursorToList(cursor);
+        } finally {
+            if (cursor != null && !cursor.isClosed()) cursor.close();
+        }
     }
 
     // 更新

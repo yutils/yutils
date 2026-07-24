@@ -199,22 +199,25 @@ class YUdp(var ip: String, var port: Int) {
             val datagramPacketSend = DatagramPacket(data, data.size, address, port)
             // 3.创建DatagramSocket对象
             val datagramSocket = DatagramSocket()
-            // 4.向服务器端发送数据报
-            datagramSocket.soTimeout = timeout
-            datagramSocket.send(datagramPacketSend)
-            // 接收服务器端响应的数据
-            // 1.创建数据报，用于接收服务器端响应的数据
-            val tempRead = ByteArray(readMaxLength)
-            val datagramPacketRead = DatagramPacket(tempRead, tempRead.size)
-            // 2.接收服务器响应的数据
-            datagramSocket.soTimeout = timeout
-            datagramSocket.receive(datagramPacketRead)
-            //3.取出数据
-            val bytes = ByteArray(datagramPacketRead.length)
-            System.arraycopy(tempRead, 0, bytes, 0, datagramPacketRead.length)
-            // 4.关闭资源
-            datagramSocket.close()
-            return bytes
+            try {
+                // 4.向服务器端发送数据报
+                datagramSocket.soTimeout = timeout
+                datagramSocket.send(datagramPacketSend)
+                // 接收服务器端响应的数据
+                // 1.创建数据报，用于接收服务器端响应的数据
+                val tempRead = ByteArray(readMaxLength)
+                val datagramPacketRead = DatagramPacket(tempRead, tempRead.size)
+                // 2.接收服务器响应的数据
+                datagramSocket.soTimeout = timeout
+                datagramSocket.receive(datagramPacketRead)
+                //3.取出数据
+                val bytes = ByteArray(datagramPacketRead.length)
+                System.arraycopy(tempRead, 0, bytes, 0, datagramPacketRead.length)
+                return bytes
+            } finally {
+                // 4.关闭资源
+                datagramSocket.close()
+            }
         }
 
         /**
@@ -257,31 +260,39 @@ class YUdp(var ip: String, var port: Int) {
             val datagramPacketSend = DatagramPacket(data, data.size, address, port)
             // 3.创建DatagramSocket对象
             val datagramSocket = DatagramSocket()
-            // 4.向服务器端发送数据报
-            datagramSocket.soTimeout = timeout
-            datagramSocket.send(datagramPacketSend)
             val yBytes = YBytes()
-            val overdueTime = System.currentTimeMillis() + timeout
-            while (System.currentTimeMillis() < overdueTime) {
-                try {
-                    // 接收服务器端响应的数据
-                    // 1.创建数据报，用于接收服务器端响应的数据
-                    val tempRead = ByteArray(maxLength)
-                    val datagramPacketRead = DatagramPacket(tempRead, tempRead.size)
-                    // 2.接收服务器响应的数据
-                    datagramSocket.soTimeout = timeout
-                    datagramSocket.receive(datagramPacketRead)
-                    //3.取出数据
-                    val bytes = ByteArray(datagramPacketRead.length)
-                    System.arraycopy(tempRead, 0, bytes, 0, datagramPacketRead.length)
-                    yBytes.addByte(bytes)
-                    //如果数据够了就退出
-                    if (yBytes.bytes.size >= maxLength) break
-                } catch (ignore: Exception) {
+            try {
+                // 4.向服务器端发送数据报
+                datagramSocket.soTimeout = timeout
+                datagramSocket.send(datagramPacketSend)
+                val overdueTime = System.currentTimeMillis() + timeout
+                while (System.currentTimeMillis() < overdueTime) {
+                    try {
+                        // 接收服务器端响应的数据
+                        // 1.创建数据报，用于接收服务器端响应的数据
+                        val tempRead = ByteArray(maxLength)
+                        val datagramPacketRead = DatagramPacket(tempRead, tempRead.size)
+                        // 2.接收服务器响应的数据
+                        datagramSocket.soTimeout = timeout
+                        datagramSocket.receive(datagramPacketRead)
+                        //3.取出数据
+                        val bytes = ByteArray(datagramPacketRead.length)
+                        System.arraycopy(tempRead, 0, bytes, 0, datagramPacketRead.length)
+                        yBytes.addByte(bytes)
+                        //如果数据够了就退出
+                        if (yBytes.bytes.size >= maxLength) break
+                    } catch (e: java.net.SocketTimeoutException) {
+                        break
+                    } catch (e: InterruptedException) {
+                        Thread.currentThread().interrupt()
+                        break
+                    } catch (ignore: Exception) {
+                    }
                 }
+            } finally {
+                // 4.关闭资源
+                datagramSocket.close()
             }
-            // 4.关闭资源
-            datagramSocket.close()
             return yBytes.bytes
         }
     }

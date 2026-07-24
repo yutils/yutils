@@ -8,7 +8,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.concurrent.*
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.ExecutionException
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.TimeoutException
 
 /**
  * 线程操作
@@ -222,18 +226,21 @@ object YThread {
     fun serial(vararg runs: Runnable) {
         if (runs.isEmpty()) return
         val executorService = Executors.newSingleThreadExecutor()
-        for (runnable in runs) {
-            val future = executorService.submit<Int> {
-                try {
-                    runnable.run()
-                } catch (e: java.lang.Exception) {
-                    e.printStackTrace()
+        try {
+            for (runnable in runs) {
+                val future = executorService.submit<Int> {
+                    try {
+                        runnable.run()
+                    } catch (e: java.lang.Exception) {
+                        e.printStackTrace()
+                    }
+                    0
                 }
-                0
+                future.get() //等待执行完成，如果不写这句，该方法不会阻塞
             }
-            future.get() //等待执行完成，如果不写这句，该方法不会阻塞
+        } finally {
+            executorService.shutdown()
         }
-        executorService.shutdown()
     }
 
 
@@ -310,10 +317,13 @@ object YThread {
     }
 
     /**
-     * delay延迟 柱塞线程
+     * delay延迟。禁止在主线程调用，否则会阻塞 Looper 导致 ANR
      */
     @JvmStatic
     fun delay(timeMillis: Long) {
+        if (isMainThread()) {
+            throw IllegalStateException("YThread.delay() 禁止在主线程调用，请使用 Handler.postDelayed 或协程 delay")
+        }
         kotlinx.coroutines.runBlocking {
             kotlinx.coroutines.delay(if (timeMillis < 0) 0 else timeMillis)//延时timeMillis毫秒
         }

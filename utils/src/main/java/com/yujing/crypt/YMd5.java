@@ -2,6 +2,7 @@ package com.yujing.crypt;
 
 import com.yujing.utils.YLog;
 
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -32,7 +33,6 @@ public class YMd5 {
     // 返回形式只为数字
     private static String byteToNum(byte bByte) {
         int iRet = bByte;
-        System.out.println("iRet1=" + iRet);
         if (iRet < 0) {
             iRet += 256;
         }
@@ -49,11 +49,11 @@ public class YMd5 {
     }
 
     public static String MD5(String strObj) {
-        return getMd5(strObj.getBytes()).toUpperCase();
+        return getMd5(strObj.getBytes(StandardCharsets.UTF_8)).toUpperCase();
     }
 
     public static String getMd5(byte[] bytes) {
-        String resultString = null;
+        String resultString = "";
         try {
             MessageDigest md = MessageDigest.getInstance(MD5);
             resultString = byteToString(md.digest(bytes));

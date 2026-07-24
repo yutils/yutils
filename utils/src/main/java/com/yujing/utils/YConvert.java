@@ -478,24 +478,30 @@ public class YConvert {
     @Deprecated
     public static Bitmap nv21ToBitmapFast(byte[] nv21, int width, int height, Context context) {
         RenderScript rs = RenderScript.create(context);
-        ScriptIntrinsicYuvToRGB toRgb = ScriptIntrinsicYuvToRGB.create(rs, Element.U8_4(rs));
-        Type.Builder yuvType = (new Type.Builder(rs, Element.U8(rs))).setX(nv21.length);
-        Allocation in = Allocation.createTyped(rs, yuvType.create(), 1);
-        Type.Builder rgbaType = (new Type.Builder(rs, Element.RGBA_8888(rs))).setX(width).setY(height);
-        Allocation out = Allocation.createTyped(rs, rgbaType.create(), 1);
+        ScriptIntrinsicYuvToRGB toRgb = null;
+        Allocation in = null;
+        Allocation out = null;
+        try {
+            toRgb = ScriptIntrinsicYuvToRGB.create(rs, Element.U8_4(rs));
+            Type.Builder yuvType = (new Type.Builder(rs, Element.U8(rs))).setX(nv21.length);
+            in = Allocation.createTyped(rs, yuvType.create(), 1);
+            Type.Builder rgbaType = (new Type.Builder(rs, Element.RGBA_8888(rs))).setX(width).setY(height);
+            out = Allocation.createTyped(rs, rgbaType.create(), 1);
 
-        in.copyFrom(nv21);
-        toRgb.setInput(in);
-        toRgb.forEach(out);
-        Bitmap newBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-        out.copyTo(newBitmap);
-
-        out.destroy();
-        in.destroy();
-        toRgb.destroy();
-        rs.destroy();
-        return newBitmap;
+            in.copyFrom(nv21);
+            toRgb.setInput(in);
+            toRgb.forEach(out);
+            Bitmap newBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+            out.copyTo(newBitmap);
+            return newBitmap;
+        } finally {
+            if (out != null) out.destroy();
+            if (in != null) in.destroy();
+            if (toRgb != null) toRgb.destroy();
+            rs.destroy();
+        }
     }
+
     @Deprecated
     public static Bitmap nv21ToBitmapFast(byte[] nv21, int width, int height) {
         return nv21ToBitmapFast(nv21, width, height, YApp.get());
@@ -557,9 +563,7 @@ public class YConvert {
         if (bytes == null) return null;
         Object object;
         ByteArrayInputStream byteIn = new ByteArrayInputStream(bytes);
-        ObjectInputStream in;
-        try {
-            in = new ObjectInputStream(byteIn);
+        try (ObjectInputStream in = new ObjectInputStream(byteIn)) {
             object = in.readObject();
         } catch (ClassNotFoundException e) {
             if (showLog) YLog.e("对象转换失败：", "Base64转对象时候发生错误,确保包名是否一致，ClassNotFoundException");

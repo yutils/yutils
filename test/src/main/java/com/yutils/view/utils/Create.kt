@@ -6,7 +6,14 @@ import android.graphics.Color
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.Button
+import android.widget.CheckBox
+import android.widget.CompoundButton
+import android.widget.EditText
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.Space
+import android.widget.TextView
 import com.yujing.utils.YApp
 import com.yujing.utils.YScreenUtil.dp2px
 import kotlin.random.Random
@@ -129,7 +136,7 @@ class Create {
                 gravity = Gravity.CENTER
                 setOnCheckedChangeListener(listener)
                 this.layoutParams = layoutParams
-                setTextColor(randomColor(255,0,200))
+                setTextColor(randomColor(255, 0, 200))
             }
             return view
         }

@@ -9,6 +9,13 @@ import java.util.List;
  *
  * @author 余静  2019年4月2日10:27:01
  */
+/*用法
+// 每隔 digit 位插入分隔符（末尾不多余分隔符）
+YString.insert("AABBCCDD", 2, "-"); // → "AA-BB-CC-DD"
+YString.insert("AABBCCD", 2, "-");  // → "AA-BB-CC-D"
+YString.ToSBC("ABC");
+YString.ToDBC("ＡＢＣ");
+ */
 @SuppressWarnings({"unused", "WeakerAccess"})
 public class YString {
     /**
@@ -167,16 +174,25 @@ public class YString {
     }
 
     /**
-     * 字符串每隔digit位添加一个符号
+     * 字符串每隔digit位添加一个符号（末尾不再追加多余分隔符）
      *
      * @param str          字符串
      * @param digit        每隔digit位添加一个符号
      * @param insertString 添加的符号
-     * @return 结果
+     * @return 结果，如 insert("AABBCCDD", 2, "-") → "AA-BB-CC-DD"
      */
     @SuppressWarnings("Annotator")
     public static String insert(String str, int digit, String insertString) {
-        String regex = "(.{" + digit + "})";
-        return str.replaceAll(regex, "$1" + insertString);
+        if (str == null || insertString == null || digit <= 0 || str.isEmpty()) {
+            return str;
+        }
+        StringBuilder sb = new StringBuilder(str.length() + str.length() / digit * insertString.length());
+        for (int i = 0; i < str.length(); i++) {
+            if (i > 0 && i % digit == 0) {
+                sb.append(insertString);
+            }
+            sb.append(str.charAt(i));
+        }
+        return sb.toString();
     }
 }

@@ -161,8 +161,8 @@ public class YObjectStorage {
      * @param fileName 文件名
      */
     public YObjectStorage(Context context, String fileName) {
-        //path = context.getDir("ObjectStorage", Context.MODE_PRIVATE).getPath() + File.separator + fileName;
-        path = context.getFilesDir() + File.separator + "ObjectStorage" + File.separator + FILENAME;
+        String name = (fileName != null && !fileName.isEmpty()) ? fileName : FILENAME;
+        path = context.getFilesDir() + File.separator + "ObjectStorage" + File.separator + name;
     }
 
     // 写入

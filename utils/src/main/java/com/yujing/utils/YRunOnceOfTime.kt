@@ -1,8 +1,8 @@
 package com.yujing.utils
 
 import java.text.SimpleDateFormat
-import java.util.*
-import kotlin.collections.ArrayList
+import java.util.Locale
+import java.util.Vector
 
 /**
  * time（millisecond）内只允许运行一次，多余的事件直接抛弃
@@ -175,21 +175,19 @@ class YRunOnceOfTime(var time: Long, var tag: String, var lastTime: Long) {
             //如果没有找到对象，就创建并且运行
             if (checkUpdate(time, tag)) {
                 YThread.runOnUiThread(runnable)
-                list.add(YRunOnceOfTime(time, tag, System.currentTimeMillis()))
             }
         }
 
-        var formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.getDefault())
-
+        @Synchronized
         override fun toString(): String {
-            check("")
-            var s = if (list.size == 0) "无数据" else ""
-            var i = 0
-            while (i < list.size) {
-                val item = list[i]
-                s += "间隔时间:${item.time}\t\t剩余:(${item.time - (System.currentTimeMillis() - item.lastTime)}毫秒)\t\t上次执行时间:${formatter.format(item.lastTime)}\t\ttag:${item.tag}\n"
-                i++
+            val currentTime = System.currentTimeMillis()
+            val sb = StringBuilder()
+            if (list.isEmpty()) sb.append("无数据")
+            val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.getDefault())
+            for (item in list) {
+                sb.append("间隔时间:${item.time}\t\t剩余:(${item.time - (currentTime - item.lastTime)}毫秒)\t\t上次执行时间:${formatter.format(item.lastTime)}\t\ttag:${item.tag}\n")
             }
+            val s = sb.toString()
             YLog.d("YRunOnceOfTime", s, 1)
             return s
         }

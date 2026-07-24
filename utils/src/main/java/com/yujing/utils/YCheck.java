@@ -22,11 +22,11 @@ public class YCheck {
      */
     public static final String INTEGER = "^-?(([1-9]\\d*$)|0)";
     /**
-     * 正整数正则表达式 大于=0 ^[1-9]\d*|0$
+     * 正整数正则表达式（历史常量名含 NEGATIVE，实际表示 ≥0） ^[1-9]\d*|0$
      */
     public static final String INTEGER_NEGATIVE = "^[1-9]\\d*|0$";
     /**
-     * 负整数正则表达式 小于=0 ^-[1-9]\d*|0$
+     * 负整数正则表达式（历史常量名含 POSITIVE，实际表示 ≤0） ^-[1-9]\d*|0$
      */
     public static final String INTEGER_POSITIVE = "^-[1-9]\\d*|0$";
     /**
@@ -34,11 +34,11 @@ public class YCheck {
      */
     public static final String DOUBLE = "^-?([1-9]\\d*\\.\\d*|0\\.\\d*[1-9]\\d*|0?\\.0+|0)$";
     /**
-     * 正Double正则表达式 大于=0  ^[1-9]\d*\.\d*|0\.\d*[1-9]\d*|0?\.0+|0$
+     * 正 Double 正则（历史常量名含 NEGATIVE，实际 ≥0）
      */
     public static final String DOUBLE_NEGATIVE = "^[1-9]\\d*\\.\\d*|0\\.\\d*[1-9]\\d*|0?\\.0+|0$";
     /**
-     * 负Double正则表达式 小于= 0  ^(-([1-9]\d*\.\d*|0\.\d*[1-9]\d*))|0?\.0+|0$
+     * 负 Double 正则（历史常量名含 POSITIVE，实际 ≤0）
      */
     public static final String DOUBLE_POSITIVE = "^(-([1-9]\\d*\\.\\d*|0\\.\\d*[1-9]\\d*))|0?\\.0+|0$";
     /**
@@ -211,7 +211,8 @@ public class YCheck {
     }
 
     /**
-     * 判断字段是否为正整数正则表达式 大于=0 符合返回ture
+     * 判断字段是否为「非负整数」（历史方法名含 NEGATIVE，与语义相反，请按本注释使用）
+     * 实际匹配常量 INTEGER_NEGATIVE：^[1-9]\d*|0$ （≥0）
      *
      * @param str str
      * @return 是否通过
@@ -221,7 +222,8 @@ public class YCheck {
     }
 
     /**
-     * 判断字段是否为负整数正则表达式 小于=0 符合返回ture
+     * 判断字段是否为「非正整数」（历史方法名含 POSITIVE，与语义相反，请按本注释使用）
+     * 实际匹配常量 INTEGER_POSITIVE：^-[1-9]\d*|0$ （≤0）
      *
      * @param str str
      * @return 是否通过
@@ -241,20 +243,14 @@ public class YCheck {
     }
 
     /**
-     * 判断字段是否为正浮点数正则表达式 大于=0 符合返回ture
-     *
-     * @param str str
-     * @return 是否通过
+     * 判断是否为非负浮点数（方法名含 NEGATIVE，历史命名与语义相反；实际 ≥0）
      */
     public static boolean isDouble_NEGATIVE(String str) {
         return Regular(str, DOUBLE_NEGATIVE);
     }
 
     /**
-     * 判断字段是否为负浮点数正则表达式 小于=0 符合返回ture
-     *
-     * @param str str
-     * @return 是否通过
+     * 判断是否为非正浮点数（方法名含 POSITIVE，历史命名与语义相反；实际 ≤0）
      */
     public static boolean isDouble_POSITIVE(String str) {
         return Regular(str, DOUBLE_POSITIVE);
@@ -271,7 +267,7 @@ public class YCheck {
     }
 
     /**
-     * 判断字段是否为年龄 符合返回ture
+     * 判断字段是否为年龄（0–120）符合返回 true
      *
      * @param str str
      * @return 是否通过
@@ -363,7 +359,7 @@ public class YCheck {
          * @return 是否通过
          */
         public static boolean isBankCard(String bankCard) {
-            if (bankCard.length() < 15 || bankCard.length() > 19) {
+            if (bankCard == null || bankCard.length() < 15 || bankCard.length() > 19) {
                 return false;
             }
             char bit = getBankCardCheckCode(bankCard.substring(0, bankCard.length() - 1));

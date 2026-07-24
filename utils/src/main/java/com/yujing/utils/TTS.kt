@@ -1,10 +1,13 @@
 @file:Suppress("DEPRECATION")
+
 package com.yujing.utils
 
 import android.content.Context
 import android.os.Build
 import android.speech.tts.TextToSpeech
 import android.util.Log
+import com.yujing.utils.TTS.enginePackageOrder
+import com.yujing.utils.TTS.init
 import java.util.Locale
 
 private const val SG_TTS_PACKAGE = "org.nobody.sgtts"
@@ -101,15 +104,19 @@ object TTS {
         private set
     var textToSpeech: TextToSpeech? = null
         private set
+
     @JvmStatic
     var speechRate = 1.0f //速度
+
     @JvmStatic
     var pitch = 1.0f //音调
 
     @JvmStatic
     var filter: ((String) -> String?)? = null
+
     @JvmStatic
     var showLog = false //是否显示log
+
     @JvmStatic
     var history = mutableListOf<String>()//历史记录，倒序，最多1000条
 
@@ -152,10 +159,10 @@ object TTS {
             return
         }
         val packages = (
-            enginePackages
-                ?: enginePackageOrder
-                ?: DEFAULT_TTS_ENGINE_PACKAGES
-        ).map { it.trim() }.filter { it.isNotEmpty() }
+                enginePackages
+                    ?: enginePackageOrder
+                    ?: DEFAULT_TTS_ENGINE_PACKAGES
+                ).map { it.trim() }.filter { it.isNotEmpty() }
         tryInitEngine(appContext, packages, 0, initListener)
     }
 
@@ -175,10 +182,12 @@ object TTS {
                         Log.e(TAG, "TTS初始化失败，语言包丢失")
                         1
                     }
+
                     TextToSpeech.LANG_NOT_SUPPORTED -> {
                         Log.e(TAG, "TTS初始化失败，语音不支持")
                         2
                     }
+
                     else -> {
                         Log.i(TAG, "TTS初始化成功")
                         0
@@ -220,10 +229,12 @@ object TTS {
                         Log.e(TAG, "TTS初始化失败[$logTag]，语言包丢失")
                         1
                     }
+
                     TextToSpeech.LANG_NOT_SUPPORTED -> {
                         Log.e(TAG, "TTS初始化失败[$logTag]，语音不支持")
                         2
                     }
+
                     else -> {
                         Log.i(TAG, "TTS初始化成功: $logTag")
                         if (enginePkg == SG_TTS_PACKAGE) {

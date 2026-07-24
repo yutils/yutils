@@ -1,11 +1,11 @@
 package com.yujing.utils;
 
+import static android.os.Environment.MEDIA_MOUNTED;
+
 import android.content.Context;
 import android.os.Environment;
 
 import java.io.File;
-
-import static android.os.Environment.MEDIA_MOUNTED;
 
 /**
  * 获取安卓各种默认目录

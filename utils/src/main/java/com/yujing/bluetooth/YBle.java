@@ -1,5 +1,7 @@
 package com.yujing.bluetooth;
 
+import static android.bluetooth.BluetoothDevice.TRANSPORT_LE;
+
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
@@ -20,8 +22,6 @@ import com.yujing.utils.YThread;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
-
-import static android.bluetooth.BluetoothDevice.TRANSPORT_LE;
 
 /**
  * 低功耗蓝牙连接类，实现连接，发送数据，读取数据
@@ -114,11 +114,24 @@ public class YBle implements YBluetoothDeviceConnect {
                     if (showLog) YLog.i(TAG, "连接成功");
                     //发现服务
                     gatt.discoverServices();
+                } else if (newState == BluetoothGatt.STATE_DISCONNECTED) {
+                    if (showLog) YLog.i(TAG, "连接已断开");
+                    try {
+                        gatt.close();
+                    } catch (Exception ignored) {
+                    }
+                    if (mBluetoothGatt == gatt) mBluetoothGatt = null;
+                    if (listener != null)
+                        YThread.runOnUiThread(() -> listener.fail("连接已断开"));
                 }
             } else {
                 //连接失败
                 YLog.e(TAG, "失败==" + status);
-                mBluetoothGatt.close();
+                try {
+                    if (mBluetoothGatt != null) mBluetoothGatt.close();
+                } catch (Exception ignored) {
+                }
+                mBluetoothGatt = null;
                 //连接失败
                 if (listener != null)
                     YThread.runOnUiThread(() -> listener.fail("连接失败"));
@@ -135,8 +148,16 @@ public class YBle implements YBluetoothDeviceConnect {
             if (showLog) YLog.i(TAG, "onServicesDiscovered()---建立连接");
             //获取初始化服务和特征值
             initServiceAndChara();
-            //订阅通知
-            mBluetoothGatt.setCharacteristicNotification(mBluetoothGatt.getService(notify_UUID_service).getCharacteristic(notify_UUID_chara), true);
+            //订阅通知（无 Notify 特征时跳过，避免 NPE）
+            if (notify_UUID_service != null && notify_UUID_chara != null && mBluetoothGatt != null) {
+                BluetoothGattService notifyService = mBluetoothGatt.getService(notify_UUID_service);
+                if (notifyService != null) {
+                    BluetoothGattCharacteristic notifyChara = notifyService.getCharacteristic(notify_UUID_chara);
+                    if (notifyChara != null) {
+                        mBluetoothGatt.setCharacteristicNotification(notifyChara, true);
+                    }
+                }
+            }
 //            mBluetoothGatt.requestMtu(512);
             //连接成功
             if (listener != null)
@@ -193,13 +214,21 @@ public class YBle implements YBluetoothDeviceConnect {
 
     @Override
     public void read() {
-        BluetoothGattCharacteristic characteristic = mBluetoothGatt.getService(read_UUID_service).getCharacteristic(read_UUID_chara);
+        if (mBluetoothGatt == null || read_UUID_service == null || read_UUID_chara == null) return;
+        BluetoothGattService service = mBluetoothGatt.getService(read_UUID_service);
+        if (service == null) return;
+        BluetoothGattCharacteristic characteristic = service.getCharacteristic(read_UUID_chara);
+        if (characteristic == null) return;
         mBluetoothGatt.readCharacteristic(characteristic);
     }
 
     public void send(byte[] data) {
+        if (data == null || mBluetoothGatt == null || write_UUID_service == null || write_UUID_chara == null)
+            return;
         BluetoothGattService service = mBluetoothGatt.getService(write_UUID_service);
+        if (service == null) return;
         BluetoothGattCharacteristic charaWrite = service.getCharacteristic(write_UUID_chara);
+        if (charaWrite == null) return;
         if (showLog) YLog.i(TAG, "发送数据长度：" + data.length + "字节");
         charaWrite.setValue(data);
         mBluetoothGatt.writeCharacteristic(charaWrite);
@@ -230,7 +259,10 @@ public class YBle implements YBluetoothDeviceConnect {
 
     @Override
     public void onDestroy() {
-        if (mBluetoothGatt != null)
+        if (mBluetoothGatt != null) {
             mBluetoothGatt.disconnect();
+            mBluetoothGatt.close();
+            mBluetoothGatt = null;
+        }
     }
 }

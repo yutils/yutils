@@ -10,6 +10,7 @@ import com.yujing.base.contract.YLifeEventListener
 import com.yujing.contract.YReturn2
 import com.yujing.contract.YReturn3
 import java.lang.Deprecated
+import java.util.concurrent.CopyOnWriteArrayList
 
 /**
  * 监听YFragment事件
@@ -27,7 +28,7 @@ base.setEventListener { event, obj ->
  */
 @kotlin.Deprecated("作废，不再使用")
 abstract class YFragment : Fragment() {
-    var yEventListeners: MutableList<YLifeEventListener> = ArrayList()
+    var yEventListeners: MutableList<YLifeEventListener> = CopyOnWriteArrayList()
 
     fun setEventListener(yEventListener: YLifeEventListener) {
         this.yEventListeners.add(yEventListener)

@@ -1,6 +1,7 @@
 package com.yujing.test.activity.bluetooth;
 
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.bluetooth.BluetoothDevice;
@@ -9,17 +10,15 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.databinding.DataBindingUtil;
 
 import com.yujing.base.YBaseDialog;
 import com.yujing.bluetooth.BleClient;
 import com.yujing.test.R;
-import com.yujing.test.activity.MainActivity;
 import com.yujing.test.activity.bluetooth.adapter.BleAdapter;
 import com.yujing.test.databinding.ActivityBleClientBinding;
 import com.yujing.test.databinding.DialogInfoBinding;
@@ -45,9 +44,46 @@ public class BleClientActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        YPermissions.Companion.requestAll(this);
-        //binding = DataBindingUtil.setContentView(this, R.layout.activity_ble_client);
-        binding =  ActivityBleClientBinding.inflate(getLayoutInflater());
+        binding = ActivityBleClientBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+        requestBlePermissionsThenInit();
+    }
+
+    private String[] blePermissions() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            return new String[]{
+                    Manifest.permission.BLUETOOTH_CONNECT,
+                    Manifest.permission.BLUETOOTH_SCAN,
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+            };
+        }
+        return new String[]{
+                Manifest.permission.BLUETOOTH,
+                Manifest.permission.BLUETOOTH_ADMIN,
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+        };
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    private void requestBlePermissionsThenInit() {
+        String[] perms = blePermissions();
+        if (YPermissions.hasPermissions(this, perms)) {
+            setupBle();
+            return;
+        }
+        new YPermissions(this)
+                .setAllSuccessListener(this::setupBle)
+                .setFailListener(p -> {
+                    binding.tvSerBindStatus.setText("权限被拒绝:" + p);
+                    Toast.makeText(this, "缺少蓝牙权限", Toast.LENGTH_LONG).show();
+                })
+                .request(perms);
+    }
+
+    @SuppressLint("SetTextI18n")
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    private void setupBle() {
         bleClient = new BleClient(this);
         bleClient.setConnectListener(aBoolean -> {
             if (aBoolean) {
@@ -156,7 +192,9 @@ public class BleClientActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        bleClient.onDestroy();
+        if (bleClient != null) {
+            bleClient.onDestroy();
+        }
         super.onDestroy();
     }
 }

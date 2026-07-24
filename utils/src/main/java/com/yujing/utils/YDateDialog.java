@@ -2,7 +2,9 @@ package com.yujing.utils;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface.OnClickListener;
+import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -24,7 +26,7 @@ import java.util.Objects;
  * 日历对话框
  *
  * @author 余静 2018年5月25日09:12:20
- * 最后一次修改
+ * 最后一次修改：不再调用 Activity.setTheme，避免污染主题导致后续 AppCompat Dialog 失败
  */
 /*用法
 YDateDialog.setDefaultFullScreen(true);
@@ -33,11 +35,12 @@ yDateDialog.setFormat("yyyy年MM月dd日");// 设置日期格式（如："yyyy�
 yDateDialog.initTime("2018年6月27日");//设置初始化日期，必须和设置格式相同（如："2016年07月01日15:19"）
 yDateDialog.setShowDay(true);// 设置是否显示日滚轮,默认显示
 yDateDialog.setShowTime(false);// 设置是否显示时间滚轮,默认显示
-yDateDialog.setShowMonth(true);// 设置是否显示时间滚轮,默认显示
-yDateDialog.setWindowListener(window -> );
+yDateDialog.setShowMonth(true);// 设置是否显示月滚轮,默认显示
+yDateDialog.setWindowListener(window -> { });
 yDateDialog.show((format, calendar, date, yyyy, MM, dd, HH, mm) -> {
-    
+    // format 为按 setFormat 格式化后的结果
 });
+// 说明：DatePicker/Dialog 使用 ContextThemeWrapper(Holo Dialog)，不会改写 Activity 主题
  */
 @SuppressWarnings({"unused"})
 public class YDateDialog {
@@ -60,8 +63,16 @@ public class YDateDialog {
 
     public YDateDialog(Activity activity) {
         this.activity = activity;
-        //Theme_Holo_Light_Dialog_NoActionBar
-        this.activity.setTheme(android.R.style.Theme_Holo_Light);
+        // 切勿在此 activity.setTheme(...)：Activity 已创建后再改主题会污染全局 Context，
+        // 导致后续 androidx AppCompat AlertDialog（如 YAlertDialogUtils）创建失败。
+        // DatePicker / Dialog 使用 ContextThemeWrapper 局部套用 Holo 主题即可。
+    }
+
+    /**
+     * 仅作用于本对话框控件，不修改 Activity 主题
+     */
+    private Context dialogContext() {
+        return new ContextThemeWrapper(activity, android.R.style.Theme_Holo_Light_Dialog_NoActionBar);
     }
 
     // 设置format
@@ -100,17 +111,18 @@ public class YDateDialog {
     }
 
     public void show(final DataListener dataListener) {
+        Context ctx = dialogContext();
         //---------------------------------------------设置布局开始------------------------------------
         // 创建一个布局
-        LinearLayout dateTimeLayout = new LinearLayout(activity);
+        LinearLayout dateTimeLayout = new LinearLayout(ctx);
         dateTimeLayout.removeAllViews();
         dateTimeLayout.setOrientation(LinearLayout.VERTICAL);
         // 实例化日期选择
-        datePicker = new DatePicker(activity);
+        datePicker = new DatePicker(ctx);
         datePicker.setCalendarViewShown(false);// 不显示周列表
         dateTimeLayout.addView(datePicker);// 添加到容器
         // 实例化时间选择
-        timePicker = new TimePicker(activity);
+        timePicker = new TimePicker(ctx);
         dateTimeLayout.addView(timePicker);
         //---------------------------------------------布局设置完毕------------------------------------
         //---------------------------------------------计算时间开始------------------------------------
@@ -157,7 +169,7 @@ public class YDateDialog {
         }
 
         //初始化弹窗时间
-        ad = new AlertDialog.Builder(activity).setTitle(sdf.format(calendar.getTime())).setView(dateTimeLayout).setPositiveButton("设置", (dialog, whichButton) -> {
+        ad = new AlertDialog.Builder(ctx).setTitle(sdf.format(calendar.getTime())).setView(dateTimeLayout).setPositiveButton("设置", (dialog, whichButton) -> {
             if (dataListener != null) {
                 String yyyy, MM, dd, HH, mm;
                 yyyy = "" + datePicker.getYear();

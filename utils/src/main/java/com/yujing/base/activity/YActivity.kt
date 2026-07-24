@@ -10,6 +10,7 @@ import com.yujing.base.contract.YLifeEventListener
 import com.yujing.contract.YReturn2
 import com.yujing.contract.YReturn3
 import java.lang.Deprecated
+import java.util.concurrent.CopyOnWriteArrayList
 
 /**
  * 监听activity事件
@@ -28,7 +29,7 @@ base.setEventListener { event, obj ->
  */
 @kotlin.Deprecated("作废，不再使用，直接使用AppCompatActivity的生命周期")
 abstract class YActivity : AppCompatActivity() {
-    var yEventListeners: MutableList<YLifeEventListener> = ArrayList()
+    var yEventListeners: MutableList<YLifeEventListener> = CopyOnWriteArrayList()
 
     fun setEventListener(yEventListener: YLifeEventListener) {
         this.yEventListeners.add(yEventListener)

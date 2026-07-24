@@ -1,15 +1,11 @@
 package com.yujing.test.activity
 
-import android.graphics.Color
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
-import androidx.databinding.DataBindingUtil
 import com.google.gson.Gson
 import com.kotlinx.apkUpdate.AppUpdate
 import com.yujing.base.YBaseActivity
-import com.yujing.bus.ThreadMode
 import com.yujing.bus.YBus
 import com.yujing.bus.YBusUtil
 import com.yujing.socket.YSocketSync
@@ -35,7 +31,6 @@ import com.yujing.utils.YTimer
 import com.yujing.utils.YToast
 import com.yujing.utils.YVersionUpdate
 import com.yujing.view.YAlertDialogUtils
-import com.yujing.view.YView
 import com.yutils.view.utils.Create
 import kotlinx.coroutines.Job
 
@@ -59,7 +54,7 @@ class MainActivity : YBaseActivity<ActivityAllTestBinding>(null) {
         textView1 = Create.textView(binding.ll).apply { text = "本APP只是YUtils分功能测试页面，临时页面" }.apply { textSize = 18F }
         textView2 = Create.textView(binding.ll)
 
-        Create.button(binding.wll, "退出APP") {
+        Create.button(binding.wll, "🔙 返回") {
             finish()
         }
 
@@ -152,6 +147,20 @@ class MainActivity : YBaseActivity<ActivityAllTestBinding>(null) {
 //            )
             TTS.speakToast("TTS播放测试,必须在 Manifest 声明要查询的 TTS 引擎")
         }
+
+        Create.button(binding.wll, "YShow") {
+            Thread {
+                YShow.show(this, "YShow测试1")
+                Thread.sleep(1000)
+                YShow.show(this, "YShow测试2")
+                Thread.sleep(1000)
+                YShow.show(this, "YShow测试3", "测试3")
+                Thread.sleep(1000)
+                YShow.show(this, "YShow测试4", "测试4")
+                Thread.sleep(1000)
+                YShow.finish()
+            }.start()
+        }
         //--------------------------------------------------------------------------------
         Create.space(binding.wll)//换行
         editText1 = Create.editText(binding.wll, "哈哈哈")
@@ -224,7 +233,7 @@ class MainActivity : YBaseActivity<ActivityAllTestBinding>(null) {
 
         Create.button(binding.wll, "连接") {
             ySocketSync?.exit()
-            ySocketSync = YSocketSync("192.168.1.21", 8888)
+            ySocketSync = YSocketSync("192.168.1.167", 5555)
             ySocketSync.hearBytes = byteArrayOf(0)//心跳
             ySocketSync.readTimeOut = 1000 * 5L//读取超时
             ySocketSync.showLog = true

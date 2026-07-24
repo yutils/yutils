@@ -6,6 +6,7 @@ import com.yujing.db.helper.YHelper;
 import com.yujing.utils.YApp;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -23,7 +24,7 @@ SQLiteDatabase db = YDB.getDB("test.db");
 SQLiteDatabase db = YDB.getHelper("test.db", 2).setOnUpgradeListener(onUpgradeListener).getDatabase();
  */
 public class YDB {
-    static List<YHelper> yHelpers = new ArrayList<>();
+    static List<YHelper> yHelpers = Collections.synchronizedList(new ArrayList<>());
 
     /**
      * 获取一个YHelper,如果不存在就创建。
@@ -33,11 +34,23 @@ public class YDB {
      * @return YHelper
      */
     public static YHelper getHelper(String dbName, int version) {
-        //已存在就不添加
-        for (YHelper item : yHelpers) if (item.getDatabaseName().equals(dbName)) return item;
-        YHelper yHelper = new YHelper(YApp.get(), dbName, version);
-        yHelpers.add(yHelper);
-        return yHelper;
+        synchronized (YDB.class) {
+            //已存在就不添加，但需要检查版本号是否一致
+            for (YHelper item : yHelpers) {
+                if (item.getDatabaseName().equals(dbName)) {
+                    //版本号不一致，关闭旧的重新创建
+                    if (item.getDbVersion() != version) {
+                        item.onDestroy();
+                        yHelpers.remove(item);
+                        break;
+                    }
+                    return item;
+                }
+            }
+            YHelper yHelper = new YHelper(YApp.get(), dbName, version);
+            yHelpers.add(yHelper);
+            return yHelper;
+        }
     }
 
     /**

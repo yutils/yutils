@@ -135,6 +135,8 @@ abstract class YBaseFragment<B : ViewBinding>(var layout: Int?) : Fragment() {
     }
 
     override fun onDestroyView() {
+        // View 销毁时先注销总线，避免回调触碰已 unbind 的 UI
+        YBusUtil.unregister(this)
         super.onDestroyView()
         // ⚠️ Fragment 视图销毁时清除 binding 引用，防止内存泄漏
         if (::binding.isInitialized && binding is ViewDataBinding) {

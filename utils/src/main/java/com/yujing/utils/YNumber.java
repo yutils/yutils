@@ -35,7 +35,7 @@ public class YNumber {
 
     //保留小数
     public static double round(double value, int scale, int roundingMode) {
-        BigDecimal bd = new BigDecimal(value);
+        BigDecimal bd = new BigDecimal(Double.toString(value));
         bd = bd.setScale(scale, roundingMode);
         return bd.doubleValue();
     }

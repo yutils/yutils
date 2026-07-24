@@ -7,8 +7,6 @@ import android.view.ViewGroup;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.yujing.utils.YLog;
-
 /**
  * 解决RecyclerView在ScrollView中的高度不正常问题
  *

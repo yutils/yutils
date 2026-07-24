@@ -4,11 +4,6 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.yujing.db.base.YBaseDao;
-
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * 获取一个SQLiteOpenHelper
  *
@@ -27,9 +22,15 @@ SQLiteDatabase db = YDB.getHelper("test.db", 2).setOnUpgradeListener(onUpgradeLi
  */
 public class YHelper extends SQLiteOpenHelper {
     private OnUpgradeListener onUpgradeListener;
+    private final int dbVersion;
 
     public YHelper(Context context, String name, int version) {
         super(context, name, null, version);
+        this.dbVersion = version;
+    }
+
+    public int getDbVersion() {
+        return dbVersion;
     }
 
     // 以读写的形式打开数据库，当磁盘满后只能调用读方法
@@ -43,7 +44,13 @@ public class YHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        onUpgradeListener.onUpgrade(db, oldVersion, newVersion);
+        if (onUpgradeListener != null) {
+            onUpgradeListener.onUpgrade(db, oldVersion, newVersion);
+        } else {
+            // 无监听时拒绝升级，避免 user_version 被抬高后永久跳过迁移
+            throw new IllegalStateException("YHelper onUpgradeListener is null, refuse upgrade from "
+                    + oldVersion + " to " + newVersion + ". Please call setOnUpgradeListener before getDatabase().");
+        }
     }
 
     public YHelper setOnUpgradeListener(OnUpgradeListener onUpgradeListener) {

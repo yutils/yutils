@@ -638,7 +638,7 @@ public class YUtils {
     }
 
     public boolean isMobileConnected() {
-        return isNetConnected(YApp.get());
+        return isMobileConnected(YApp.get());
     }
 
     /**
@@ -797,8 +797,10 @@ public class YUtils {
         // 获取剪贴板的剪贴数据集
         if (clipboard != null) {
             ClipData clipData = clipboard.getPrimaryClip();
-            if (clipData != null && clipData.getItemCount() > 0)
-                return clipData.getItemAt(0).getText().toString();
+            if (clipData != null && clipData.getItemCount() > 0) {
+                CharSequence text = clipData.getItemAt(0).getText();
+                if (text != null) return text.toString();
+            }
         }
         return null;
     }
@@ -818,8 +820,10 @@ public class YUtils {
         if (clipboard != null) {
             ClipData clipData = clipboard.getPrimaryClip();
             if (clipData != null)
-                for (int i = 0; i < clipData.getItemCount(); i++)
-                    strings.add(clipData.getItemAt(0).getText().toString());
+                for (int i = 0; i < clipData.getItemCount(); i++) {
+                    CharSequence text = clipData.getItemAt(i).getText();
+                    if (text != null) strings.add(text.toString());
+                }
         }
         return strings;
     }
@@ -930,7 +934,7 @@ public class YUtils {
      * @return 是否成功
      */
     public static boolean openTcp(int port) {
-        return shellRootNoReturn("setprop service.adb.tcp.port " + port,"stop adbd", "start adbd");
+        return shellRootNoReturn("setprop service.adb.tcp.port " + port, "stop adbd", "start adbd");
     }
 
     /**
@@ -1242,7 +1246,7 @@ public class YUtils {
     public static void reStartAPP(Context context, Class<? extends Activity> activityClass) {
         Intent intent = new Intent(YActivityUtil.getCurrentActivity(), activityClass);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.putExtra("isRestart",true);
+        intent.putExtra("isRestart", true);
         context.startActivity(intent);
         exit();
     }
@@ -1254,9 +1258,9 @@ public class YUtils {
      */
     public static void reStartAPP(Context context) {
         Intent intent = context.getPackageManager().getLaunchIntentForPackage(context.getPackageName());
-        if (intent != null){
+        if (intent != null) {
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.putExtra("isRestart",true);
+            intent.putExtra("isRestart", true);
         }
         context.startActivity(intent);
         exit();

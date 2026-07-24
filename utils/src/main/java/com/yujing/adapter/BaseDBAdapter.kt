@@ -111,7 +111,7 @@ abstract class BaseDBAdapter<T>(var layout: Int, var list: List<T>?) : RecyclerV
         holder.binding.root.setOnClickListener { onItemClickListener?.invoke(position) }
 
         //长按
-        holder.binding.root.setOnLongClickListener { onItemLongClickListener?.invoke(position);false }
+        holder.binding.root.setOnLongClickListener { onItemLongClickListener?.invoke(position); false }
 
         //必须要有这行，防止闪烁
         holder.binding.executePendingBindings()

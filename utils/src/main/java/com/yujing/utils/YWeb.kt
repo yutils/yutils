@@ -9,7 +9,6 @@ import android.view.WindowManager
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.widget.FrameLayout
-import com.yujing.utils.YWebView
 
 /**
  * YWeb，对webView二次封装，实现播放视频等操作

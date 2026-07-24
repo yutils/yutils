@@ -1,6 +1,6 @@
 package com.yujing.utils
 
-import java.util.*
+import java.util.Vector
 import java.util.concurrent.TimeoutException
 
 

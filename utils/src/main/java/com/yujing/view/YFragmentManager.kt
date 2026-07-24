@@ -62,6 +62,19 @@ class YFragmentManager {
     }
 
     /**
+     * 安全提交事务：
+     * - 状态未保存时用 [FragmentTransaction.commit]，保证可恢复
+     * - 已 onSaveInstanceState 时用 [FragmentTransaction.commitAllowingStateLoss]，避免崩溃
+     */
+    private fun commitSafely(transaction: FragmentTransaction) {
+        if (fragmentManager.isStateSaved) {
+            transaction.commitAllowingStateLoss()
+        } else {
+            transaction.commit()
+        }
+    }
+
+    /**
      * 获取最顶层fragment，当前layout的最顶层
      */
     fun getTopFragment(): Fragment? {
@@ -94,24 +107,25 @@ class YFragmentManager {
             //如果没有添加过,就先添加，添加会自动显示
             if (!targetFragment.isAdded) {
                 ft.hide(hideFragment)
-                ft.add(layout, targetFragment).commit()
+                ft.add(layout, targetFragment)
             } else {
                 //如果已经添加过，就直接显示
                 if (targetFragment != hideFragment) ft.hide(hideFragment)
-                ft.show(targetFragment).commit()
+                ft.show(targetFragment)
             }
         } else {
             //如果没有添加过,就先添加，添加会自动显示
             if (!targetFragment.isAdded) {
                 //获取所有当前layout的fragment，全部隐藏掉
                 for (f in fragmentManager.fragments) if (layout == f.id) ft.hide(f)
-                ft.add(layout, targetFragment).commit()
+                ft.add(layout, targetFragment)
             } else {
                 //获取所有当前layout的fragment，全部隐藏掉，自己除外
                 for (f in fragmentManager.fragments) if (layout == f.id && targetFragment != f) ft.hide(f)
-                ft.show(targetFragment).commit()
+                ft.show(targetFragment)
             }
         }
+        commitSafely(ft)
     }
 
     /**
@@ -140,7 +154,9 @@ class YFragmentManager {
     @Synchronized
     fun hide(targetFragment: Fragment?) {
         if (targetFragment == null) return
-        if (targetFragment.isAdded) fragmentManager.beginTransaction().hide(targetFragment).commit()
+        if (targetFragment.isAdded) {
+            commitSafely(fragmentManager.beginTransaction().hide(targetFragment))
+        }
     }
 
     /**
@@ -159,10 +175,11 @@ class YFragmentManager {
     @Synchronized
     fun remove(fragment: Fragment?) {
         if (fragment == null) return
-        fragmentManager.beginTransaction()
-            .remove(fragment)
-            .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)
-            .commit()
+        commitSafely(
+            fragmentManager.beginTransaction()
+                .remove(fragment)
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)
+        )
     }
 
     /**
@@ -215,7 +232,7 @@ class YFragmentManager {
         if (fragment == null) return
         val transaction = fragmentManager.beginTransaction()
         transaction.replace(layout, fragment)
-        transaction.commit()
+        commitSafely(transaction)
     }
 
     /**
@@ -250,7 +267,7 @@ class YFragmentManager {
             transaction.addToBackStack(it::class.java.name)
         }
         transaction.replace(layout, fragment)
-        transaction.commit()
+        commitSafely(transaction)
     }
 
     /**
@@ -261,8 +278,13 @@ class YFragmentManager {
         printBackStack()
         val num = fragmentManager.backStackEntryCount
         if (num == 0) return false
+        // onSaveInstanceState 后 popBackStack 会抛 IllegalStateException
+        if (fragmentManager.isStateSaved) {
+            YLog.e("Fragment", "state already saved, skip popBackStack")
+            return false
+        }
         fragmentManager.popBackStack()
-        return num > 0
+        return true
     }
 
     /**
@@ -296,8 +318,12 @@ class YFragmentManager {
         printBackStack()
         val num = fragmentManager.backStackEntryCount
         if (num == 0) return false
+        if (fragmentManager.isStateSaved) {
+            YLog.e("Fragment", "state already saved, skip popBackStack($name)")
+            return false
+        }
         fragmentManager.popBackStack(name, FragmentManager.POP_BACK_STACK_INCLUSIVE)
-        return num > 0
+        return true
     }
 
     /**
@@ -308,8 +334,13 @@ class YFragmentManager {
         printBackStack()
         YLog.d("Fragment", "退出全部栈")
         val num = fragmentManager.backStackEntryCount
+        if (num == 0) return false
+        if (fragmentManager.isStateSaved) {
+            YLog.e("Fragment", "state already saved, skip popBackStack all")
+            return false
+        }
         for (i in 0 until num) fragmentManager.popBackStack()
-        return num > 0
+        return true
     }
 
     /**
@@ -324,7 +355,7 @@ class YFragmentManager {
         if (fragment.javaClass.name == getTopFragment()?.javaClass?.name) return
         val transaction = fragmentManager.beginTransaction()
         transaction.replace(layout, fragment)
-        transaction.commit()
+        commitSafely(transaction)
     }
 
     /**
@@ -340,6 +371,6 @@ class YFragmentManager {
             if (fragment.javaClass.name == exist.javaClass.name) return
         val transaction = fragmentManager.beginTransaction()
         transaction.replace(layout, fragment)
-        transaction.commit()
+        commitSafely(transaction)
     }
 }

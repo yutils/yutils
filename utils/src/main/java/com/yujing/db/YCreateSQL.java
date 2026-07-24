@@ -20,11 +20,14 @@ import java.util.Map;
  */
 @Deprecated
 public class YCreateSQL {
-    /** SQL 字符串字面量中单引号转义 */
+    /**
+     * SQL 字符串字面量中单引号转义
+     */
     private static String escapeSqlLiteral(String raw) {
         if (raw == null) return null;
         return raw.replace("'", "''");
     }
+
     // CREATE TABLE IF NOT EXISTS `User`(`id` TEXT NULL,`account` TEXT
     // NULL,`name` TEXT NULL,`phone` TEXT NULL,`nickname` TEXT NULL,`age` TEXT
     // NULL,`sex` TEXT NULL,`password` TEXT NULL,`photourl` TEXT NULL)

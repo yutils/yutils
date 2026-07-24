@@ -16,15 +16,14 @@ import kotlinx.coroutines.launch
  */
 /*
 用法
-//添加资源
-YSound.getInstance().put(0,R.raw.di)
-//播放资源
-YSound.getInstance().play(0)
-//释放资源
+// put 是异步加载：加载完成后再 play，或用完成回调
+YSound.getInstance().put(0, R.raw.di) {
+    YSound.getInstance().play(0)
+}
+// 加载播放并在超时后释放（推荐 oneshot）
+YSound.play(R.raw.success, 1000)
+// 释放资源
 YSound.getInstance().onDestroy()
-
-//加载播放并释放资源
-YSound.play(R.raw.success,1000)
 */
 
 /*

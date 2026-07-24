@@ -5,7 +5,11 @@ import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
-import android.view.*
+import android.view.Gravity
+import android.view.LayoutInflater
+import android.view.View
+import android.view.Window
+import android.view.WindowManager
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import com.yujing.utils.YScreenUtil
@@ -155,8 +159,8 @@ abstract class YBaseDialog<B : ViewDataBinding> : Dialog {
      * 设置弹窗是否可以关闭
      */
     override fun setCancelable(cancelable: Boolean) {
-        super.setCancelable(mCancelable)
         mCancelable = cancelable
+        super.setCancelable(cancelable)
     }
 
     /* *************************基本设置************************** */ //配置dialog基本属性
@@ -192,7 +196,7 @@ abstract class YBaseDialog<B : ViewDataBinding> : Dialog {
     }
 
     override fun show() {
-        if (activity.isFinishing) return
+        if (activity.isFinishing || activity.isDestroyed) return
         if (YThread.isMainThread()) {
             //主要作用是焦点失能和焦点恢复，保证在弹出dialog时不会弹出虚拟按键且事件不会穿透。
             if (fullscreen && this.window != null) {
@@ -222,10 +226,12 @@ abstract class YBaseDialog<B : ViewDataBinding> : Dialog {
     }
 
     override fun dismiss() {
-        if (activity.isFinishing) return
+        if (activity.isFinishing || activity.isDestroyed) return
         //退出动画
         if (openAnimation) {
-            view.startAnimation(yAnimation.getExitAnimation { super.dismiss() })
+            view.startAnimation(yAnimation.getExitAnimation {
+                if (!activity.isFinishing && !activity.isDestroyed) super.dismiss()
+            })
         } else {
             super.dismiss()
         }

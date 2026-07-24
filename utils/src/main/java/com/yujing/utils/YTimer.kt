@@ -26,8 +26,11 @@ var job: Job? = null
 job?.cancel()
 job = yTimer.loopIO(1000) {  }
 
-//每秒调用一次，最多调用5次，或者10秒,回调UI线程
-yTimer.loopUI(1000,5,10000) {  }
+//每秒调用一次，最多调用 5 次（maxNumber 为精确次数），或累计不超过 10 秒，回调 UI 线程
+yTimer.loopUI(1000, 5, 10000) {  }
+
+//同步轮询：listener 返回非 null 即停，或达到 maxNumber / 超时
+val result = YTimer.loopSync(200, 10, 5000) { null }
 
 //退出时关闭
 override fun onDestroy() {
@@ -124,7 +127,7 @@ class YTimer {
         /**
          * 同步执行，执行完毕后休息指定时间后继续,直到获取到返回值或最大执行次数或超时
          * @param intervalTime 间隔时间
-         * @param maxNumber 最多执行多少次
+         * @param maxNumber 最多执行多少次（精确次数，例如 5 表示最多执行 5 次）
          * @param maxMillisecond 最多执行多少毫秒
          * @param listener 执行回调监听，当返回值不为null时，立即停止循环
          * @return 返回值
@@ -137,8 +140,8 @@ class YTimer {
             //返回的对象
             var obj: T? = null
             runBlocking {
-                //当统计次数大于最大统计次数，或者执行时间大于最大时间，或者监听返回不为null，立即停止循环
-                while (count <= maxNumber && System.currentTimeMillis() - startTime <= maxMillisecond) {
+                // count 从 0 递增；条件为 count < maxNumber，保证最多执行 maxNumber 次
+                while (count < maxNumber && System.currentTimeMillis() - startTime <= maxMillisecond) {
                     try {
                         count++
                         obj = listener.invoke()

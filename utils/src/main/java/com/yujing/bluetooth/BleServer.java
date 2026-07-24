@@ -1,5 +1,7 @@
 package com.yujing.bluetooth;
 
+import static android.content.Context.BLUETOOTH_SERVICE;
+
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -27,8 +29,6 @@ import com.yujing.utils.YLog;
 import com.yujing.utils.YThread;
 
 import java.util.UUID;
-
-import static android.content.Context.BLUETOOTH_SERVICE;
 
 /**
  * 蓝牙BLE服务，广播
@@ -109,7 +109,15 @@ public class BleServer {
             if (errorListener != null) YThread.runOnUiThread(() -> errorListener.value("未打开蓝牙"));
             return false;
         }
-        bluetoothAdapter.setName(name);
+        try {
+            bluetoothAdapter.setName(name);
+        } catch (SecurityException e) {
+            // Android 12+ 需要 BLUETOOTH_CONNECT；未授权时不崩，交由上层先申请权限
+            if (errorListener != null) {
+                YThread.runOnUiThread(() -> errorListener.value("缺少蓝牙权限，无法设置设备名：" + e.getMessage()));
+            }
+            return false;
+        }
         setServer();
         return true;
     }
@@ -130,6 +138,10 @@ public class BleServer {
     public void send(byte[] data) {
         if (bluetoothDevice == null) {
             if (errorListener != null) YThread.runOnUiThread(() -> errorListener.value("未连接蓝牙设备"));
+            return;
+        }
+        if (gattServer == null) {
+            if (errorListener != null) YThread.runOnUiThread(() -> errorListener.value("gattServer未初始化"));
             return;
         }
         characterNotify.setValue(data);
@@ -153,6 +165,17 @@ public class BleServer {
     public void stopService() {
         if (mBluetoothLeAdvertiser != null) {
             mBluetoothLeAdvertiser.stopAdvertising(mAdvertiseCallback);
+        }
+    }
+
+    /**
+     * 销毁，释放GATT资源，必须在Activity.onDestroy中调用
+     */
+    public void onDestroy() {
+        stopService();
+        if (gattServer != null) {
+            gattServer.close();
+            gattServer = null;
         }
     }
 

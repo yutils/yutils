@@ -2,6 +2,8 @@ package com.yujing.crypt;
 
 import com.yujing.utils.YBase64;
 
+import java.nio.charset.StandardCharsets;
+
 /**
  * 加密解密算法
  *
@@ -19,7 +21,8 @@ public class YEncrypt {
     }
 
     public String decode(String psw) {
-        return new String(decode(YBase64.decode(psw)));
+        byte[] result = decode(YBase64.decode(psw));
+        return result == null ? null : new String(result);
     }
 
     public String encode(String str, String passWord) {
@@ -27,7 +30,8 @@ public class YEncrypt {
     }
 
     public String decode(String psw, String passWord) {
-        return new String(decode(YBase64.decode(psw), passWord));
+        byte[] result = decode(YBase64.decode(psw), passWord);
+        return result == null ? null : new String(result);
     }
 
     private byte[] intToByte(int int65535) {// 只能是0到65535之间的数不能为负数
@@ -62,7 +66,10 @@ public class YEncrypt {
 
     // 加密
     public byte[] encode(byte[] byteArray, String passWord) {
-        byte[] p = passWord.getBytes();
+        if (passWord == null || passWord.isEmpty()) {
+            throw new IllegalArgumentException("passWord不能为空");
+        }
+        byte[] p = passWord.getBytes(StandardCharsets.UTF_8);
         int key1 = (int) (Math.random() * 65535);
         int key2 = (int) (Math.random() * 65535);
         byte[] bytes = new byte[byteArray.length + 6];
@@ -83,8 +90,9 @@ public class YEncrypt {
         return bytes;
     }
 
-    // 解密
+    // 解密，失败返回 null（不再返回中文错误字节伪装成明文）
     public byte[] decode(byte[] byteArray) {
+        if (byteArray == null || byteArray.length < 6) return null;
         int xy = byteToInt(new byte[]{byteArray[0], byteArray[1]});// 校验位
         int key1 = byteToInt(new byte[]{byteArray[2], byteArray[3]});
         int key2 = byteToInt(new byte[]{byteArray[4], byteArray[5]});
@@ -100,13 +108,17 @@ public class YEncrypt {
         if ((xy1 % 65535) == xy) {
             return bytes;
         } else {
-            return new byte[]{-23, -108, -103, -24, -81, -81, -17, -68, -127, -27, -83, -105, -25, -84, -90, -28, -72, -78, -24, -94, -85, -28, -65, -82, -26, -108, -71, -24, -65, -121, -17, -68, -127};
+            return null;
         }
     }
 
-    // 解密
+    // 解密，失败返回 null（不再返回中文错误字节伪装成明文）
     public byte[] decode(byte[] byteArray, String passWord) {
-        byte[] p = passWord.getBytes();
+        if (passWord == null || passWord.isEmpty()) {
+            throw new IllegalArgumentException("passWord不能为空");
+        }
+        if (byteArray == null || byteArray.length < 6) return null;
+        byte[] p = passWord.getBytes(StandardCharsets.UTF_8);
         int xy = byteToInt(new byte[]{byteArray[0], byteArray[1]});// 校验位
         int key1 = byteToInt(new byte[]{byteArray[2], byteArray[3]});
         int key2 = byteToInt(new byte[]{byteArray[4], byteArray[5]});
@@ -122,7 +134,7 @@ public class YEncrypt {
         if ((xy1 % 65535) == xy) {
             return bytes;
         } else {//密码错误或字符串被修改过！
-            return new byte[]{-27, -81, -122, -25, -96, -127, -23, -108, -103, -24, -81, -81, -26, -120, -106, -27, -83, -105, -25, -84, -90, -28, -72, -78, -24, -94, -85, -28, -65, -82, -26, -108, -71, -24, -65, -121, -17, -68, -127};
+            return null;
         }
     }
 

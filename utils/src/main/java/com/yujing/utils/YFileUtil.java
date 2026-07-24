@@ -15,9 +15,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * 文件工具类
@@ -33,7 +33,7 @@ public class YFileUtil {
      * @param str  要转换的string
      */
     public static void stringToFile(File file, String str) {
-        byteToFile(file, str.getBytes());
+        byteToFile(file, str.getBytes(StandardCharsets.UTF_8));
     }
 
     /**
@@ -57,7 +57,7 @@ public class YFileUtil {
         byte[] data = fileToByte(file);
         if (data == null)
             return null;
-        return new String(data);
+        return new String(data, StandardCharsets.UTF_8);
     }
 
     /**
@@ -68,16 +68,14 @@ public class YFileUtil {
      * @return 是否成功
      */
     public static boolean byteToFile(File file, byte[] bytes) {
-        if (!Objects.requireNonNull(file.getParentFile()).exists()) // 如果位置不存在
-            file.getParentFile().mkdirs();
+        File parent = file.getParentFile();
+        if (parent != null && !parent.exists())
+            parent.mkdirs();
         if (file.exists())
             file.delete();
-        FileOutputStream out;
-        try {
-            out = new FileOutputStream(file);
+        try (FileOutputStream out = new FileOutputStream(file)) {
             out.write(bytes);
             out.flush();
-            out.close();
         } catch (FileNotFoundException e) {
             System.out.println("No Find File");
             return false;
@@ -117,7 +115,7 @@ public class YFileUtil {
      * @return 是否成功
      */
     public static boolean addStringToFile(File file, String str) {
-        return addByteToFile(file, str.getBytes());
+        return addByteToFile(file, str.getBytes(StandardCharsets.UTF_8));
     }
 
     /**
@@ -129,16 +127,17 @@ public class YFileUtil {
      */
     public static boolean addByteToFile(File file, byte[] bytes) {
         try {
-            if (!Objects.requireNonNull(file.getParentFile()).exists()) // 如果位置不存在
-                file.getParentFile().mkdirs();
+            File parent = file.getParentFile();
+            if (parent != null && !parent.exists())
+                parent.mkdirs();
             // 打开一个随机访问文件流，按读写方式
-            RandomAccessFile randomFile = new RandomAccessFile(file, "rw");
-            // 文件长度，字节数
-            long fileLength = randomFile.length();
-            // 将写文件指针移到文件尾。
-            randomFile.seek(fileLength);
-            randomFile.write(bytes);
-            randomFile.close();
+            try (RandomAccessFile randomFile = new RandomAccessFile(file, "rw")) {
+                // 文件长度，字节数
+                long fileLength = randomFile.length();
+                // 将写文件指针移到文件尾。
+                randomFile.seek(fileLength);
+                randomFile.write(bytes);
+            }
         } catch (IOException e) {
             e.printStackTrace();
             return false;
@@ -167,15 +166,13 @@ public class YFileUtil {
         if (file.isFile()) {
             return file.delete();
         } else if (file.isDirectory()) {
-            if (Objects.requireNonNull(file.listFiles()).length != 0) {
-                int zFiles = Objects.requireNonNull(file.listFiles()).length;
-                File[] delFile2 = file.listFiles();
-                for (int i = 0; i < zFiles; i++) {
-                    if (Objects.requireNonNull(delFile2)[i].isDirectory()) {
-                        delFile(delFile2[i].getAbsolutePath());
-                    }
-                    delFile2[i].delete();
+            File[] files = file.listFiles();
+            if (files == null) return file.delete();
+            for (File f : files) {
+                if (f.isDirectory()) {
+                    delFile(f.getAbsolutePath());
                 }
+                f.delete();
             }
             return file.delete();
         } else {
@@ -196,24 +193,24 @@ public class YFileUtil {
             new File(target).mkdirs();
             File a = new File(source);
             String[] file = a.list();
+            if (file == null) return;
             File temp;
-            for (String aFile : Objects.requireNonNull(file)) {
+            for (String aFile : file) {
                 if (source.endsWith(File.separator)) {
                     temp = new File(source + aFile);
                 } else {
                     temp = new File(source + File.separator + aFile);
                 }
                 if (temp.isFile()) {
-                    FileInputStream input = new FileInputStream(temp);
-                    FileOutputStream output = new FileOutputStream(target + File.separator + temp.getName());
-                    byte[] b = new byte[16384];
-                    int len;
-                    while ((len = input.read(b)) != -1) {
-                        output.write(b, 0, len);
+                    try (FileInputStream input = new FileInputStream(temp);
+                         FileOutputStream output = new FileOutputStream(target + File.separator + temp.getName())) {
+                        byte[] b = new byte[16384];
+                        int len;
+                        while ((len = input.read(b)) != -1) {
+                            output.write(b, 0, len);
+                        }
+                        output.flush();
                     }
-                    output.flush();
-                    output.close();
-                    input.close();
                 }
                 if (temp.isDirectory()) {
                     copy(source + File.separator + aFile, target + File.separator + aFile, true);
@@ -222,18 +219,18 @@ public class YFileUtil {
         } else {
             File oldFile = new File(source);
             if (oldFile.exists()) {
-                InputStream inputStream = new FileInputStream(source);
                 File file = new File(target);
-                Objects.requireNonNull(file.getParentFile()).mkdirs();
+                File parent = file.getParentFile();
+                if (parent != null) parent.mkdirs();
                 file.createNewFile();
-                FileOutputStream outputStream = new FileOutputStream(file);
-                byte[] buffer = new byte[16384];
-                int byteRead;
-                while ((byteRead = inputStream.read(buffer)) != -1) {
-                    outputStream.write(buffer, 0, byteRead);
+                try (InputStream inputStream = new FileInputStream(source);
+                     FileOutputStream outputStream = new FileOutputStream(file)) {
+                    byte[] buffer = new byte[16384];
+                    int byteRead;
+                    while ((byteRead = inputStream.read(buffer)) != -1) {
+                        outputStream.write(buffer, 0, byteRead);
+                    }
                 }
-                inputStream.close();
-                outputStream.close();
                 file.setLastModified(oldFile.lastModified());
             }
         }

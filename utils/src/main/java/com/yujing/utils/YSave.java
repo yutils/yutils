@@ -6,7 +6,7 @@ import android.content.Context;
 import com.google.gson.Gson;
 
 import java.io.File;
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 对象储存到磁盘，读取时候调取，如果缓存中有该对象就在缓存中取，如果缓存中没有对象就在磁盘上面取 用于解决静态变量被释放问题
@@ -51,7 +51,7 @@ public static void setP(Boolean b) { YSave.create(YPath.get(),"txt").put("p", b)
 @SuppressWarnings("unused")
 public class YSave {
     private static final String TAG = "YSave"; //标记
-    private static HashMap<String, Object> cache;    // 缓存，临时缓存
+    private static ConcurrentHashMap<String, Object> cache;    // 缓存，临时缓存
     private static volatile boolean useCache = true;//是否启用缓存
 
     private final Gson gson = new Gson();
@@ -68,8 +68,28 @@ public class YSave {
     }
 
     // 获取缓存
-    private synchronized static HashMap<String, Object> getCache() {
-        return (cache == null) ? cache = new HashMap<>() : cache;
+    private synchronized static ConcurrentHashMap<String, Object> getCache() {
+        return (cache == null) ? cache = new ConcurrentHashMap<>() : cache;
+    }
+
+    /**
+     * 缓存 key 按路径+扩展名隔离，避免不同目录实例互相脏读
+     */
+    private String cacheKey(String key) {
+        return getPath() + "|" + (extensionName != null ? extensionName : ".save") + "|" + key;
+    }
+
+    /**
+     * 校验 key，禁止路径穿越
+     */
+    private static String safeKey(String key) {
+        if (key == null || key.isEmpty()) {
+            throw new IllegalArgumentException("YSave key不能为空");
+        }
+        if (key.contains("..") || key.contains("/") || key.contains("\\") || key.contains(File.separator)) {
+            throw new IllegalArgumentException("YSave key不允许包含路径分隔符或.. : " + key);
+        }
+        return key;
     }
 
     public YSave(Context context) {
@@ -94,11 +114,12 @@ public class YSave {
 
     // 写入
     public void write(String key, Object data) {
+        key = safeKey(key);
         if (data == null) {
             remove(key);
             return;
         }
-        if (useCache) getCache().put(key, data);
+        if (useCache) getCache().put(cacheKey(key), data);
 
         // 然后写盘,byte直接写入
         if (byte[].class.equals(data.getClass())) {
@@ -117,13 +138,18 @@ public class YSave {
 
     // 删除
     public void remove(String key) {
-        getCache().remove(key);
+        key = safeKey(key);
+        getCache().remove(cacheKey(key));
         YFileUtil.delFile(readFile(key));
     }
 
     // 删除全部
     public void removeAll() {
-        getCache().clear();
+        String pathPrefix = getPath() + "|";
+        ConcurrentHashMap<String, Object> map = getCache();
+        for (String k : new java.util.ArrayList<>(map.keySet())) {
+            if (k != null && k.startsWith(pathPrefix)) map.remove(k);
+        }
         YFileUtil.delFile(getPath());
     }
 
@@ -134,15 +160,16 @@ public class YSave {
 
     // 读取
     public Object read(String key, java.lang.reflect.Type type, Object defaultObject) {
+        key = safeKey(key);
         // 如果使用缓存，直接返回
         if (useCache) {
-            Object object = getCache().get(key);
+            Object object = getCache().get(cacheKey(key));
             if (object != null) return object;
         }
         // 读盘，如果是byte[]直接返回
         if (type == byte[].class) {
             byte[] bytes = YFileUtil.fileToByte(readFile(key));
-            if (useCache && bytes != null) getCache().put(key, bytes);
+            if (useCache && bytes != null) getCache().put(cacheKey(key), bytes);
             return bytes != null ? bytes : defaultObject;
         }
         // 读盘，如果是null直接返回
@@ -151,12 +178,12 @@ public class YSave {
 
         //读盘，如果是String直接返回
         if (type.equals(String.class)) {
-            if (useCache) getCache().put(key, value);// 保存到内存中
+            if (useCache) getCache().put(cacheKey(key), value);// 保存到内存中
             return value;
         }
         //如果是其他对象，转换后返回
         Object object = gson.fromJson(value, type);
-        if (useCache) getCache().put(key, object);// 保存到内存中
+        if (useCache) getCache().put(cacheKey(key), object);// 保存到内存中
         return object;
     }
 
@@ -168,6 +195,7 @@ public class YSave {
     // 读取
     @SuppressWarnings("unchecked")
     public <T> T read(String key, Class<T> classOfT, Object defaultObject) {
+        key = safeKey(key);
         // 如果使用缓存，直接返回
         if (useCache) {
             try {
@@ -188,11 +216,11 @@ public class YSave {
                     classOfT = (Class<T>) Character.class;
                 else if (classOfT == short.class)
                     classOfT = (Class<T>) Short.class;
-                object = (T) classOfT.cast(getCache().get(key));
+                object = (T) classOfT.cast(getCache().get(cacheKey(key)));
                 if (object != null) return object;
             } catch (Exception e) {
                 e.printStackTrace();
-                YLog.e("类型转换失败,数据：" + getCache().get(key) + " 采用JSON反序列化模式运行。错误异常：" + e.getMessage());
+                YLog.e("类型转换失败,数据：" + getCache().get(cacheKey(key)) + " 采用JSON反序列化模式运行。错误异常：" + e.getMessage());
             }
         }
         // 读盘，如果是byte[]直接返回
@@ -207,13 +235,13 @@ public class YSave {
         //读盘，如果是String直接返回
         if (classOfT.equals(String.class)) {
             T obj = (T) json;
-            if (useCache) getCache().put(key, obj);// 保存到内存中
+            if (useCache) getCache().put(cacheKey(key), obj);// 保存到内存中
             return obj;
         }
 
         //如果是其他对象，转换后返回
         T obj = gson.fromJson(json, classOfT);
-        if (useCache) getCache().put(key, obj);// 保存到内存中
+        if (useCache) getCache().put(cacheKey(key), obj);// 保存到内存中
         return obj;
     }
 
@@ -224,7 +252,8 @@ public class YSave {
 
     // 获取文件
     public File readFile(String key) {
-        return new File(getPath() + key + (extensionName != null ? extensionName : ".save"));
+        key = safeKey(key);
+        return new File(getPath(), key + (extensionName != null ? extensionName : ".save"));
     }
 
     public YSave setPath(String path) {

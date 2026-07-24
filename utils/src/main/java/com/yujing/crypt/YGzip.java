@@ -56,10 +56,13 @@ public class YGzip {
     public static void compress(File file, boolean delete) throws Exception {
         FileInputStream fis = new FileInputStream(file);
         FileOutputStream fos = new FileOutputStream(file.getPath() + EXT);
-        compress(fis, fos);
-        fis.close();
-        fos.flush();
-        fos.close();
+        try {
+            compress(fis, fos);
+        } finally {
+            fis.close();
+            fos.flush();
+            fos.close();
+        }
         if (delete) {
             file.delete();
         }
@@ -99,10 +102,10 @@ public class YGzip {
             gos.flush();
             gos.close();
         } catch (IOException e) {
-            System.out.println("Error");
             if (progressThread != null) {
                 progressThread.stopShow();
             }
+            throw new RuntimeException("GZIP压缩失败", e);
         }
     }
 
@@ -134,12 +137,15 @@ public class YGzip {
      */
     public static void decompress(File file, boolean delete) throws Exception {
         FileInputStream fis = new FileInputStream(file);
-        String path = file.getPath().lastIndexOf(".gz") == -1 ? (file.getPath() + ".copy") : file.getPath().substring(0, file.getPath().lastIndexOf(".gz"));
+        String path = file.getName().endsWith(".gz") ? file.getPath().substring(0, file.getPath().length() - 3) : file.getPath() + ".copy";
         FileOutputStream fos = new FileOutputStream(new File(path));
-        decompress(fis, fos);
-        fis.close();
-        fos.flush();
-        fos.close();
+        try {
+            decompress(fis, fos);
+        } finally {
+            fis.close();
+            fos.flush();
+            fos.close();
+        }
         if (delete) {
             file.delete();
         }
@@ -177,10 +183,10 @@ public class YGzip {
             progressThread.finish();
             gis.close();
         } catch (IOException e) {
-            System.out.println("Error,或许文件并未加压");
             if (progressThread != null) {
                 progressThread.stopShow();
             }
+            throw new RuntimeException("GZIP解压失败，或许文件并未压缩", e);
         }
     }
 }

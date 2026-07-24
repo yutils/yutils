@@ -5,7 +5,6 @@ import com.yujing.utils.YConvert;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
-import java.security.SecureRandom;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
@@ -129,22 +128,14 @@ public class YAes {
     }
 
     /**
-     * 创建一个随机秘钥
+     * 根据 password 创建确定性秘钥（与 encryptECB/CBC 的 padding 规则一致）
+     * 注意：不要用 SecureRandom(seed)+KeyGenerator，Android 上无法稳定复现密钥
      *
      * @param key 根据password创建
      * @return 秘钥
      */
     public static SecretKeySpec createKey(byte[] key) throws Exception {
-        // 生成key//构造密钥生成器，指定为AES算法,不区分大小写
-        KeyGenerator keyGenerator = KeyGenerator.getInstance(AES);
-        //生成一个128位的随机源,根据传入的字节数组
-        keyGenerator.init(128, new SecureRandom(key));
-        //产生原始对称密钥
-        SecretKey secretKey = keyGenerator.generateKey();
-        //获得原始对称密钥的字节数组
-        byte[] keyBytes = secretKey.getEncoded();
-        // key转换,根据字节数组生成AES密钥
-        return new SecretKeySpec(keyBytes, AES);
+        return new SecretKeySpec(paddingData(key), AES);
     }
 
     /**

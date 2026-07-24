@@ -8,6 +8,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import java.lang.reflect.Method
 import java.util.Vector
@@ -29,7 +30,7 @@ class YBusUtil {
         var listObject: Vector<Any> = Vector()
 
         @JvmStatic
-        var anySticky: Vector<YMessage<Any>> = Vector()
+        var anySticky: CopyOnWriteArrayList<YMessage<Any>> = CopyOnWriteArrayList()
 
         // -------- 索引与缓存 --------
         // 类 -> 该类的订阅方法（已提取注解信息、参数信息）
@@ -127,10 +128,13 @@ class YBusUtil {
 
         @JvmStatic
         fun destroyAll() {
+            busScope?.cancel()
+            serialScope.cancel()
             listObject.clear()
             objectSubs.clear()
             tagIndex.clear()
             wildcardIndex.clear()
+            methodCache.clear()
         }
 
         // 发送事件（零扫描分发）
@@ -153,20 +157,20 @@ class YBusUtil {
 
         @JvmStatic
         private fun subscribe(yMessage: YMessage<Any>) {
-            try {
-                // 命中显式 tag + 通配
-                val targets = ArrayList<Subscription>()
-                tagIndex[yMessage.type ?: ""]?.let { targets.addAll(it) }
-                if (wildcardIndex.isNotEmpty()) targets.addAll(wildcardIndex)
+            // 命中显式 tag + 通配
+            val targets = ArrayList<Subscription>()
+            tagIndex[yMessage.type ?: ""]?.let { targets.addAll(it) }
+            if (wildcardIndex.isNotEmpty()) targets.addAll(wildcardIndex)
 
-                if (targets.isEmpty()) return
-                for (sub in targets) {
+            if (targets.isEmpty()) return
+            for (sub in targets) {
+                try {
                     // 显式 tag 的方法天然匹配；通配方法需要按签名做一次轻量判断
                     if (!matches(sub.subscriberMethod, yMessage)) continue
                     invokeByThreadMode(sub, yMessage)
+                } catch (e: Throwable) {
+                    YLog.e("YBus", "单个订阅者分发异常：${e.message}", e)
                 }
-            } catch (e: Throwable) {
-                YLog.e("YBus", "分发异常：${e.message}", e)
             }
         }
 
@@ -213,10 +217,14 @@ class YBusUtil {
         // ===== 索引构建 =====
         private fun findSubscriberMethods(clazz: Class<*>): List<SubscriberMethod> {
             val list = ArrayList<SubscriberMethod>()
+            val seenSignatures = HashSet<String>()
             var c: Class<*>? = clazz
             while (c != null && c != Any::class.java && c != Object::class.java) {
                 for (m in c.declaredMethods) {
                     val ann = m.getAnnotation(YBus::class.java) ?: continue
+                    // 用方法名+参数类型做去重键，子类重写的方法优先，跳过父类版本
+                    val sig = m.name + m.parameterTypes.joinToString { it.name }
+                    if (!seenSignatures.add(sig)) continue
                     m.isAccessible = true
                     val tags = ann.value
                     val tagList = if (tags.isEmpty() || (tags.size == 1 && tags[0].isEmpty())) emptyList() else tags.toList()

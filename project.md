@@ -23,12 +23,12 @@
 
 ## Gradle 引用
 
-[添加依赖，当前最新版：————> 2.3.5　　　　![最新版](https://img.shields.io/badge/%E6%9C%80%E6%96%B0%E7%89%88-2.3.5-green.svg)](https://search.maven.org/artifact/com.kotlinx/yutils)
+[添加依赖，当前最新版：————> 2.3.6　　　　![最新版](https://img.shields.io/badge/%E6%9C%80%E6%96%B0%E7%89%88-2.3.6-green.svg)](https://search.maven.org/artifact/com.kotlinx/yutils)
 
 ```
 dependencies {
      //更新地址  https://github.com/yutils/yutils 建议过几天访问看下有没有新版本
-     implementation 'com.kotlinx:yutils:2.3.5'
+     implementation 'com.kotlinx:yutils:2.3.6'
 }
 ```
 
@@ -312,8 +312,8 @@ YAlertDialogUtils().showList("请选择一个", listOf("123", "456", "789", "000
     //YLog.i("选择了：$it")
 }
 
-//输入框
-YAlertDialogUtils().showEdit("测试", "请输入内容") {
+//输入框（参数：title, text, hint, listener）
+YAlertDialogUtils().showEdit("测试", text = "", hint = "请输入内容") {
     //YLog.i("输入了：$it")
 }
 ```
@@ -358,22 +358,39 @@ APK安装，如果没有请求安装权限，会先跳转到请求安装权限�
 YInstallApk().install(YPath.getSDCard() + "/app.apk")
 ```
 
-如果是安卓8.0以上先请求打开未知来源
+如果是安卓8.0以上先请求打开未知来源。`YUri.getUri` / 拍照等需要 FileProvider，authority 为 `${applicationId}.fileProvider`。
+
+权限示例：
 
 ```xml
-    权限：
 <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+```
 
-    1.首先创建res/xml/provider_paths.xml<?xml version="1.0" encoding="utf-8"?><paths xmlns:android="http://schemas.android.com/apk/res/android">
-<!-- /storage/emulated/0/Download/${applicationId}/.beta/apk-->
-<external-path name="beta_external_path" path="Download/" />
-<!--/storage/emulated/0/Android/data/${applicationId}/files/apk/-->
-<external-path name="beta_external_files_path" path="Android/data/" />
+1. 创建 `res/xml/provider_paths.xml`（请按实际路径增删；含 cache/files 才能转内部文件 Uri）：
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<paths xmlns:android="http://schemas.android.com/apk/res/android">
+    <external-path name="beta_external_path" path="Download/" />
+    <external-path name="beta_external_files_path" path="Android/data/" />
+    <files-path name="internal_files" path="." />
+    <cache-path name="internal_cache" path="." />
+    <external-files-path name="private_files" path="." />
+    <external-cache-path name="external_cache" path="." />
 </paths>
+```
 
-    2.再在AndroidManifest.xml  中的application加入<!--安装app-->
-<provider android:name="androidx.core.content.FileProvider" android:authorities="${applicationId}.fileProvider" android:exported="false" android:grantUriPermissions="true">
-<meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/provider_paths" />
+2. 在 `AndroidManifest.xml` 的 `<application>` 内加入：
+
+```xml
+<provider
+    android:name="androidx.core.content.FileProvider"
+    android:authorities="${applicationId}.fileProvider"
+    android:exported="false"
+    android:grantUriPermissions="true">
+    <meta-data
+        android:name="android.support.FILE_PROVIDER_PATHS"
+        android:resource="@xml/provider_paths" />
 </provider>
 ```
 
@@ -416,6 +433,22 @@ YConvert.bytes2Files(byteArray, File("地址").path)
 YConvert.fileToByte(File("地址"))
 
 //... 更多请查看源码
+```
+
+----
+
+### YString 字符串处理
+
+```kotlin
+// 每隔 digit 位插入分隔符（末尾不再多加一个分隔符）
+// "AABBCCDD" → "AA-BB-CC-DD"
+YString.insert("AABBCCDD", 2, "-")
+// 长度不能整除时： "AABBCCD" → "AA-BB-CC-D"
+YString.insert("AABBCCD", 2, "-")
+
+// 全角 / 半角
+YString.ToSBC("ABC")
+YString.ToDBC("ＡＢＣ")
 ```
 
 ----
@@ -490,11 +523,18 @@ protected void onDestroy(){
 ```kotlin
 val yTimer = YTimer()
 
-//每秒调用一次
+//每秒调用一次（IO 线程）
 yTimer.loopIO(1000) {  }
 
-//每秒调用一次，最多调用5次，或者10秒,回调UI线程
-yTimer.loopUI(1000,5,10000) {  }
+//每秒调用一次，最多调用 5 次，或累计不超过 10 秒，回调在 UI 线程
+//maxNumber = 精确执行次数（例如 5 表示最多执行 5 次）
+yTimer.loopUI(1000, 5, 10000) {  }
+
+//同步轮询：直到 listener 返回非 null，或达到 maxNumber / 超时
+val result = YTimer.loopSync(200, 10, 5000) {
+    // 返回非 null 立即结束
+    null
+}
 
 //退出时关闭
 override fun onDestroy() {
@@ -574,18 +614,20 @@ class MyAccountAdapter<T>(context: Context, list: List<T>) : YBaseYRecyclerViewA
 
 ### 弹出一个日期选择器
 
-```kotlin
-YDateDialog.setDefaultFullScreen(true);
-YDateDialog yDateDialog = new YDateDialog(activity);
-yDateDialog.setFormat("yyyy年MM月dd日");// 设置日期格式（如："yyyy年MM月dd日HH:mm"）
-yDateDialog.initTime("2022年2月22日");//设置初始化日期，必须和设置格式相同（如："2016年07月01日15:19"）
-yDateDialog.setShowDay(true);// 设置是否显示日滚轮,默认显示
-yDateDialog.setShowTime(false);// 设置是否显示时间滚轮,默认显示
-yDateDialog.setShowMonth(true);// 设置是否显示时间滚轮,默认显示
-yDateDialog.setWindowListener(window -> );
-yDateDialog.show((format, calendar, date, yyyy, MM, dd, HH, mm) -> {
+> 内部用 `ContextThemeWrapper` 套 Holo 对话框主题，**不会**再调用 `Activity.setTheme`，因此弹完后仍可正常使用 AppCompat 的 `YAlertDialogUtils`。
 
-});
+```kotlin
+YDateDialog.setDefaultFullScreen(true)
+val yDateDialog = YDateDialog(activity)
+yDateDialog.setFormat("yyyy年MM月dd日") // 设置日期格式（如："yyyy年MM月dd日HH:mm"）
+yDateDialog.initTime("2022年2月22日") // 初始化日期必须与 format 一致
+yDateDialog.setShowDay(true)   // 是否显示日，默认 true
+yDateDialog.setShowTime(false) // 是否显示时分，默认 true
+yDateDialog.setShowMonth(true) // 是否显示月，默认 true
+yDateDialog.setWindowListener { window -> /* 可改 window 样式 */ }
+yDateDialog.show { format, calendar, date, yyyy, MM, dd, HH, mm ->
+    // format 为按 setFormat 格式化后的字符串
+}
 ```
 
 ----
@@ -593,7 +635,7 @@ yDateDialog.show((format, calendar, date, yyyy, MM, dd, HH, mm) -> {
 ### 各种检查验证数据是否合法
 
 ```kotlin
-//判断是否是年龄0-12
+//判断是否是年龄 0–120
 YCheck.isAge("50")
 //校验中文
 YCheck.isChinese("你好")
@@ -601,13 +643,17 @@ YCheck.isChinese("你好")
 YCheck.isEnglish("ABCDEF")
 //判断字段是否为数字 正负整数 正负浮点数 符合返回ture
 YCheck.isNumber("5.25")
-//判断是否是整数
+//判断是否是整数（可带负号）
 YCheck.isInteger("55")
+// 注意：历史命名与语义相反 ——
+// isInteger_NEGATIVE 实际匹配 ≥0 的整数；isInteger_POSITIVE 实际匹配 ≤0 的整数
+YCheck.isInteger_NEGATIVE("12")
+YCheck.isInteger_POSITIVE("-3")
 //判断是否是double
 YCheck.isDouble("123.564")
 //判断是否是email
 YCheck.isEmail("3373217@qq.com")
-//判断是否是银行卡号
+//判断是否是银行卡号（Luhm）
 YCheck.isBankCard("6222848136846824")
 //判断是否是日期，支持 YYYY-MM-DD ， YYYY/MM/DD ， YYYY_MM_DD ， YYYYMMDD ，  YYYY.MM.DD
 YCheck.isDate("2022-02-22")
@@ -694,11 +740,15 @@ YScreenUtil.snapShotWithoutStatusBar(this)
 
 ### SoundPool 快捷使用
 
+> `SoundPool.load` 是异步的：`put` 后立刻 `play` 可能无声。可用 `put` 的完成回调，或直接用 `YSound.play(resId, timeOut)`（内部等加载完成再播）。
+
 ```kotlin
-//添加资源
-YSound.getInstance().put(0, R.raw.di)
-//播放资源
-YSound.getInstance().play(0)
+//添加资源（可选：加载完成回调）
+YSound.getInstance().put(0, R.raw.di) {
+    YSound.getInstance().play(0)
+}
+//或：加载播放并在超时后释放
+YSound.play(R.raw.success, 1000)
 //释放资源
 YSound.getInstance().onDestroy()
 ```
@@ -817,6 +867,7 @@ java
 
 ### 其他
 
+- **演示 / 分类测试 App**：模块 `:test`，启动页 `TestHomeActivity`（右上角可回旧版按钮墙）。给 AI / 协作者的开发与加用例说明见根目录 [AGENTS.md](AGENTS.md)
 - YUsb类：USB使用通用方法，包含连接，打开，发送数据，读取数据
 - YWeb：对webView二次封装，实现播放视频等操作
 - YPlayer：多功能播放器
