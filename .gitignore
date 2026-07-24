@@ -10,3 +10,4 @@
 app/libs/
 utils/sampledata/
 /gradles/
+gradle/gradle-daemon-jvm.properties

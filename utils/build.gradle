@@ -1,7 +1,7 @@
 plugins {
     id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
-    id 'com.vanniktech.maven.publish' version "0.36.0" apply true //maven上传插件
+    id 'com.vanniktech.maven.publish' version "0.37.0" apply true //maven上传插件
 }
 android {
     namespace 'com.yujing.utils' //不能修改
