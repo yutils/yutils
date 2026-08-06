@@ -397,7 +397,9 @@ public class YLog {
                     Log.e(TAG, codeLine + " \n" + "null", tr);
                 }
             } else {
-                System.err.println("TAG:" + TAG + "\tcodeLine:" + codeLine + " \n" + "null" + ((tr == null) ? "" : ("\tThrowable:" + tr.getMessage())));
+                if (IS_SHOW_LOG_ERROR) {
+                    System.err.println("TAG:" + TAG + "\tcodeLine:" + codeLine + " \n" + "null" + ((tr == null) ? "" : ("\tThrowable:" + tr.getMessage())));
+                }
             }
             return;
         }
@@ -430,10 +432,12 @@ public class YLog {
                         break;
                 }
             } else {
-                if (ERROR.equals(type)) {
+                if (ERROR.equals(type) && IS_SHOW_LOG_ERROR) {
                     System.err.println("TAG:" + TAG + "\tvalue:" + value + ((tr == null) ? "" : ("\tThrowable:" + tr.getMessage())));
                 } else {
-                    System.out.println("TAG:" + TAG + "\tvalue:" + value + ((tr == null) ? "" : ("\tThrowable:" + tr.getMessage())));
+                    if (IS_SHOW_LOG_VERBOSE || IS_SHOW_LOG_DEBUG || IS_SHOW_LOG_INFO || IS_SHOW_LOG_WARN) {
+                        System.out.println("TAG:" + TAG + "\tvalue:" + value + ((tr == null) ? "" : ("\tThrowable:" + tr.getMessage())));
+                    }
                 }
             }
             i++;

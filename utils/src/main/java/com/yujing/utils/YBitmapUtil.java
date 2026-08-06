@@ -555,23 +555,52 @@ public class YBitmapUtil {
         return bitmapToDot(bitmap, 200);
     }
 
+
+//    public static boolean[][] bitmapToDot(Bitmap bitmap, int threshold) {
+//        if (YBitmapUtil.isEmptyBitmap(bitmap)) return null;
+//        bitmap = YBitmapUtil.toGray(bitmap);
+//        //转boolean 黑true
+//        boolean[][] blacks = new boolean[bitmap.getHeight()][bitmap.getWidth()];
+//        for (int y = 0; y < blacks.length; y++) {
+//            for (int x = 0; x < blacks[y].length; x++) {
+//                int px = bitmap.getPixel(x, y);
+//                blacks[y][x] = Color.red(px) <= threshold;//小于阈值就为黑色
+//            }
+//        }
+//        return blacks;
+//    }
+
     /**
-     * bitmap转点阵图
+     * 高性能 bitmap 转点阵图
      * 黑色为true，白色为false
      *
-     * @param bitmap    bitmap
-     * @param threshold 阈值，低于这个值就默认是黑色，0-255
-     * @return boolean二维数组，[列][行]
+     * @param bitmap    源bitmap
+     * @param threshold 阈值 (0-255)，低于此值判定为黑色
+     * @return boolean二维数组 [行][列]
      */
     public static boolean[][] bitmapToDot(Bitmap bitmap, int threshold) {
-        if (YBitmapUtil.isEmptyBitmap(bitmap)) return null;
-        bitmap = YBitmapUtil.toGray(bitmap);
-        //转boolean 黑true
-        boolean[][] blacks = new boolean[bitmap.getHeight()][bitmap.getWidth()];
-        for (int y = 0; y < blacks.length; y++) {
-            for (int x = 0; x < blacks[y].length; x++) {
-                int px = bitmap.getPixel(x, y);
-                blacks[y][x] = Color.red(px) <= threshold;//小于阈值就为黑色
+        if (isEmptyBitmap(bitmap)) return null;
+        final int w = bitmap.getWidth();
+        final int h = bitmap.getHeight();
+        // ✅ 优化1: 一次性获取所有像素到int数组，避免逐像素JNI调用
+        final int[] pixels = new int[w * h];
+        bitmap.getPixels(pixels, 0, w, 0, 0, w, h);
+        // ✅ 优化2: 预分配结果数组
+        final boolean[][] blacks = new boolean[h][w];
+        // ✅ 优化3: 直接在ARGB上计算灰度，省去toGray()的额外Bitmap创建和遍历
+        // 使用整数近似公式: Gray ≈ (R*77 + G*150 + B*29) >> 8
+        // 等价于 R*0.3 + G*0.59 + B*0.11，但纯整数运算无浮点开销
+        for (int y = 0; y < h; y++) {
+            final boolean[] row = blacks[y];
+            final int rowOffset = y * w;
+            for (int x = 0; x < w; x++) {
+                final int px = pixels[rowOffset + x];
+                final int r = (px >>> 16) & 0xFF;
+                final int g = (px >>> 8) & 0xFF;
+                final int b = px & 0xFF;
+                // 整数加权灰度计算，结果范围0-255
+                final int gray = (r * 77 + g * 150 + b * 29) >>> 8;
+                row[x] = gray <= threshold;
             }
         }
         return blacks;
