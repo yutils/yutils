@@ -15,8 +15,8 @@ import java.util.Locale;
 
 /**
  * LOG显示类
- * 日志显示调用的类名和代码行号
- * 解决AndroidStudio的logcat显示超长字符串的问题
+ * 可选显示调用的类名和代码行号（IS_SHOW_CODE_LINE，默认关闭）
+ * 解决AndroidStudio的logcat显示超长字符串的问题（按 UTF-8 字节分段）
  * 保存日志到本地文件夹
  * 清理某个时间点之前的日志
  *
@@ -25,6 +25,8 @@ import java.util.Locale;
 /* 用法
     YLog.d("你好")
     YLog.i("tag","你好")
+    //默认不打印调用行号；调试需要时打开
+    YLog.IS_SHOW_CODE_LINE = true
     //向上偏移一级，输出调用类和行数时，显示上级调用改函数的类和对应行数
     YLog.i("tag","你好",1)
     //日志监听
@@ -67,6 +69,7 @@ public class YLog {
     public static boolean IS_SHOW_LOG_INFO = true;//是否在logcat中显示INFO
     public static boolean IS_SHOW_LOG_WARN = true;//是否在logcat中显示WARN
     public static boolean IS_SHOW_LOG_ERROR = true;//是否在logcat中显示ERROR
+    public static boolean IS_SHOW_CODE_LINE = false;//是否显示调用类名与行号（取堆栈较耗时，默认关闭）
 
     //-------------------------------------------静态方法↓-------------------------------------------
 
@@ -385,29 +388,44 @@ public class YLog {
      * @param lineDeviation 偏移行
      */
     private static void println(String TAG, String msg, Throwable tr, String type, int lineDeviation) {
-        String codeLine = YStackTrace.getLine(2 + lineDeviation);
-        boolean error = codeLine == null;
-        if (error) {
-            codeLine = YStackTrace.getLine(2);
-            msg = "错误！无法定位到方法行。\n" + msg;
+        String codeLine = null;
+        if (IS_SHOW_CODE_LINE) {
+            codeLine = YStackTrace.getLine(2 + lineDeviation);
+            if (codeLine == null) {
+                codeLine = YStackTrace.getLine(2);
+                msg = "错误！无法定位到方法行。\n" + msg;
+            }
         }
         if (msg == null) {
+            String nullValue = IS_SHOW_CODE_LINE ? (codeLine + " \nnull") : "null";
             if (YClass.isAndroid()) {
                 if (IS_SHOW_LOG_ERROR) {
-                    Log.e(TAG, codeLine + " \n" + "null", tr);
+                    Log.e(TAG, nullValue, tr);
                 }
             } else {
                 if (IS_SHOW_LOG_ERROR) {
-                    System.err.println("TAG:" + TAG + "\tcodeLine:" + codeLine + " \n" + "null" + ((tr == null) ? "" : ("\tThrowable:" + tr.getMessage())));
+                    System.err.println("TAG:" + TAG + "\t" + nullValue + ((tr == null) ? "" : ("\tThrowable:" + tr.getMessage())));
                 }
             }
             return;
         }
-        List<StringBuilder> lines = YString.groupActual(msg, LOG_MAX_LENGTH - codeLine.length() - 10);
+        int maxLen = IS_SHOW_CODE_LINE
+                ? LOG_MAX_LENGTH - codeLine.length() - 10
+                : LOG_MAX_LENGTH;
+        if (maxLen < 3) maxLen = 3;
+        List<StringBuilder> lines = YString.groupActual(msg, maxLen);
         int i = 1;
         for (StringBuilder item : lines) {
-            //第一行要显示代码line，只有行就不显示line1行数
-            String value = (i == 1 ? "★" + codeLine : "★--->" + i) + " \n" + item.toString();
+            String value;
+            if (IS_SHOW_CODE_LINE) {
+                //第一行要显示代码line，后续段显示序号
+                value = (i == 1 ? "★" + codeLine : "★--->" + i) + " \n" + item.toString();
+            } else if (i == 1) {
+                //关行号：首段直接打正文（单段时无 ★ 头）
+                value = item.toString();
+            } else {
+                value = "★--->" + i + " \n" + item.toString();
+            }
             if (YClass.isAndroid()) {
                 switch (type) {
                     case VERBOSE:

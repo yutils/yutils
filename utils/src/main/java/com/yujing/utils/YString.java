@@ -1,6 +1,12 @@
 package com.yujing.utils;
 
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
 import java.nio.charset.Charset;
+import java.nio.charset.CharsetEncoder;
+import java.nio.charset.CoderResult;
+import java.nio.charset.CodingErrorAction;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -121,6 +127,8 @@ public class YString {
 
     /**
      * 字符串分组，真实长度，每digit位字符拆分一次字符串，英文算一个字符，中文算两个或者3字符
+     * <p>
+     * 默认按 UTF-8 字节长度切分（无逐字 getBytes 分配）。
      *
      * @param str   字符串
      * @param digit 位
@@ -132,10 +140,12 @@ public class YString {
 
     /**
      * 字符串分组，指定字符串编码
+     * <p>
+     * charset 为 null 或 UTF-8 时走无分配快路径；其它编码用 CharsetEncoder 复用缓冲，避免逐字 new String/getBytes。
      *
      * @param str     字符串
      * @param digit   位
-     * @param charset 编码
+     * @param charset 编码，null 视为 UTF-8
      * @return 拆分后的字符串
      */
     public static List<StringBuilder> groupActual(String str, int digit, Charset charset) {
@@ -145,32 +155,106 @@ public class YString {
             strings.add(new StringBuilder(str));
             return strings;
         }
+        if (charset == null || StandardCharsets.UTF_8.equals(charset)) {
+            return groupActualUtf8(str, digit);
+        }
+        return groupActualByCharset(str, digit, charset);
+    }
+
+    /**
+     * UTF-8 字节长度切分：按码点计算字节数，不分配临时 byte[]。
+     */
+    private static List<StringBuilder> groupActualUtf8(String str, int digit) {
         List<StringBuilder> strings = new ArrayList<>();
-        StringBuilder sb = new StringBuilder();
-        int index = 0;
         int length = str.length();
-        for (int i = 0; i < length; i++) {
-            char c = str.charAt(i);//获取每一个字
-            index += String.valueOf(c).getBytes(charset != null ? charset : Charset.defaultCharset()).length;
-            //如果大于就换行
-            if (index > digit) {
-                index = 0;
+        StringBuilder sb = new StringBuilder(Math.min(length, digit));
+        int index = 0;
+        for (int i = 0; i < length; ) {
+            int cp = str.codePointAt(i);
+            int charCount = Character.charCount(cp);
+            int bytes = utf8ByteLength(cp);
+            if (index > 0 && index + bytes > digit) {
                 strings.add(sb);
-                sb = new StringBuilder();
-                i--;
+                sb = new StringBuilder(Math.min(length - i, digit));
+                index = 0;
                 continue;
             }
-            //连接字符串
-            sb.append(c);
-            if (index == digit) {//如果大于就换行
-                index = 0;
+            sb.appendCodePoint(cp);
+            index += bytes;
+            i += charCount;
+            if (index >= digit) {
                 strings.add(sb);
-                sb = new StringBuilder();
+                sb = new StringBuilder(Math.min(length - i, digit));
+                index = 0;
             }
         }
-        if (sb.length() > 0)
-            strings.add(sb);
+        if (sb.length() > 0) strings.add(sb);
         return strings;
+    }
+
+    private static int utf8ByteLength(int codePoint) {
+        if (codePoint <= 0x7F) return 1;
+        if (codePoint <= 0x7FF) return 2;
+        if (codePoint <= 0xFFFF) return 3;
+        return 4;
+    }
+
+    /**
+     * 非 UTF-8：用复用的 CharsetEncoder 计算码点字节长度，避免逐字 String.valueOf().getBytes()。
+     */
+    private static List<StringBuilder> groupActualByCharset(String str, int digit, Charset charset) {
+        CharsetEncoder encoder = charset.newEncoder()
+                .onMalformedInput(CodingErrorAction.REPLACE)
+                .onUnmappableCharacter(CodingErrorAction.REPLACE);
+        CharBuffer cb = CharBuffer.allocate(2);
+        int maxBytes = Math.max(8, (int) Math.ceil(encoder.maxBytesPerChar() * 2) + 4);
+        ByteBuffer bb = ByteBuffer.allocate(maxBytes);
+        List<StringBuilder> strings = new ArrayList<>();
+        int length = str.length();
+        StringBuilder sb = new StringBuilder(Math.min(length, digit));
+        int index = 0;
+        for (int i = 0; i < length; ) {
+            int cp = str.codePointAt(i);
+            int charCount = Character.charCount(cp);
+            int bytes = encodedByteLength(encoder, cb, bb, cp, charCount);
+            if (index > 0 && index + bytes > digit) {
+                strings.add(sb);
+                sb = new StringBuilder(Math.min(length - i, digit));
+                index = 0;
+                continue;
+            }
+            sb.appendCodePoint(cp);
+            index += bytes;
+            i += charCount;
+            if (index >= digit) {
+                strings.add(sb);
+                sb = new StringBuilder(Math.min(length - i, digit));
+                index = 0;
+            }
+        }
+        if (sb.length() > 0) strings.add(sb);
+        return strings;
+    }
+
+    private static int encodedByteLength(CharsetEncoder encoder, CharBuffer cb, ByteBuffer bb, int cp, int charCount) {
+        cb.clear();
+        if (charCount == 1) {
+            cb.put((char) cp);
+        } else {
+            cb.put(Character.highSurrogate(cp));
+            cb.put(Character.lowSurrogate(cp));
+        }
+        cb.flip();
+        bb.clear();
+        encoder.reset();
+        CoderResult cr = encoder.encode(cb, bb, true);
+        if (cr.isOverflow()) {
+            // 极端编码：回退到整码点编码长度
+            return new String(Character.toChars(cp)).getBytes(encoder.charset()).length;
+        }
+        encoder.flush(bb);
+        int bytes = bb.position();
+        return bytes > 0 ? bytes : 1;
     }
 
     /**

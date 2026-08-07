@@ -251,6 +251,17 @@ object ConvertCases {
             require(joined.toString() == s || joined.toString().replace("\n", "") == s) { "groupDouble=$joined" }
             val g2 = YString.groupActual(s, 6)
             require(g2.isNotEmpty())
+            val joinedActual = g2.joinToString("") { it.toString() }
+            require(joinedActual == s) { "groupActual 拼接应还原原文: $joinedActual" }
+            // 较长 ASCII（hex/报文常见）按字节切分后仍可完整还原
+            val hex = "A".repeat(50) + "B".repeat(50)
+            val gHex = YString.groupActual(hex, 40)
+            require(gHex.size >= 2) { "长串应被切分, size=${gHex.size}" }
+            require(gHex.joinToString("") { it.toString() } == hex) { "hex groupActual 拼接失败" }
+            // 中文 UTF-8 每字 3 字节，digit=6 时应能按字边界切开且还原
+            val cn = "中文测试内容ABCD"
+            val gCn = YString.groupActual(cn, 6)
+            require(gCn.joinToString("") { it.toString() } == cn) { "中文 groupActual 拼接失败" }
         },
         AutoTestCase("convert.num.float.double", "YConvertNumberBytes float/double/2bytes", TestCategory.CONVERT) {
             val f = 12.5f
