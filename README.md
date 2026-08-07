@@ -17,47 +17,51 @@ Welcome to my GitHub ! ! !
 采用kotlin扩展方法的方式来扩展kotlin功能。增加易用性。 举例："你好".toast()   举例："日志".logI()
 
 ----
-**3.  [FaceRec-Android](https://github.com/yutils/FaceRec-Android)**  ---->  [https://github.com/yutils/FaceRec-Android](https://github.com/yutils/FaceRec-Android)  
+**3.  [Easycontrol](https://github.com/yutils/Easycontrol)**  ---->  [https://github.com/yutils/Easycontrol](https://github.com/yutils/Easycontrol)  
+手机远程控制手机，永久免费使用，持续维护，支持到安卓17，更新到最新版scrcpy，帮助你方便的使用手机远程控制手机。
+
+----
+**4.  [FaceRec-Android](https://github.com/yutils/FaceRec-Android)**  ---->  [https://github.com/yutils/FaceRec-Android](https://github.com/yutils/FaceRec-Android)  
 安卓人脸识别，Android face recognition using InsightFaceSDK， 完全离线，本地运行，实时人脸检测、特征提取与比对，适用于生物识别、身份认证等场景。
 
 ----
-**4. [yutils](https://github.com/yutils/yutils)**  ---->  [https://github.com/yutils/yutils](https://github.com/yutils/yutils)  
+**5. [yutils](https://github.com/yutils/yutils)**  ---->  [https://github.com/yutils/yutils](https://github.com/yutils/yutils)  
 工具集合：各种基类，蓝牙控制，自定义总线，加密解密，SQLite数据库，Socket保持长连接，UDP通信，图片处理，日期处理，弹出自定义对话框，GSP获取，计时器，通知栏下载，处理队列，延迟操作，防粘连操作，文件处理保存，对象保存，线程池处理，单例toast，APP版本更新，快速拍照、选择相册、截图，webView封装，相机封装，多媒体播放封装，弹窗popupWindow快速实现，各种类型转换，APP启动，重启，shell执行，等...
 
 ----
-**5. [yhttp](https://github.com/yutils/yhttp)**  ---->  [https://github.com/yutils/yhttp](https://github.com/yutils/yhttp)  
+**6. [yhttp](https://github.com/yutils/yhttp)**  ---->  [https://github.com/yutils/yhttp](https://github.com/yutils/yhttp)  
 Http网络请求，使用简单，快速，支持java，kotlin，安卓，一行实现网络请求，支持https、session、get、post、put、delete、多文件上传、文件下载、日志完整显示等。
 
 ----
-**6.  [QrCodeLib](https://github.com/yutils/QrCodeLib)**  ---->  [https://github.com/yutils/QrCodeLib](https://github.com/yutils/QrCodeLib)  
+**7.  [QrCodeLib](https://github.com/yutils/QrCodeLib)**  ---->  [https://github.com/yutils/QrCodeLib](https://github.com/yutils/QrCodeLib)  
 一行代码实现相机扫描二维码 QRCodeUtil.openCamera(activity) {it-> }，一行代码实现选择相册照片并解析二维码 QRCodeUtil.openAlbum(activity) {it-> }，一行代码生成二维码图片
 
 ----
-**7.  [databinding](https://github.com/yutils/databinding)**  ---->  [https://github.com/yutils/databinding](https://github.com/yutils/databinding)  
+**8.  [databinding](https://github.com/yutils/databinding)**  ---->  [https://github.com/yutils/databinding](https://github.com/yutils/databinding)  
 DataBinding 学习 ：1. 单向绑定   2. 双向绑定 3.RecyclerView  注解使用: @BindingAdapter
 
 ----
-**8.  [CH34xUART](https://github.com/yutils/CH34xUART)**  ---->  [https://github.com/yutils/CH34xUART](https://github.com/yutils/CH34xUART)  
+**9.  [CH34xUART](https://github.com/yutils/CH34xUART)**  ---->  [https://github.com/yutils/CH34xUART](https://github.com/yutils/CH34xUART)  
 CH340/CH341的USB转串口安卓免驱应用库。修复bug，简单易用。
 
 ----
-**9. [ycamerax](https://github.com/yutils/ycamerax)**  ---->  [https://github.com/yutils/ycamerax](https://github.com/yutils/ycamerax)  
+**10. [ycamerax](https://github.com/yutils/ycamerax)**  ---->  [https://github.com/yutils/ycamerax](https://github.com/yutils/ycamerax)  
 CameraX 使用，支持安卓12，一键获取照片，一键视频，逐帧回调bitmap分析，支持双指放大，双击放大，单击手动对焦
 
 ----
-**10. [HikVisionDemo](https://github.com/yutils/HikVisionDemo)**  ---->  [https://github.com/yutils/HikVisionDemo](https://github.com/yutils/HikVisionDemo)  
+**11. [HikVisionDemo](https://github.com/yutils/HikVisionDemo)**  ---->  [https://github.com/yutils/HikVisionDemo](https://github.com/yutils/HikVisionDemo)  
 海康威视demo   4路同时播放   支持缩放  拍照等
 
 ----
-**11. [AlipayPassDialog](https://github.com/yutils/AlipayPassDialog)**  ---->  [https://github.com/yutils/AlipayPassDialog](https://github.com/yutils/AlipayPassDialog)  
+**12. [AlipayPassDialog](https://github.com/yutils/AlipayPassDialog)**  ---->  [https://github.com/yutils/AlipayPassDialog](https://github.com/yutils/AlipayPassDialog)  
 Android 支付密码数字键盘， 支持自定义文本、颜色、大小、自定义关闭图标、弹框样式、回调函数处理、数字位置随机、自定义密码位数1-9位、可以自定义样式Dialog、调节字体颜色大小内容。
 
 ----
-**12. [openConnect](https://github.com/yutils/openConnect)**  ---->  [https://github.com/yutils/openConnect](https://github.com/yutils/openConnect)  
+**13. [openConnect](https://github.com/yutils/openConnect)**  ---->  [https://github.com/yutils/openConnect](https://github.com/yutils/openConnect)  
 一键打开网络调试（无界面APP），支持自定义端口，支持开机自启，适合板载安卓开发。
 
 ----
-**13. [note](https://gitee.com/yos/note)**  ---->  [https://gitee.com/yos/note](https://gitee.com/yos/note)   
+**14. [note](https://gitee.com/yos/note)**  ---->  [https://gitee.com/yos/note](https://gitee.com/yos/note)   
 一些笔记，每次遇到了什么问题就记录下来。久而久之就记录了很多杂七杂八的笔记。
 
 ----
