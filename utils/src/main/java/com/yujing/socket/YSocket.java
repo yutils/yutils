@@ -473,11 +473,16 @@ public class YSocket {
                         synchronized (YSocket.this) {
                             closeSocket();
                             Socket newSocket = (createSocketInterceptor != null) ? createSocketInterceptor.create() : new Socket();
-                            SocketAddress socAddress = new InetSocketAddress(ip, port);// 连接
-                            newSocket.connect(socAddress, 1000 * 5);
-                            newSocket.setKeepAlive(true);
-                            socket = newSocket;
-                            connect = true;
+                            try {
+                                SocketAddress socAddress = new InetSocketAddress(ip, port);// 连接
+                                newSocket.connect(socAddress, 1000 * 5);
+                                newSocket.setKeepAlive(true);
+                                socket = newSocket;
+                                connect = true;
+                            } catch (Exception e2) {
+                                try { newSocket.close(); } catch (Exception ignored) {}
+                                throw e2;
+                            }
                         }
                         printLog("连接成功... (" + ip + ":" + port + ")");
                         connectListener.isSuccess(true);

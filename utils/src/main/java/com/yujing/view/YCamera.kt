@@ -311,7 +311,7 @@ class YCamera(var textureView: AutoFitTextureView, var id: String?) {
         mAnalysisReader = ImageReader.newInstance(frameWidth, frameHeight, ImageFormat.YUV_420_888, 2)
         mAnalysisReader!!.setOnImageAvailableListener({ reader ->
             //获取下一张图片
-            val image = reader!!.acquireNextImage()
+            val image = reader?.acquireNextImage() ?: return@setOnImageAvailableListener
             if (analysisCount++ % analysisInterval == 0L) {
                 //val startTime = System.currentTimeMillis()
                 if (image.format == ImageFormat.YUV_420_888) {
@@ -363,7 +363,7 @@ class YCamera(var textureView: AutoFitTextureView, var id: String?) {
         mImageReader = ImageReader.newInstance(captureWidth, captureHeight, ImageFormat.JPEG, 1)
         mImageReader?.setOnImageAvailableListener({ reader: ImageReader ->
             //获取最后一张图片
-            val image = reader.acquireLatestImage()
+            val image = reader.acquireLatestImage() ?: return@setOnImageAvailableListener
             if (image.format == ImageFormat.JPEG) {
                 if (captureListener != null && image.planes.isNotEmpty()) {
                     val buffer = image.planes[0].buffer

@@ -130,6 +130,7 @@ class YBusUtil {
         fun destroyAll() {
             busScope?.cancel()
             serialScope.cancel()
+            anySticky.clear()
             listObject.clear()
             objectSubs.clear()
             tagIndex.clear()
@@ -146,7 +147,14 @@ class YBusUtil {
 
         //串行
         @OptIn(ExperimentalCoroutinesApi::class)
-        private val serialScope = CoroutineScope(Dispatchers.Default.limitedParallelism(1))
+        private var serialScope: CoroutineScope = CoroutineScope(Dispatchers.Default.limitedParallelism(1))
+            get() {
+                if (field.coroutineContext[Job]?.isCancelled == false) {
+                    return field
+                }
+                field = CoroutineScope(Dispatchers.Default.limitedParallelism(1))
+                return field
+            }
 
         //串行消息
         fun postSerial(tag: String, value: Any?) {

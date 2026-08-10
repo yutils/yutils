@@ -112,9 +112,13 @@ public class YUri {
             // DownloadsProvider
             else if (isDownloadsDocument(uri)) {
                 final String id = DocumentsContract.getDocumentId(uri);
-                final Uri contentUri = ContentUris.withAppendedId(
-                        Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));
-                return getDataColumn(context, contentUri, null, null);
+                try {
+                    final Uri contentUri = ContentUris.withAppendedId(
+                            Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));
+                    return getDataColumn(context, contentUri, null, null);
+                } catch (NumberFormatException e) {
+                    return null;
+                }
             }
             // MediaProvider
             else if (isMediaDocument(uri)) {

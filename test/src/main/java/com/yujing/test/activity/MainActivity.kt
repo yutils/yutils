@@ -14,6 +14,8 @@ import com.yujing.test.activity.bluetooth.BleClientActivity
 import com.yujing.test.activity.bluetooth.BleServerActivity
 import com.yujing.test.databinding.ActivityAllTestBinding
 import com.yujing.utils.TTS
+import com.yujing.utils.YAsync
+import com.yujing.utils.YBytes
 import com.yujing.utils.YConvert
 import com.yujing.utils.YDelay
 import com.yujing.utils.YImageDialog
@@ -375,6 +377,75 @@ class MainActivity : YBaseActivity<ActivityAllTestBinding>(null) {
 
         Create.button(binding.wll, "YTimerStop") {
             yTimer.stop()
+        }
+
+        Create.button(binding.wll, "没tag，就等待") {
+            Thread{
+                try {
+                    YAsync.getInstance().ifNotHaveTagWait("abc", 5000)
+                    YToast.showQueue("等到：abc")
+                } catch (e: Exception) {
+                    YToast.showQueue("未等到tag=abc")
+                }
+            }.start()
+        }
+        Create.button(binding.wll, "异步转同步等待") {
+            Thread{
+                try {
+                    val value = YAsync.getInstance().submit<String>("abc", 5000) {
+                        YToast.showQueue("立即执行")
+                    }
+                    YToast.showQueue("收到：$value")
+                } catch (e: Exception) {
+                    YToast.showQueue("未等到消息超时")
+                }
+            }.start()
+        }
+
+        Create.button(binding.wll, "异步转同步完成") {
+            YAsync.getInstance().finish("abc", "YY")
+        }
+
+        //--------------------------------------------------------------------------------
+        Create.space(binding.wll)//换行
+        Create.button(binding.wll, "YBytes测试") {
+            val sb = StringBuilder()
+            //1.构造：默认/指定长度/初始数组（null安全）
+            YBytes(-5)//负数不崩溃
+            YBytes(null)//null不崩溃
+            //2.添加功能
+            val yb = YBytes(byteArrayOf(0x01, 0x02, 0x03))
+            yb.addByte(0x04)//单字节
+            yb.addByte(byteArrayOf(0x05, 0x06, 0x07, 0x08), 2)//前2个
+            yb.addByte(byteArrayOf(0x09, 0x0A, 0x0B, 0x0C), 2, 2)//从index2起2个
+            yb.addByte(listOf<Byte>(0x0D, 0x0E, 0x0F), 1)//List前1个
+            yb.addByte(listOf<Byte>(0x10, 0x11, 0x12), 1, 2)//List从index1起2个
+            sb.append("①添加:${YConvert.bytesToHexString(yb.getBytes())}\n")
+            //期望:01 02 03 04 05 06 0B 0C 0D 11 12
+
+            //3.修改功能
+            yb.changeByte(0x21, 0)//单字节
+            yb.changeByte(byteArrayOf(0x22, 0x23), 1)//从index1起写2个
+            yb.changeByte(byteArrayOf(0x24, 0x25, 0x26), 3, 3)//从index3起写3个
+            yb.changeByte(listOf<Byte>(0x27, 0x28), 7, 2)//List从index7起写2个
+            sb.append("②修改:${YConvert.bytesToHexString(yb.getBytes())}\n")
+            //期望:21 22 23 24 25 26 0B 27 28 11 12
+
+            //4.越界/null安全（不崩溃，截断处理）
+            yb.changeByte(byteArrayOf(0x31, 0x32, 0x33, 0x34), 9, 5)//长度越界截断
+            yb.addByte(null as ByteArray?)//null不崩
+            yb.addByte(byteArrayOf(0x41), -1)//负数不崩
+            sb.append("③越界截断后:${YConvert.bytesToHexString(yb.getBytes())}\n")
+            //期望:21 22 23 24 25 26 0B 27 28 31 32
+
+            //5.拆分
+            val parts = YBytes.split(byteArrayOf(1, 2, 3, 4, 5, 6, 7), 3)
+            sb.append("④拆分:${parts.size}段,长度:${parts.joinToString(",") { it.size.toString() }}\n")
+            //期望:3,3,1
+            sb.append("⑤split(null)/split(0):${YBytes.split(null, 0).size}段(不崩溃)\n")
+
+            textView1.text = sb.toString()
+            YToast.show("YBytes测试完成，见上方输出")
         }
     }
 

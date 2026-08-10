@@ -385,7 +385,7 @@ public class YShow extends Dialog {
         return show(activity, message1, message2, canCancel, null);
     }
 
-    public synchronized static YShow show(Activity activity, CharSequence message1, CharSequence message2, boolean canCancel, Boolean fullScreen) {
+    public static YShow show(Activity activity, CharSequence message1, CharSequence message2, boolean canCancel, Boolean fullScreen) {
         if (activity == null || activity.isFinishing() || activity.isDestroyed()) {
             return yDialog;
         }

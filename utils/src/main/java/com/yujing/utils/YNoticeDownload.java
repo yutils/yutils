@@ -94,7 +94,13 @@ public class YNoticeDownload {
         //只是下载状态才显示。当处于下载中状态和下载完成时状态均在通知栏中显示VISIBILITY_VISIBLE_NOTIFY_COMPLETED
         request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
         //设置下载路径
-        String newString = url.substring(url.lastIndexOf("/"));//返回一个新的字符串，它是此字符串的一个子字符串。
+        String newString;
+        int lastSlash = url.lastIndexOf("/");
+        if (lastSlash >= 0 && lastSlash < url.length() - 1) {
+            newString = url.substring(lastSlash);//返回一个新的字符串，它是此字符串的一个子字符串。
+        } else {
+            newString = "/" + System.currentTimeMillis() + ".download";
+        }
         file = new File(YPath.getFilePath(activity, "download") + newString);//外部存储卡目录
         if (file.exists()) {
             //noinspection ResultOfMethodCallIgnored
@@ -130,23 +136,28 @@ public class YNoticeDownload {
     private void getProgress() {
         DownloadManager.Query query = new DownloadManager.Query().setFilterById(id);
         Cursor cursor = mDownloadManager.query(query);
-        if (cursor != null && cursor.moveToFirst()) {
-            final int downloaded = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
-            final int fileSize = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
-            cursor.close();
-            if (fileSize <= 0) return;
-            if (!activity.isFinishing() && !finish && downLoadProgress != null)
-                activity.runOnUiThread(() -> downLoadProgress.progress(downloaded, fileSize));
-            if (downloaded == fileSize) {
-                finish = true;
-                myTimer.cancel();
+        if (cursor != null) {
+            try {
+                if (cursor.moveToFirst()) {
+                    final int downloaded = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
+                    final int fileSize = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
+                    if (fileSize <= 0) return;
+                    if (!activity.isFinishing() && !finish && downLoadProgress != null)
+                        activity.runOnUiThread(() -> downLoadProgress.progress(downloaded, fileSize));
+                    if (downloaded == fileSize) {
+                        finish = true;
+                        myTimer.cancel();
+                    }
+                    return;
+                }
+            } finally {
+                cursor.close();
             }
-        } else {
-            //失败
-            myTimer.cancel();
-            if (!activity.isFinishing() && downLoadFail != null)
-                activity.runOnUiThread(() -> downLoadFail.fail());
         }
+        //失败
+        myTimer.cancel();
+        if (!activity.isFinishing() && downLoadFail != null)
+            activity.runOnUiThread(() -> downLoadFail.fail());
     }
 
     public String getTitle() {
@@ -199,29 +210,34 @@ public class YNoticeDownload {
                 //final long id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, 0);
                 DownloadManager.Query query = new DownloadManager.Query().setFilterById(id);
                 Cursor cursor = mDownloadManager.query(query);
-                if (cursor != null && cursor.moveToFirst()) {
-                    int status = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS));
-                    switch (status) {
-                        case DownloadManager.STATUS_SUCCESSFUL:
-                            getProgress();
-                            if (!activity.isFinishing() && downLoadComplete != null)
-                                activity.runOnUiThread(() -> downLoadComplete.complete(mDownloadManager.getUriForDownloadedFile(id), file));
-                            break;
-                        case DownloadManager.STATUS_FAILED:
-                            myTimer.cancel();
-                            //错误原因
-                            int reason = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_REASON));
-                            if (downLoadFail != null)
-                                activity.runOnUiThread(() -> downLoadFail.fail());
-                            break;
-                        case DownloadManager.STATUS_PAUSED:
-                            break;
-                        case DownloadManager.STATUS_PENDING:
-                            break;
-                        case DownloadManager.STATUS_RUNNING:
-                            break;
+                if (cursor != null) {
+                    try {
+                        if (cursor.moveToFirst()) {
+                            int status = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS));
+                            switch (status) {
+                                case DownloadManager.STATUS_SUCCESSFUL:
+                                    getProgress();
+                                    if (!activity.isFinishing() && downLoadComplete != null)
+                                        activity.runOnUiThread(() -> downLoadComplete.complete(mDownloadManager.getUriForDownloadedFile(id), file));
+                                    break;
+                                case DownloadManager.STATUS_FAILED:
+                                    myTimer.cancel();
+                                    //错误原因
+                                    int reason = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_REASON));
+                                    if (downLoadFail != null)
+                                        activity.runOnUiThread(() -> downLoadFail.fail());
+                                    break;
+                                case DownloadManager.STATUS_PAUSED:
+                                    break;
+                                case DownloadManager.STATUS_PENDING:
+                                    break;
+                                case DownloadManager.STATUS_RUNNING:
+                                    break;
+                            }
+                        }
+                    } finally {
+                        cursor.close();
                     }
-                    cursor.close();
                 }
             } else if (DownloadManager.ACTION_NOTIFICATION_CLICKED.equals(intent.getAction())) {
                 //下载过程中的点击事件
@@ -244,7 +260,13 @@ public class YNoticeDownload {
     }
 
     public void onResume() {
-        if (mReceiver != null) ContextCompat.registerReceiver(activity, mReceiver, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE), ContextCompat.RECEIVER_NOT_EXPORTED);
+        // 构造函数已注册过广播，这里仅用于 onDestroy 后手动重新注册（幂等处理，重复注册会抛异常）
+        if (mReceiver != null) {
+            try {
+                ContextCompat.registerReceiver(activity, mReceiver, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE), ContextCompat.RECEIVER_NOT_EXPORTED);
+            } catch (IllegalStateException ignored) {
+            }
+        }
     }
 
     public void onDestroy() {

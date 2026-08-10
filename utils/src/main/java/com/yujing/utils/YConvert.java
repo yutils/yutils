@@ -328,7 +328,7 @@ public class YConvert {
     public static Bitmap path2Bitmap(String path) {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
-        //Bitmap bitmap = BitmapFactory.decodeFile(path, options); // 此时返回 bm 为空
+        Bitmap bitmap = BitmapFactory.decodeFile(path, options); // 此时返回 bm 为空，不能删除这行
         options.inJustDecodeBounds = false; // 缩放比。由于是固定比例缩放，只用高或者宽其中一个数据进行计算即可
         int be = (int) (options.outHeight / (float) 320);
         if (be <= 0)
