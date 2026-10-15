@@ -1,6 +1,7 @@
 package com.yujing.utils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -236,7 +237,11 @@ public class YBytes {
      * @param bytes bytes
      */
     public void setBytes(byte[] bytes) {
-        this.bytes = bytes;
+        if (bytes == null) {
+            this.bytes = new byte[0];
+            return;
+        }
+        this.bytes = Arrays.copyOf(bytes, bytes.length);
     }
 
     /**
@@ -284,5 +289,20 @@ public class YBytes {
      */
     public byte[] getBytes() {
         return bytes;
+    }
+
+    /**
+     * 获取bytes数组长度
+     * @return length
+     */
+    public int size(){
+        return bytes.length;
+    }
+
+    /**
+     * 清空数据
+     */
+    public void clear() {
+        bytes = new byte[0];
     }
 }
